@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <integer name="default_fm_freq_for_pcba">104300</integer>
+    <integer name="default_fm_freq">87500</integer>
+
+    <!--value in 0, 1, 2-->
+    <!--单斜线测试-->
+    <!--对角线测试-->
+    <!--边线加对角线测试-->
+    <integer name="default_tp_for_pcba">0</integer>
+    <integer name="default_tp">4</integer>
+
+    <integer name="default_tp_width_for_pcba">100</integer>
+    <integer name="default_tp_width">60</integer>
+
+    <!--value in 0, 1, 2, 3, 4-->
+    <!--C+G-->
+    <!--W+G-->
+    <!--CDMA-->
+    <!--WCDMA-->
+    <!--GSM+TDSCDMA+TDDLTD-->
+    <integer name="default_model">4</integer>
+
+    <string name ="default_sd_path">/storage/sdcard1</string>
+
+    <!--value in 0,1-->
+    <!--0:one pic-->
+    <!--1:five pic-->
+    <string name="default_lcd_for_pcba">0</string>
+    <string name="default_lcd">1</string>
+</resources>

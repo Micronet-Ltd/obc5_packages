@@ -1,0 +1,162 @@
+/*
+* Copyright (C) 2013 Samsung System LSI
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*      http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+package com.android.bluetooth.map;
+
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+
+import android.telephony.PhoneNumberUtils;
+import android.util.Log;
+import android.util.Xml;
+import java.util.List;
+import java.nio.charset.Charset;
+import com.android.internal.util.FastXmlSerializer;
+import org.xmlpull.v1.XmlSerializer;
+
+import android.util.Xml;
+
+/**
+ * @author cbonde
+ *
+ */
+public class BluetoothMapFolderElement {
+    private String name;
+    private String serverId;
+    private String parentServerId;
+    private BluetoothMapFolderElement parent = null;
+    protected ArrayList<BluetoothMapFolderElement> subFolders;
+
+    public BluetoothMapFolderElement( String name, BluetoothMapFolderElement parent ){
+        this(name, null, null, parent);
+    }
+    public BluetoothMapFolderElement( String name, String serverId, String parentServerId,
+            BluetoothMapFolderElement parent) {
+        this.name = name;
+        this.parent = parent;
+        this.serverId = serverId;
+        this.parentServerId = parentServerId;
+        subFolders = new ArrayList<BluetoothMapFolderElement>();
+    }
+    public String getName() {
+        return name;
+    }
+
+    public String getServerId() {
+        return serverId;
+    }
+
+    /**
+     * Fetch the parent folder.
+     * @return the parent folder or null if we are at the root folder.
+     */
+    public BluetoothMapFolderElement getParent() {
+        return parent;
+    }
+
+    /**
+     * Fetch the root folder.
+     * @return the parent folder or null if we are at the root folder.
+     */
+    public BluetoothMapFolderElement getRoot() {
+        BluetoothMapFolderElement rootFolder = this;
+        while(rootFolder.getParent() != null)
+            rootFolder = rootFolder.getParent();
+        return rootFolder;
+    }
+
+    /**
+     * Add a folder.
+     * @param name the name of the folder to add.
+     * @return the added folder element.
+     */
+    public BluetoothMapFolderElement addFolder(String name){
+        return addFolder(name, null, null);
+    }
+    /**
+     * Add a folder.
+     * @param name the displayName of the folder to add.
+     * @param serverId the serverId of the folder to add.
+     * @param parentServerId the parentServerId of the folder to add.
+     * @return the added folder element.
+     */
+    public BluetoothMapFolderElement addFolder(String name, String serverId, String parentServerId)
+    {
+        BluetoothMapFolderElement newFolder =
+                new BluetoothMapFolderElement(name, serverId, parentServerId, this);
+        subFolders.add(newFolder);
+        return newFolder;
+    }
+
+    /**
+     * Fetch the number of sub folders.
+     * @return returns the number of sub folders.
+     */
+    public int getSubFolderCount(){
+        return subFolders.size();
+    }
+
+    /**
+     * Returns the subFolder element matching the supplied folder name.
+     * @param folderName the name of the subFolder to find.
+     * @return the subFolder element if found {@code null} otherwise.
+     */
+    public BluetoothMapFolderElement getSubFolder(String folderName){
+        for(BluetoothMapFolderElement subFolder : subFolders){
+            if(subFolder.getName().equalsIgnoreCase(folderName))
+                return subFolder;
+        }
+        return null;
+    }
+
+    public byte[] encode(int offset, int count) throws UnsupportedEncodingException {
+        StringWriter sw = new StringWriter();
+        XmlSerializer xmlMsgElement = new FastXmlSerializer();
+        int i, stopIndex;
+        if(offset > subFolders.size())
+            throw new IllegalArgumentException("FolderListingEncode: offset > subFolders.size()");
+
+        stopIndex = offset + count;
+        if(stopIndex > subFolders.size())
+            stopIndex = subFolders.size();
+
+        try {
+            xmlMsgElement.setOutput(sw);
+            xmlMsgElement.startDocument("UTF-8", true);
+            xmlMsgElement.setFeature("http://xmlpull.org/v1/doc/features.html#indent-output", true);
+            xmlMsgElement.startTag(null, "folder-listing");
+            xmlMsgElement.attribute(null, "version", "1.0");
+            for(i = offset; i<stopIndex; i++)
+            {
+                xmlMsgElement.startTag(null, "folder");
+                xmlMsgElement.attribute(null, "name", subFolders.get(i).getName());
+                xmlMsgElement.endTag(null, "folder");
+            }
+            xmlMsgElement.endTag(null, "folder-listing");
+            xmlMsgElement.endDocument();
+        } catch (IllegalArgumentException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IllegalStateException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return sw.toString().getBytes("UTF-8");
+    }
+}

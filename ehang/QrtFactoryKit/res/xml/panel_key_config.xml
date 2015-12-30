@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FactoryTest>
+    <TestKey
+            name="MENU"
+            keyCode="KEYCODE_MENU"/>
+    <TestKey
+            name="HOME"
+            keyCode="KEYCODE_HOME"/>
+    <TestKey
+            name="BACK"
+            keyCode="KEYCODE_BACK"/>
+    <!--<TestKey-->
+            <!--name="SEARCH"-->
+            <!--keyCode="KEYCODE_SEARCH"/>-->
+</FactoryTest>

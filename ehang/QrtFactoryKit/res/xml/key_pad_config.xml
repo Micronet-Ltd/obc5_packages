@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FactoryTest>
+    <PadTestKey
+            name="VOLUME_UP"
+            text="keypad_volume_up"
+            keyCode="KEYCODE_VOLUME_UP"/>
+    <PadTestKey
+            name="VOLUME_DOWN"
+            text="keypad_volume_down"
+            keyCode="KEYCODE_VOLUME_DOWN"/>
+    <!--<PadTestKey-->
+            <!--name="FOCUS"-->
+            <!--text="keypad_focus"-->
+            <!--keyCode="KEYCODE_FOCUS"/>-->
+    <!--<PadTestKey-->
+            <!--name="CAMERA"-->
+            <!--text="keypad_camera"-->
+            <!--keyCode="KEYCODE_CAMERA"/>-->
+</FactoryTest>

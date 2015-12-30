@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FactoryTest>
+
+    <Single>
+    	
+    	  <TestItem name="Battery" enable="true">
+            <Intent
+                    packageName="com.qrt.factory"
+                    className="com.qrt.factory.activity.Battery"/>
+        </TestItem>
+
+        <TestItem name="PanelKeyLight" enable="true">
+            <Intent
+                    packageName="com.qrt.factory"
+                    className="com.qrt.factory.activity.PanelKeyLight"/>
+        </TestItem>
+
+        <TestItem name = "Speaker" enable = "true">
+            <Intent
+                    packageName = "com.qrt.factory"
+                    className = "com.qrt.factory.activity.Speaker" />
+        </TestItem>
+
+        <TestItem name = "Vibrate" enable = "true">
+            <Intent
+                    packageName = "com.qrt.factory"
+                    className = "com.qrt.factory.activity.Vibrate" />
+        </TestItem>
+
+        <TestItem name = "MicAndReceiver" enable = "true">
+            <Intent
+                    packageName = "com.qrt.factory"
+                    className = "com.qrt.factory.activity.MicAndReceiver" />
+        </TestItem>
+    </Single>
+</FactoryTest>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- added by zhangjiaquan for SW00037849 add choose engine feature 14-3-26 -->
+<PreferenceScreen
+        xmlns:android="http://schemas.android.com/apk/res/android">
+
+        <com.android.quicksearchbox.preferences.SearchEnginePreference
+                android:key="search_engine"
+                android:persistent="false"
+                android:title="@string/select_engine"
+                android:dialogTitle="@string/select_engine_title"
+                android:entries="@array/engine_options"
+                android:entryValues="@array/engine_options_values"
+                android:defaultValue="@string/default_engine_value"/>
+
+</PreferenceScreen>

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Copyright (c) 2011, QUALCOMM Incorporated.
+    All Rights Reserved.
+    QUALCOMM Proprietary and Confidential.
+    Developed by QRD Engineering team.
+-->
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+
+    <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
+        <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="10sp">
+            <Button
+                    android:id="@+id/fm_search"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:layout_width="fill_parent"
+                    android:layout_height="80dip"
+                    android:text="@string/fm_search"
+                    android:layout_weight="2">
+            </Button>
+            <TextView
+                    android:id="@+id/fm_frequency"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:gravity="center"
+                    android:layout_weight="1">
+            </TextView>
+        </TableRow>
+
+
+        <TextView
+                android:id="@+id/fm_insert_headset"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/insert_headset"
+                android:textColor="@color/red"/>
+
+        <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center">
+
+        </TableRow>
+    </LinearLayout>
+
+    <LinearLayout
+            android:orientation="vertical"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="0dip"
+            android:layout_height="wrap_content"
+            android:layout_width="fill_parent">
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/fm_confirm"
+                android:textAppearance="?android:attr/textAppearanceMedium">
+        </TextView>
+        <LinearLayout
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="0dip"
+                android:layout_height="wrap_content"
+                android:layout_width="fill_parent">
+            <Button
+                    android:id="@+id/fm_fail"
+                    android:text="@string/no"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:layout_height="80dip"
+                    android:layout_width="fill_parent"
+                    android:layout_weight="1"/>
+            <Button
+                    android:id="@+id/fm_pass"
+                    android:text="@string/yes"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:layout_height="80dip"
+                    android:layout_width="fill_parent"
+                    android:layout_weight="1"/>
+        </LinearLayout>
+    </LinearLayout>
+</RelativeLayout>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2008 The Android Open Source Project
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+  
+          http://www.apache.org/licenses/LICENSE-2.0
+  
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+        android:title="@string/device_xinxi">
+<!-- qj delete this for 8916
+        <Preference android:key="cpu_1" 
+                android:title="@string/cpu_1"
+                android:summary="@string/cpu_1_summary"/>
+
+        <Preference android:key="hexinshu" 
+                android:title="@string/hexinshu"
+                android:summary="@string/hexinshu_summary"/>
+                
+        <Preference android:key="cpu_2" 
+                android:title="@string/cpu_2"
+                android:summary="@string/cpu_2_summary"/>
+-->
+        <Preference android:key="fenbianlv"
+                android:title="@string/fenbianlv"
+                android:summary="@string/fenbianlv_summary"/>
+
+        
+        <Preference android:key="jsneicun" 
+                android:title="@string/jsneicun"
+                android:summary="@string/jsneicun_summary"/>
+
+        <Preference android:key="yxneicun" 
+                android:title="@string/yxneicun"
+                android:summary="@string/yxneicun_summary"/>
+
+        <Preference android:key="pm_size"
+                android:title="@string/pm_size"
+                android:summary="@string/pm_size_summary"/>
+
+</PreferenceScreen>

@@ -1,0 +1,503 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <!--
+        Copyright (c) 2011, QUALCOMM Incorporated. All Rights Reserved. QUALCOMM Proprietary and Confidential. Developed
+        by QRD Engineering team.
+    -->
+<resources  xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+
+    <!-- Common string -->
+
+    <string name="auto_test">Auto Test</string>
+    <string name="auto_outtime_test">Back testing is not complete, please manually run</string>
+    <string
+        name="test_result">Test Result</string>
+    <string
+        name="ok">OK</string>
+    <string
+        name="pass">Pass</string>
+    <string
+        name="fail">Fail</string>
+    <string
+        name="app_name">FactoryKit Test</string>
+    <string
+        name="start">Start</string>
+    <string
+        name="scan">Scan</string>
+     <string
+             name="user_canceled">User canceled</string>
+
+    <string name="version_info">Version Information</string>
+
+    <string name="software_version">Software version: </string>
+
+    <string name="Hardware_version">Hardware version: </string>
+
+    <string name="Product_version">Product version: </string>
+
+    <string name="build_version">Build version: </string>
+
+    <string
+        name="device_open_fail">Device open fail!</string>
+    <string
+        name="service_get_fail">Sevice get fail!</string>
+    <string
+        name="sensor_get_fail">Sensor get fail!</string>
+    <string
+        name="sensor_register_fail">Sensor register fail!</string>
+    <string
+        name="test_pass">Test pass</string>
+    <string
+        name="shake_hint">Please cover light sensor with your hands at least 2 times.</string>
+    <string
+            name="light_sensor_verison">sensor type:
+    </string>
+
+    <string name="headset_key">Headset key</string>
+    <string
+        name="remove_headset">Please remove headset</string>
+    <string
+            name="remove_headset_second">Please remove headset in %s second</string>
+    <string
+        name="insert_headset">Please insert headset</string>
+    <string
+            name="insert_headset_second">Please insert headset in %s second</string>
+    <string
+        name="stop">Stop</string>
+    <string
+        name="play">Play</string>
+    <string
+        name="record">Record</string>
+    <string
+        name="time_out">Time out!</string>
+    <string
+        name="error_pass">Please correct test!</string>
+
+
+    <!-- ControlCenter -->
+    <string
+        name="clean_state">Clean Test State</string>
+    <string
+        name="uninstall">Uninstall</string>
+    <string
+        name="control_center_quit_confirm">Do you want to exit?</string>
+    <string name="refresh_results">Refresh Results</string>
+    <string name="master_clear_menu_text">Reset phone</string>
+    <string name="test_info_menu_text">Test Results</string>
+
+    <!--Battery-->
+    <string name="battery_msg">Please insert the charger!</string>
+
+    <string name="battery_insert">Please insert the charger in %s second!</string>
+
+    <!-- Led -->
+    <string
+            name="led_red">red</string>
+    <string
+            name="led_green">green</string>
+    <string
+            name="led_blue">blue</string>
+    <string
+        name="led_red_name">TriColor Led (red)</string>
+    <string
+            name="led_green_name">TriColor Led (green)</string>
+    <string
+            name="led_blue_name">TriColor Led (blue)</string>
+    <string
+        name="led_text">Light color %s test</string>
+
+    <!-- Flashlight -->
+    <string
+        name="flashlight_name">Flashlight</string>
+    <string
+        name="flashlight_confirm">Is the Flashlight on?</string>
+
+    <string
+            name="iris_leds_confirm">Is the two infrared light of the iris camera on?
+    </string>		
+		
+    <!-- SIM1 -->
+    <string
+        name="sim1_name">SIM</string>
+    <!-- SIM2 -->
+    <string
+        name="sim2_name">SIM2</string>
+
+    <!-- TouchPanelEdge -->
+    <string
+        name="touchpanel_edge_name">TouchPanel Edge</string>
+
+    <!-- TouchPanelKey -->
+    <string
+        name="touchpanel_key_name">TouchPanel Key</string>
+
+    <!-- Keypad -->
+    <string
+        name="keypad_name">Keypad</string>
+    <string
+            name="keypad_and_vibrate_name">Keypad and Vibrate
+    </string>
+    <string
+        name="keypad_text">Please press the following keys:</string>
+    <string
+        name="keypad_volume_up">VOLUME_UP</string>
+    <string
+        name="keypad_volume_down">VOLUME_DOWN</string>
+    <string
+            name="keypad_menu">MENU</string>
+    <string
+            name="keypad_home">HOME</string>
+    <string
+            name="keypad_back">BACK</string>
+    <string
+            name="keypad_app_switch">APP_SWITCH</string>
+    <string
+        name="keypad_focus">FOCUS</string>
+    <string
+        name="keypad_camera">CAMERA</string>
+
+    <!-- CameraBack-->
+    <string
+        name="cameraback_name">CameraBack</string>
+    <string
+        name="cameraback_takepicture">Take picture</string>
+    <string
+        name="cameraback_fail_open">Camera open Fail, please Check Camera Installed Correctly!</string>
+    <!-- CameraFront-->
+    <string
+        name="camerafront_name">CameraFront</string>
+    <string
+        name="camerafront_takepicture">Take picture</string>
+    <string
+            name="CameraIris_name">CameraIris
+    </string>
+    <!-- LCM-->
+    <string
+        name="lcm_name">LCM</string>
+    <string
+        name="lcm_confirm">Please choose</string>
+
+    <!-- Vibrator -->
+    <string
+        name="vibrate_name">Vibrator</string>
+    <string
+        name="vibrate_confirm">Please choose vibration</string>
+    <string
+        name="vibrate_hint">Vibrating...</string>
+
+
+    <!-- PSensor -->
+    <string
+        name="psensor_name">Proximity Sensor</string>
+    <string
+        name="psensor_hint">Please cover the Psensor.</string>
+    <!-- Hall Sensor -->
+    <string
+        name="hallsensor_hint">Please use magnet close to the Hall switch.</string>
+    <string
+            name="hall_sensor_check">Status : undetected magnet
+    </string>
+    
+    <string
+            name="hall_sensor_check_ok">Status : detected magnet
+    </string>
+    <!-- GSensor -->
+    <string
+        name="gsensor_name">Gravity Sensor</string>
+
+    <!-- MSensor -->
+    <string
+        name="msensor_name">Magnetic Sensor</string>
+
+    <!-- OSensor -->
+    <string
+        name="osensor_name">Oritentation Sensor</string>
+
+    <!-- HSensor -->
+    <string
+        name="hsensor_name">Pressure Sensor</string>		
+    <!-- Gyroscope -->
+    <string
+        name="gyroscope_name">Gyroscope</string>
+
+
+    <!-- LightSensor -->
+    <string
+        name="lightsensor_name">LightSensor</string>
+
+    <!-- SDCard -->
+    <string
+        name="sdcard_name">SD Card</string>
+    <string
+        name="sdcard_wait">Please wait for reading Sd card...</string>
+    <string
+        name="sdcard_confirm">Have inserted SD card?</string>
+    <string
+        name="sdcard_to_remove">Please Remove the SD card</string>
+    <string
+        name="sdcard_to_insert">Please insert SD card</string>
+
+    <!-- Bluetooth -->
+    <string
+        name="bluetooth_name">Bluetooth</string>
+    <string
+        name="bluetooth_scan_start">Scaning devices...</string>
+    <string
+        name="bluetooth_scan_finish">Finish scan</string>
+    <string
+        name="bluetooth_scan_null">Not found any device</string>
+
+    <!-- WiFi -->
+    <string
+        name="wifi_name">WiFi</string>
+    <string
+        name="wifi_text">WiFi test will be completed within 30 seconds, please wait.</string>
+    <string
+        name="wifi_is_closing">WiFi is closing, please retry after a while.</string>
+    <string
+        name="wifi_scan_null">Not found any AP!</string>
+    <string
+        name="wifi_state_unknown1">WiFi state unknown, please retry.</string>
+
+
+    <!--TransmitterReceiver -->
+    <string
+        name="transmitter_receiver_name">Transmitter and Receiver</string>
+    <string
+        name="transmitter_receiver_hint">Transmitter and Receiver</string>
+    <string
+        name="transmitter_receiver_recording">Now recording, please say some words to transmitter and click Stop button to stop.</string>
+
+    <string
+        name="transmitter_receiver_playing">Replaying now, please listen to the receiver.</string>
+    <string
+        name="transmitter_receiver_confirm">Do you hear the sound?</string>
+    <string
+        name="transmitter_receiver_record_first">Please click Record button first</string>
+    <string
+        name="transmitter_receiver_replay_end">Have reached the end.</string>
+    <string
+        name="transmitter_receiver_to_record">Click Record button to record sound.</string>
+
+    <!-- Headset -->
+    <string
+        name="headset_insert_name">Headset Insert</string>
+    <string
+            name="headset_remove_name">Headset remove</string>
+    <string
+            name="headset_name">Headset</string>
+    <string
+        name="headset_hint">Headset</string>
+    <string
+        name="headset_recording">Now recording, please say some words to transmitter and click Stop button to stop.</string>
+    <string
+        name="headset_playing">Replaying now, please listen to the headset.</string>
+    <string
+        name="headset_confirm">Do you hear the sound?</string>
+    <string
+        name="headset_record_first">Please click Record button first</string>
+    <string
+        name="headset_replay_end">Have reached the end.</string>
+    <string
+        name="headset_to_record">Click Record button to record sound.</string>
+
+    <!-- Speaker -->
+    <string
+        name="speaker_name">Speaker</string>
+    <string
+        name="speaker_hint">Speaker</string>
+    <string
+        name="speaker_confirm">Do you hear the sound?</string>
+    <string
+            name="left_speaker_confirm">Do you hear the left speaker sound?
+    </string>
+    <string
+            name="right_speaker_confirm">Do you hear the right speaker sound?
+    </string>		
+    <string
+        name="speaker_playing">Playing...</string>
+    <string
+        name="speaker_play_first">Please click Play button first</string>
+    <string
+        name="speaker_to_play">Click Play button to play sound.</string>
+    <string
+        name="speaker_recording">Now being recorded, please speak</string>
+
+    <!-- GPS -->
+    <string
+        name="gps_name">GPS</string>
+    <string
+        name="gps_enable_first">Please enable GPS first</string>
+    <string
+        name="gps_latitude">latitude:</string>
+    <string
+        name="gps_longitude">longitude:</string>
+    <string
+        name="gps_speed">speed:</string>
+    <string
+        name="gps_speed_unit">m/s</string>
+    <string
+        name="gps_altitude">altitude:</string>
+    <string
+        name="gps_altitude_unit">m</string>
+    <string
+        name="gps_bearing">bearing:</string>
+    <string
+        name="gps_unknown">Location unknown or locating...</string>
+    <string
+        name="gps_provider_enabled">Provider enabled</string>
+    <string
+            name="gps_start">GPS Start</string>
+    <string
+            name="gps_locate_sucess">Locate sucess</string>
+
+    <!-- FM -->
+    <string
+        name="fm_name">FmRadio</string>
+    <string
+        name="fm_search">Search</string>
+    <string
+            name="fm_search_on">Searching,Please wait...
+    </string>
+    <string
+            name="fm_open_on">Open Device,Please wait...
+    </string>
+    <string
+            name="fm_open_error">Open Device Error
+    </string>
+    <string
+        name="fm_confirm">Can you hear the sound ?</string>
+
+    <!-- Battery -->
+    <string
+        name="battery_name">Battery and Charge</string>
+    <string
+        name="battery_voltage">Battery Voltage = </string>
+    <string name="battery_status">Battery Status  =  </string>
+    <string name="battery_temperature">Battery Temperature  =  </string>
+
+    <!-- FuelGaugeCalibration -->
+    <string
+        name="fuelgauge_name">FuelGaulge Calibration</string>
+    <string
+        name="fuelgauge_hint">FuelGauge Calibration will be completed within 30s, please wait...</string>
+    <string
+        name="fuelgauge_processing">Processing...</string>
+
+    <!-- PanelKeyLight -->
+    <string
+            name="keyLight_name">Panel Key Light</string>
+    <string
+            name="keyLight_text">Please Press MENU KEY</string>
+    <string
+            name="keyLight_confirm">keyboard light is correct (YES OR NO)</string>
+
+    <!-- Strings for Dialog yes button -->
+    <string name="yes">"Yes"</string>
+
+    <!-- Strings for Dialog no button -->
+    <string name="no">"No"</string>
+
+    <string name="audio_message_aux">please say blows to auxiliary mic and listen to the headset!</string>
+    <string name="audio_message_Earphone">please blows to mic and listen to the headset!</string>
+    <string name="audio_message_Receiver">please blows to mic and listen to the receiver!</string>
+    <string name="audio_message_headset">please blows to headset mic and listen to the headset!</string>
+    <string name="audio_title_aux">auxiliary MIC</string>
+    <string name="audio_title_Earphone">MIC</string>
+    <string name="touch_panel_key_message">
+        <![CDATA[Please Press\n<]]>
+        <xliff:g id="KEY">%1$s</xliff:g>
+        <![CDATA[ KEY>]]></string>
+
+    <string name="set_nv_menu_text">Set the full power mode</string>
+    <string name="set_nv_menu_password">Please enter password</string>
+    <string name="set_nv_menu_password_bad">Passwords don\'t match</string>
+    <string name="set_nv_pass">Set successfully</string>
+    <string name="dlg_ok">OK</string>
+    <string name="dlg_cancel">Cancel</string>
+    <string name="cancel">Cancel</string>
+    <string name="testing">Testing</string>
+    <string name="unknown">Unknown</string>
+    <string name="retest_button">Retest</string>
+    <string name="bluetooth_turning_on">"Turning on Bluetooth..."</string>
+
+    <string name="cdma_adjustment">CDMA adjustment:</string>
+    <string name="cdma_1x_final_test">CDMA 1x final test:</string>
+    <string name="cdma_evdo_final_test">CDMA EVDO final test:</string>
+    <string name="cdma_coupling">CDMA coupling:</string>
+    <string name="nv_pass">Test pass</string>
+    <string name="nv_null">Not tested</string>
+    <string name="nv_fail">Test fail</string>
+
+    <string name="led_name">LED</string>
+    <string name="led_tri_text">LED test sequence: red, green, blue</string>
+    <string name="led_dual_text">LED test sequence: red, green</string>
+    <string name="led_confirm">Is LED color correct?</string>
+
+    <!-- TouchPanelKey And KeyLight -->
+    <string
+            name="touchpanel_key_and_key_light_name">TouchPanel Key And Key Light
+    </string>
+
+    <!-- LCM And Speaker-->
+    <string
+            name="lcm_and_speaker_name">LCM And Speaker
+    </string>
+    <string name="pcba_factory_test">Board Factory Test:</string>
+
+	<string name="smt_test">Board test:</string>
+    <string name="phone_test">Phone test:</string>
+
+    <string name="receiver_hint">Receiver</string>
+    
+    <string name="hall_test">Hall test</string>
+    
+    <string name="wcdma_adjustment">WCDMA adjustment:</string>
+    <string name="wcdma_final_test">WCDMA final test:</string>
+    <string name="wcdma_coupling">WCDMA coupling:</string>
+
+    <string name="gsm_adjustment">GSM adjustment:</string>
+    <string name="gsm_final_test">GSM final test:</string>
+    <string name="gsm_coupling">GSM coupling:</string>
+    
+	<string name="coupling">coupling:</string>
+	
+    <string name="rtc_title">RTC</string>
+    <string name="rtc_msg">If the RTC is normal, the test will be successful, 
+    	after two second slick failure button three seconds 
+    	later is still stuck in this interface, manually</string>
+
+    <string name="nfc_name">Near Field Communication</string>
+
+    <string name="tdscdma_adjustment">TDSCDMA adjustment:</string>
+    <string name="tdscdma_final_test">TDSCDMA final test:</string>
+    <string name="tdscdma_coupling">TDSCDMA coupling:</string>
+
+    <string name="tddlte_adjustment">TDDLTE adjustment:</string>
+    <string name="tddlte_final_test">TDDLTE final test:</string>
+    <string name="tddlte_coupling">TDDLTE coupling:</string>
+
+    <string name="fddlte_adjustment">FDDLTE adjustment:</string>
+    <string name="fddlte_final_test">FDDLTE final test:</string>
+    <string name="fddlte_coupling">FDDLTE coupling:</string>
+
+    <string name="adjustment">adjustment</string>
+
+    <string
+            name="adjustment_start">Adjustment,Please wait...</string>
+
+    <string
+            name="adjustment_thres">Threshold</string>
+
+    <string
+            name="adjustment_ok">Adjusted</string>
+
+    <string
+            name="adjustment_tip">Please phone in horizontal position before adjustment</string>
+	
+	<string
+        name="touchpanel_auto_name">Auto TouchPanel
+	</string>
+	<string
+        name="nfc_test_notice">Please put the card near the mobile phone
+	</string>
+</resources>

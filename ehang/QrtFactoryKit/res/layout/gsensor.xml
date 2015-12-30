@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Copyright (c) 2011, QUALCOMM Incorporated.
+    All Rights Reserved.
+    QUALCOMM Proprietary and Confidential.
+    Developed by QRD Engineering team.
+-->
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+
+    <TextView
+            android:id="@+id/gsensor_result"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"/>
+
+    <LinearLayout
+            android:orientation="vertical"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="0dip"
+            android:layout_height="wrap_content"
+            android:layout_width="fill_parent">
+
+        <TextView android:text="@string/adjustment_tip"
+                  android:layout_width="fill_parent"
+                  android:layout_height="wrap_content"
+                  android:textSize="20sp"/>
+
+        <Button
+                android:id="@+id/adjustment_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/adjustment"/>
+
+        <TextView android:id="@+id/adjustment_value"
+                  android:layout_width="fill_parent"
+                  android:layout_height="wrap_content"
+                  android:textSize="20sp"/>
+        <LinearLayout
+                android:layout_marginBottom="0dip"
+                android:layout_height="wrap_content"
+                android:layout_width="fill_parent">
+            <Button
+                    android:id="@+id/gsensor_pass"
+                    android:layout_width="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_height="80dip"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:layout_weight="1"
+                    android:text="@string/ok"/>
+            <Button
+                    android:id="@+id/gsensor_cancel"
+                    android:layout_width="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_height="80dip"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:layout_weight="1"
+                    android:text="@string/fail"/>
+        </LinearLayout>
+    </LinearLayout>
+</RelativeLayout>

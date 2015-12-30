@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="set_adb_prop_display">####8989#</string>
+    <string name="set_aplog_code">####7878#</string>
+    <string name="set_qxdmlog_code">####8787#</string>
+    <string name="set_usb_sn_code">####8789#</string>
+</resources>

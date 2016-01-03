@@ -4687,10 +4687,11 @@ public class Launcher extends Activity
     public void updateVoiceButtonProxyVisible(boolean forceDisableVoiceButtonProxy) {
         final View voiceButtonProxy = findViewById(R.id.voice_button_proxy);
         if (voiceButtonProxy != null) {
-            boolean visible = !forceDisableVoiceButtonProxy &&
+            /*boolean visible = !forceDisableVoiceButtonProxy &&
                     mWorkspace.shouldVoiceButtonProxyBeVisible();
             voiceButtonProxy.setVisibility(visible ? View.VISIBLE : View.GONE);
-            voiceButtonProxy.bringToFront();
+            voiceButtonProxy.bringToFront();*/
+        	voiceButtonProxy.setVisibility(View.GONE);
         }
     }
 

@@ -137,7 +137,13 @@ public class IccLockSettings extends PreferenceActivity
                     }
                 } else {
                     mPinToggle.setEnabled(true);
-                    mPinDialog.setEnabled(true);
+                   
+					if(mPinToggle.isChecked()){
+                        mPinDialog.setEnabled(true);
+					}else{
+                        mPinDialog.setEnabled(false);
+					}
+					
                     mHandler.sendMessage(mHandler.obtainMessage(MSG_SIM_STATE_CHANGED));
                 }
             }
@@ -212,6 +218,12 @@ public class IccLockSettings extends PreferenceActivity
 
     private void updatePreferences() {
         mPinToggle.setChecked(mPhone.getIccCard().getIccLockEnabled());
+
+		if(mPinToggle.isChecked()){
+            mPinDialog.setEnabled(true);
+		}else{
+            mPinDialog.setEnabled(false);
+		}
     }
 
     @Override
@@ -431,6 +443,7 @@ public class IccLockSettings extends PreferenceActivity
                         Toast.LENGTH_SHORT).show();
             }
             mPinToggle.setChecked(mToState);
+			mPinDialog.setEnabled(mToState);
         } else {
             handleException(exception, MSG_ENABLE_ICC_PIN_COMPLETE,
                 attemptsRemaining);

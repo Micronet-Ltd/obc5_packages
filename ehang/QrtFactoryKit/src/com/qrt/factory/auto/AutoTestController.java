@@ -81,10 +81,10 @@ public class AutoTestController {
             mContext.getMainLooper().prepare();
             for (TestItem autoTestItem : mAutoTestItems) {
                 Utilities.loge("AUTO_TEST", autoTestItem.getName());
-                if (testFinish) {
-                    mHandler.sendEmptyMessage(3);
-                    return;
-                }
+               // if (testFinish) {
+                 //   mHandler.sendEmptyMessage(3);
+                 //   continue;
+                //}
                 Utilities.loge("AUTO_TEST", "testFinish = " + testFinish);
                 AutoTest autoTest = map.get(autoTestItem.getName());
                 if (autoTest != null) {

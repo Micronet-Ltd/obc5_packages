@@ -169,7 +169,9 @@ public class DataUsageSummary extends HighlightingFragment implements Indexable 
     private static final String TAB_WIFI = "wifi";
     private static final String TAB_ETHERNET = "ethernet";
     // In multi-sim device, UI will show tab names as SIM1, SIM2, etc.
-    private static final String TAB_SIM = "SIM";
+   
+	private static int subTag = R.string.slot_name_1;
+    private static String TAB_SIM ;
 
     private static final String TAG_CONFIRM_DATA_DISABLE = "confirmDataDisable";
     private static final String TAG_CONFIRM_LIMIT = "confirmLimit";
@@ -737,6 +739,7 @@ public class DataUsageSummary extends HighlightingFragment implements Indexable 
      * binds them to visible controls.
      */
     private void updateBody() {
+        TAB_SIM = getString(subTag);
         mBinding = true;
         if (!isAdded()) return;
 
@@ -951,6 +954,7 @@ public class DataUsageSummary extends HighlightingFragment implements Indexable 
     private Boolean mMobileDataEnabled;
 
     private boolean isMobileDataEnabled() {
+		 TAB_SIM = getString(subTag);
         // How about exposing sub based API like TelephonyManager.getDataEnabled(int subId);
         if (mCurrentTab.startsWith(TAB_SIM)) {
             // as per SUB, return the individual flag
@@ -968,6 +972,8 @@ public class DataUsageSummary extends HighlightingFragment implements Indexable 
 
     private void setMobileDataEnabled(boolean enabled) {
         if (LOGD) Log.d(TAG, "setMobileDataEnabled()");
+		
+		TAB_SIM = getString(subTag);
         // How about exposing sub based API like TelephonyManager.setDataEnabled(int subId);
         if (mCurrentTab.startsWith(TAB_SIM)) {
             int phoneId = multiSimGetCurrentSub();
@@ -1025,6 +1031,7 @@ public class DataUsageSummary extends HighlightingFragment implements Indexable 
     private void updatePolicy(boolean refreshCycle) {
         boolean dataEnabledVisible = mDataEnabledSupported;
         boolean disableAtLimitVisible = mDisableAtLimitSupported;
+		TAB_SIM = getString(subTag);
 
         if (isAppDetailMode()) {
             dataEnabledVisible = false;
@@ -1143,6 +1150,7 @@ public class DataUsageSummary extends HighlightingFragment implements Indexable 
 
             final boolean dataEnabled = !mDataEnabled.isChecked();
             final String currentTab = mCurrentTab;
+			TAB_SIM = getString(subTag);
             if (TAB_MOBILE.equals(currentTab) || currentTab.startsWith(TAB_SIM)) {
                 if (dataEnabled) {
                     setMobileDataEnabled(true);
@@ -1869,6 +1877,8 @@ public class DataUsageSummary extends HighlightingFragment implements Indexable 
                     && parent.mPolicyEditor.getPolicy(parent.mTemplate) != null) {
                 final long minLimitBytes = (long) (policy.warningBytes * 1.2f);
                 final long limitBytes;
+				
+			    TAB_SIM = res.getString(R.string.slot_name_1);	
 
                 // TODO: customize default limits based on network template
                 final String currentTab = parent.mCurrentTab;
@@ -2571,7 +2581,7 @@ public class DataUsageSummary extends HighlightingFragment implements Indexable 
         if (i <= 0) {
             return "";
        } else {
-            return TAB_SIM + i;
+            return getString(subTag) + i;
         }
     }
 
@@ -2580,7 +2590,7 @@ public class DataUsageSummary extends HighlightingFragment implements Indexable 
         if (i <= 0) {
             return "";
         } else {
-            return getText(R.string.data_usage_tab_slot).toString() + i;
+            return getText(R.string.slot_name_1).toString() + i;
         }
     }
 

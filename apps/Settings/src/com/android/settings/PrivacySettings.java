@@ -23,6 +23,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Process;
 import android.os.RemoteException;
@@ -37,6 +38,7 @@ import android.preference.SwitchPreference;
 import android.provider.SearchIndexableResource;
 import android.provider.Settings;
 import android.util.Log;
+import android.content.BroadcastReceiver;
 
 import com.android.settings.search.BaseSearchIndexProvider;
 import com.android.settings.search.Indexable;
@@ -45,11 +47,14 @@ import com.android.settings.search.Indexable.SearchIndexProvider;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.android.settings.search.Indexable;
 import com.android.settings.search.BaseSearchIndexProvider;
 import com.android.settings.search.Indexable.SearchIndexProvider;
 
 import java.util.ArrayList;
 import java.util.List;
+import android.widget.Toast;
+import android.util.Log;
 
 /**
  * Gesture lock pattern settings.
@@ -65,16 +70,38 @@ public class PrivacySettings extends SettingsPreferenceFragment implements
     private static final String CONFIGURE_ACCOUNT = "configure_account";
     private static final String BACKUP_INACTIVE = "backup_inactive";
     private static final String PERSONAL_DATA_CATEGORY = "personal_data_category";
+    private static final String MASTER_CLEAR = "master_clear";
     private static final String TAG = "PrivacySettings";
     private IBackupManager mBackupManager;
     private SwitchPreference mBackup;
     private SwitchPreference mAutoRestore;
     private Dialog mConfirmDialog;
     private PreferenceScreen mConfigure;
+	private PreferenceScreen mMasterClear;
     private boolean mEnabled;
 
     private static final int DIALOG_ERASE_BACKUP = 2;
     private int mDialogType;
+
+	//added by xuegang for lowbattery 20151030 begin
+    private  Context mcontext;
+	private int mBatteryLevel;  
+	private BroadcastReceiver mBatteryInfoReceiver = new BroadcastReceiver() {
+		  @Override
+		  public void onReceive(Context context, Intent intent) {
+			  String action = intent.getAction();
+			  if (Intent.ACTION_BATTERY_CHANGED.equals(action)) {
+	
+				  int level = intent.getIntExtra("level", 0);
+				  int scale = intent.getIntExtra("scale", 100);
+				  Log.d("PrivacySettings", "level="+level+"scale="+scale);
+				  mBatteryLevel = (level * 100 / scale);		
+				  Log.d("PrivacySettings", "mBatteryLevel="+mBatteryLevel);
+			  }
+		  }
+	};
+	//added by xuegang for lowbattery 20151030 end
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -97,6 +124,10 @@ public class PrivacySettings extends SettingsPreferenceFragment implements
         mAutoRestore.setOnPreferenceChangeListener(preferenceChangeListener);
 
         mConfigure = (PreferenceScreen) screen.findPreference(CONFIGURE_ACCOUNT);
+
+        mMasterClear = (PreferenceScreen) screen.findPreference(MASTER_CLEAR);
+
+        mcontext = getActivity(); //Added by xuegang for lowbattery 20151030
 
         ArrayList<String> keysToRemove = getNonVisibleKeys(getActivity());
         final int screenPreferenceCount = screen.getPreferenceCount();
@@ -122,12 +153,26 @@ public class PrivacySettings extends SettingsPreferenceFragment implements
     @Override
     public void onResume() {
         super.onResume();
+		
+		//added by xuegang for lowbattery 20151030 begin
+		mcontext.registerReceiver(mBatteryInfoReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));  
+		//added by xuegang for lowbattery 20151030 end
 
         // Refresh UI
         if (mEnabled) {
             updateToggles();
         }
     }
+
+	//added by xuegang for lowbattery 20151030 begin
+	@Override	
+	 public void onPause() {	  
+		 super.onPause(); 
+		 mcontext.unregisterReceiver(mBatteryInfoReceiver);
+	 
+	} 
+	//added by xuegang for lowbattery 20151030 end
+
 
     @Override
     public void onStop() {
@@ -138,6 +183,25 @@ public class PrivacySettings extends SettingsPreferenceFragment implements
         mDialogType = 0;
         super.onStop();
     }
+	
+	//added by xuegang for lowbattery 20151030 begin
+    @Override
+    public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen,
+            Preference preference) {
+    	final Context context = getActivity();
+		Log.d("PrivacySettings", "onPreferenceChange");
+		if (preference == mMasterClear) {
+			Log.d("PrivacySettings", "mBatteryLevel============="+mBatteryLevel);
+			if(mBatteryLevel < 15){
+				Toast.makeText(context,context.getResources().getString(R.string.battery_low_restore_factoryset),
+					Toast.LENGTH_SHORT).show();
+				return true;
+			}
+		}
+
+        return super.onPreferenceTreeClick(preferenceScreen, preference);
+    }
+	//added by xuegang for lowbattery 20151030 end
 
     private OnPreferenceChangeListener preferenceChangeListener = new OnPreferenceChangeListener() {
         @Override
@@ -164,6 +228,7 @@ public class PrivacySettings extends SettingsPreferenceFragment implements
                     mAutoRestore.setChecked(!nextValue);
                 }
             }
+			
             return result;
         }
     };

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">My Notes</string>
+
+    <string name="cancel">CANCEL</string>
+    <string name="done">DONE</string>
+    <string name="back">Back</string>
+    <string name="details_hint">Details</string>
+    <string name="date_hint">Date</string>
+    
+    <string name="add_note">Add note</string>
+    <string name="new_note">New note</string>
+    <string name="edit_note">Edit note</string>
+    <string name="add_folder">New folder</string>
+    <string name="move_note">Move to folder</string>
+    <string name="edit_folder_name">Edit folder name</string>
+    <string name="confirm_cancel">Cancel</string>
+    <string name="confirm_done">Done</string>
+    <string name="delete">Delete</string>
+    <string name="copy_note">Copy text</string>
+    
+    <string name="note_option">Note option</string>
+    <string name="folder_option">Folder option</string>
+    <string name="delete_warning">This note will be deleted.</string>
+    <string name="delete_one_warning">One note will be deleted.</string>
+    <string name="delete_some_warning">notes will be deleted.</string>
+    <string name="delete_folder_warning">Confirm to delete this folder and its notes?</string>
+    <string name="no_selected">No item selected.</string>
+    
+	<string name="folder_name">Folder name</string>	
+	<string name="folder_others">Others</string>
+	<string name="folder_call">Calling records</string>
+	
+</resources>

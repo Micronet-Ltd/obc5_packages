@@ -200,7 +200,17 @@
     <string
             name="keypad_camera">照相
     </string>
-
+    <string
+            name="keypad_sos">SOS按键
+    </string>
+    <string
+            name="keypad_ptt">PTT按键
+    </string> 
+    
+    <string
+            name="pin12_name">扩展接口
+    </string>    
+    
     <!-- CameraBack-->
     <string
             name="cameraback_name">后置摄像头
@@ -629,4 +639,21 @@
 	<string
         name="nfc_test_notice">请将磁卡靠近手机背面
 	</string>
+    <!-- 北斗 -->
+    <string
+            name="beidou_name">北斗
+    </string>
+    <string
+            name="beidou_enable_first">请先启用北斗
+    </string>
+    <string
+            name="beidou_start">北斗 开始</string>
+    <string
+            name="gpsbeidou_name">GPS/北斗
+    </string>
+    <string
+            name="gpsbeidou_enable_first">请先启用GPS/北斗
+    </string>
+    <string
+            name="gpsbeidou_start">GPS/北斗 开始</string>
 </resources>

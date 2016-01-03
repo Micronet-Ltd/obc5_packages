@@ -602,8 +602,9 @@ public class GroupEditorFragment extends Fragment implements SelectAccountDialog
         }
         return false;
     }
-
-    private boolean revert() {
+  //modify by chenqi,for add "discard changed" to actionBar,and next with  "done" 2015-11-26
+  //just change "privite" to "public",for calling by others
+    public boolean revert() {
         if (!hasNameChange() && !hasMembershipChange()) {
             doRevertAction();
         } else {

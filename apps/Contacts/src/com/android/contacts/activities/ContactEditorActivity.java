@@ -92,7 +92,14 @@ public class ContactEditorActivity extends ContactsActivity
         }
 
         setContentView(R.layout.contact_editor_activity);
-
+        //{begin by chenqi,for add "discard changed" to actionBar,and next with  "done" 2015-11-26
+        //just move them form end here,for fragment init end
+        mFragment = (ContactEditorFragment) getFragmentManager().findFragmentById(
+                R.id.contact_editor_fragment);
+        mFragment.setListener(mFragmentListener);
+        Uri uri = Intent.ACTION_EDIT.equals(action) ? getIntent().getData() : null;
+        mFragment.load(action, uri, getIntent().getExtras());
+        //}end by chenqi,for add "discard changed" to actionBar,and next with  "done" 2015-11-26        
         ActionBar actionBar = getActionBar();
         if (actionBar != null) {
             // Inflate a custom action bar that contains the "done" button for saving changes
@@ -107,6 +114,17 @@ public class ContactEditorActivity extends ContactsActivity
                     mFragment.doSaveAction();
                 }
             });
+            
+            //{begin by chenqi,for add "discard changed" to actionBar,and next with  "done" 2015-11-26
+            View discardMenuitem = customActionBarView.findViewById(R.id.discard_menu_item);
+            discardMenuitem.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mFragment.revert();
+                }
+            });
+            //}end by chenqi,for add "discard changed" to actionBar,and next with  "done" 2015-11-26
+            
             TextView title = (TextView) customActionBarView.findViewById(R.id.title);
             if (Intent.ACTION_EDIT.equals(action)) {
                 title.setText(getResources().getString(
@@ -120,13 +138,12 @@ public class ContactEditorActivity extends ContactsActivity
                     ActionBar.DISPLAY_SHOW_CUSTOM | ActionBar.DISPLAY_SHOW_HOME |
                     ActionBar.DISPLAY_SHOW_TITLE);
             actionBar.setCustomView(customActionBarView);
+            
+            
         }
 
-        mFragment = (ContactEditorFragment) getFragmentManager().findFragmentById(
-                R.id.contact_editor_fragment);
-        mFragment.setListener(mFragmentListener);
-        Uri uri = Intent.ACTION_EDIT.equals(action) ? getIntent().getData() : null;
-        mFragment.load(action, uri, getIntent().getExtras());
+
+        
     }
 
     @Override

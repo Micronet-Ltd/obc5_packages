@@ -1889,6 +1889,12 @@ public class CallFeaturesSetting extends PreferenceActivity
                     CdmaCallOptions.initCallWaitingPref(this, mPhone.getPhoneId());
                 }
             } else if (phoneType == PhoneConstants.PHONE_TYPE_GSM) {
+                /*lihui@20151031 added for display FDN setting according config item start*/
+                Preference fdnButton = prefSet.findPreference(BUTTON_FDN_KEY);
+                if (fdnButton != null && getResources().getBoolean(R.bool.config_diable_fdn_setting)) {
+                    prefSet.removePreference(fdnButton);
+                }
+				/*lihui@20151031 added for display FDN setting according config item end*/
                 if (getResources().getBoolean(R.bool.config_additional_call_setting)) {
                     addPreferencesFromResource(R.xml.gsm_umts_call_options);
                 }

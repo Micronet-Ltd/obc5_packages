@@ -37,6 +37,7 @@ import com.cyanogenmod.filemanager.util.FileHelper;
 
 import java.io.File;
 import java.util.List;
+import java.nio.charset.Charset;
 
 /**
  * A class that wraps a dialog for input a name for file, folder, ...
@@ -262,9 +263,10 @@ public class InputNameDialog
         }
 
         // Too long
-        if (name.length() >= FILENAME_CHAR_LIMIT) {
+		byte b[]=name.getBytes(Charset.forName("UTF8"));
+        if (b.length  >= FILENAME_CHAR_LIMIT) {
             setMsg(InputNameDialog.this.mContext.getString(
-                    R.string.input_name_dialog_message_invalid_name_length), true);
+                    R.string.input_name_dialog_message_invalid_name_length), false);
             return;
         }
 

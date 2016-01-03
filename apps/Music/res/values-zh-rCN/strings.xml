@@ -188,4 +188,5 @@
     <string name="more_music">更多音乐</string>
     <string name="more_video">更多视频</string>
 	<string name="exit">"退出"</string>
+	<string name="edit_playlist_menu">编辑</string>
 </resources>

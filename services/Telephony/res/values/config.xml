@@ -110,7 +110,7 @@ for different hardware or product builds. -->
 <!-- If true, removes the Voice Privacy option from Call Settings -->
 <bool name="config_voice_privacy_disable">false</bool>
 <!-- If false, removes the X-Divert option from Call Settings -->
-<bool name="config_xdivert_enable">true</bool>
+<bool name="config_xdivert_enable">false</bool>
 <!-- If false, removes the Video Call option from Call Settings -->
 <bool name="config_video_call_enable">true</bool>
 
@@ -278,7 +278,7 @@ as an enum (NONE, HFA, OTASP). -->
     <!-- If true, removes the Voice Privacy option from Call Settings -->
     <bool name="config_voice_privacy_disable">false</bool>
     <!-- If false, removes the X-Divert option from Call Settings -->
-    <bool name="config_xdivert_enable">true</bool>
+    <bool name="config_xdivert_enable">false</bool>
     <!-- If false, removes the Video Call option from Call Settings -->
     <bool name="config_video_call_enable">true</bool>
 
@@ -356,7 +356,7 @@ as an enum (NONE, HFA, OTASP). -->
    <bool name="icc_depersonalizationPanelEnabled">true</bool>
 
     <!-- config switching DDS switch back to the default sub -->
-    <bool name="config_dds_switch_back">false</bool>
+    <bool name="config_dds_switch_back">true</bool>
 
     <!-- config network mode for smartfren carriers -->
     <bool name="config_network_smartfren_feature">false</bool>
@@ -376,5 +376,7 @@ as an enum (NONE, HFA, OTASP). -->
 
    <!-- Flag indicating if IMS account settings is enabled-->
    <bool name="config_ims_account_settings_enable">false</bool>
-   
+
+   <!-- Flag indicating if fdn setting is diabled -->
+   <bool name="config_diable_fdn_setting">true</bool>
 </resources>

@@ -154,7 +154,13 @@
         name="keypad_focus">FOCUS</string>
     <string
         name="keypad_camera">CAMERA</string>
-
+    <string
+            name="keypad_sos">SOS</string>
+    <string
+            name="keypad_ptt">PTT</string>
+    <string
+            name="pin12_name">Extended Interface</string>
+    
     <!-- CameraBack-->
     <string
         name="cameraback_name">CameraBack</string>
@@ -500,4 +506,17 @@
 	<string
         name="nfc_test_notice">Please put the card near the mobile phone
 	</string>
+    <!-- beidou -->
+    <string
+        name="beidou_name">BeiDou</string>
+    <string
+        name="beidou_enable_first">Please enable BeiDou first</string>
+    <string
+        name="beidou_start">BeiDou Start</string>
+    <string
+        name="gpsbeidou_name">GPS/BeiDou</string>
+    <string
+        name="gpsbeidou_enable_first">Please enable GPS/BeiDou first</string>
+    <string
+        name="gpsbeidou_start">GPS/BeiDou Start</string>
 </resources>

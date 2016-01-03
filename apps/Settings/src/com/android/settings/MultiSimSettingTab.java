@@ -124,7 +124,8 @@ public class MultiSimSettingTab extends TabActivity {
     }
 
     public static String getMultiSimName(Context context, int subscription) {
-        final SubscriptionInfo sir = findRecordBySlotId(context, subscription);
+        SubscriptionInfo sir = findRecordBySlotId(context, subscription);
+		sir = null;
 
         if (sir != null) {
             return sir.getDisplayName().toString();

@@ -32,6 +32,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
     <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
+    <uses-permission android:name="android.permission.GET_TASKS" />
 
     <supports-screens
         android:anyDensity="true"
@@ -147,6 +148,13 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
+        
+        <receiver android:name="com.android.camera.CameraKeyReceiver">
+            <intent-filter>
+                <action android:name="com.ehang.key.camera.pressed" />
+            </intent-filter>
+        </receiver>
+       
     </application>
 
 </manifest>

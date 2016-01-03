@@ -21,29 +21,6 @@
                     className="com.qrt.factory.activity.SdCard"/>
         </TestItem>
 
-        <TestItem name="Nfc" enable="true">
-            <Intent
-                    packageName="com.qrt.factory"
-                    className="com.qrt.factory.activity.Nfc"/>
-        </TestItem>
-
-        <TestItem name="GravitySensor" enable="true">
-            <Intent
-                    packageName="com.qrt.factory"
-                    className="com.qrt.factory.activity.GravitySensor"/>
-        </TestItem>
-        <TestItem name = "HightSensor" enable = "true">
-            <Intent
-                    packageName = "com.qrt.factory"
-                    className = "com.qrt.factory.activity.HightSensor" />
-        </TestItem>			
-        <!--qrt added by xuegang to compass test 201400905 end-->
-        <TestItem name="MagneticSensor" enable="true">
-            <Intent
-                    packageName="com.qrt.factory"
-                    className="com.qrt.factory.activity.MagneticSensor"/>
-        </TestItem>
-
         <TestItem name="Bluetooth" enable="true">
             <Intent
                     packageName="com.qrt.factory"
@@ -55,7 +32,7 @@
                     packageName="com.qrt.factory"
                     className="com.qrt.factory.activity.WiFi"/>
         </TestItem>
-
+        
         <TestItem name="Gps" enable="true">
             <Intent
                     packageName="com.qrt.factory"
@@ -77,10 +54,10 @@
                     className="com.qrt.factory.activity.TouchPanelLine"/>
         </TestItem>
 
-        <TestItem name="TouchPanelKey" enable="true">
+	 <TestItem name="TouchPanel" enable="true">
             <Intent
                     packageName="com.qrt.factory"
-                    className="com.qrt.factory.activity.TouchPanelKey"/>
+                    className="com.qrt.factory.activity.TouchPanel"/>
         </TestItem>
 
         <TestItem name="KeypadAndVibrate" enable="true">
@@ -94,12 +71,38 @@
                     packageName="com.qrt.factory"
                     className="com.qrt.factory.activity.LcmAndSpeaker"/>
         </TestItem>
+
         <TestItem name="ColorLed" enable="true">
             <Intent
                     packageName="com.qrt.factory"
                     className="com.qrt.factory.activity.ColorLed"/>
         </TestItem>
 
+        <TestItem name="GravitySensorAuto" enable="true">
+            <Intent
+                    packageName="com.qrt.factory"
+                    className="com.qrt.factory.activity.GravitySensorAuto"/>
+        </TestItem>
+
+        <TestItem name="GyroscopeAuto" enable="true">
+            <Intent
+                packageName="com.qrt.factory"
+                className="com.qrt.factory.activity.GyroscopeAuto"/>
+        </TestItem>
+ 
+        <TestItem name = "HightSensor" enable = "true">
+            <Intent
+                    packageName = "com.qrt.factory"
+                    className = "com.qrt.factory.activity.HightSensor" />
+        </TestItem>			
+
+        <TestItem name="MagneticSensor" enable="true">
+            <Intent
+                    packageName="com.qrt.factory"
+                    className="com.qrt.factory.activity.MagneticSensor"/>
+        </TestItem>
+	
+		
         <TestItem name="LightSensor" enable="true">
             <Intent
                     packageName="com.qrt.factory"
@@ -112,11 +115,10 @@
                     className="com.qrt.factory.activity.ProximitySensor"/>
         </TestItem>
 
-        <!--Del by wangwenlong for delete gyroscope test (ql1000)-->
-        <TestItem name="Gyroscope" enable="true">
+        <TestItem name="Nfc" enable="true">
             <Intent
-                packageName="com.qrt.factory"
-                className="com.qrt.factory.activity.Gyroscope"/>
+                    packageName="com.qrt.factory"
+                    className="com.qrt.factory.activity.Nfc"/>
         </TestItem>
 
         <TestItem name="CameraBack" enable="true">
@@ -165,13 +167,7 @@
             <Intent
                     packageName = "com.qrt.factory"
                     className = "com.qrt.factory.activity.Receiver" />
-        </TestItem>
-        
-        <TestItem name = "Hall" enable = "true">
-            <Intent
-                    packageName = "com.qrt.factory"
-                    className = "com.qrt.factory.activity.HallSensor" />
-        </TestItem>
+        </TestItem>     
     </Single>
 
     <!-- <FunctionItem

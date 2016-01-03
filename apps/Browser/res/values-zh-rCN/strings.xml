@@ -56,6 +56,7 @@
     <string name="reload" msgid="8585220783228408062">"刷新"</string>
     <string name="back" msgid="8414603107175713668">"返回"</string>
     <string name="forward" msgid="4288210890526641577">"前进"</string>
+    <string name="backpage">"后退"</string>
     <string name="save" msgid="5922311934992468496">"确定"</string>
     <string name="do_not_save" msgid="6777633870113477714">"取消"</string>
     <string name="location" msgid="3411848697912600125">"网址"</string>

@@ -71,6 +71,7 @@ public class LegacyLocationProvider implements LocationProvider {
         Log.d(TAG, "disconnect");
         // The onPause() call to stopReceivingLocationUpdates is sufficient to unregister the
         // Network/GPS listener.
+        stopReceivingLocationUpdates();
     }
 
     private void startReceivingLocationUpdates() {

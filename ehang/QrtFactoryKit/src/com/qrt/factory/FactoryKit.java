@@ -9,6 +9,7 @@ import com.qrt.factory.util.XmlUtil;
 import android.util.Log;
 import android.content.Intent;
 import android.content.Context;
+import android.provider.Settings;
 
 public class FactoryKit extends Application{
 
@@ -49,6 +50,12 @@ public class FactoryKit extends Application{
     	}
     	
     	List<TestItem>[] testItems = null;
+		int gps_en = 0;
+		int bd_en = 0;
+
+	    gps_en=Settings.Secure.getInt(mContext.getContentResolver(),Settings.Secure.TEXT_GPS_ENABLE,0);
+	    bd_en=Settings.Secure.getInt(mContext.getContentResolver(),Settings.Secure.TEXT_BD_ENABLE,0);    
+		
         try {
             int bootMode = 0;
             if (intent.getBooleanExtra("attachment", false)) {
@@ -60,11 +67,34 @@ public class FactoryKit extends Application{
                     		mContext.getResources().getInteger(R.integer.default_fm_freq_for_pcba);
 				/*qrt added by xuegang for auto sim test 20141120 begin*/	
                 } else if ("dsds".equals(SystemProperties.get("persist.radio.multisim.config"))) {
-                    bootMode = 3;
-                    TestSettings.DEFAULT_FREQ =
+			       if(bd_en!=0&&gps_en!=0)
+			       {
+                      bootMode = 6;
+			       }
+				   else if(bd_en!=0)
+			       {
+                      bootMode = 5;
+			       }
+			       else
+			       {
+                      bootMode = 3;
+			       } 
+					
+                   TestSettings.DEFAULT_FREQ =
                     		mContext.getResources().getInteger(R.integer.default_fm_freq);
                 } else {
-                    bootMode = 0;
+			       if(bd_en!=0&&gps_en!=0)
+			       {
+                      bootMode = 7;
+			       }
+			       else if(bd_en!=0)
+			       {
+                      bootMode = 4;
+			       }
+			       else
+			       {
+                      bootMode = 0;
+			       }
                     TestSettings.DEFAULT_FREQ =
                     		mContext.getResources().getInteger(R.integer.default_fm_freq);
                 }

@@ -447,7 +447,7 @@ public class SecuritySettings extends SettingsPreferenceFragment
                     com.android.internal.R.bool.config_showNavigationBar);
             Preference screenPinning =
                     advancedCategory.findPreference(KEY_SCREEN_PINNING);
-            if (!hasNavBar) {
+            if (!hasNavBar && screenPinning != null) {
                 advancedCategory.removePreference(screenPinning);
             }
 

@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FactoryTest>
+
+    <Auto>
+        <TestItem name="Sim1" enable="true">
+            <Intent
+                    packageName="com.qrt.factory"
+                    className="com.qrt.factory.activity.Sim1"/>
+        </TestItem>
+
+        <TestItem name="Sim2" enable="true">-->
+            <Intent
+                    packageName="com.qrt.factory"
+                    className="com.qrt.factory.activity.Sim2"/>
+        </TestItem>
+
+        <TestItem name="SdCard" enable="true">
+            <Intent
+                    packageName="com.qrt.factory"
+                    className="com.qrt.factory.activity.SdCard"/>
+        </TestItem>
+
+        <TestItem name="Bluetooth" enable="true">
+            <Intent
+                    packageName="com.qrt.factory"
+                    className="com.qrt.factory.activity.Bluetooth"/>
+        </TestItem>
+
+        <TestItem name="WiFi" enable="true">
+            <Intent
+                    packageName="com.qrt.factory"
+                    className="com.qrt.factory.activity.WiFi"/>
+        </TestItem>
+        
+        <TestItem name="Gps" enable="true">
+            <Intent
+                    packageName="com.qrt.factory"
+                    className="com.qrt.factory.activity.Beidou"/>
+        </TestItem>
+    </Auto>
+
+    <Single>
+
+        <TestItem name="Battery" enable="true">
+            <Intent
+                    packageName="com.qrt.factory"
+                    className="com.qrt.factory.activity.Battery"/>
+        </TestItem>
+
+        <TestItem name="TouchPanelLine" enable="true">
+            <Intent
+                    packageName="com.qrt.factory"
+                    className="com.qrt.factory.activity.TouchPanelLine"/>
+        </TestItem>
+
+	 <TestItem name="TouchPanel" enable="true">
+            <Intent
+                    packageName="com.qrt.factory"
+                    className="com.qrt.factory.activity.TouchPanel"/>
+        </TestItem>
+
+        <TestItem name="KeypadAndVibrate" enable="true">
+            <Intent
+                    packageName="com.qrt.factory"
+                    className="com.qrt.factory.activity.KeypadAndVibrate"/>
+        </TestItem>
+
+        <TestItem name="LcmAndSpeaker" enable="true">
+            <Intent
+                    packageName="com.qrt.factory"
+                    className="com.qrt.factory.activity.LcmAndSpeaker"/>
+        </TestItem>
+
+        <TestItem name="ColorLed" enable="true">
+            <Intent
+                    packageName="com.qrt.factory"
+                    className="com.qrt.factory.activity.ColorLed"/>
+        </TestItem>
+
+        <TestItem name="GravitySensorAuto" enable="true">
+            <Intent
+                    packageName="com.qrt.factory"
+                    className="com.qrt.factory.activity.GravitySensorAuto"/>
+        </TestItem>
+
+        <TestItem name="GyroscopeAuto" enable="true">
+            <Intent
+                packageName="com.qrt.factory"
+                className="com.qrt.factory.activity.GyroscopeAuto"/>
+        </TestItem>
+ 
+        <TestItem name = "HightSensor" enable = "true">
+            <Intent
+                    packageName = "com.qrt.factory"
+                    className = "com.qrt.factory.activity.HightSensor" />
+        </TestItem>			
+
+        <TestItem name="MagneticSensor" enable="true">
+            <Intent
+                    packageName="com.qrt.factory"
+                    className="com.qrt.factory.activity.MagneticSensor"/>
+        </TestItem>		
+		
+        <TestItem name="LightSensor" enable="true">
+            <Intent
+                    packageName="com.qrt.factory"
+                    className="com.qrt.factory.activity.LightSensor"/>
+        </TestItem>
+
+        <TestItem name="ProximitySensor" enable="true">
+            <Intent
+                    packageName="com.qrt.factory"
+                    className="com.qrt.factory.activity.ProximitySensor"/>
+        </TestItem>
+
+        <TestItem name="Nfc" enable="true">
+            <Intent
+                    packageName="com.qrt.factory"
+                    className="com.qrt.factory.activity.Nfc"/>
+        </TestItem>
+
+        <TestItem name="CameraBack" enable="true">
+            <Intent
+                    packageName="com.qrt.factory"
+                    className="com.qrt.factory.activity.CameraBack"/>
+        </TestItem>
+
+        <TestItem name="CameraFront" enable="true">
+            <Intent
+                    packageName="com.qrt.factory"
+                    className="com.qrt.factory.activity.CameraFront"/>
+        </TestItem>
+
+        <TestItem name="AssistMic" enable="true">
+            <Intent
+                    packageName="com.qrt.factory"
+                    className="com.qrt.factory.activity.AssistMic"/>
+        </TestItem>
+
+        <TestItem name="HeadsetKey" enable="true">
+            <Intent
+                    packageName="com.qrt.factory"
+                    className="com.qrt.factory.activity.HeadsetKey"/>
+        </TestItem>
+
+        <TestItem name="Headset" enable="true">
+            <Intent
+                    packageName="com.qrt.factory"
+                    className="com.qrt.factory.activity.Headset"/>
+        </TestItem>
+
+        <TestItem name="MicAndReceiver" enable="true">
+            <Intent
+                    packageName="com.qrt.factory"
+                    className="com.qrt.factory.activity.MicAndReceiver"/>
+        </TestItem>
+
+        <TestItem name="FmRadio" enable="true">
+            <Intent
+                packageName="com.qrt.factory"
+                className="com.qrt.factory.activity.FmRadio"/>
+        </TestItem>
+
+        <TestItem name = "Receiver" enable = "true">
+            <Intent
+                    packageName = "com.qrt.factory"
+                    className = "com.qrt.factory.activity.Receiver" />
+        </TestItem>     
+    </Single>
+
+    <!-- <FunctionItem
+    name="*FuelGaugeCalibration"
+    enable="false"
+    packageName="com.qrt.factory.FuelGaugeCalibration"></FunctionItem>-->
+
+    <!--
+	<FunctionItem
+        name="TriColor Led"
+        enable="true"
+        packageName="com.qrt.factory.TriColorLed"></FunctionItem>
+	-->
+    <!--
+     <FunctionItem
+         name="Flashlight"
+         enable="true"
+         packageName="com.qrt.factory.Flashlight"></FunctionItem>
+     -->
+</FactoryTest>

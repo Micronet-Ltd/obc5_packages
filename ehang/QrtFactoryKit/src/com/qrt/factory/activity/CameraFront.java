@@ -173,23 +173,22 @@ public class CameraFront extends AbstractActivity
         }
 
         if (mCamera == null) {
+			logd("surfaceCreated mCamera is null!!!");
             fail();
         } else {
             try {
                 mCamera.setPreviewDisplay(mSurfaceHolder);
                 Camera.Parameters parameters = mCamera.getParameters();
                 parameters.setPictureFormat(PixelFormat.JPEG);
-                parameters.setFlashMode(Camera.Parameters.FLASH_MODE_ON);
-
 
                 setPreviewSize(parameters);
 
-
-
                 mCamera.setParameters(parameters);
                 mCamera.startPreview();
+				logd("surfaceCreated mCamera is finished!!!");
 
             } catch (Exception exception) {
+               logd("surfaceCreated mCamera is exception!!!");
                 mCamera.release();
                 mCamera = null;
                 fail();
@@ -269,7 +268,6 @@ public class CameraFront extends AbstractActivity
             try {
                 Camera.Parameters parameters = mCamera.getParameters();
                 parameters.setPictureFormat(PixelFormat.JPEG);
-                parameters.setFlashMode(Camera.Parameters.FLASH_MODE_ON);
 
                 setPreviewSize(parameters);
 
@@ -300,7 +298,7 @@ public class CameraFront extends AbstractActivity
             } else if(w >= supportedPreviewSize.height &&
                     h >= supportedPreviewSize.width){
 
-                setLayoutParams(parameters, supportedPreviewSize.width, supportedPreviewSize.height);
+                setLayoutParams(parameters, supportedPreviewSize.height, supportedPreviewSize.width);
                 return;
             }
         }

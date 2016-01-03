@@ -21,6 +21,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
+import android.view.Window;
+import android.view.WindowManager;
 
 import com.android.camera.debug.Log;
 
@@ -62,6 +64,7 @@ public abstract class QuickActivity extends Activity {
      * call to onResume() should execute onResumeTasks() immediately.
      */
     private boolean mCanceledResumeTasks = false;
+    private boolean mOpenonKeyguard = true;
 
     /**
      * A runnable for deferring tasks to be performed in onResume() if starting
@@ -95,7 +98,10 @@ public abstract class QuickActivity extends Activity {
         logLifecycle("onCreate", true);
         Log.v(TAG, "Intent Action = " + getIntent().getAction());
         super.onCreate(bundle);
-
+        
+        Intent intent = getIntent();
+		mOpenonKeyguard = intent.getBooleanExtra("onKeyguard", false);
+        
         mMainHandler = new Handler(getMainLooper());
 
         onCreateTasks(bundle);
@@ -127,6 +133,15 @@ public abstract class QuickActivity extends Activity {
             }
         }
         super.onResume();
+        
+        if(mOpenonKeyguard){
+			final Window win = getWindow();
+			win.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
+			win.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+					| WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
+					| WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON);
+		}		
+        
         logLifecycle("onResume", false);
     }
 

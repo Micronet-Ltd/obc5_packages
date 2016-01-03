@@ -221,7 +221,8 @@ public class MSimStatus extends PreferenceActivity {
     }
 
     private String getMultiSimName(int phoneId) {
-        String name = MultiSimSettingTab.getMultiSimName(this, phoneId);
+        //String name = MultiSimSettingTab.getMultiSimName(this, phoneId);
+		String name = null;
         if (name != null) {
             return name;
         } else {
@@ -660,7 +661,9 @@ public class MSimStatus extends PreferenceActivity {
     private void updateNetworkType(int phoneId) {
         // Whether EDGE, UMTS, etc...
         int[] subId = SubscriptionManager.getSubId(phoneId);
-        int netwokType = mTelephonyManager.getNetworkType(subId[0]);
+		/*yihang hanxiaoming 2015.12.4 modifyed for networktype display begin*/
+        int netwokType = mTelephonyManager.getVoiceNetworkType(subId[0]);
+		/*yihang hanxiaoming 2015.12.4 modifyed for networktype display end*/
         if (TelephonyManager.NETWORK_TYPE_UNKNOWN != netwokType) {
             mNetworkSummary[phoneId] = getSimSummary(phoneId,
                     mTelephonyManager.getNetworkTypeName(netwokType));

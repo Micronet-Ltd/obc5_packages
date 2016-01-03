@@ -14,6 +14,7 @@ import com.qrt.factory.util.Utilities;
 
 import java.util.ArrayList;
 import java.util.List;
+import android.util.Log;
 
 /**
  * Created with IntelliJ IDEA. User: wangwenlong Date: 12-4-6 Time: 下午3:05 To
@@ -35,7 +36,6 @@ public class MicAndReceiver extends AbstractActivity {
 
     private static List<String> initOpenCmdList(){
         List<String> openCmdList = new ArrayList<String>();
-		/*Add By baiwuqiang to change cmd at android 4.4 HQ00000000 2014-6-24 begin*/
 		openCmdList.add("tinymix 'LOOPBACK Mode' 'ENABLE'");
 		openCmdList.add("tinymix 'MICBIAS CAPLESS Switch' '1'");
         openCmdList.add("tinymix 'DEC1 MUX' 'ADC1'");
@@ -50,6 +50,8 @@ public class MicAndReceiver extends AbstractActivity {
         openCmdList.add("tinymix 'HPHR' 'Switch'");
         openCmdList.add("tinymix 'RX1 Digital Volume' '84'");
         openCmdList.add("tinymix 'RX2 Digital Volume' '84'");
+        openCmdList.add("tinymix 'DEC1 MUX' 'ZERO'");
+        openCmdList.add("tinymix 'DEC1 MUX' 'ADC1'");
         openCmdList.add("tinymix 'Loopback MCLK' 'ENABLE'");
 		
 /*		
@@ -73,7 +75,6 @@ public class MicAndReceiver extends AbstractActivity {
 
     private static List<String> initCloseCmdList(){
         List<String> closeCmdList = new ArrayList<String>();
-		/*Add By baiwuqiang to change cmd at android 4.4 HQ00000000 2014-6-24 begin*/
 		closeCmdList.add("tinymix 'MICBIAS CAPLESS Switch' '0'");
         closeCmdList.add("tinymix 'DEC1 MUX' 'ZERO'");
         closeCmdList.add("tinymix 'DEC1 Volume' '84'");
@@ -87,9 +88,9 @@ public class MicAndReceiver extends AbstractActivity {
         closeCmdList.add("tinymix 'HPHR' 'ZERO'");
         closeCmdList.add("tinymix 'RX1 Digital Volume' '84'");
         closeCmdList.add("tinymix 'RX2 Digital Volume' '84'");
+        closeCmdList.add("tinymix 'DEC1 MUX' 'ZERO'");
         closeCmdList.add("tinymix 'Loopback MCLK' 'DISABLE'");
 		closeCmdList.add("tinymix 'LOOPBACK Mode' 'DISABLE'");
-        //Del By Wangwenlong to avoid bug issue (8x26) HQ00000000 2013-10-22 Begin
         /*cmdList.add("tinymix 'DEC1 Volume' '0%'");
         cmdList.add("tinymix 'ADC1 Volume' '0%'");
         cmdList.add("tinymix 'HPHL DAC Switch' 0");
@@ -153,7 +154,7 @@ public class MicAndReceiver extends AbstractActivity {
         mInsertHeadsetView = (TextView) findViewById(
                 R.id.mic_receiver_headset);
         mInsertHeadsetView.setText(R.string.insert_headset);
-
+        Log.d(TAG, "onCreate MicAndReceiver");
         //Del By Wangwenlong to avoid bug issue (8x26) HQ00000000 2013-11-28
         //Utilities.exec(OPEN_CMD_LIST);
     }
@@ -184,10 +185,12 @@ public class MicAndReceiver extends AbstractActivity {
                     mInsertHeadsetView.setVisibility(View.INVISIBLE);
                     mPassButton.setClickable(true);
                     //Add By Wangwenlong to avoid bug issue (8x26) HQ00000000 2013-11-28
+                    Log.d(TAG, "ACTION_HEADSET_PLUG Inserted");
                     Utilities.exec(OPEN_CMD_LIST);
                 } else { // 拔出耳机
                     mInsertHeadsetView.setVisibility(View.VISIBLE);
                     mPassButton.setClickable(false);
+					Log.d(TAG, "ACTION_HEADSET_PLUG plucked");
                     //Add By Wangwenlong to avoid bug issue (8x26) HQ00000000 2013-11-28
                     Utilities.exec(CLOSE_CMD_LIST);
                 }
@@ -197,6 +200,7 @@ public class MicAndReceiver extends AbstractActivity {
 
     @Override
     public void finish() {
+        Log.d(TAG, "finish MicAndReceiver");
         Utilities.exec(CLOSE_CMD_LIST);
         super.finish();
     }

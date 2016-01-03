@@ -258,8 +258,9 @@ public class NotificationSettings extends SettingsPreferenceFragment implements 
             }
             mCurrent = sbv;
             if (mCurrent != null) {
-                mHandler.removeMessages(H.STOP_SAMPLE);
-                mHandler.sendEmptyMessageDelayed(H.STOP_SAMPLE, SAMPLE_CUTOFF);
+				//wenjs modified for play whole audio file when user click volume seekbar
+                //mHandler.removeMessages(H.STOP_SAMPLE);
+                //mHandler.sendEmptyMessageDelayed(H.STOP_SAMPLE, SAMPLE_CUTOFF);
             }
         }
 

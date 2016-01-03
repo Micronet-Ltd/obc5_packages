@@ -111,6 +111,14 @@ public class XmlUtil {
                 return R.xml.item_config_default;
 			case 3:
 				return R.xml.item_config_default_for_dsds;
+			case 4:
+				return R.xml.item_config_default_bd;
+			case 5:
+				return R.xml.item_config_default_for_dsds_bd;
+			case 6:
+				return R.xml.item_config_default_for_dsds_gpsbd;
+			case 7:
+				return R.xml.item_config_default_gpsbd;
 
             default:
                 return R.xml.item_config_default;

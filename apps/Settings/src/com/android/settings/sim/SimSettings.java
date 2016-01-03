@@ -257,6 +257,14 @@ public class SimSettings extends RestrictedSettingsFragment implements Indexable
         mSimEnablers = new ArrayList<MultiSimEnablerPreference>(mNumSlots);
         for (int i = 0; i < mNumSlots; ++i) {
             final SubscriptionInfo sir = Utils.findRecordBySlotId(getActivity(), i);
+			/*lihui@20151202 added for exchange display string according local language start*/
+			if(sir != null){
+    			sir.setDisplayName(getLocalString(sir.getDisplayName().toString()));
+    			Log.d(TAG, "After setting:displayName="+ sir.getDisplayName()+",sir="+sir);
+			}
+			boolean hasCard = TelephonyManager.getDefault().hasIccCard(i);
+			Log.d(TAG, "hasCard="+ hasCard);
+			/*lihui@20151202 added for exchange display string according local language end*/
             simCards.addPreference(new SimPreference(getActivity(), sir, i));
             if (mNumSlots > 1) {
                 mSimEnablers.add(i, new MultiSimEnablerPreference(
@@ -266,7 +274,7 @@ public class SimSettings extends RestrictedSettingsFragment implements Indexable
                 removePreference(SIM_ENABLER_CATEGORY);
             }
             // Do not display deactivated subInfo in preference list
-            if ((sir != null) && (sir.getStatus() == SubscriptionManager.ACTIVE)) {
+            if ((sir != null) && (sir.getStatus() == SubscriptionManager.ACTIVE) && hasCard) {
                 mSelectableSubInfos.add(sir);
             }
         }
@@ -355,12 +363,22 @@ public class SimSettings extends RestrictedSettingsFragment implements Indexable
             simPref.setSummary(R.string.sim_selection_required_pref);
             ((DropDownPreference) simPref).setSelectedValue(ASK_VALUE, false);
         } else if (sir != null) {
-            simPref.setSummary(sir.getDisplayName());
+            simPref.setSummary(getLocalString(sir.getDisplayName().toString()));
             ((DropDownPreference) simPref).setSelectedValue(sir.getSimSlotIndex(), false);
         }
         simPref.setEnabled(mSelectableSubInfos == null ? false : mSelectableSubInfos.size() > 1);
     }
-
+    
+    /*lihui@20151202 added for exchange display string according local language start*/
+	protected String getLocalString(String originalCarrier) {
+        String localeCarrier = android.util.NativeTextHelper.getLocalString(getActivity(),
+                originalCarrier,
+                R.array.origin_carrier_names,
+                R.array.locale_carrier_names);
+        return localeCarrier;
+    }
+	/*lihui@20151202 added for exchange display string according local language end*/
+	
     private void updateCellularDataValues() {
         final Preference simPref = findPreference(KEY_CELLULAR_DATA);
         final SubscriptionInfo sir = Utils.findRecordBySubId(getActivity(),
@@ -371,7 +389,7 @@ public class SimSettings extends RestrictedSettingsFragment implements Indexable
         boolean callStateIdle = isCallStateIdle();
         if (sir != null) {
             ((DropDownPreference) simPref).setSelectedValue(sir.getSimSlotIndex(), false);
-            simPref.setSummary(sir.getDisplayName());
+            simPref.setSummary(getLocalString(sir.getDisplayName().toString()));
         }
         Log.d(TAG, "updateCellularDataValues" + sir);
         if (mSelectableSubInfos.size() > 1 && !needDisableDataSub2()) {
@@ -411,19 +429,26 @@ public class SimSettings extends RestrictedSettingsFragment implements Indexable
             telecomManager.getUserSelectedOutgoingPhoneAccount();
         int subId = mSubscriptionManager.getDefaultVoiceSubId();
         int slotId = mSubscriptionManager.getSlotId(subId);
+		simPref.setTitle(R.string.calls_title);
         if (phoneAccount != null
                 && (slotId >= SubscriptionManager.MIN_SUBSCRIPTION_ID_VALUE &&
                 slotId <= SubscriptionManager.MAX_SUBSCRIPTION_ID_VALUE)) {
+            /*lihui @20151204 added for set simPref summary start*/
+            String phoneAccountLabel = getLocalString((String) telecomManager.getPhoneAccount(phoneAccount).getLabel());
+			simPref.setSummary(phoneAccountLabel);
+			/*lihui @20151204 added for set simPref summary end*/
             ((DropDownPreference) simPref).setSelectedValue(slotId, false);
         } else if (phoneAccount == null) {
+            /*lihui @20151204 added for set simPref summary start*/
+			simPref.setSummary(getResources().getString(R.string.sim_calls_ask_first_prefs_title));
+			/*lihui @20151204 added for set simPref summary end*/
             ((DropDownPreference) simPref).setSelectedValue(ASK_VALUE, false);
         }
-        simPref.setTitle(R.string.calls_title);
-        simPref.setSummary((phoneAccount == null ||
+        /*simPref.setSummary((phoneAccount == null ||
                 (slotId >= SubscriptionManager.MIN_SUBSCRIPTION_ID_VALUE &&
                 slotId <= SubscriptionManager.MAX_SUBSCRIPTION_ID_VALUE))
                         ? getResources().getString(R.string.sim_calls_ask_first_prefs_title)
-                        : (String) telecomManager.getPhoneAccount(phoneAccount).getLabel());
+                        : (String) telecomManager.getPhoneAccount(phoneAccount).getLabel());*/
         simPref.setEnabled(mSelectableSubInfos == null ? false : mSelectableSubInfos.size() > 1);
     }
 
@@ -542,7 +567,7 @@ public class SimSettings extends RestrictedSettingsFragment implements Indexable
         for (int i = 0; i < subSelectableSize; ++i) {
             final SubscriptionInfo sir = mSelectableSubInfos.get(i);
             if (sir != null) {
-                simPref.addItem(sir.getDisplayName().toString(), sir.getSimSlotIndex());
+                simPref.addItem(getLocalString(sir.getDisplayName().toString()), sir.getSimSlotIndex());
             }
         }
 
@@ -616,7 +641,7 @@ public class SimSettings extends RestrictedSettingsFragment implements Indexable
             setTitle(res.getString(R.string.sim_card_number_title, mSlotId + 1));
             if (mSubscriptionInfo != null) {
                 setSummary(res.getString(R.string.sim_settings_summary,
-                        mSubscriptionInfo.getDisplayName(),
+                        getLocalString(mSubscriptionInfo.getDisplayName().toString()),
                         mSubscriptionInfo.getNumber()));
                 setEnabled(true);
             } else {
@@ -643,7 +668,7 @@ public class SimSettings extends RestrictedSettingsFragment implements Indexable
             builder.setView(dialogLayout);
 
             EditText nameText = (EditText)dialogLayout.findViewById(R.id.sim_name);
-            nameText.setText(mSubscriptionInfo.getDisplayName());
+            nameText.setText(getLocalString(mSubscriptionInfo.getDisplayName().toString()));
             nameText.addTextChangedListener(SimSettings.this);
 
             TextView numberView = (TextView)dialogLayout.findViewById(R.id.number);
@@ -690,7 +715,7 @@ public class SimSettings extends RestrictedSettingsFragment implements Indexable
                     final EditText nameText = (EditText)dialogLayout.findViewById(R.id.sim_name);
                     mSubscriptionInfo.setDisplayName(nameText.getText());
                     SubscriptionManager.from(getActivity()).setDisplayName(
-                            mSubscriptionInfo.getDisplayName().toString(),
+                            getLocalString(mSubscriptionInfo.getDisplayName().toString()),
                             mSubscriptionInfo.getSubscriptionId(),
                             SubscriptionManager.NAME_SOURCE_USER_INPUT);
 

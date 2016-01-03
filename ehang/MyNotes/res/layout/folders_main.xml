@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:gravity="top"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:background="@drawable/folder_bg">
+    
+    <include layout="@layout/list_folder_title"/>
+	<GridView android:layout_width="wrap_content"    
+		android:layout_height="wrap_content"
+		android:numColumns="3"
+		android:id="@+id/gridFolders"
+		android:gravity="top">
+	</GridView>
+	<!-- android:listSelector="@drawable/grid_select" -->
+	<TextView
+	        android:id="@+id/txtParameter"
+	     	android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:visibility="gone"/>
+</LinearLayout>

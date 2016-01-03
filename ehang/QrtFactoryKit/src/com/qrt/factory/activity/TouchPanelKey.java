@@ -31,6 +31,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
+import android.util.Log;
 
 public class TouchPanelKey extends AbstractActivity {
 
@@ -59,6 +60,8 @@ public class TouchPanelKey extends AbstractActivity {
     private byte value = '0';
 
     private boolean keyTestPass;
+	
+	public static final int FLAG_HOMEKEY_DISPATCHED = 0x80000000; 
 
     @Override
     protected String getTag() {
@@ -85,6 +88,8 @@ public class TouchPanelKey extends AbstractActivity {
 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+		getWindow().setFlags(FLAG_HOMEKEY_DISPATCHED, FLAG_HOMEKEY_DISPATCHED);
 
         searchKeyDownCount = 0;
         key = 0;
@@ -148,6 +153,15 @@ public class TouchPanelKey extends AbstractActivity {
         return true;
     }
 
+	@Override
+	public boolean onKeyDown( int keyCode, KeyEvent event) {
+		Log.d(TAG, "onKeyDown onKeyDown : " + keyCode);
+		
+		if (keyCode == event.KEYCODE_HOME) {
+			return true;
+		}
+		return super.onKeyDown(keyCode, event);
+	}
     private void keyPressed(int keyCode) {
         if (key >= mTestKeys.size()) {
             return;

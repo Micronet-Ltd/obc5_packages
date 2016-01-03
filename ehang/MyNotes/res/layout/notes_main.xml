@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:gravity="top"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:background="@drawable/note_bg">
+    
+    <include layout="@layout/list_note_title"/>
+	<ListView android:layout_width="wrap_content"    
+		android:layout_height="wrap_content"  
+		android:id="@+id/listViewFolders" >
+	</ListView>
+	<ListView android:layout_width="fill_parent"    
+		android:layout_height="wrap_content"  
+		android:id="@+id/listViewNotes"
+		style="@style/Listview">
+	</ListView>
+	<View style="@style/DivideLineColor"/>
+	<TextView
+	        android:id="@+id/txtParameter"
+	     	android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:visibility="gone"/>
+</LinearLayout>

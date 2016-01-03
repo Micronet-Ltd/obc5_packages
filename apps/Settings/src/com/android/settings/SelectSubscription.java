@@ -93,8 +93,10 @@ public class SelectSubscription extends  TabActivity {
         for (int i = 0; i < numPhones; i++) {
             SubscriptionInfo sir =
                     SubscriptionManager.from(this).getActiveSubscriptionInfoForSimSlotIndex(i);
-            String displayName =
-                    (sir != null) ? sir.getDisplayName().toString() : tabLabel[i];
+            //String displayName =
+                    //(sir != null) ? sir.getDisplayName().toString() : tabLabel[i];
+
+			String displayName = tabLabel[i];
 
             log("Creating SelectSub activity = " + i + " displayName = " + displayName);
 

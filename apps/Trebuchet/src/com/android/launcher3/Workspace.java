@@ -85,6 +85,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+//add
+import android.widget.Toast;
+import com.android.launcher3.R;
 
 /**
  * The workspace is a wide area with a wallpaper and a finite number of pages.
@@ -306,6 +309,9 @@ public class Workspace extends SmoothPagedView
     private boolean mShowSearchBar;
     private boolean mShowOutlines;
     private boolean mHideIconLabels;
+	
+	//add
+	Toast fileisfull=null;
 
     /**
      * Used to inflate the Workspace from XML.
@@ -315,6 +321,7 @@ public class Workspace extends SmoothPagedView
      */
     public Workspace(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
+		fileisfull=Toast.makeText(context, context.getResources().getString(R.string.folder_isfull), Toast.LENGTH_SHORT);
     }
 
     /**
@@ -3073,6 +3080,10 @@ public class Workspace extends SmoothPagedView
             if (fi.acceptDrop(dragInfo)) {
                 return true;
             }
+			//add
+			else{
+			fileisfull.show();
+			}
         }
         return false;
     }
@@ -3301,9 +3312,16 @@ public class Workspace extends SmoothPagedView
                     mTargetCell[1] = lp.cellY;
                     CellLayout layout = (CellLayout) cell.getParent().getParent();
                     layout.markCellsAsOccupiedForView(cell);
+					
                 }
             }
 
+			
+			//add
+			if(fileisfull!=null){
+						fileisfull.cancel();						
+			}
+			
             final CellLayout parent = (CellLayout) cell.getParent().getParent();
             final Runnable finalResizeRunnable = resizeRunnable;
             // Prepare it to be animated into its new position

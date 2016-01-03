@@ -310,4 +310,7 @@ s -->
     <string name="abandoned_promise_explanation">The app for this icon isn\'t installed.
         You can remove it, or search for the app and install it manually.
     </string>
+	
+	<string name="folder_isfull">The folder is full</string>
+	
 </resources>

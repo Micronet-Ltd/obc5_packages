@@ -106,7 +106,15 @@ public class MSimMobileNetworkSubSettings extends PreferenceActivity
     CdmaOptions mCdmaOptions;
 
     private Preference mClickedPreference;
-
+    /*lihui @20150928 added for all RAT network preferred setting according to the sim begin */
+    private String CU_ICCID = "898601";
+    private String CMCC_ICCID_1 = "898600";
+    private String CMCC_ICCID_2 = "898602";
+    private String CMCC_ICCID_3 = "898607";
+    private String CT_ICCID_1 = "898603";
+    private String CT_ICCID_2 = "898611";
+    private String current_iccId = null;
+    /*lihui @20150928 added for all RAT network preferred setting according to the sim end */
     /**
      * This is a method implemented for DialogInterface.OnClickListener.
      * Used to dismiss the dialogs when they come up.
@@ -231,7 +239,12 @@ public class MSimMobileNetworkSubSettings extends PreferenceActivity
             prefSet.removePreference(mButtonPreferredLte);
             mButtonPreferredLte = null;
         }
-
+		
+        /*lihui @20150928 added for all RAT network preferred setting according to the sim begin */
+        current_iccId = mPhone.getIccSerialNumber();
+        log("current_iccId= "+current_iccId);
+        /*lihui @20150928 added for all RAT network preferred setting according to the sim end */
+		
         int networkFeature = SystemProperties.getInt(Constants.PERSIST_RADIO_NETWORK_FEATURE,
             Constants.NETWORK_MODE_DEFAULT);
 
@@ -263,6 +276,42 @@ public class MSimMobileNetworkSubSettings extends PreferenceActivity
                         prefSet.removePreference(mButtonPreferredNetworkMode);
                     }
                 }
+                break;
+			 case Constants.NETWORK_MODE_ALL_RAT:
+                /*lihui @20150928 added for all RAT network preferred setting according to the sim begin */
+				if(mPhone.getPhoneId()== PhoneConstants.SUB1){
+                    if(current_iccId != null){
+                        if(((current_iccId.substring(0,CMCC_ICCID_1.length())).equals(CMCC_ICCID_1))
+                            ||((current_iccId.substring(0,CMCC_ICCID_2.length())).equals(CMCC_ICCID_2))
+                            ||((current_iccId.substring(0,CMCC_ICCID_3.length())).equals(CMCC_ICCID_3))){
+                            mButtonPreferredNetworkMode.setDialogTitle(R.string.preferred_network_mode_dialogtitle_cmcc);
+                            mButtonPreferredNetworkMode.setEntries(R.array.preferred_network_mode_options_cmcc);
+                            mButtonPreferredNetworkMode.setEntryValues(R.array.preferred_network_mode_options_values_cmcc);
+                        }else if((current_iccId.substring(0,CU_ICCID.length())).equals(CU_ICCID)){
+                            mButtonPreferredNetworkMode.setDialogTitle(R.string.preferred_network_mode_dialogtitle_cmcc);
+                            mButtonPreferredNetworkMode.setEntries(R.array.preferred_network_mode_options_cu);
+                            mButtonPreferredNetworkMode.setEntryValues(R.array.preferred_network_mode_options_values_cu);
+                        }else if(((current_iccId.substring(0,CT_ICCID_1.length())).equals(CT_ICCID_1))
+                            ||((current_iccId.substring(0,CT_ICCID_2.length())).equals(CT_ICCID_2))){
+                            mButtonPreferredNetworkMode.setDialogTitle(R.string.preferred_network_mode_dialogtitle_cmcc);
+                            mButtonPreferredNetworkMode.setEntries(R.array.preferred_network_mode_options_ct);
+                            mButtonPreferredNetworkMode.setEntryValues(R.array.preferred_network_mode_options_values_ct);
+                        }else{
+                            mButtonPreferredNetworkMode.setDialogTitle(R.string.preferred_network_mode_dialogtitle_cmcc);
+                            mButtonPreferredNetworkMode.setEntries(R.array.preferred_network_mode_options_all_rat_default);
+                            mButtonPreferredNetworkMode.setEntryValues(R.array.preferred_network_mode_options_values_all_rat_default);
+                        }
+                    }else{
+                        mButtonPreferredNetworkMode.setDialogTitle(R.string.preferred_network_mode_dialogtitle_cmcc);
+                        mButtonPreferredNetworkMode.setEntries(R.array.preferred_network_mode_options_all_rat_default);
+                        mButtonPreferredNetworkMode.setEntryValues(R.array.preferred_network_mode_options_values_all_rat_default);
+                    }
+				}else if(mPhone.getPhoneId()== PhoneConstants.SUB2){
+					mButtonPreferredNetworkMode.setEnabled(false);
+				}else{
+                    log("invalid PhoneId is " + mPhone.getPhoneId()); 
+				}
+                /*lihui @20150928 added for all RAT network preferred setting according to the sim end */
                 break;
             default:
                 break;
@@ -638,8 +687,15 @@ public class MSimMobileNetworkSubSettings extends PreferenceActivity
                         R.string.preferred_network_mode_wcdma_only_summary);
                 break;
             case Phone.NT_MODE_GSM_UMTS:
-                mButtonPreferredNetworkMode.setSummary(
+				/*lihui @20150928 added for all RAT network preferred setting according to the sim begin*/
+                if (networkFeature == Constants.NETWORK_MODE_ALL_RAT){
+                    mButtonPreferredNetworkMode.setSummary(
+                        R.string.preferred_network_mode_3g_2g_auto_summary);
+                }else{
+                    mButtonPreferredNetworkMode.setSummary(
                         R.string.preferred_network_mode_gsm_wcdma_summary);
+                }
+                /*lihui @20150928 added for all RAT network preferred setting according to the sim end*/
                 break;
             case Phone.NT_MODE_CDMA:
                 switch (mPhone.getLteOnCdmaMode()) {
@@ -674,9 +730,16 @@ public class MSimMobileNetworkSubSettings extends PreferenceActivity
                                 ? R.string.preferred_network_mode_lte_only_summary
                                 : R.string.preferred_network_mode_lte_summary);
                 break;
-            case Phone.NT_MODE_LTE_GSM_WCDMA:
-                mButtonPreferredNetworkMode.setSummary(
-                        R.string.preferred_network_mode_lte_gsm_wcdma_summary);
+            case Phone.NT_MODE_LTE_GSM_WCDMA:			
+			    /*lihui @20150928 added for all RAT network preferred setting according to the sim begin*/
+                if (networkFeature == Constants.NETWORK_MODE_ALL_RAT){
+                    mButtonPreferredNetworkMode.setSummary(
+                        R.string.preferred_network_mode_4g_3g_2g_auto_summary);
+                }else{
+                    mButtonPreferredNetworkMode.setSummary(
+                            R.string.preferred_network_mode_lte_gsm_wcdma_summary);
+                }
+                /*lihui @20150928 added for all RAT network preferred setting according to the sim end*/
                 break;
             case Phone.NT_MODE_LTE_CDMA_AND_EVDO:
                 mButtonPreferredNetworkMode.setSummary(
@@ -685,12 +748,27 @@ public class MSimMobileNetworkSubSettings extends PreferenceActivity
                                 : R.string.preferred_network_mode_lte_cdma_evdo_summary);
                 break;
             case Phone.NT_MODE_LTE_CDMA_EVDO_GSM_WCDMA:
-                mButtonPreferredNetworkMode.setSummary(
+			    /*lihui @20150928 added for all RAT network preferred setting according to the sim begin*/
+                if (networkFeature == Constants.NETWORK_MODE_ALL_RAT){
+                    mButtonPreferredNetworkMode.setSummary(
+                        R.string.preferred_network_mode_4g_3g_2g_auto_summary);
+                }else{
+                    mButtonPreferredNetworkMode.setSummary(
                         R.string.preferred_network_mode_global_summary);
+                }
+                /*lihui @20150928 added for all RAT network preferred setting according to the sim end*/
+               
                 break;
             case Phone.NT_MODE_GLOBAL:
-                mButtonPreferredNetworkMode.setSummary(
+                /*lihui @20150928 added for all RAT network preferred setting according to the sim begin*/
+                if (networkFeature == Constants.NETWORK_MODE_ALL_RAT){
+                    mButtonPreferredNetworkMode.setSummary(
+                        R.string.preferred_network_mode_3g_2g_auto_summary);
+                }else{
+                    mButtonPreferredNetworkMode.setSummary(
                         R.string.preferred_network_mode_cdma_evdo_gsm_wcdma_summary);
+                }
+                /*lihui @20150928 added for all RAT network preferred setting according to the sim end*/
                 break;
             case Phone.NT_MODE_LTE_WCDMA:
                 mButtonPreferredNetworkMode.setSummary(
@@ -717,7 +795,8 @@ public class MSimMobileNetworkSubSettings extends PreferenceActivity
                         R.string.preferred_network_mode_td_scdma_gsm_lte_summary);
                 break;
             case Phone.NT_MODE_TD_SCDMA_GSM_WCDMA:
-                if (networkFeature == Constants.NETWORK_MODE_CMCC) {
+                if (networkFeature == Constants.NETWORK_MODE_CMCC //) {
+                     ||networkFeature == Constants.NETWORK_MODE_ALL_RAT) {  //lihui @20150928 added for all RAT network preferred setting according to the sim
                     mButtonPreferredNetworkMode.setSummary(
                             R.string.preferred_network_mode_3g_2g_auto);
                 } else {
@@ -730,7 +809,8 @@ public class MSimMobileNetworkSubSettings extends PreferenceActivity
                         R.string.preferred_network_mode_td_scdma_wcdma_lte_summary);
                 break;
             case Phone.NT_MODE_TD_SCDMA_GSM_WCDMA_LTE:
-                if (networkFeature == Constants.NETWORK_MODE_CMCC) {
+                if (networkFeature == Constants.NETWORK_MODE_CMCC //) {
+                    || networkFeature == Constants.NETWORK_MODE_ALL_RAT) { //lihui @20150928 added for all RAT network preferred setting according to the sim
                     mButtonPreferredNetworkMode.setSummary(
                         R.string.preferred_network_mode_4g_3g_2g_auto);
                 } else {
@@ -739,12 +819,26 @@ public class MSimMobileNetworkSubSettings extends PreferenceActivity
                 }
                 break;
             case Phone.NT_MODE_TD_SCDMA_CDMA_EVDO_GSM_WCDMA:
-                mButtonPreferredNetworkMode.setSummary(
+				/*lihui @20150928 added for all RAT network preferred setting according to the sim begin*/
+                if (networkFeature == Constants.NETWORK_MODE_ALL_RAT){
+                    mButtonPreferredNetworkMode.setSummary(
+                        R.string.preferred_network_mode_3g_2g_auto_summary);
+                }else{
+                    mButtonPreferredNetworkMode.setSummary(
                         R.string.preferred_network_mode_td_scdma_cdma_evdo_gsm_wcdma_summary);
+                }
+                /*lihui @20150928 added for all RAT network preferred setting according to the sim end*/
                 break;
             case Phone.NT_MODE_TD_SCDMA_LTE_CDMA_EVDO_GSM_WCDMA:
-                mButtonPreferredNetworkMode.setSummary(
+				/*lihui @20150928 added for all RAT network preferred setting according to the sim begin*/
+                if (networkFeature == Constants.NETWORK_MODE_ALL_RAT){
+                    mButtonPreferredNetworkMode.setSummary(
+                        R.string.preferred_network_mode_4g_3g_2g_auto_summary);
+                }else{
+                    mButtonPreferredNetworkMode.setSummary(
                         R.string.preferred_network_mode_td_scdma_lte_cdma_evdo_gsm_wcdma_summary);
+                }
+                /*lihui @20150928 added for all RAT network preferred setting according to the sim end*/
                 break;
             case Phone.NT_MODE_LTE_CDMA_EVDO_GSM:
                 mButtonPreferredNetworkMode.setSummary(

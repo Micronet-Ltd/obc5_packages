@@ -289,7 +289,7 @@ public class ApnSettings extends SettingsPreferenceFragment implements
                 String key = cursor.getString(ID_INDEX);
                 String type = cursor.getString(TYPES_INDEX);
                 boolean readOnly = (cursor.getInt(RO_INDEX) == 1);
-
+                Log.d(TAG, "find select name = " + name + ",apn=" + apn + ",key=" + key + ",type=" + type);
                 String localizedName = getLocalizedName(getActivity(), cursor, LOCALIZED_NAME_INDEX);
                 if (!TextUtils.isEmpty(localizedName)) {
                     name = localizedName;
@@ -327,10 +327,14 @@ public class ApnSettings extends SettingsPreferenceFragment implements
                 Log.d(TAG, "set key to  " +pref.getKey());
             }
             cursor.close();
-
-            for (Preference preference : mmsApnList) {
-                apnList.addPreference(preference);
-            }
+            /*lihui @20151031 modified for whether to hide mms apn start*/
+            if (!getResources().getBoolean(R.bool.hide_mms_apn)) {
+                for (Preference preference : mmsApnList) {
+                    apnList.addPreference(preference);
+                }
+			}
+		    /*lihui @20151031 modified for whether to hide mms apn end*/
+			
         }
     }
 

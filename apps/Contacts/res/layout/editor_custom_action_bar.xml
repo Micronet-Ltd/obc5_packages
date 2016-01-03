@@ -13,33 +13,97 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-
+<!--  begin mod by chenqi,for add "discard changed" to actionBar,and next with  "done" 2015-11-26-->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:divider="?android:attr/dividerVertical"
+    android:showDividers="middle|end"
+    android:dividerPadding="12dip"
+    android:focusable="true"
+    android:clickable="true"
     android:orientation="horizontal">
+   <LinearLayout
 
-    <ImageView
-        android:id="@+id/save_menu_item"
-        android:focusable="true"
-        android:clickable="true"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_marginEnd="8dip"
-        android:src="@drawable/ic_done_wht_24dp"
-        style="?android:attr/actionButtonStyle"
-        android:contentDescription="@string/menu_done" />
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="20dip"
+            android:layout_marginRight="20dip"
+            android:padding="2dip"
+            android:orientation="horizontal"
+            android:duplicateParentState="true"
+            style="@android:style/TextAppearance.Material.Widget.ActionBar.Title">
+	    <TextView
+	        android:id="@+id/title"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_gravity="center_vertical"
+	        android:layout_marginLeft="8dip"
+	        android:layout_marginRight="8dip"
+	        android:layout_marginEnd="8dip"
+	        android:textAppearance="?android:attr/textAppearanceMedium"
+	        android:textColor="@color/actionbar_text_color"
+	        android:text="@string/menu_done"
+	        />
+	</LinearLayout>
+    
+     <LinearLayout
+            android:id="@+id/save_menu_item"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:duplicateParentState="true"
+            style="?android:attr/actionButtonStyle">
 
-    <TextView
-        android:id="@+id/title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textColor="@color/actionbar_text_color"
-        android:text="@string/menu_done"
-        style="@android:style/TextAppearance.Material.Widget.ActionBar.Title" />
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="8dip"
+                android:layout_marginEnd="8dip"
+                android:src="@drawable/ic_done_wht_24dp"
+                android:description="@string/menu_done" />
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="8dip"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@color/action_bar_button_text_color"
+                android:text="@string/menu_done"
+                style="@android:style/Widget.Holo.ActionBar.TabText" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/discard_menu_item"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:duplicateParentState="true"
+            style="?android:attr/actionButtonStyle">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="8dip"
+                android:layout_marginEnd="8dip"
+                android:src="@drawable/ic_menu_discard_holo_dark"
+                android:description="@string/menu_done" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="8dip"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@color/action_bar_button_text_color"
+                android:text="@string/menu_discard"
+                style="@android:style/Widget.Holo.ActionBar.TabText" />
+
+        </LinearLayout>
+<!--  end by chenqi,for add "discard changed" to actionBar,and next with  "done" 2015-11-26-->
 </LinearLayout>

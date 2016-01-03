@@ -26,7 +26,7 @@
     <bool name="config_additional_system_update_setting_enable">false</bool>
 
     <!-- Whether to hide SUPL apn for China Union -->
-    <bool name="config_hidesupl_enable">false</bool>
+    <bool name="config_hidesupl_enable">true</bool>
 
     <!-- Whether to show hotspot via the ap's classification -->
     <bool name="set_wifi_priority">false</bool>
@@ -42,7 +42,7 @@
     <bool name="config_show_mobile_plan">false</bool>
 
     <!-- Whether to hide mms apn-->
-    <bool name="config_mms_enable">false</bool>
+    <bool name="config_mms_enable">true</bool>
 
     <!-- Whether to add app search function in ManageApplications activity -->
     <bool name="config_searchapp_enabled">false</bool>
@@ -106,4 +106,10 @@
 
     <!-- Whether to add SIM/AKA in EAP method for adding network -->
     <bool name="config_eap_sim_function">false</bool>
+
+    <!-- add by xuyajun to set whether to enable nfc touch payment -->
+    <bool name="hide_nfc_touch_payment">true</bool>
+    
+    <!-- added by lihui for whether to hide mms apn -->
+    <bool name="hide_mms_apn">true</bool>
 </resources>

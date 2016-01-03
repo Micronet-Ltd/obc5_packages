@@ -1960,6 +1960,9 @@ public class CameraActivity extends QuickActivity
                 }
             }
         }
+		if (keyCode == KeyEvent.KEYCODE_MENU){
+				return true;				
+		}
 
         return super.onKeyDown(keyCode, event);
     }
@@ -1991,7 +1994,9 @@ public class CameraActivity extends QuickActivity
                   mCameraAppUI.hideFilmstrip();
                 }
                 return true;
-            }
+            } else if (keyCode == KeyEvent.KEYCODE_MENU){
+				return true;				
+			}
         }
         return super.onKeyUp(keyCode, event);
     }

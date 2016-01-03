@@ -3248,7 +3248,7 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
             @Override
             public void screenScrolled(View v, int i, float scrollProgress) {
                 float rotation = 90.0f * scrollProgress;
-
+				if(scrollProgress==-1||scrollProgress==1)return; //add
                 v.setCameraDistance(mPagedView.mDensity * PagedView.CAMERA_DISTANCE);
                 v.setTranslationX(v.getMeasuredWidth() * scrollProgress);
                 v.setPivotX(!mPagedView.isLayoutRtl() ? 0f : v.getMeasuredWidth());

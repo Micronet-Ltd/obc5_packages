@@ -56,7 +56,7 @@ public class SelectSubscription extends  TabActivity {
     public static final String TARGET_CLASS = "TARGET_CLASS";
 
     private String[] tabLabel = {"SUB 1", "SUB 2", "SUB 3"};
-
+    private int[] tabLabelString = {R.string.sub_1, R.string.sub_2, R.string.sub_3};
     private TabSpec subscriptionPref;
 
     @Override
@@ -85,10 +85,25 @@ public class SelectSubscription extends  TabActivity {
         for (int i = 0; i < numPhones; i++) {
             SubscriptionInfo sir =
                     SubscriptionManager.from(this).getActiveSubscriptionInfoForSimSlotIndex(i);
-            String displayName =
-                    (sir != null) ? sir.getDisplayName().toString() : tabLabel[i];
+	    String displayName = tabLabel[i];
+		/*lihui A20151201 modify for exchange displayname according local language start*/
+		if(sir != null){
+			if (DBG) log("sim_info:displayName = " + sir.getDisplayName().toString());
+			String displayNameStr = sir.getDisplayName().toString();
+			if(displayNameStr != null){
+                displayName= android.util.NativeTextHelper.getInternalLocalString(this,
+                             sir.getDisplayName().toString(),
+                             R.array.original_carrier_names,
+                             R.array.locale_carrier_names);
+			}
+		}else{
+           displayName = getString(tabLabelString[i]);
+		}
 
-            log("Creating SelectSub activity = " + i + " displayName = " + displayName);
+        //String displayName =
+        //        (sir != null) ? sir.getDisplayName().toString() : tabLabel[i];
+        /*lihui A20151201 modify for exchange displayname according local language end*/
+        log("Creating SelectSub activity = " + i + " displayName = " + displayName);
 
             // Add phone Id to the displayName to differentiate
             // tag names of tabs

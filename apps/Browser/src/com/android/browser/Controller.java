@@ -1501,6 +1501,9 @@ public class Controller
 
         final MenuItem forward = menu.findItem(R.id.forward_menu_id);
         forward.setEnabled(canGoForward);
+		
+        final MenuItem backpage = menu.findItem(R.id.backpage_menu_id);
+        backpage.setEnabled(canGoBack);
 
         final MenuItem source = menu.findItem(isInLoad() ? R.id.stop_menu_id
                 : R.id.reload_menu_id);
@@ -1529,7 +1532,7 @@ public class Controller
         uaSwitcher.setChecked(isDesktopUa);
         menu.setGroupVisible(R.id.LIVE_MENU, isLive);
         menu.setGroupVisible(R.id.SNAPSHOT_MENU, !isLive);
-        menu.setGroupVisible(R.id.COMBO_MENU, false);
+        menu.setGroupVisible(R.id.COMBO_MENU, true/*false*/);
 
         mUi.updateMenuState(tab, menu);
     }
@@ -1577,9 +1580,9 @@ public class Controller
                 bookmarksOrHistoryPicker(ComboViews.History);
                 break;
 
-            case R.id.snapshots_menu_id:
-                bookmarksOrHistoryPicker(ComboViews.Snapshots);
-                break;
+           // case R.id.snapshots_menu_id:
+           //     bookmarksOrHistoryPicker(ComboViews.Snapshots);
+           //     break;
 
             case R.id.add_bookmark_menu_id:
                 bookmarkCurrentPage();
@@ -1599,6 +1602,10 @@ public class Controller
 
             case R.id.forward_menu_id:
                 getCurrentTab().goForward();
+                break;
+
+            case R.id.backpage_menu_id:
+                getCurrentTab().goBack();
                 break;
 
             case R.id.close_menu_id:
@@ -2395,8 +2402,9 @@ public class Controller
     protected void closeCurrentTab(boolean andQuit) {
         if (mTabControl.getTabCount() == 1) {
             mCrashRecoveryHandler.clearState();
-            mTabControl.removeTab(getCurrentTab());
-            mActivity.finish();
+        //    mTabControl.removeTab(getCurrentTab());		
+        //    mActivity.finish();	
+		    exitAlert();
             return;
         }
         final Tab current = mTabControl.getCurrentTab();
@@ -2546,7 +2554,7 @@ public class Controller
                  */
                	/* add by wenjs for show exit dialog 20150422 begin */
                 //mActivity.moveTaskToBack(true);
-                exitAlert();
+             //  exitAlert();
 				/* add by wenjs for show exit dialog 20150422 end */
             }
         }

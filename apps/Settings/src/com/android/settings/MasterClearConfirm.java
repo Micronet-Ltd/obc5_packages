@@ -32,6 +32,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+
+
 /**
  * Confirm and execute a reset of the device to a clean "just out of the box"
  * state.  Multiple confirmations are required: first, a general "are you sure
@@ -58,11 +60,13 @@ public class MasterClearConfirm extends Fragment {
             if (Utils.isMonkeyRunning()) {
                 return;
             }
-
+			/*add by lyf for master clear get stuck 20151104 begin*/
+		   /*
             final PersistentDataBlockManager pdbManager = (PersistentDataBlockManager)
                     getActivity().getSystemService(Context.PERSISTENT_DATA_BLOCK_SERVICE);
-
+			
             if (pdbManager != null && !pdbManager.getOemUnlockEnabled()) {
+
                 // if OEM unlock is enabled, this will be wiped during FR process.
                 final ProgressDialog progressDialog = getProgressDialog();
                 progressDialog.show();
@@ -88,6 +92,9 @@ public class MasterClearConfirm extends Fragment {
             } else {
                 doMasterClear();
             }
+            */
+            doMasterClear();
+			/*add by lyf for master clear get stuck 20151104 end*/
         }
 
         private ProgressDialog getProgressDialog() {

@@ -22,6 +22,7 @@ LOCAL_MODULE_TAGS := optional
 LOCAL_SRC_FILES := $(call all-subdir-java-files) $(call all-renderscript-files-under, src)
 
 LOCAL_PACKAGE_NAME := Galaxy4
+LOCAL_DEX_PREOPT := false 
 LOCAL_CERTIFICATE := shared
 LOCAL_SDK_VERSION := 14
 

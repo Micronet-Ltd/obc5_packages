@@ -234,6 +234,14 @@ public class MultiSimEnablerPreference extends Preference implements OnCheckedCh
                 " slot id = " + mSlotId);
 
         String displayName = mSir == null ? "SIM" : (String)mSir.getDisplayName();
+		/*lihui @20151201 added for exchange the displayname  according local language start*/
+		displayName= android.util.NativeTextHelper.getInternalLocalString(mContext,
+                displayName,
+                R.array.origin_carrier_names,
+                R.array.locale_carrier_names);
+		logd("displayName=" + displayName);
+		mSir.setDisplayName(displayName);
+		/*lihui @20151201 added for exchange the displayname  according local language end*/
         if (isActivated) {
             summary = displayName;
             if (!TextUtils.isEmpty(mSir.getNumber())) {

@@ -1570,6 +1570,15 @@ public class MSimCallFeaturesSubSetting extends PreferenceActivity
 
         // get buttons
         PreferenceScreen prefSet = getPreferenceScreen();
+		
+		/*lihui@20151031 added for display FDN setting according config item start*/
+		log("ehang remove prefFDN setting");
+        Preference prefFDN = prefSet.findPreference(BUTTON_FDN_KEY);
+        if (prefFDN != null && getResources().getBoolean(R.bool.config_diable_fdn_setting)){
+            prefSet.removePreference(prefFDN);
+	    }	
+		/*lihui@20151031 added for display FDN setting according config item end*/
+		
         mVoicemailCategory = (PreferenceScreen)findPreference(BUTTON_VOICEMAIL_CATEGORY_KEY);
         mSubMenuVoicemailSettings = (EditPhoneNumberPreference)findPreference(BUTTON_VOICEMAIL_KEY);
         if (mSubMenuVoicemailSettings != null) {

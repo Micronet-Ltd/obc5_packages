@@ -174,8 +174,8 @@ public class WifiApDialog extends AlertDialog implements View.OnClickListener,
 
 	    if (strlength > WIFI_SSID_MAX_LENGTH_BYTES) {
 		    editable.delete(editEnd - 1, editEnd);
-		    Toast.makeText(getContext(), R.string.wifi_ssid_input_limit,
-				    Toast.LENGTH_SHORT).show();
+		    //Toast.makeText(getContext(), R.string.wifi_ssid_input_limit,
+				    //Toast.LENGTH_SHORT).show();
 	    }
     }
 

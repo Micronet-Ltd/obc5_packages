@@ -109,7 +109,9 @@ public class CellBroadcastSettings extends PreferenceActivity {
     // Default reminder interval is off.
     public static final String ALERT_REMINDER_INTERVAL_DEFAULT_DURATION = "0";
 
-    public static String subTag = "SUB";
+    //public static String subTag = R.string.sub_1;
+	
+	private int[] subTag = {R.string.sub_1, R.string.sub_2, R.string.sub_2};
 
     public static int sPhoneId;
 
@@ -122,9 +124,9 @@ public class CellBroadcastSettings extends PreferenceActivity {
             actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
             actionBar.setDisplayShowTitleEnabled(true);
             for (int i = 0; i < TelephonyManager.getDefault().getPhoneCount(); i++) {
-                actionBar.addTab(actionBar.newTab().setText(subTag+(i+1)).setTabListener(
+                actionBar.addTab(actionBar.newTab().setText(getString(subTag[i])).setTabListener(
                         new SubTabListener(new CellBroadcastSettingsFragment(),
-                        subTag + (i+1), i)));
+                        getString(subTag[i]), i)));
             }
         } else {
             // Display the fragment as the main content.

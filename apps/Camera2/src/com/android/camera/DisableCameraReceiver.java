@@ -79,8 +79,9 @@ public class DisableCameraReceiver extends BroadcastReceiver {
 
         // We need the DONT_KILL_APP flag, otherwise we will be killed
         // immediately because we are in the same app.
-        pm.setComponentEnabledSetting(name,
-            PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
-            PackageManager.DONT_KILL_APP);
+        //modify by wenjs
+        //pm.setComponentEnabledSetting(name,
+        //    PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+        //    PackageManager.DONT_KILL_APP);
     }
 }

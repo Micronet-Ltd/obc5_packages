@@ -90,12 +90,17 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import android.util.Log;
 
 
 /**
  * A helper class with useful methods for deal with commands.
  */
 public final class CommandHelper {
+
+	static final String TAG = "CommandHelper";
+
+	static List<String> delFiles = new ArrayList<String>();
 
     /**
      * A wrapper class for asynchronous operations that need restore the filesystem
@@ -380,10 +385,18 @@ public final class CommandHelper {
         Console c = ensureConsoleForFile(context, console, directory);
         DeleteDirExecutable executable =
                 c.getExecutableFactory().newCreator().createDeleteDirExecutable(directory);
-        writableExecute(context, executable, c);
+
+		delFiles.clear();
+		getFilesPath(new File(directory));
+		Log.e(TAG, "deleteDirectory:" + directory);
+		
+		writableExecute(context, executable, c);
 
         // Do media scan
-        File parent = new File(directory).getParentFile();
+        File parent = new File(directory).getParentFile();		
+
+		removeDirFromMediaStore(context, directory);
+		
         if (parent != null) {
             MediaScannerConnection.scanFile(context, new String[]{
                     MediaHelper.normalizeMediaPath(parent.getAbsolutePath())}, null, null);
@@ -823,6 +836,37 @@ public final class CommandHelper {
         }
 
         return ret;
+    }
+	
+	public static void getFilesPath(File folder){
+		File[] files = folder.listFiles();
+		Log.e(TAG, "getFilesPath files:" + files);
+		
+        if (files != null) {
+			Log.e(TAG, "getFilesPath files.length:" + files.length);
+            for (int i = 0; i < files.length; i++) {
+                if (files[i].isDirectory()) {
+					getFilesPath(files[i]);                    
+                } else {
+                	delFiles.add(files[i].getAbsolutePath());
+					Log.e(TAG, "getFilesPath files[i].getAbsolutePath():" + files[i].getAbsolutePath());
+                }
+            }
+        }
+		delFiles.add(folder.getAbsolutePath());
+
+		Log.e(TAG, "getFilesPath folder.getAbsolutePath():" + folder.getAbsolutePath());
+	}
+
+
+	private static void removeDirFromMediaStore(Context context, String path) {
+
+		int count = delFiles.size();
+        for (int i = 0; i < count; i++) {
+			Log.e(TAG, "removeDirFromMediaStore delFiles.get(i):" + delFiles.get(i));
+			removeFromMediaStore(context, delFiles.get(i));            
+        }
+		delFiles.clear();
     }
 
     private static void removeFromMediaStore(Context context, String path) {

@@ -715,6 +715,9 @@ public class MessagingPreferenceActivity extends PreferenceActivity
             mSmsPrefCategory.removePreference(mManageSim1Pref);
             mSmsPrefCategory.removePreference(mManageSim2Pref);
         }
+		/*lihui@20151031 added for remove sd card sms manage start*/
+        mSmsPrefCategory.removePreference(mManageSdcardSMSPref);
+		/*lihui@20151031 added for remove sd card sms manage end*/
     }
 
     private boolean isAirPlaneModeOn() {
@@ -1558,10 +1561,18 @@ public class MessagingPreferenceActivity extends PreferenceActivity
         }
         int count = TelephonyManager.getDefault().getPhoneCount();
         for (int i = 0; i < count; i++) {
+			/*lihui @20151205 added for not display smsc when sim card is cdma card start*/
+			if(TelephonyManager.getDefault().getCurrentPhoneType(0) == TelephonyManager.PHONE_TYPE_CDMA && i == 0){
+                setSMSCPrefState(i,false);
+			}else{
+			/*lihui @20151205 added for not display smsc when sim card is cdma card end*/
             setSMSCPrefState(i, !isAirPlaneModeOn() &&
                     (TelephonyManager.getDefault().isMultiSimEnabled()
                     ? MessageUtils.isIccCardActivated(i)
                     : TelephonyManager.getDefault().hasIccCard()));
+			/*lihui @20151205 added for not display smsc when sim card is cdma card start*/
+			}
+			/*lihui @20151205 added for not display smsc when sim card is cdma card end*/
         }
     }
 

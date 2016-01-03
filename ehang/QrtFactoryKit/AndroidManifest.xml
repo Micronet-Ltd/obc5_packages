@@ -281,7 +281,7 @@
         </activity>
 
         <activity
-                android:name=".activity.GravitySensor"
+                android:name=".activity.GravitySensorAuto"
 				android:configChanges="orientation|keyboardHidden|mcc|mnc"
                 android:label="@string/gsensor_name"
                 android:screenOrientation="portrait">
@@ -319,7 +319,7 @@
         </activity>
 
         <activity
-                android:name=".activity.Gyroscope"
+                android:name=".activity.GyroscopeAuto"
 				android:configChanges="orientation|keyboardHidden|mcc|mnc"
                 android:label="@string/gyroscope_name"
                 android:screenOrientation="portrait">
@@ -388,6 +388,32 @@
                 android:name=".activity.Gps"
 				android:configChanges="orientation|keyboardHidden|mcc|mnc"
                 android:label="@string/gps_name"
+                android:screenOrientation="portrait">
+            <intent-filter>
+                <action
+                        android:name="android.intent.action.MAIN"/>
+                <category
+                        android:name="android.category.factory.kit"/>
+            </intent-filter>
+        </activity>
+
+        <activity
+                android:name=".activity.Beidou"
+				android:configChanges="orientation|keyboardHidden|mcc|mnc"
+                android:label="@string/beidou_name"
+                android:screenOrientation="portrait">
+            <intent-filter>
+                <action
+                        android:name="android.intent.action.MAIN"/>
+                <category
+                        android:name="android.category.factory.kit"/>
+            </intent-filter>
+        </activity>
+
+        <activity
+                android:name=".activity.GpsBeidou"
+				android:configChanges="orientation|keyboardHidden|mcc|mnc"
+                android:label="@string/gpsbeidou_name"
                 android:screenOrientation="portrait">
             <intent-filter>
                 <action
@@ -672,5 +698,4 @@
     <uses-permission android:name="android.permission.MANAGE_USB"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.INTERNET"/>
-
 </manifest>

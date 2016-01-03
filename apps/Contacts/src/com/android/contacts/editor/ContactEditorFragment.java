@@ -1098,6 +1098,7 @@ public class ContactEditorFragment extends Fragment implements
         inflater.inflate(R.menu.edit_contact, menu);
     }
 
+
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         // This supports the keyboard shortcut to save changes to a contact but shouldn't be visible
@@ -1354,8 +1355,10 @@ public class ContactEditorFragment extends Fragment implements
             return dialog;
         }
     }
-
-    private boolean revert() {
+//modify by chenqi,for add "discard changed" to actionBar,and next with  "done" 2015-11-26
+//just change "privite" to "public",for calling by others
+    public boolean revert() 
+	{
         if (mState.isEmpty() || !hasPendingChanges()) {
             doRevertAction();
         } else {

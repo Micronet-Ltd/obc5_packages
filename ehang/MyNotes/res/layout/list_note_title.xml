@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent" android:layout_height="50dp"
+    android:orientation="horizontal" android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:background="@drawable/title_bar">
+    
+    	<ImageButton 
+			android:id="@+id/imgBtnBack"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:clickable="true"
+		    android:background="@drawable/arrow_normal"
+		    android:src="@drawable/button_back"
+		    android:contentDescription="@string/back"
+		    android:layout_marginTop="5dp"
+		    android:layout_marginLeft="2dp"/>
+        <ImageView 
+		    android:id="@+id/imgTitle"
+		    android:layout_width="35dp"
+		    android:layout_height="fill_parent"
+		    android:src="@drawable/ic_launcher"
+		    android:layout_marginLeft="2dp"
+		    android:contentDescription="@string/app_name"/>
+        <TextView
+	        android:id="@+id/txtTitle"
+	        android:text="@string/app_name"
+	     	android:layout_width="0dp"
+	        android:layout_height="fill_parent"
+	        android:layout_weight="1"
+	        android:singleLine="true"
+	        android:ellipsize="marquee"
+	        android:paddingLeft="3dp"
+	        android:paddingTop="10dp"
+	        style="@style/Title"/>
+        <ImageView 
+		    android:id="@+id/imgDeleteDisable"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:clickable="true"
+		    android:src="@drawable/delete_disable"
+		    android:contentDescription="@string/delete"
+		    android:visibility="visible"/>
+        <ImageButton 
+			android:id="@+id/imgBtnDelete"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:clickable="true"
+		    android:background="@drawable/delete_normal"
+		    android:src="@drawable/button_delete"
+		    android:contentDescription="@string/delete"
+		    android:visibility="gone"/>
+		<ImageButton 
+			android:id="@+id/imgBtnAdd"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:clickable="true"
+		    android:background="@drawable/add_note_normal"
+		    android:src="@drawable/button_add"
+		    android:contentDescription="@string/add_note"/>
+</LinearLayout>

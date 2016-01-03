@@ -1243,14 +1243,11 @@ public class SettingsActivity extends Activity
                                         PackageManager.FEATURE_NFC_HOST_CARD_EMULATION)) {
                             removeTile = true;
                         }
+					    if(getResources().getBoolean(R.bool.hide_nfc_touch_payment)){
+                            removeTile = true;
+                        }
                     }
-                } /*qj else if (id == R.id.print_settings) {
-                    boolean hasPrintingSupport = getPackageManager().hasSystemFeature(
-                            PackageManager.FEATURE_PRINTING);
-                    if (!hasPrintingSupport) {
-                        removeTile = true;
-                    }
-                }*/ else if (id == R.id.development_settings) {
+                }  else if (id == R.id.development_settings) {
                     if (!showDev || um.hasUserRestriction(
                             UserManager.DISALLOW_DEBUGGING_FEATURES)) {
                         removeTile = true;

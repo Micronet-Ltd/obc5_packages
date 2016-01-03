@@ -31,6 +31,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
+import android.util.Log;
 
 public class TouchPanel extends AbstractActivity {
 
@@ -50,6 +51,8 @@ public class TouchPanel extends AbstractActivity {
     private AlertDialog mDialog;
 
     private boolean keyTestPass;
+
+	public static final int FLAG_HOMEKEY_DISPATCHED = 0x80000000; 
 
     @Override
     protected String getTag() {
@@ -76,6 +79,8 @@ public class TouchPanel extends AbstractActivity {
 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+		Log.d(TAG, "TouchPanel!!!");
 
         searchKeyDownCount = 0;
         key = 0;
@@ -107,7 +112,7 @@ public class TouchPanel extends AbstractActivity {
         mDialog.getWindow().setType(
                 WindowManager.LayoutParams.TYPE_KEYGUARD_DIALOG);
         mDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
-
+  
             public boolean onKey(DialogInterface dialog, int keyCode,
                     KeyEvent event) {
                 if (KeyEvent.ACTION_UP == event.getAction()) {
@@ -119,7 +124,7 @@ public class TouchPanel extends AbstractActivity {
         mDialog.setCancelable(false);
         if (!isFinishing()) {
             mDialog.show();
-        }
+        }  
     }
 
     private String getKeyName() {
@@ -131,11 +136,22 @@ public class TouchPanel extends AbstractActivity {
     }
 
     public boolean onKeyUp(int keyCode, KeyEvent msg) {
+		Log.d(TAG, "onKeyUp onKeyDown : " + keyCode);
 
         keyPressed(keyCode);
 
         return true;
     }
+
+	@Override
+	public boolean onKeyDown( int keyCode, KeyEvent event) {
+		Log.d(TAG, "onKeyDown onKeyDown : " + keyCode);
+		
+		if (keyCode == event.KEYCODE_HOME) {
+			return true;
+		}
+		return super.onKeyDown(keyCode, event);
+	}
 
     private void keyPressed(int keyCode) {
         if (key >= mTestKeys.size()) {

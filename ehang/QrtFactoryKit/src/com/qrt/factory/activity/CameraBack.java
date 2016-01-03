@@ -277,7 +277,7 @@ public class CameraBack extends AbstractActivity
 
         public void onAutoFocus(boolean focused, Camera camera) {
             if (focused) {
-                takePicture();
+                //takePicture();
             }
         }
     }
@@ -290,11 +290,14 @@ public class CameraBack extends AbstractActivity
                 Camera.Parameters parameters = mCamera.getParameters();
                 parameters.setPictureFormat(PixelFormat.JPEG);
                 //parameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+				parameters.setFocusMode(parameters.FOCUS_MODE_AUTO);
                 parameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
                 setPreviewSize(parameters);
                 mCamera.setParameters(parameters);
 //                mCamera.setDisplayOrientation(180);//deleted by tianfangzhou for preview ,SW00015286,2013.10.11
                 mCamera.startPreview();
+		     	mCamera.autoFocus(new AutoFocusCallback());
+
             } catch (Exception e) {
                 loge(e);
                 fail();

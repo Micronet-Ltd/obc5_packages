@@ -72,6 +72,8 @@ public class PlaylistBrowserActivity extends ListActivity
     private static final int RENAME_PLAYLIST = CHILD_MENU_BASE + 3;
     private static final int CHANGE_WEEKS = CHILD_MENU_BASE + 4;
     private static final int CLEAR_ALL_PLAYLISTS = CHILD_MENU_BASE + 5;
+	//zhoukai add 
+	private static final int ADD_NEW_FILE_FLODER = CHILD_MENU_BASE + 6;
     private static final long RECENTLY_ADDED_PLAYLIST = -1;
     private static final long ALL_SONGS_PLAYLIST = -2;
     private static final long PODCASTS_PLAYLIST = -3;
@@ -310,6 +312,8 @@ public class PlaylistBrowserActivity extends ListActivity
         if (!mCreateShortcut) {
             menu.add(0, PARTY_SHUFFLE, 0, R.string.party_shuffle); // icon will be set in onPrepareOptionsMenu()
             menu.add(0, CLEAR_ALL_PLAYLISTS, 0, R.string.clear_all_playlists).setIcon(R.drawable.ic_menu_clear_playlist);
+			//zhoukai add  
+			menu.add(0, ADD_NEW_FILE_FLODER, 0, R.string.new_playlist).setIcon(R.drawable.ic_menu_add_new_file_floder);
             menu.add(0, CLOSE, 0, R.string.close_music).setIcon(R.drawable.quick_panel_music_close);
             if (getResources().getBoolean(R.bool.def_music_add_more_video_enabled))
                 menu.add(0, MORE_MUSIC, 0, R.string.more_music).setIcon(
@@ -348,6 +352,13 @@ public class PlaylistBrowserActivity extends ListActivity
                 intent.setClass(this, DeleteItems.class);
                 intent.putExtras(b);
                 startActivityForResult(intent, -1);
+                break;
+			    //zhoukai add 
+		    case ADD_NEW_FILE_FLODER:
+                String filedesc = getString(R.string.new_playlist);
+				 Intent newintent = new Intent();
+				newintent.setClass(this, CreatePlaylist.class);
+                startActivityForResult(newintent, NEW_PLAYLIST);
                 break;
             case CLOSE:
                 try {

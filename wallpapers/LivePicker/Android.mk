@@ -42,6 +42,7 @@ LOCAL_SRC_FILES := $(call all-subdir-java-files)
 LOCAL_REQUIRED_MODULES := android.software.live_wallpaper.xml
 
 LOCAL_PACKAGE_NAME := LiveWallpapersPicker
+LOCAL_DEX_PREOPT := false
 LOCAL_CERTIFICATE := platform
 
 LOCAL_PROGUARD_FLAG_FILES := proguard.flags

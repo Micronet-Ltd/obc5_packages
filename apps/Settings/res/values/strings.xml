@@ -5390,6 +5390,8 @@
     <string name="sub_deactivate_not_supported">Deactivation not supported</string>
     <string name="sub_activate_not_supported">Activation not supported</string>
     <string name="slot_name">SIM <xliff:g id="sub">%d</xliff:g></string>
+	
+	<string name="slot_name_1">SIM</string>
 
     <!-- A menu item in "About phone" that allows the user to update the phone with settings
     from their cell phone carrier. The use of the string is similar to the string
@@ -6330,6 +6332,7 @@
     <string name="external_storage_turn_on">External storage has been turned on</string>
     <string name="external_storage_turn_off">External storage has been turned off</string>
     <string name="sound_category_calls_title">Incoming calls</string>
+    <string name="battery_low_restore_factoryset">Power less than 15% banned restore the factory settings</string>
     <string name="lte_4g_settings_title">Enable 4G</string>
     <string name="lte_4g_switch_prompt">The phone will change from 3G/2G to 4G, some active task may be stopped</string>
     <!-- Carrier Name -->

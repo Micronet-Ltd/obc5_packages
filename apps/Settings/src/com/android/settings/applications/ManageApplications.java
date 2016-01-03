@@ -199,7 +199,7 @@ public class ManageApplications extends Fragment implements
 
     // add for new feature for search applications
     public static final int SHOW_SEARCH_APPLICATIONS = MENU_OPTIONS_BASE + 9;
-    //qj public static final int APP_INSTALL_LOCATION = MENU_OPTIONS_BASE + 10;
+    public static final int APP_INSTALL_LOCATION = MENU_OPTIONS_BASE + 10;
 
     private boolean mSearchappEnabled;
 
@@ -1168,8 +1168,8 @@ public class ManageApplications extends Fragment implements
                 .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         menu.add(0, RESET_APP_PREFERENCES, 4, R.string.reset_app_preferences)
                 .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
-        /*qj menu.add(0, APP_INSTALL_LOCATION, 4, R.string.app_install_location_title)
-                .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);*/
+        menu.add(0, APP_INSTALL_LOCATION, 4, R.string.app_install_location_title)
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
 
         if (!Utils.isRestrictedProfile(getActivity())) {
             menu.add(0, SHOW_PROTECTED_APPS, 5, R.string.protected_apps)
@@ -1352,9 +1352,9 @@ public class ManageApplications extends Fragment implements
             //add for new feature for search applications
             if(menuId == SHOW_SEARCH_APPLICATIONS){
                 showInputmethod();
-        } /*qj else if (menuId == APP_INSTALL_LOCATION) {
+        } else if (menuId == APP_INSTALL_LOCATION) {
             showAppInstallLocationSettingDlg();
-        }*/ else if (menuId == SHOW_PROTECTED_APPS) {
+        } else if (menuId == SHOW_PROTECTED_APPS) {
             //Launch Protected Apps Fragment
             Intent intent = new Intent(getActivity(), ProtectedAppsActivity.class);
             startActivity(intent);
@@ -1380,7 +1380,6 @@ public class ManageApplications extends Fragment implements
         return selectedLocation;
     }
 
-	/*
     private void showAppInstallLocationSettingDlg() {
         int appInstallID = Settings.Global.getInt(getActivity().getContentResolver(),
                 Settings.Global.DEFAULT_INSTALL_LOCATION, APP_INSTALL_AUTO);
@@ -1414,7 +1413,7 @@ public class ManageApplications extends Fragment implements
                             }
                         }
                 ).show();
-    }*/
+    }
 
     public void onItemClick(TabInfo tab, AdapterView<?> parent, View view, int position,
             long id) {

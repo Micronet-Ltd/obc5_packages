@@ -781,7 +781,7 @@ public class AlarmClockFragment extends DeskClockFragment implements
             CheckBox vibrate;
             CheckBox increasingVolume;
             TextView ringtone;
-            TextView profile;
+ //           TextView profile;
             View hairLine;
             View arrow;
             View collapseExpandArea;
@@ -927,7 +927,7 @@ public class AlarmClockFragment extends DeskClockFragment implements
             holder.vibrate = (CheckBox) view.findViewById(R.id.vibrate_onoff);
             holder.increasingVolume = (CheckBox) view.findViewById(R.id.increasing_volume_onoff);
             holder.ringtone = (TextView) view.findViewById(R.id.choose_ringtone);
-            holder.profile = (TextView) view.findViewById(R.id.choose_profile);
+   //         holder.profile = (TextView) view.findViewById(R.id.choose_profile);
 
             view.setTag(holder);
         }
@@ -1098,7 +1098,7 @@ public class AlarmClockFragment extends DeskClockFragment implements
                 }
             });
 
-            itemHolder.profile.setVisibility(isProfilesEnabled() ? View.VISIBLE : View.GONE);
+           // itemHolder.profile.setVisibility(isProfilesEnabled() ? View.VISIBLE : View.GONE);
         }
 
         private void setAlarmItemBackgroundAndElevation(LinearLayout layout, boolean expanded) {
@@ -1279,7 +1279,7 @@ public class AlarmClockFragment extends DeskClockFragment implements
                 }
             });
 
-            final String profile = getProfileName(alarm);
+            /*final String profile = getProfileName(alarm);
             itemHolder.profile.setText(profile);
             itemHolder.profile.setVisibility(isProfilesEnabled() ? View.VISIBLE : View.GONE);
             itemHolder.profile.setContentDescription(
@@ -1289,7 +1289,7 @@ public class AlarmClockFragment extends DeskClockFragment implements
                 public void onClick(View view) {
                     launchProfilePicker(alarm);
                 }
-            });
+            });*/
         }
 
         // Sets the alpha of the digital time display. This gives a visual effect

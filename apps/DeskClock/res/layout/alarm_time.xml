@@ -108,7 +108,7 @@
                 android:textSize="16sp"
                 android:textColor="@color/clock_white"/>
 
-            <TextView
+            <!--<TextView
                 android:id="@+id/choose_profile"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
@@ -124,7 +124,7 @@
                 android:singleLine="true"
                 android:textAlignment="viewStart"
                 android:textSize="16sp"
-                android:textColor="@color/clock_white" />
+                android:textColor="@color/clock_white" />-->
 
             <CheckBox
                 android:id="@+id/increasing_volume_onoff"

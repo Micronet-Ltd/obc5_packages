@@ -67,8 +67,8 @@ public class BrowserActivity extends Activity {
         // If this was a web search request, pass it on to the default web
         // search provider and finish this activity.
         if (IntentHandler.handleWebSearchIntent(this, null, getIntent())) {
-            finish();
-            return;
+      //      finish();
+      //      return;
         }
         mController = createController();
 

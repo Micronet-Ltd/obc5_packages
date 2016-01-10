@@ -313,7 +313,7 @@ public class PlaylistBrowserActivity extends ListActivity
             menu.add(0, PARTY_SHUFFLE, 0, R.string.party_shuffle); // icon will be set in onPrepareOptionsMenu()
             menu.add(0, CLEAR_ALL_PLAYLISTS, 0, R.string.clear_all_playlists).setIcon(R.drawable.ic_menu_clear_playlist);
 			//zhoukai add  
-			menu.add(0, ADD_NEW_FILE_FLODER, 0, R.string.new_playlist).setIcon(R.drawable.ic_menu_add_new_file_floder);
+//temp!!!			menu.add(0, ADD_NEW_FILE_FLODER, 0, R.string.new_playlist).setIcon(R.drawable.ic_menu_add_new_file_floder);
             menu.add(0, CLOSE, 0, R.string.close_music).setIcon(R.drawable.quick_panel_music_close);
             if (getResources().getBoolean(R.bool.def_music_add_more_video_enabled))
                 menu.add(0, MORE_MUSIC, 0, R.string.more_music).setIcon(

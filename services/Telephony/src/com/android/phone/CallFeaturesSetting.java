@@ -1772,9 +1772,9 @@ public class CallFeaturesSetting extends PreferenceActivity
 
 		/*ehang lihui@20151015 added for display ecc list according the config item start*/
 		mEmergencyCall = (PreferenceScreen) findPreference(BUTTON_EMERGENCY_CALL_KEY);
-	    //if (!getResources().getBoolean(R.bool.show_emergency_call_list)) {
-	//			 prefSet.removePreference(mEmergencyCall);
-	    //}
+	    if (!getResources().getBoolean(R.bool.show_emergency_call_list)) {
+				 prefSet.removePreference(mEmergencyCall);
+	    }
 		/*ehang lihui@20151015 added for display ecc list according the config item end*/
 
         // Enable enhanced 4G LTE mode settings depending on whether exists on platform

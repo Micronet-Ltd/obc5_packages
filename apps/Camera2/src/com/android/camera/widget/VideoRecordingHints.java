@@ -30,6 +30,7 @@ import com.android.camera.util.CameraUtil;
 import com.android.camera2.R;
 
 import java.lang.ref.WeakReference;
+import android.graphics.RectF;
 
 /**
  * This class is designed to show the video recording hint when device is held in
@@ -194,8 +195,8 @@ public class VideoRecordingHints extends View {
             mRotation = 0;
         }
     }
-
-    @Override
+    // zhoukai modified
+    /*@Override
     public void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
         // Center drawables in the layout
@@ -206,8 +207,9 @@ public class VideoRecordingHints extends View {
         mPhoneGraphic.setBounds(mCenterX - mPhoneGraphicHalfWidth, mCenterY - mPhoneGraphicHalfHeight,
                 mCenterX + mPhoneGraphicHalfWidth, mCenterY + mPhoneGraphicHalfHeight);
         invalidate();
-    }
+    }*/
 
+	
     @Override
     public void draw(Canvas canvas) {
         super.draw(canvas);
@@ -258,6 +260,19 @@ public class VideoRecordingHints extends View {
             }
         }
     }
+	//zhoukai add 
+	public void mPreviewAreaChanged(RectF previewArea){
+		mCenterX = (int) previewArea.centerX();
+		mCenterY = (int) previewArea.centerY();
+		mRotateArrows.setBounds( (int) previewArea.centerX() - mRotateArrowsHalfSize, (int) previewArea.centerY() - mRotateArrowsHalfSize,
+                 (int) previewArea.centerX() + mRotateArrowsHalfSize, (int) previewArea.centerY() + mRotateArrowsHalfSize);
+        mPhoneGraphic.setBounds( (int) previewArea.centerX() - mPhoneGraphicHalfWidth, (int) previewArea.centerY() - mPhoneGraphicHalfHeight,
+                 (int) previewArea.centerX() + mPhoneGraphicHalfWidth, (int) previewArea.centerY() + mPhoneGraphicHalfHeight);
+        invalidate();
+	}
+
+	
+	
 
     /**
      * Returns whether the device is in landscape based on the natural orientation

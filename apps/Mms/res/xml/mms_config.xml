@@ -69,7 +69,11 @@
          will be converted into a single mms message. For example, if the mms_config.xml file
          specifies <int name="smsToMmsTextThreshold">7</int>, then on the 8th sms segment, the
          message will be converted to an mms. -->
-    <int name="smsToMmsTextThreshold">-1</int>
+    <!-- mod by chenqi 2015-12-30 18:06
+         reason:if sms is too long, the count will be err,so ...
+         -->
+    <int name="smsToMmsTextThreshold">10</int>
+
 
     <!-- If true, The mms support slide duration.
          If false, The mms does not support slide duration and we have to

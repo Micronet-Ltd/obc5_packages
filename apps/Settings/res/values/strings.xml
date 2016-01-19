@@ -1472,6 +1472,8 @@
     <string name="wifi_error">Error</string>
     <!-- Toast message when Wi-Fi or bluetooth is disallowed in airplane mode -->
     <string name="wifi_in_airplane_mode">In Airplane mode</string>
+    <!-- Toast message when the bluetooth space restriction is set -->
+    <string name="ss_bluetooth_disabled">Bluetooth use is restricted in this Space.</string>
     <!-- Toast message when Wi-Fi cannot scan for networks -->
     <string name="wifi_fail_to_scan">Can\'t scan for networks</string>
     <!-- Checkbox title for option to notify user when open networks are nearby -->
@@ -2082,7 +2084,7 @@
     <!-- Display settings screen, summary for screen saver options, screen saver is turned off -->
     <string name="screensaver_settings_summary_off">Off</string>
     <!-- Dream settings screen, caption for when dreams are disabled -->
-    <string name="screensaver_settings_disabled_prompt">To control what happens when the phone is docked and/or sleeping, turn Daydream on.</string>
+    <string name="screensaver_settings_disabled_prompt">To control what happens when the phone is sleeping, turn Daydream on.</string>
     <!-- Dream settings screen, action label, when to dream -->
     <string name="screensaver_settings_when_to_dream">When to daydream</string>
     <!-- Dream settings screen, button label to start dreaming -->

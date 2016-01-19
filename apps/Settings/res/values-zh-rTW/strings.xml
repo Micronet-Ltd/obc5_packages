@@ -825,7 +825,7 @@
     <string name="screensaver_settings_summary_sleep" msgid="9086186698140423493">"充電時"</string>
     <string name="screensaver_settings_summary_dock" msgid="2072657401664633283">"安置於座架上時"</string>
     <string name="screensaver_settings_summary_off" msgid="2481581696365146473">"關閉"</string>
-    <string name="screensaver_settings_disabled_prompt" msgid="3857507943322777651">"如要控制手機安置於座架上和/或休眠時的設定，請開啟休眠模式。"</string>
+    <string name="screensaver_settings_disabled_prompt" msgid="3857507943322777651">"如要控制手機休眠時的設定，請開啟休眠模式。"</string>
     <string name="screensaver_settings_when_to_dream" msgid="8352267826043957746">"休眠模式開啟時間"</string>
     <string name="screensaver_settings_dream_start" msgid="4998187847985120168">"立即開啟"</string>
     <string name="screensaver_settings_button" msgid="7292214707625717013">"設定"</string>

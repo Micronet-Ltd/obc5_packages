@@ -133,11 +133,13 @@ public class PreviewOverlay extends View
     public void setOnPreviewTouchedListener(OnPreviewTouchedListener listener) {
         mOnPreviewTouchedListener = listener;
     }
-
+	
+    //zhoukai modified
     @Override
     public void onPreviewAreaChanged(RectF previewArea) {
         mZoomProcessor.layout((int) previewArea.left, (int) previewArea.top,
-                (int) previewArea.right, (int) previewArea.bottom);
+                (int) previewArea.right, (int) previewArea.bottom,
+				(int) previewArea.centerX(), (int) previewArea.centerY());
     }
 
     @Override
@@ -258,10 +260,11 @@ public class PreviewOverlay extends View
             mCurrentRatio = ratio;
         }
 
-        public void layout(int l, int t, int r, int b) {
+        public void layout(int l, int t, int r, int b , int x , int y ) {
             // TODO: Needs to be centered in preview TextureView
-            mCenterX = (r - l) / 2;
-            mCenterY = (b - t) / 2;
+			//zhoukai modified
+            mCenterX = x;
+            mCenterY = y;
             // UI will extend from 20% to 80% of maximum inset circle.
             float insetCircleDiameter = Math.min(getWidth(), getHeight());
             mOuterRadius = insetCircleDiameter * 0.5f * ZOOM_UI_SIZE;

@@ -39,9 +39,9 @@
         android:showAsAction="never"
         android:visible="true"
         android:title="@string/export_image" />
-    <item
+    <!--<item
         android:id="@+id/printButton"
         android:showAsAction="never"
         android:visible="true"
-        android:title="@string/print_image"/>
+        android:title="@string/print_image"/>-->
 </menu>

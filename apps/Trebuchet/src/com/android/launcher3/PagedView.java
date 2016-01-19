@@ -3176,6 +3176,11 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
                 // it from accepting touches
                 if (alpha == 0) {
                     v.setTranslationX(v.getMeasuredWidth() * -10f);
+					if (v instanceof CellLayout) {
+						((CellLayout) v).getShortcutsAndWidgets().setAlpha(1.0f);
+					} else {
+						v.setAlpha(1.0f);
+					}
                 } else if (v.getVisibility() != VISIBLE) {
                     v.setVisibility(VISIBLE);
                 }
@@ -3248,7 +3253,11 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
             @Override
             public void screenScrolled(View v, int i, float scrollProgress) {
                 float rotation = 90.0f * scrollProgress;
-				if(scrollProgress==-1||scrollProgress==1)return; //add
+				if(scrollProgress==-1||scrollProgress==1){
+					v.setTranslationX(0f);
+	                v.setTranslationY(0f);
+					return;
+				}
                 v.setCameraDistance(mPagedView.mDensity * PagedView.CAMERA_DISTANCE);
                 v.setTranslationX(v.getMeasuredWidth() * scrollProgress);
                 v.setPivotX(!mPagedView.isLayoutRtl() ? 0f : v.getMeasuredWidth());

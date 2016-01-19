@@ -46,7 +46,6 @@ import static android.text.format.DateUtils.FORMAT_SHOW_DATE;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 import static com.android.internal.util.Preconditions.checkNotNull;
 import static com.android.settings.Utils.prepareCustomPreferencesList;
-
 import android.animation.LayoutTransition;
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -147,6 +146,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+
+import com.securespaces.android.ssm.SpaceInfo;
+import com.securespaces.android.ssm.SecureSpacesExtensions;
 
 /**
  * Panel showing data usage history across various networks, including options
@@ -2182,6 +2184,7 @@ public class DataUsageSummary extends HighlightingFragment implements Indexable 
             builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();   //lihui @20151224 for dialog dismiss too slowly after click positive button 
                     final DataUsageSummary target = (DataUsageSummary) getTargetFragment();
                     if (target != null) {
                         target.setRestrictBackground(true);

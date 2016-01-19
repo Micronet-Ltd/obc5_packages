@@ -37,7 +37,7 @@
     <!-- Name for all applications running as this uid. -->
     <string name="uid_name">Android Core Apps</string>
     <!-- Default folder name -->
-    <string name="folder_name"></string>
+    <string name="folder_name">Folder</string>
     <!-- Displayed when user selects a shortcut for an app that was uninstalled [CHAR_LIMIT=none]-->
     <string name="activity_not_found">App isn\'t installed.</string>
     <!-- SafeMode shortcut error string -->

@@ -414,7 +414,12 @@ public class QuickMessagePopup extends Activity {
         // and get the wake lock to turn on the screen.
         boolean isScreenOn = mPowerManager.isScreenOn();
         boolean inKeyguardRestrictedInputMode = mKeyguardManager.inKeyguardRestrictedInputMode();
-        if (inKeyguardRestrictedInputMode || ((!inKeyguardRestrictedInputMode) && !isScreenOn)) {
+        if (inKeyguardRestrictedInputMode || ((!inKeyguardRestrictedInputMode) && !isScreenOn)) {			
+        	boolean isLocked = mKeyguardManager.isKeyguardLocked();
+        	boolean isSecure = mKeyguardManager.isKeyguardSecure();
+        	if(isLocked&&!isSecure){
+        		this.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
+        	}
             ManageWakeLock.acquireFull(mContext);
             mScreenUnlocked = true;
         }

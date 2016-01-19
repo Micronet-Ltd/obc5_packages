@@ -48,6 +48,9 @@ import android.view.KeyEvent;
 import android.view.OrientationEventListener;
 import android.view.View;
 import android.widget.Toast;
+import android.hardware.Camera;
+import android.hardware.Camera.Parameters;
+
 
 import com.android.camera.app.AppController;
 import com.android.camera.app.CameraAppUI;
@@ -104,7 +107,7 @@ public class VideoModule extends CameraModule
     private static final int MSG_SWITCH_CAMERA = 8;
     private static final int MSG_SWITCH_CAMERA_START_ANIMATION = 9;
 
-    private static final long SHUTTER_BUTTON_TIMEOUT = 500L; // 500ms
+    private static final long SHUTTER_BUTTON_TIMEOUT = 1000L; //wenjs modify time form 500 to 1000// 500ms
 
     /**
      * An unpublished intent flag requesting to start recording straight away
@@ -172,6 +175,8 @@ public class VideoModule extends CameraModule
     private ContentResolver mContentResolver;
 
     private LocationManager mLocationManager;
+
+	private Parameters mParameters;//add by wenjs
 
     private int mPendingSwitchCameraId;
     private final Handler mHandler = new MainHandler();
@@ -569,6 +574,7 @@ public class VideoModule extends CameraModule
         bottomBarSpec.enableTorchFlash = true;
         bottomBarSpec.flashCallback = mFlashCallback;
         bottomBarSpec.hideHdr = true;
+		bottomBarSpec.enablewaterCamera=true;
         bottomBarSpec.enableGridLines = true;
 
         if (isVideoCaptureIntent()) {
@@ -653,7 +659,12 @@ public class VideoModule extends CameraModule
     }
 
     private void onStopVideoRecording() {
-        mAppController.getCameraAppUI().setSwipeEnabled(true);
+		if(Keys.arewaterCameraOn(mAppController.getSettingsManager())){
+			
+		}else{
+			 mAppController.getCameraAppUI().setSwipeEnabled(true);
+		}
+       
         boolean recordFail = stopVideoRecording();
         if (mIsVideoCaptureIntent) {
             if (mQuickCapture) {
@@ -927,6 +938,9 @@ public class VideoModule extends CameraModule
             stopPreview();
         }
 
+		//add by wenjs begin
+		setCameraDefaultParameters();
+
         setDisplayOrientation();
         mCameraDevice.setDisplayOrientation(mDisplayRotation);
         setCameraParameters();
@@ -1057,7 +1071,8 @@ public class VideoModule extends CameraModule
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         switch (keyCode) {
             case KeyEvent.KEYCODE_CAMERA:
-                onShutterButtonClick();
+			    //zhoukai modified
+                //onShutterButtonClick();
                 return true;
             case KeyEvent.KEYCODE_MENU:
                 // Consume menu button presses during capture.
@@ -1784,6 +1799,12 @@ public class VideoModule extends CameraModule
     @Override
     public void onLayoutOrientationChanged(boolean isLandscape) {
         setDisplayOrientation();
+		 SlideView slideview=(SlideView)mActivity.findViewById(R.id.slider);
+		   if(isLandscape){
+			 slideview.setRotation(270); 		 
+		   }else{
+			    slideview.setRotation(360);
+		   }
     }
 
     // TODO: integrate this into the SettingsManager listeners.
@@ -1918,6 +1939,7 @@ public class VideoModule extends CameraModule
         String flashSetting = mActivity.getSettingsManager()
             .getString(mAppController.getCameraScope(), Keys.KEY_VIDEOCAMERA_FLASH_MODE);
         Boolean gridLinesOn = Keys.areGridLinesOn(mActivity.getSettingsManager());
+		Boolean waterCameraOn = Keys.arewaterCameraOn(mActivity.getSettingsManager());
         UsageStatistics.instance().photoCaptureDoneEvent(
                 eventprotos.NavigationChange.Mode.VIDEO_STILL, title + ".jpeg", exif,
                 isCameraFrontFacing(), false, currentZoomValue(), flashSetting, gridLinesOn,
@@ -2020,4 +2042,16 @@ public class VideoModule extends CameraModule
             mCameraDevice.applySettings(mCameraSettings);
         }
     }
+
+	//add by wenjs begin
+	/**
+	* set camera default parameter
+	*
+	*/
+	private void setCameraDefaultParameters() {
+        mParameters = mCameraDevice.getParameters();
+		mParameters.setDenoise(Camera.Parameters.DENOISE_ON);
+		mParameters.setAntibanding(Camera.Parameters.ANTIBANDING_50HZ);
+    }
+	//add by wenjs end
 }

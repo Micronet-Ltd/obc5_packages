@@ -186,6 +186,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import android.provider.ContactsContract.Profile;
+
+
+
 /**
  * Mostly translucent {@link Activity} that shows QuickContact dialog. It loads
  * data asynchronously, and then shows a popup with details centered around
@@ -2037,11 +2041,21 @@ public class QuickContactActivity extends ContactsActivity {
             if (data.isNotFound()) {
                 if (!mHasAlreadyBeenOpened) {
                     Log.i(TAG, "No contact found: " + ((ContactLoader)loader).getLookupUri());
-                    Toast.makeText(QuickContactActivity.this, R.string.invalidContactMessage,
-                            Toast.LENGTH_LONG).show();
+                    //{{begin,mod by chenqi 2015-12-29 19:40
+                    //reason:bug #3349,if profile info is empty...
+                    Uri empty_uri = ((ContactLoader)loader).getLookupUri();
+                    if(empty_uri.equals(Profile.CONTENT_URI))
+                    {
+                        Toast.makeText(QuickContactActivity.this, R.string.profile_not_exist,
+                                Toast.LENGTH_LONG).show();
+                    }else{
+                    //}}end,mod by chenqi
+                        Toast.makeText(QuickContactActivity.this, R.string.invalidContactMessage,
+                                Toast.LENGTH_LONG).show();
                     }
-                    finish();
-                    return;
+                }
+                finish();
+                return;
             }
 
             bindContactData(data);

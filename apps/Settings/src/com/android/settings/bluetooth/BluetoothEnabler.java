@@ -33,6 +33,11 @@ import com.android.settings.WirelessSettings;
 import com.android.settings.search.Index;
 import com.android.settings.widget.SwitchBar;
 
+import com.securespaces.android.ssm.SpacesManager;
+import com.securespaces.android.ssm.SecureSpacesExtensions;
+import com.securespaces.android.ssm.SpaceRestrictions;
+import com.securespaces.android.ssm.UserUtils;
+
 /**
  * BluetoothEnabler is a helper to manage the Bluetooth on/off checkbox
  * preference. It turns on/off Bluetooth and ensures the summary of the
@@ -183,6 +188,14 @@ public final class BluetoothEnabler implements SwitchBar.OnSwitchChangeListener 
             Toast.makeText(mContext, R.string.wifi_in_airplane_mode, Toast.LENGTH_SHORT).show();
             // Reset switch to off
             switchView.setChecked(false);
+        }
+
+        if (SecureSpacesExtensions.hasSecureSpacesService()) {
+            SpacesManager sm = new SpacesManager(mContext);
+            if (isChecked && sm.hasSpaceRestriction(SpaceRestrictions.SS_DISALLOW_BLUETOOTH, UserUtils.myUserHandle())) {
+                Toast.makeText(mContext, R.string.ss_bluetooth_disabled, Toast.LENGTH_SHORT).show();
+                switchView.setChecked(false);
+            }
         }
 
         if (mLocalAdapter != null) {

@@ -185,7 +185,7 @@ public class CameraActivity extends QuickActivity
 
     /** Should be used wherever a context is needed. */
     private Context mAppContext;
-
+	
     /**
      * Camera fatal error handling:
      * 1) Present error dialog to guide users to exit the app.
@@ -287,6 +287,7 @@ public class CameraActivity extends QuickActivity
     private final BroadcastReceiver mShutdownReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+			Log.d(TAG, "---------mShutdownReceiver");
             finish();
         }
     };
@@ -583,6 +584,8 @@ public class CameraActivity extends QuickActivity
                     if (!activity.mPaused) {
                         activity.getWindow().clearFlags(
                                 WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+								//zhoukai modified ,when timeout > 2min,so exits Camera2
+								 activity.finish();
                     }
                     break;
                 }
@@ -981,6 +984,11 @@ public class CameraActivity extends QuickActivity
     public Context getAndroidContext() {
         return mAppContext;
     }
+	//home
+	@Override
+    public CameraActivity getAndroidContextActivity() {
+        return CameraActivity.this;
+    }
 
     @Override
     public void launchActivityByIntent(Intent intent) {
@@ -1295,10 +1303,10 @@ public class CameraActivity extends QuickActivity
             case R.id.action_details:
                 showDetailsDialog(mFilmstripController.getCurrentId());
                 return true;
-            case R.id.action_help_and_feedback:
+           /* case R.id.action_help_and_feedback:
                 mResetToPreviewOnResume = false;
                 GoogleHelpHelper.launchGoogleHelp(this);
-                return true;
+                return true;*/
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -1363,12 +1371,43 @@ public class CameraActivity extends QuickActivity
     public void onNewIntentTasks(Intent intent) {
         onModeSelected(getModeIndex());
     }
+	
+	
+    private final BroadcastReceiver mShowOnKeyGuardShutdownReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+			Log.d(TAG, "----------mShowOnKeyGuardShutdownReceiver.");
+            unregisterReceiver(mShowOnKeyGuardShutdownReceiver);
+    		finish();
+		}
+	};
+	
+    private final BroadcastReceiver mCameraShowWhenLockedReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+			Log.d(TAG, "----------mCameraShowWhenLockedReceiver");
+            Window win = getWindow();
+            WindowManager.LayoutParams params = win.getAttributes();
+            params.flags |= WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED;
+            win.setAttributes(params);
+			
+            IntentFilter filter_screen_off = new IntentFilter(Intent.ACTION_SCREEN_OFF);
+            registerReceiver(mShowOnKeyGuardShutdownReceiver/*mShutdownReceiver*/, filter_screen_off);
 
+            IntentFilter filter_user_unlock = new IntentFilter(Intent.ACTION_USER_PRESENT);
+            registerReceiver(mShowOnKeyGuardShutdownReceiver/*mShutdownReceiver*/, filter_user_unlock);
+        }
+    };
+	
+	
     @Override
     public void onCreateTasks(Bundle state) {
         CameraPerformanceTracker.onEvent(CameraPerformanceTracker.ACTIVITY_START);
         mAppContext = getApplication().getBaseContext();
-
+		
+        IntentFilter filter_camera_over_keyguard = new IntentFilter("CAMERA_SHOW_WHEN_LOCKED");
+        registerReceiver(mCameraShowWhenLockedReceiver, filter_camera_over_keyguard);
+		
         if (!Glide.isSetup()) {
             Glide.setup(new GlideBuilder(getAndroidContext())
                 .setResizeService(new FifoPriorityThreadPoolExecutor(2)));
@@ -1440,10 +1479,12 @@ public class CameraActivity extends QuickActivity
         } else {
             mSecureCamera = intent.getBooleanExtra(SECURE_CAMERA_EXTRA, false);
         }
-
-        if (mSecureCamera) {
+		
+		boolean isKeyguardLocked = intent.getBooleanExtra(CameraKeyReceiver.KEYGUARD_LOCKED, false);
+        if (mSecureCamera || isKeyguardLocked) {
             // Change the window flags so that secure camera can show when
             // locked
+			Log.d(TAG, "----mSecureCamera || isKeyguardLocked");
             Window win = getWindow();
             WindowManager.LayoutParams params = win.getAttributes();
             params.flags |= WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED;
@@ -1462,6 +1503,7 @@ public class CameraActivity extends QuickActivity
             IntentFilter filter_user_unlock = new IntentFilter(Intent.ACTION_USER_PRESENT);
             registerReceiver(mShutdownReceiver, filter_user_unlock);
         }
+		
         mCameraAppUI = new CameraAppUI(this,
                 (MainActivityLayout) findViewById(R.id.activity_root_view), isCaptureIntent());
 
@@ -1914,6 +1956,8 @@ public class CameraActivity extends QuickActivity
         if (mSecureCamera) {
             unregisterReceiver(mShutdownReceiver);
         }
+        unregisterReceiver(mCameraShowWhenLockedReceiver);
+		
         mSettingsManager.removeAllListeners();
         mCameraController.removeCallbackReceiver();
         mCameraController.setCameraExceptionHandler(null);
@@ -1977,7 +2021,12 @@ public class CameraActivity extends QuickActivity
             } else if (keyCode == KeyEvent.KEYCODE_MENU
                     || keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
                 // Let the mode list view consume the event.
-                mCameraAppUI.openModeList();
+              	if(Keys.arewaterCameraOn(mSettingsManager)){
+            	
+            	}else{
+            		 mCameraAppUI.openModeList();
+     				
+            	}
                 return true;
             } else if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
                 mCameraAppUI.showFilmstrip();
@@ -2045,7 +2094,7 @@ public class CameraActivity extends QuickActivity
         if (isSecureCamera() && !ApiHelper.isLOrHigher()) {
             // Compatibility pre-L: launching new activities right above
             // lockscreen does not reliably work, only show help if not secure
-            menu.removeItem(R.id.action_help_and_feedback);
+            //menu.removeItem(R.id.action_help_and_feedback);
         }
 
         return super.onPrepareOptionsMenu(menu);

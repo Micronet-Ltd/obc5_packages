@@ -127,6 +127,9 @@ import java.util.Set;
 
 import static com.android.settings.dashboard.DashboardTile.TILE_ID_UNDEFINED;
 
+import com.securespaces.android.ssm.SpaceInfo;
+import com.securespaces.android.ssm.SecureSpacesExtensions;
+
 public class SettingsActivity extends Activity
         implements PreferenceManager.OnPreferenceTreeClickListener,
         PreferenceFragment.OnPreferenceStartFragmentCallback,
@@ -1226,10 +1229,17 @@ public class SettingsActivity extends Activity
                     boolean hasMultipleUsers =
                             ((UserManager) getSystemService(Context.USER_SERVICE))
                                     .getUserCount() > 1;
+
+                    boolean isSpace = false;
+                    if (SecureSpacesExtensions.hasSecureSpacesService()) {
+                        isSpace = SpaceInfo.isSpace(um.getUserInfo(UserHandle.getCallingUserId()));
+                    }
+
                     if (!UserHandle.MU_ENABLED
                             || (!UserManager.supportsMultipleUsers()
                                     && !hasMultipleUsers)
-                            || Utils.isMonkeyRunning()) {
+                            || Utils.isMonkeyRunning()
+                            || isSpace) {
                         removeTile = true;
                     }
                 }*/ else if (id == R.id.nfc_payment_settings) {

@@ -264,10 +264,11 @@ public final class AlarmInstance implements ClockContract.InstancesColumns {
             long time = currentTime - ai.getAlarmTime().getTimeInMillis();
             LogUtils.v("getFirstAlarmInstance = " + ai);
 
-            if (closestMissAlarmElapse > time) {
+            if (time >= 0) {
                 firstAlarm = ai;
                 closestMissAlarmElapse = time;
                 LogUtils.v("getFirstAlarmInstance closest = " + ai);
+				break;
             }
         }
 

@@ -250,8 +250,20 @@ public final class CallsManager extends Call.ListenerBase {
     @Override
     public void onSuccessfulIncomingCall(Call incomingCall) {
         Log.d(this, "onSuccessfulIncomingCall");
-
-        if (isCallBlacklisted(incomingCall)) {
+		/*lihui @20151127 added for enable black and white list function start*/
+		String isCloseBlackList = SystemProperties.get("persist.sys.whitelistenable", "");
+		boolean isNeedBlock = false;
+		if(!isCloseBlackList.endsWith("true") && isCallBlacklisted(incomingCall)){        // 1:black list function is enabled
+            isNeedBlock = true;
+		}else if(2 == SystemProperties.getInt("persist.sys.bwlist", 0) && !isCallBlacklisted(incomingCall)){ //2:white list function is enabled.
+            isNeedBlock = true;
+			return;
+		}else{
+            isNeedBlock = false;
+		}
+		Log.d(this, "isNeedBlock = " + isNeedBlock);
+        if (isNeedBlock) {
+		/*lihui @20151127 added for enable black and white list function end*/
             mCallLogManager.logCall(incomingCall, Calls.BLACKLIST_TYPE);
         } else {
             setCallState(incomingCall, CallState.RINGING);

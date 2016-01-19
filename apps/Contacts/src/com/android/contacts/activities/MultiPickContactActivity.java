@@ -403,7 +403,15 @@ public class MultiPickContactActivity extends ListActivity implements
                 }
                 if (mMode == MODE_DEFAULT_CONTACT) {
                     if (SimContactsConstants.ACTION_MULTI_PICK.equals(getIntent().getAction())) {
-                        if (mChoiceSet.size() > MAX_CONTACTS_NUM_TO_SELECT_ONCE) {
+						/*lihui @20160113 added for display sim's free contacts count when export contacts to sim card start*/
+                        int simContactsFreeCounts = getIntent().getIntExtra("sim_contacts_free_count",-1);
+						Log.d(TAG,"mChoiceSet.size()=" + mChoiceSet.size() + ",simContactsFreeCounts=" + simContactsFreeCounts);
+						if((simContactsFreeCounts != -1) && (mChoiceSet.size() > simContactsFreeCounts)){
+                            String text = getString(R.string.too_many_contacts_add_to_group,
+                                    simContactsFreeCounts);
+                            Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
+						}else if (mChoiceSet.size() > MAX_CONTACTS_NUM_TO_SELECT_ONCE) {
+						/*lihui @20160113 added for display sim's free contacts count when export contacts to sim card end*/
                             String text = getString(R.string.too_many_contacts_add_to_group,
                                     MAX_CONTACTS_NUM_TO_SELECT_ONCE);
                             Toast.makeText(this, text, Toast.LENGTH_SHORT).show();

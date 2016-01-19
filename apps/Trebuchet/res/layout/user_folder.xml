@@ -48,11 +48,12 @@
             android:paddingTop="@dimen/folder_name_padding"
             android:adjustViewBounds="true"
             android:layout_alignParentRight="true"
-            android:src="@drawable/folder_unlock" />
+            android:src="@drawable/folder_unlock"
+	    android:visibility="gone" />
 
         <com.android.launcher3.FolderEditText
             android:id="@+id/folder_name"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:background="#00000000"

@@ -53,6 +53,8 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import com.securespaces.android.ssm.SpaceInfo;
+import com.securespaces.android.ssm.SecureSpacesExtensions;
 
 /**
  * Singleton for retrieving and monitoring the state about all running
@@ -1378,8 +1380,18 @@ public class RunningState {
 
         for (int i=0; i<mMergedItems.size(); i++) {
             mMergedItems.get(i).updateSize(context);
+
+            if (SecureSpacesExtensions.hasExtension("HIDDEN_EXTENSION")) {
+                UserState user = mMergedItems.get(i).mUser;
+                if (user != null
+                        && user.mInfo != null
+                        && SpaceInfo.isHidden(user.mInfo)) {
+                    mMergedItems.remove(i);
+                    i--;
+                }
+             }
         }
-        
+
         synchronized (mLock) {
             mNumBackgroundProcesses = numBackgroundProcesses;
             mNumForegroundProcesses = numForegroundProcesses;
@@ -1423,6 +1435,23 @@ public class RunningState {
 
     ArrayList<MergedItem> getCurrentBackgroundItems() {
         synchronized (mLock) {
+
+            if (SecureSpacesExtensions.hasExtension("HIDDEN_EXTENSION")) {
+
+                if (mUserBackgroundItems != null) {
+
+                    for (int i = 0; i < mUserBackgroundItems.size(); i++) {
+                        MergedItem mi = mUserBackgroundItems.get(i);
+
+                        if ((mi != null) && (mi.mUser != null)) {
+                            if (SpaceInfo.isHidden(mi.mUser.mInfo)) {
+                                mUserBackgroundItems.remove(i);
+                                i--;
+                            }
+                        }
+                    }
+                }
+            }
             return mUserBackgroundItems;
         }
     }

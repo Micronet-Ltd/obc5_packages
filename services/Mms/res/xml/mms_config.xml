@@ -84,4 +84,6 @@
     <!--
     <string name="naiSuffix"></string>
     -->
+	<!-- Disable SMS to MMS conversion for multiple recipient SMS -->
+    <bool name="enableGroupMms">false</bool>
 </mms_config>

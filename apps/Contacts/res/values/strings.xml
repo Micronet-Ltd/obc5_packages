@@ -802,4 +802,10 @@
     <string name="delete_call_alert">Sure to delete the call logs selected?</string>
     <string name="title_del_call">Delete</string>
     <string name="title_add_members">Add members</string>
+	
+    <!-- mod by chenqi 2015-12-30 18:25
+    reason:bug #3349,if profile info is empty...
+    -->
+    <string name="profile_not_exist">Your profile info doesn\'t exist</string>
+
 </resources>

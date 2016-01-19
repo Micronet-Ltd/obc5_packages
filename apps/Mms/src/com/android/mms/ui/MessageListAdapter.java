@@ -306,6 +306,18 @@ public class MessageListAdapter extends CursorAdapter {
         mBodyCache = new HashMap<Integer, String>();
     }
 
+//{{begin,mod by chenqi 2016-01-06 15:31
+//reason:can't select all message when having sms and mms.case:02292457
+	@Override 
+    public long getItemId(int position) { 
+        if(getCursor() != null ){ 
+            getCursor().moveToPosition(position); 
+            return position; 
+        } 
+        return 0; 
+    } 
+//}}end,mod by chenqi
+
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
         if (view instanceof MessageListItem) {

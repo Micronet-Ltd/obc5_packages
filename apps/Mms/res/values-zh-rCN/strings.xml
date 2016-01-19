@@ -118,6 +118,8 @@
     <string name="discard_message_reason_some_invalid">"您的信息有部分无效的接收者，将被舍弃。"</string>
     <string name="discard_message_reason" msgid="2667664943003796133">"您的信息没有有效的接收者，将被舍弃。"</string>
     <string name="has_invalid_recipient" msgid="1485388396900997383">"无效接收者：&lt;<xliff:g id="NAME">%1$s</xliff:g>&gt;"</string>
+	<string name="has_blachlist_recipient">无效的接收者：接收者不在白名单列表中！</string>
+	
     <string name="invalid_destination" msgid="4573835601024786416">"目标地址无效。"</string>
     <string name="service_not_activated" msgid="9178218144019626176">"该服务尚未在网络上激活。"</string>
     <string name="service_message_not_found" msgid="1908877102600048515">"信息已过期或无法查看。"</string>

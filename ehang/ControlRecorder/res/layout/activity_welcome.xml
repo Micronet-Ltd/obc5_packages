@@ -1,0 +1,39 @@
+﻿<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/baise">
+	<!-- 设置其位置在文本名字额上边 ,位于布局文件的水平居中-->
+<ImageView 
+    android:id="@+id/img_logo"
+    android:layout_width="80dp"
+    android:layout_height="90dp"
+	android:layout_above="@+id/text_name"
+	android:layout_marginTop="20dp"
+    android:layout_centerHorizontal="true"
+    android:src="@drawable/subject"
+    />
+    <!-- 设置欢迎页面文本名字，设置粗体 -->
+<TextView 
+    android:id="@+id/text_name"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:textSize="20sp"
+	android:layout_centerInParent="true"
+    android:textColor="@color/heise"
+	android:layout_marginBottom="150dp"
+    android:text="@string/welcome"
+    />
+<!-- 离底部边缘的距离是20dp,位于布局文件的水平居中，位于父容器的底部-->
+<TextView 
+    android:id="@+id/load"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="20dp"
+    android:layout_centerHorizontal="true"
+    android:layout_alignParentBottom="true"
+    android:textColor="@color/huise"
+    android:text="@string/yihang"
+    />
+</RelativeLayout>
+

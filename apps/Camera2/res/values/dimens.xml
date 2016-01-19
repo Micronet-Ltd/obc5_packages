@@ -14,6 +14,21 @@
      limitations under the License.
 -->
 <resources>
+ <!-- Default screen margins, per the Android Design guidelines. -->
+     <!--slide-->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="mask_text_size">28dp</dimen>
+    <dimen name="mask_text_margin_left">100dp</dimen>
+    <dimen name="mask_text_margin_top">60dp</dimen>
+    <dimen name="slider_margin_left">20dp</dimen>
+    <dimen name="slider_margin_top">30dp</dimen>
+    <dimen name="slidable_length">210dp</dimen>
+    <dimen name="effective_length">190dp</dimen>
+    <dimen name="effective_velocity">1300dp</dimen>
+	<dimen name="dtext_top">80dp</dimen>
+	<dimen name="mask_text_margin_Right">100dp</dimen>
+    <dimen name="dtext_bottom">50dp</dimen>
     <dimen name="pano_mosaic_surface_height">240dp</dimen>
     <dimen name="pano_review_button_width">70dp</dimen>
     <dimen name="pano_review_button_height">45dp</dimen>

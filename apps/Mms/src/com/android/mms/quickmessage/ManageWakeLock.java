@@ -32,7 +32,7 @@ public class ManageWakeLock {
             return;
         }
 
-        ManageKeyguard.disableKeyguard(context);
+        //ManageKeyguard.disableKeyguard(context);
 
         PowerManager mPm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
         mWakeLock = mPm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK

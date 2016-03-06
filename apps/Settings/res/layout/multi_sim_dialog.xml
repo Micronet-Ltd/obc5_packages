@@ -126,11 +126,13 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/sim_dialog_margin_top"
+                    android:visibility="gone"
                     android:text="@string/sim_editor_num_format" />
 
             <Spinner android:id="@+id/display_numbers"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:visibility="gone"
                     android:entries="@array/sim_card_data_range"
                     android:paddingBottom="@dimen/sim_dialog_margin_bottom"
                     android:prompt="@string/sim_editor_num_format" />

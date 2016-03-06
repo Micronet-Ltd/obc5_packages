@@ -54,7 +54,7 @@
     <bool name="wifi_to_cell">false</bool>
 
     <!-- Whether to add AGPS parameter settings -->
-    <bool name="config_agps_enabled">false</bool>
+    <bool name="config_agps_enabled">true</bool>
 
     <!-- Whether to connect to wifi automatically -->
     <bool name="config_auto_connect_wifi_enabled">false</bool>

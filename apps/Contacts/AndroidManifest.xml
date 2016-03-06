@@ -61,12 +61,12 @@
     >
         <uses-library android:name="com.suntek.mway.rcs.client.api" android:required="false" />
 
-
+	<!-- modified by ahp, change the screenOrientation rotate -->
         <!-- The main Contacts activity with the contact list, favorites, and groups. -->
         <activity android:name=".activities.PeopleActivity"
             android:label="@string/launcherActivityLabel"
             android:theme="@style/PeopleTheme"
-            android:screenOrientation="sensor"
+            android:configChanges="orientation|screenSize|keyboardHidden"
             android:clearTaskOnLaunch="true"
             android:launchMode="singleTop"
         >

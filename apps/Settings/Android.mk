@@ -2,7 +2,7 @@ LOCAL_PATH:= $(call my-dir)
 include $(CLEAR_VARS)
 
 LOCAL_JAVA_LIBRARIES := bouncycastle conscrypt telephony-common ims-common
-LOCAL_STATIC_JAVA_LIBRARIES := android-support-v4 android-support-v13 jsr305
+LOCAL_STATIC_JAVA_LIBRARIES := android-support-v4 android-support-v13 jsr305 libsecurespaces
 
 LOCAL_MODULE_TAGS := optional
 
@@ -26,6 +26,17 @@ LOCAL_PROGUARD_FLAG_FILES := proguard.flags
 include frameworks/opt/setupwizard/navigationbar/common.mk
 
 include $(BUILD_PACKAGE)
+
+# the graphite changes to Settings require the SecureSpaces SDK.  If
+# we cannot build the SDK from source, then we look for a prebuilt
+# version in vendor/graphiteplus
+ifeq ($(wildcard packages/apps/SpacesManager),)
+include $(CLEAR_VARS)
+LIB_SS_PATH := vendor/graphiteplus/proprietary/libsecurespaces/securespaces-sdk.jar
+LOCAL_PREBUILT_STATIC_JAVA_LIBRARIES := \
+        libsecurespaces:../../../$(LIB_SS_PATH)
+include $(BUILD_MULTI_PREBUILT)
+endif
 
 # Use the following include to make our test apk.
 ifeq (,$(ONE_SHOT_MAKEFILE))

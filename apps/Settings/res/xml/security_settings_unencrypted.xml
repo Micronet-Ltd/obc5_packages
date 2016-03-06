@@ -16,7 +16,7 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
                   android:title="@string/crypt_keeper_settings_title">
-
+<!-- del by lyf for removing encrypt phone 20151214 
     <PreferenceCategory
         android:key="security_category"
         android:title="@string/crypt_keeper_settings_title">
@@ -27,5 +27,5 @@
             android:fragment="com.android.settings.CryptKeeperSettings" />
     
     </PreferenceCategory>
-
+-->
 </PreferenceScreen>

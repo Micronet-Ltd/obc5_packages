@@ -46,6 +46,8 @@ public class Keys {
     public static final String KEY_EXPOSURE = "pref_camera_exposure_key";
     public static final String KEY_VIDEO_EFFECT = "pref_video_effect_key";
     public static final String KEY_CAMERA_ID = "pref_camera_id_key";
+	//water
+	public static final String KEY_waterCamera_MODE = "pref_camera_click_key";
 
     public static final String KEY_CAMERA_HDR = "pref_camera_hdr_key";
     public static final String KEY_CAMERA_HDR_PLUS = "pref_camera_hdr_plus_key";
@@ -158,7 +160,10 @@ public class Keys {
                 R.array.pref_camera_pano_orientation_entryvalues));
 
         settingsManager.setDefaults(KEY_CAMERA_GRID_LINES, false);
-
+		//water
+		settingsManager.setDefaults(KEY_waterCamera_MODE, false);
+        settingsManager.set(SettingsManager.SCOPE_GLOBAL, KEY_waterCamera_MODE, false);
+		
         settingsManager.setDefaults(KEY_SHOULD_SHOW_REFOCUS_VIEWER_CLING, true);
 
         settingsManager.setDefaults(KEY_HDR_PLUS_FLASH_MODE,
@@ -210,6 +215,13 @@ public class Keys {
     public static boolean areGridLinesOn(SettingsManager settingsManager) {
         return settingsManager.getBoolean(SettingsManager.SCOPE_GLOBAL,
                                           KEY_CAMERA_GRID_LINES);
+    }
+	
+	//water
+	public static boolean arewaterCameraOn(SettingsManager settingsManager) {
+		
+        return settingsManager.getBoolean(SettingsManager.SCOPE_GLOBAL,
+                                          KEY_waterCamera_MODE);
     }
 
     /**

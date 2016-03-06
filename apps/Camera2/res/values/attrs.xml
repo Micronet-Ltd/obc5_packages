@@ -49,4 +49,20 @@
     <declare-styleable name="RadioOptions">
         <attr name="selected_drawable" format="reference" />
     </declare-styleable>
+    <!--water-->
+    <declare-styleable name="SlideView">
+        <attr name="maskText" format="string" />
+        <attr name="maskTextSize" format="dimension" />
+        <attr name="maskTextMarginLeft" format="dimension" />
+        <attr name="maskTextMarginTop" format="dimension" />
+        <attr name="slider" format="reference" />
+        <attr name="sliderMarginLeft" format="dimension" />
+        <attr name="sliderMarginTop" format="dimension" />
+        <attr name="slidableLength" format="dimension" />
+        <attr name="effectiveLength" format="dimension" />
+        <attr name="effectiveVelocity" format="dimension" />
+		<attr name="dtexttop" format="dimension" />
+		<attr name="maskTextMarginRight" format="dimension" />
+		<attr name="dtextbottom" format="dimension" />
+    </declare-styleable>
 </resources>

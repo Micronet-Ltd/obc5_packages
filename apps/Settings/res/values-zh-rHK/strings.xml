@@ -825,7 +825,7 @@
     <string name="screensaver_settings_summary_sleep" msgid="9086186698140423493">"充電時"</string>
     <string name="screensaver_settings_summary_dock" msgid="2072657401664633283">"安放在插座上時"</string>
     <string name="screensaver_settings_summary_off" msgid="2481581696365146473">"關閉"</string>
-    <string name="screensaver_settings_disabled_prompt" msgid="3857507943322777651">"開啟 Daydream，設定手機在插座上和/或休眠時顯示的畫面。"</string>
+    <string name="screensaver_settings_disabled_prompt" msgid="3857507943322777651">"開啟 Daydream，設定手機在休眠時顯示的畫面。"</string>
     <string name="screensaver_settings_when_to_dream" msgid="8352267826043957746">"Daydream 開啟時間"</string>
     <string name="screensaver_settings_dream_start" msgid="4998187847985120168">"立即開始"</string>
     <string name="screensaver_settings_button" msgid="7292214707625717013">"設定"</string>

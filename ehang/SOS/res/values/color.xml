@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="line">#cccccc</color>
+    <color name="colFont">#000000</color>
+    <color name="sumFont">#888888</color>
+    
+    <color name="bottomsel">#99ffff</color>
+    <color name="bottomnosel">#ffffff</color>
+    
+    <color name="itemsel">#99ffff</color>
+    <color name="itemnosel">#ffffff</color>
+    
+    <color name="setupsel">#99ffff</color>
+    <color name="setupnosel">#dedede</color>
+
+</resources>

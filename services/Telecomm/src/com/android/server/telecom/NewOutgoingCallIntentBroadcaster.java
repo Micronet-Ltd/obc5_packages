@@ -23,6 +23,8 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.UserHandle;
+import android.os.SystemProperties;
+
 import android.telecom.GatewayInfo;
 import android.telecom.PhoneAccount;
 import android.telecom.TelecomManager;
@@ -31,9 +33,11 @@ import android.telephony.DisconnectCause;
 import android.telephony.PhoneNumberUtils;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
+import com.android.internal.telephony.util.BlacklistUtils;
 
 // TODO: Needed for move to system service: import com.android.internal.R;
 import com.android.internal.telephony.TelephonyProperties;
+import android.widget.Toast;
 
 /**
  * OutgoingCallIntentBroadcaster receives CALL and CALL_PRIVILEGED Intents, and broadcasts the
@@ -216,8 +220,20 @@ class NewOutgoingCallIntentBroadcaster {
         // True for certain types of numbers that are not intended to be intercepted or modified
         // by third parties (e.g. emergency numbers).
         boolean callImmediately = false;
-
+        Log.v(this, "action =" + action);
         if (Intent.ACTION_CALL.equals(action)) {
+			Log.v(this, "outGoing call number =" + number);
+			/*lihui @20151127 added for enable black and white list function start*/
+			String isCloseBlackList = SystemProperties.get("persist.sys.whitelistenable", "");
+			if( isCloseBlackList.endsWith("true") &&
+				2 == SystemProperties.getInt("persist.sys.bwlist", 0) && 
+				!isCallBlacklisted(number)){   
+               Log.v(this, "Bolcking the number which is not in the white list.");
+               Toast.makeText(mContext, R.string.has_blachlist_recipient, Toast.LENGTH_LONG).show();
+			   
+               return DisconnectCause.OUTGOING_CANCELED;
+			}
+			/*lihui @20151127 added for enable black and white list function end*/
             if (isPotentialEmergencyNumber) {
                 if (!mIsDefaultOrSystemPhoneApp) {
                     Log.w(this, "Cannot call potential emergency number %s with CALL Intent %s "
@@ -419,4 +435,20 @@ class NewOutgoingCallIntentBroadcaster {
             intent.setAction(action);
         }
     }
+	/*lihui @20151127 added for enable black and white list function start*/
+	protected boolean isCallBlacklisted(String number) {
+        if (number == null) {
+            return false;
+        }
+        // See if the number is in the blacklist
+        // Result is one of: MATCH_NONE, MATCH_LIST or MATCH_REGEX
+        int listType = BlacklistUtils.isListed(mContext, number, BlacklistUtils.BLOCK_CALLS);
+        if (listType != BlacklistUtils.MATCH_NONE) {
+            // We have a match, set the user and hang up the call and notify
+            Log.v(this, "Incoming call from " + number + " blocked.");
+            return true;
+        }
+        return false;
+    }
+	/*lihui @20151127 added for enable black and white list function end*/
 }

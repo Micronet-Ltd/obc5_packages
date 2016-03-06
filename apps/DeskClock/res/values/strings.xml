@@ -857,6 +857,7 @@
     <string name="ringtone_default">"Default ringtone"</string>
     <string name="power_on_text">Power on</string>
     <string name="power_on_yes_text">Yes</string>
-    <string name="power_on_no_text">No</string>
+    <string name="power_on_no_text">No</string>	
+    <string name="alarm_on_playlists_hint">No playlists,please create playlists in the music player.</string>
 </resources>
 

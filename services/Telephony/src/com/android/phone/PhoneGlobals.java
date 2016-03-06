@@ -991,7 +991,12 @@ public class PhoneGlobals extends ContextWrapper {
                 createIntent.setClass(context, ManagedRoaming.class);
                 createIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 createIntent.putExtra(PhoneConstants.SUBSCRIPTION_KEY, subscription);
-                context.startActivity(createIntent);
+                try {
+                    context.startActivity(createIntent);
+                } catch (Exception e) {
+                    //e.printStackTrace();
+                    Log.w(LOG_TAG, "startActivity Exception");
+                }
             }
         }
     }

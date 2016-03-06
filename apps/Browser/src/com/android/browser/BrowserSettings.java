@@ -455,6 +455,7 @@ public class BrowserSettings implements OnSharedPreferenceChangeListener,
 
     public void clearPasswords() {
         WebViewDatabase db = WebViewDatabase.getInstance(mContext);
+		clearCookies();//add
         db.clearUsernamePassword();
         db.clearHttpAuthUsernamePassword();
     }

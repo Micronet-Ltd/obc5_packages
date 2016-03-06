@@ -51,7 +51,8 @@ public class ButtonManager implements SettingsManager.OnSettingChangedListener {
     public static final int BUTTON_GRID_LINES = 10;
     public static final int BUTTON_EXPOSURE_COMPENSATION = 11;
     public static final int BUTTON_COUNTDOWN = 12;
-
+	//water
+    public static final int WATERCAMERA = 13;
     /** For two state MultiToggleImageButtons, the off index. */
     public static final int OFF = 0;
     /** For two state MultiToggleImageButtons, the on index. */
@@ -71,7 +72,8 @@ public class ButtonManager implements SettingsManager.OnSettingChangedListener {
     private ImageButton mButtonCancel;
     private ImageButton mButtonDone;
     private ImageButton mButtonRetake; // same as review.
-
+	//water
+    private MultiToggleImageButton waterButton;
     private ImageButton mButtonExposureCompensation;
     private ImageButton mExposureN2;
     private ImageButton mExposureN1;
@@ -95,7 +97,10 @@ public class ButtonManager implements SettingsManager.OnSettingChangedListener {
     private static int sGcamIndex;
 
     private final AppController mAppController;
-
+	
+	
+    private boolean  watercamera_enable=false;
+	
     /**
      * Get a new global ButtonManager.
      */
@@ -104,7 +109,8 @@ public class ButtonManager implements SettingsManager.OnSettingChangedListener {
 
         Context context = app.getAndroidContext();
         sGcamIndex = context.getResources().getInteger(R.integer.camera_mode_gcam);
-
+        watercamera_enable=context.getResources().getBoolean(R.bool.watercamera_enable);
+		
         mSettingsManager = app.getSettingsManager();
         mSettingsManager.addListener(this);
     }
@@ -171,7 +177,15 @@ public class ButtonManager implements SettingsManager.OnSettingChangedListener {
         mModeOptionsPano = (RadioOptions) root.findViewById(R.id.mode_options_pano);
         mModeOptionsButtons = root.findViewById(R.id.mode_options_buttons);
         mModeOptions = (ModeOptions) root.findViewById(R.id.mode_options);
-
+		//water
+		
+        waterButton=(MultiToggleImageButton)root.findViewById(R.id.water_Button);
+		
+		if(!watercamera_enable){
+		
+		   ((LinearLayout)waterButton.getParent()).removeView(waterButton);
+			
+        }
         mButtonCountdown = (MultiToggleImageButton) root.findViewById(R.id.countdown_toggle_button);
     }
 
@@ -216,7 +230,12 @@ public class ButtonManager implements SettingsManager.OnSettingChangedListener {
             index = mSettingsManager.getIndexOfCurrentValue(SettingsManager.SCOPE_GLOBAL,
                                                             Keys.KEY_COUNTDOWN_DURATION);
             button = getButtonOrError(BUTTON_COUNTDOWN);
-        }
+        } else if(key.equals(Keys.KEY_waterCamera_MODE)) {
+		
+		    index = mSettingsManager.getIndexOfCurrentValue(SettingsManager.SCOPE_GLOBAL,
+                                                            Keys.KEY_waterCamera_MODE);
+			 button = getButtonOrError(WATERCAMERA);
+		}
 
         if (button != null && button.getState() != index) {
             button.setState(Math.max(index, 0), false);
@@ -280,6 +299,12 @@ public class ButtonManager implements SettingsManager.OnSettingChangedListener {
                     throw new IllegalStateException("Countdown button could not be found.");
                 }
                 return mButtonCountdown;
+			case WATERCAMERA:
+                if (waterButton == null) {
+                    throw new IllegalStateException("watercamer button could not be found.");
+                }
+                return waterButton;
+				
             default:
                 throw new IllegalArgumentException("button not known by id=" + buttonId);
         }
@@ -350,6 +375,9 @@ public class ButtonManager implements SettingsManager.OnSettingChangedListener {
                 break;
             case BUTTON_GRID_LINES:
                 initializeGridLinesButton(button, cb, R.array.grid_lines_icons);
+                break;
+		     case WATERCAMERA:
+                initializewaterCameraButton(button, cb, R.array.water_Button);
                 break;
             case BUTTON_COUNTDOWN:
                 initializeCountdownButton(button, cb, R.array.countdown_duration_icons);
@@ -815,6 +843,37 @@ public class ButtonManager implements SettingsManager.OnSettingChangedListener {
         }
     }
 
+	
+	
+	/**
+     * Initialize a watercamera button.
+     */
+	 private void initializewaterCameraButton(final MultiToggleImageButton button, final ButtonCallback cb, int resIdImages){
+		 
+		 if (resIdImages > 0) {
+            button.overrideImageIds(resIdImages);
+         }
+		 button.overrideContentDescriptions(R.array.waterCamera_id_descriptions);
+		 
+		 button.setOnStateChangeListener(new MultiToggleImageButton.OnStateChangeListener() {
+             @Override
+             public void stateChanged(View view, int state) {
+                 mSettingsManager.setValueByIndex(SettingsManager.SCOPE_GLOBAL,
+                                                 Keys.KEY_waterCamera_MODE, state);
+             
+                if (cb != null) {
+                    cb.onStateChanged(state);
+                }
+               // mAppController.getCameraAppUI().onChangeCamera();
+           }
+        });	 
+		int index = mSettingsManager.getIndexOfCurrentValue(SettingsManager.SCOPE_GLOBAL,
+                                                            Keys.KEY_waterCamera_MODE);
+        button.setState(index >= 0 ? index : 0, true);
+		  
+	 }
+	
+	
     /**
      * Initialize a grid lines button.
      */

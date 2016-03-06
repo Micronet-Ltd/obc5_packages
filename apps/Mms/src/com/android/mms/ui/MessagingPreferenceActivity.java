@@ -430,8 +430,10 @@ public class MessagingPreferenceActivity extends PreferenceActivity
         }
 
         // Blacklist screen - Needed for setting summary
+		String isCloseBlackList = SystemProperties.get("persist.sys.whitelistenable", "");
+   	
         mBlacklist = (PreferenceScreen) findPreference(BLACKLIST);
-        if (!BlacklistUtils.isBlacklistFeaturePresent(this)) {
+        if (!BlacklistUtils.isBlacklistFeaturePresent(this) || isCloseBlackList.endsWith("true")) {
             PreferenceCategory parent =
                     (PreferenceCategory)findPreference("pref_key_extra_settings");
             parent.removePreference(mBlacklist);

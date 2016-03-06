@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">工具箱</string>
+    <string name="text_sos">SOS</string>
+    <string name="text_controlrecorder">防窃听助手</string>
+    <string name="text_mypedometer">计步器</string>
+    <string name="text_altimeter">气压高度计</string>
+    <string name="text_tourch">手电筒</string>
+    <string name="text_compass">指南针</string>
+    <string name="text_magnifiter">放大镜</string>
+    <string name="text_about">关于</string>
+    <string name="exit_prompt">再按一次退出程序</string>
+    <string name="title_ehang">工具箱</string>
+    <string name="title_about">关于</string>
+    <string name="close_about">关闭</string>
+    <string name="about_ehang">一行科技有限责任公司</string>
+    <string name="copyright_ehang">Copyright © 2015 YiHang Inc. All Rights Reserved.</string>
+    <string name="text_close">确定要退出吗?</string>
+    <string name="title_hint">提示</string>
+    <string name="text_ok">确认</string>
+    <string name="text_cancel">取消</string>
+    <string name="ver_number">工具箱  V1.0</string>
+</resources>

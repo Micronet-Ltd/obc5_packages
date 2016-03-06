@@ -61,7 +61,7 @@ public class BottomBar extends FrameLayout {
     private final int mBackgroundAlphaOverlay;
     private final int mBackgroundAlphaDefault;
     private boolean mOverLayBottomBar;
-
+    private FrameLayout mLockLayout;
     private FrameLayout mCaptureLayout;
     private FrameLayout mCancelLayout;
     private TopRightWeightedLayout mIntentReviewLayout;
@@ -168,6 +168,9 @@ public class BottomBar extends FrameLayout {
     public void onFinishInflate() {
         mCaptureLayout =
                 (FrameLayout) findViewById(R.id.bottombar_capture);
+		//waterLock
+	    mLockLayout =
+                (FrameLayout) findViewById(R.id.lock);
         mCancelLayout =
                 (FrameLayout) findViewById(R.id.bottombar_cancel);
         mCancelLayout.setVisibility(View.GONE);
@@ -248,6 +251,7 @@ public class BottomBar extends FrameLayout {
      * capture layout.
      */
     public void transitionToCapture() {
+		mLockLayout.setVisibility(View.VISIBLE);
         mCaptureLayout.setVisibility(View.VISIBLE);
         mCancelLayout.setVisibility(View.GONE);
         mIntentReviewLayout.setVisibility(View.GONE);

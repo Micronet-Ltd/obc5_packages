@@ -47,7 +47,7 @@ public class GeneralPreferencesFragment extends PreferenceFragment
 
     static final String TAG = "PersonalPreferencesFragment";
 
-    static final String BLANK_URL = "about:blank";
+    static final String BLANK_URL = "blank_page";
     static final String CURRENT = "current";
     static final String BLANK = "blank";
     static final String DEFAULT = "default";

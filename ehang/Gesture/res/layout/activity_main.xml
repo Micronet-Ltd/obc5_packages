@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+    <RelativeLayout
+        android:id="@+id/rl"
+        android:layout_width="fill_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal"
+        android:background="@color/lightgray">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/title" 
+            android:textSize="20sp"
+            android:textColor="@color/lightblack"
+            android:layout_marginLeft="35dp"
+			android:layout_centerVertical="true"/>
+        <ToggleButton  
+	        android:id="@+id/mToggleBtn"  
+	        android:layout_width="wrap_content"  
+	        android:layout_height="wrap_content"
+	        android:background="@android:color/transparent"  
+	        android:button="@drawable/togglebtn_bg"  
+	        android:checked="false" 
+	        android:layout_alignParentRight="true"
+	        android:layout_centerVertical="true"
+	        android:layout_marginRight="35dp"
+	        android:textOff=""  
+	        android:textOn="" /> 
+    </RelativeLayout>
+
+ 	<ListView
+ 	    android:id="@+id/mListView"
+ 	    android:layout_width="fill_parent"
+ 	    android:layout_height="wrap_content"
+ 	    android:layout_below="@+id/rl"
+ 	    android:layout_marginLeft="20dp"
+ 	    android:listSelector="@color/lightgray" >
+
+ 	</ListView>
+
+</RelativeLayout>
+

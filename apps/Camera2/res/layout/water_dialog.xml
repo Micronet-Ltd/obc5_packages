@@ -1,0 +1,57 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="120dp"
+    android:orientation="vertical"
+    android:layout_gravity="center" >
+	
+     <LinearLayout 
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="55dp"
+        android:orientation="horizontal"
+        >
+		
+    <ImageView 
+        android:id="@+id/prompt"
+        android:layout_marginTop="15dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/prompt_image"
+        android:layout_marginLeft="17dp"
+        android:layout_centerHorizontal="true"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/dialog_prompt"
+		android:layout_marginTop="18dp"
+		android:layout_marginLeft="5dp"
+        android:textSize="18sp" 
+		android:textStyle="bold"
+        android:layout_centerHorizontal="true"/>
+    </LinearLayout>
+   
+	<TextView 
+        android:id="@+id/context_tp"
+		android:lineSpacingExtra="3dp"
+		android:layout_marginTop="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/TP_Context"
+        android:textSize="15sp"
+		android:textStyle="bold"
+        android:layout_marginLeft="20dp"
+		android:layout_marginRight="17dp"/>
+	<TextView 
+        android:id="@+id/context_power"
+		android:lineSpacingExtra="3dp"
+		android:layout_marginTop="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/power_Context"
+        android:textSize="15sp"
+		android:textStyle="bold"
+        android:layout_marginLeft="20dp"
+		android:layout_marginBottom="18dp"
+		android:layout_marginRight="17dp"/>
+</LinearLayout>

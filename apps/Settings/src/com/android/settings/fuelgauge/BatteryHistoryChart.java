@@ -1255,22 +1255,22 @@ public class BatteryHistoryChart extends View {
             mTextPaint.setTextAlign(textAlignLeft);  // large-mode labels always aligned to start
             if (mHavePhoneSignal) {
                 canvas.drawText(mPhoneSignalLabel, textStartX,
-                        height - mPhoneSignalOffset - mTextDescent, mTextPaint);
+                        height - mPhoneSignalOffset - mTextDescent - mLineWidth/2, mTextPaint);
             }
             if (mHaveGps) {
                 canvas.drawText(mGpsOnLabel, textStartX,
-                        height - mGpsOnOffset - mTextDescent, mTextPaint);
+                        height - mGpsOnOffset - mTextDescent - mLineWidth/2, mTextPaint);
             }
             if (mHaveWifi) {
                 canvas.drawText(mWifiRunningLabel, textStartX,
-                        height - mWifiRunningOffset - mTextDescent, mTextPaint);
+                        height - mWifiRunningOffset - mTextDescent - mLineWidth/2, mTextPaint);
             }
             canvas.drawText(mCpuRunningLabel, textStartX,
-                    height - mCpuRunningOffset - mTextDescent, mTextPaint);
+                    height - mCpuRunningOffset - mTextDescent - mLineWidth/2, mTextPaint);
             canvas.drawText(mChargingLabel, textStartX,
-                    height - mChargingOffset - mTextDescent, mTextPaint);
+                    height - mChargingOffset - mTextDescent - mLineWidth/2, mTextPaint);
             canvas.drawText(mScreenOnLabel, textStartX,
-                    height - mScreenOnOffset - mTextDescent, mTextPaint);
+                    height - mScreenOnOffset - mTextDescent - mLineWidth/2, mTextPaint);
             mTextPaint.setTextAlign(align);
         }
 

@@ -37,6 +37,9 @@ import com.android.mms.LogTag;
 import com.android.mms.MmsConfig;
 import com.google.android.mms.ContentType;
 import com.google.android.mms.MmsException;
+//add and mod by chenqi,for get the size of mms's vcard 2015-12-14
+import java.nio.channels.FileChannel;
+
 // TODO: remove dependency for SDK build
 
 public abstract class MediaModel extends Model implements EventListener {
@@ -246,7 +249,23 @@ public abstract class MediaModel extends Model implements EventListener {
             if (input instanceof FileInputStream) {
                 // avoid reading the whole stream to get its length
                 FileInputStream f = (FileInputStream) input;
-                mSize = (int) f.getChannel().size();
+				//{{ begin,add and mod by chenqi,for get the size of mms's vcard 2015-12-14
+                FileChannel fc = f.getChannel();
+                if(null != fc){
+                	mSize = (int)fc.size();
+                	if(mSize > 0){
+                		return;
+                	}else{
+                		while (-1 != input.read()) {
+                            mSize++;
+							 if (mSize > MmsConfig.getMaxMessageSize()) {
+								break;
+							 }
+                        }
+                	}
+                }
+                //mSize = (int) f.getChannel().size();
+				//}}end,add and mod by chenqi,for get the size of mms's vcard 2015-12-14
                 // sometimes mSize will be zero here. It's tempting to count the bytes as the code
                 // does below, but that turns out to be very slow. We'll deal with a zero size
                 // when we resize the media.

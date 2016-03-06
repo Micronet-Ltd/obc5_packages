@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">SOS</string>
+    
+    <string name="setup">启动</string>
+    <string name="numlist">号码列表</string>
+    <string name="numlist_">未设置</string>
+    <string name="premms">预置短信</string>
+    <string name="premms_">未设置</string>
+    <string name="help">帮助</string>
+    <string name="help_detail">\n1.点击“启动”开启紧急呼救； \n2.手机自动发送“预置短信+小区号”到“号码列表”；\n3.待定位成功，再次发送位置信息到“号码列表”\n</string>
+    <string name="ehang">一行科技有限责任公司</string>
+    
+    <string name="ensure">确定</string>
+    <string name="cancel">取消</string>
+    
+    <string name="setuped">已启动</string>
+    <string name="nosim">无SIM卡</string>
+    <string name="errsim">SIM卡异常</string>
+    
+    <string name="dif1">与第 1个号码相同</string>
+    <string name="dif2">与第 2个号码相同</string>
+    <string name="dif3">与第 3个号码相同</string>
+    <string name="dif4">与第 4个号码相同</string>
+    <string name="dif5">与第 5个号码相同</string>
+    
+    <string name="notice">重复</string>
+    <string name="repick">重新选择</string>
+    
+    <string name="cellnum">小区号:</string>
+    <string name="longi">经度:</string>
+    <string name="lati">纬度:</string>
+    <string name="addr">位置:</string>
+    <string name="thisText">这是一条紧急求救短信:</string>
+    
+    
+</resources>

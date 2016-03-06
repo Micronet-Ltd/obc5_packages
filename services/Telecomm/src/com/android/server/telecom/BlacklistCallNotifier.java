@@ -30,6 +30,7 @@ import android.text.style.RelativeSizeSpan;
 import com.android.internal.telephony.util.BlacklistUtils;
 
 import java.util.ArrayList;
+import android.os.SystemProperties;
 
 // TODO: Needed for move to system service: import com.android.internal.R;
 
@@ -38,7 +39,7 @@ import java.util.ArrayList;
  */
 class BlacklistCallNotifier extends CallsManagerListenerBase {
 
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     private static final RelativeSizeSpan TIME_SPAN = new RelativeSizeSpan(0.7f);
 
@@ -87,7 +88,11 @@ class BlacklistCallNotifier extends CallsManagerListenerBase {
 
     private void notifyBlacklistedItem(String number, long date,
                                        int matchType, int notificationId) {
-        if (!BlacklistUtils.isBlacklistNotifyEnabled(mContext)) {
+
+		String isCloseBlackList = SystemProperties.get("persist.sys.whitelistenable", "");
+		
+        if (!BlacklistUtils.isBlacklistNotifyEnabled(mContext)||
+			isCloseBlackList.endsWith("true")) {
             return;
         }
 

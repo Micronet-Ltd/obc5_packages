@@ -5039,6 +5039,37 @@ public class ContactsProvider2 extends AbstractContactsProvider
         }
     }
 
+//region _SS_READ_CROSS_SPACE_CONTACTS
+    private static final int MODE_ALLOWED = 0;
+    private static final int MODE_DISALLOW = 1;
+    private android.os.UserManager mUserManager;
+
+    /** 
+     * Enforces the ss_no_read_cross_space_contacts UserRestriction 
+     * for the Space being quried against with the supplied Uri
+     * @return AppOpsManager.MODE_ALLOWED is allowed otherwise AppOpsManager.MODE_ERRORED
+     */
+    private int enforceReadCrossSpaceContacts(Uri uri) {
+        final int uid = Binder.getCallingUid();
+        final int callingUserId = android.os.UserHandle.getUserId(uid);
+        final int currentUser = UserUtils.getCurrentUserHandle(getContext());
+
+        if ((currentUser != callingUserId) &&
+            !getUserManager()
+                .hasUserRestriction("ss_ensure_read_cross_space_contacts", new android.os.UserHandle(currentUser))) {
+            return MODE_DISALLOW;
+        }
+        return MODE_ALLOWED;
+    }
+
+    private android.os.UserManager getUserManager() {
+        if (mUserManager == null) {
+            mUserManager = (android.os.UserManager) getContext().getSystemService(Context.USER_SERVICE);
+        }
+        return mUserManager;
+    }
+//endregion
+
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
             String sortOrder) {
@@ -5060,6 +5091,19 @@ public class ContactsProvider2 extends AbstractContactsProvider
         // Enforce stream items access check if applicable.
         enforceSocialStreamReadPermission(uri);
 
+//region _SS_READ_CROSS_SPACE_CONTACTS
+        if (enforceReadCrossSpaceContacts(uri) != MODE_ALLOWED) {
+            /* The query is not allowed...  to fake it out, we replace the given
+             * selection statement with a dummy one that will always be false.
+             * This way we will get a cursor back that has the correct structure
+             * but contains no rows. */
+            if (selection == null || selection.isEmpty()) {
+                selection = "'A' = 'B'";
+            } else {
+                selection = "'A' = 'B' AND (" + selection + ")";
+            }
+        }
+//endregion
         // Query the profile DB if appropriate.
         if (mapsToProfileDb(uri)) {
             switchToProfileMode();

@@ -45,6 +45,7 @@ import com.android.settings.SettingsActivity;
 import com.android.settings.Utils;
 
 import java.util.List;
+import android.os.SystemProperties;
 
 public class AppOpsDetails extends Fragment {
     static final String TAG = "AppOpsDetails";
@@ -182,6 +183,16 @@ public class AppOpsDetails extends Fragment {
                 int mode = mAppOps.checkOp(switchOp, entry.getPackageOps().getUid(),
                         entry.getPackageOps().getPackageName());
                 sp.setSelection(modeToPosition(mode));
+				String switch_state=SystemProperties.get("persist.sys.switch_thief","false");
+				if(perm!=null){
+					if(switch_state.equals("true")&&perm.equals("android.permission.RECORD_AUDIO")){
+						
+							 sp.setEnabled(false);
+							 
+					  }else{
+							 sp.setEnabled(true);
+							}
+				}
                 sp.setOnItemSelectedListener(new Spinner.OnItemSelectedListener() {
                     boolean firstMode = true;
 

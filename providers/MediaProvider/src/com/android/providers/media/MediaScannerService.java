@@ -238,6 +238,22 @@ public class MediaScannerService extends Service implements Runnable
             
             try {
                 if (filePath != null) {
+
+                    //added by xuegang for MTP explorer show file when it is directory 20160107 begin
+					File file = new File(filePath);
+					if(file.isDirectory())
+					{
+					    String[] directories = null;
+					    Log.d(TAG, "filepath is isDirectory, filePath:" + filePath);
+						directories = new String[] {
+														filePath
+												    };
+
+						scan(directories, MediaProvider.EXTERNAL_VOLUME);
+						return;
+					}
+					//added by xuegang for MTP explorer show file when it is directory 20160107 end
+					
                     IBinder binder = arguments.getIBinder("listener");
                     IMediaScannerListener listener = 
                             (binder == null ? null : IMediaScannerListener.Stub.asInterface(binder));

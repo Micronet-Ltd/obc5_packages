@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">SOS</string>
+    
+    <string name="setup">Setup</string>
+    <string name="numlist">Number List</string>
+    <string name="numlist_">no set</string>
+    <string name="premms">Preset SMS</string>
+    <string name="premms_">no set</string>
+    <string name="help">Help</string>
+    <string name="help_detail">\n1.Click \"Setup\" for emergency help; \n2.Device will send \"Preset SMS + Cell number\" to \"Number List\" automatically;\n3.It will send location message to \"Number List\" again when locationing successful\n</string>
+    <string name="ehang">YiHang Technologies Co., Ltd</string>
+    
+    <string name="ensure">Done</string>
+    <string name="cancel">Cancel</string>
+    
+    <string name="setuped">Have Setup</string>
+    <string name="nosim">No SIM Card</string>
+    <string name="errsim">SIM Card Error</string>
+    
+    <string name="dif1">Same as first number</string>
+    <string name="dif2">Same as second number</string>
+    <string name="dif3">Same as third number</string>
+    <string name="dif4">Same as fourth number</string>
+    <string name="dif5">Same as fifth number</string>
+    
+    <string name="notice">Repeated</string>
+    <string name="repick">Select again</string>
+    
+    <string name="cellnum">Cell number:</string>
+    <string name="longi">Longitude:</string>
+    <string name="lati">Latitude:</string>
+    <string name="addr">Location:</string>
+    <string name="thisText">This is a emergency sms:</string>
+    
+    
+</resources>

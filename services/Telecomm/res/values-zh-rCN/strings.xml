@@ -45,4 +45,5 @@
     <string name="headset_plugin_view_text">耳机已插入到手机。</string>
     <string name="headset_plugin_view_title">耳机插入</string>
     <string name="select_account_dialog_title">选择账户</string>
+	<string name="has_blachlist_recipient">无效的接收者：接收者不在白名单列表中！</string>
 </resources>

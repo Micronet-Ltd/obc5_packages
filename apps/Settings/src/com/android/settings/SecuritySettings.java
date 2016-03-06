@@ -59,10 +59,17 @@ import com.android.settings.search.Indexable;
 import com.android.settings.search.SearchIndexableRaw;
 import com.android.settings.R;
 
+import com.securespaces.android.ssm.SpaceInfo;
+import com.securespaces.android.ssm.SpacesManager;
+import com.securespaces.android.ssm.SpaceRestrictions;
+import com.securespaces.android.ssm.UserUtils;
+import com.securespaces.android.ssm.SecureSpacesExtensions;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import static android.provider.Settings.System.SCREEN_OFF_TIMEOUT;
+import android.os.SystemProperties;
 
 /**
  * Gesture lock pattern settings.
@@ -181,6 +188,26 @@ public class SecuritySettings extends SettingsPreferenceFragment
             // if there are multiple users, disable "None" setting
             UserManager mUm = (UserManager) context. getSystemService(Context.USER_SERVICE);
             List<UserInfo> users = mUm.getUsers(true);
+
+            if (SecureSpacesExtensions.hasSecureSpacesService()) {
+                for (int i = 0; i < users.size(); i++) {
+                    UserInfo user = users.get(i);
+
+                    boolean exclude = false;
+                    if (SecureSpacesExtensions.hasExtension("HIDDEN_EXTENSION")) {
+                        exclude = SpaceInfo.isHidden(user);
+                    }
+                    if (!exclude && SecureSpacesExtensions.hasExtension("ENCRYPTION_EXTENSION")) {
+                        exclude = SpaceInfo.isAirlockUser(user);
+                    }
+
+                    if (exclude) {
+                        users.remove(user);
+                        i--;
+                    }
+                }
+            }
+
             final boolean singleUser = users.size() == 1;
 
             if (singleUser && lockPatternUtils.isLockScreenDisabled()) {
@@ -256,6 +283,18 @@ public class SecuritySettings extends SettingsPreferenceFragment
             }
         }
 
+        // Disable Screen Lock Preference if authentication mode is disabled
+        if (SecureSpacesExtensions.hasSecureSpacesService()) {
+            SpacesManager sm = new SpacesManager(root.getContext());
+            if (sm.hasSpaceRestriction(SpaceRestrictions.SS_DISABLE_SCREEN_LOCK, UserUtils.myUserHandle())) {            
+                Preference screenLockPref = findPreference(KEY_UNLOCK_SET_OR_CHANGE);
+                screenLockPref.setEnabled(false);
+                Log.d(TAG, "Has restriction SS_DISABLE_SCREEN_LOCK. Disable preference now. " + screenLockPref.getKey());
+            } else {
+                Log.d(TAG, "Does not have restriciton SS_DISABLE_SCREEN_LOCK");
+            }
+        }
+
         // Trust Agent preferences
         PreferenceGroup securityCategory = (PreferenceGroup)
                 root.findPreference(KEY_SECURITY_CATEGORY);
@@ -283,6 +322,7 @@ public class SecuritySettings extends SettingsPreferenceFragment
                 }
             }
         }
+
 
         // lock after preference
         mLockAfter = (ListPreference) root.findPreference(KEY_LOCK_AFTER_TIMEOUT);
@@ -462,9 +502,12 @@ public class SecuritySettings extends SettingsPreferenceFragment
         addPreferencesFromResource(R.xml.security_settings_app_cyanogenmod);
         mBlacklist = (PreferenceScreen) root.findPreference(KEY_BLACKLIST);
 
+		String isCloseBlackList = SystemProperties.get("persist.sys.whitelistenable", "");
+
         // Determine options based on device telephony support
         if (!pm.hasSystemFeature(PackageManager.FEATURE_TELEPHONY) ||
-                !BlacklistUtils.isBlacklistFeaturePresent(getActivity())) {
+                !BlacklistUtils.isBlacklistFeaturePresent(getActivity()) ||
+                isCloseBlackList.endsWith("true")) {
             // No telephony, remove dependent options
             PreferenceGroup appCategory = (PreferenceGroup)
                     root.findPreference(KEY_APP_SECURITY_CATEGORY);

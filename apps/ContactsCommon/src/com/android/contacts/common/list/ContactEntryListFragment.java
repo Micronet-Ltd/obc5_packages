@@ -277,8 +277,13 @@ public abstract class ContactEntryListFragment<T extends ContactEntryListAdapter
     public void onCreate(Bundle savedState) {
         super.onCreate(savedState);
         restoreSavedState(savedState);
-        mAdapter = createListAdapter();
+		
+        //{{begin,mod by chenqi 2016-01-07 11:22
+        //reason:display,sort fromt err:sub clss need this step.
         mContactsPrefs = new ContactsPreferences(mContext);
+        mForceLoad = loadPreferences();
+        //}}end,mod by chenqi
+        mAdapter = createListAdapter();
         restoreSavedState(savedState);
 
         IntentFilter filter = new IntentFilter();
@@ -320,7 +325,7 @@ public abstract class ContactEntryListFragment<T extends ContactEntryListAdapter
 
         mContactsPrefs.registerChangeListener(mPreferencesChangeListener);
 
-        mForceLoad = loadPreferences();
+      //  mForceLoad = loadPreferences();//reason:display,sort fromt err:sub clss need this step.so,i move it to oncreat 2016-01-07-11:18
 
         mDirectoryListStatus = STATUS_NOT_LOADED;
         mLoadPriorityDirectoriesOnly = true;

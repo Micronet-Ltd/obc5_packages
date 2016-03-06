@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/mainbackground"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:orientation="vertical"
+    android:paddingTop="5dp" >
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="0dip"
+        android:layout_weight="1"
+        android:clickable="false"
+        android:gravity="left|center"
+        android:paddingLeft="8dp"
+        android:text="@string/premms"
+        android:textColor="#000000"
+        android:textSize="24sp" />
+
+    <EditText
+        android:id="@+id/preMmsEdit"
+        android:layout_width="match_parent"
+        android:layout_height="0dip"
+        android:layout_marginLeft="2dp"
+        android:layout_marginRight="2dp"
+        android:layout_weight="3.2"
+        android:gravity="left|top"
+        android:minHeight="120dp"
+        android:textColor="#444444"
+        android:textSize="22sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dip"
+        android:layout_weight="1"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/mmsok"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/leftbottombg"
+            android:gravity="center"
+            android:text="@string/ensure"
+            android:textSize="22sp" />
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="6dp"
+            android:background="#dddddd" />
+
+        <Button
+            android:id="@+id/mmsno"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/rightbottombg"
+            android:gravity="center"
+            android:text="@string/cancel"
+            android:textSize="22sp" />
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+		<color name="title">#00CC33</color>
+		<color name="all">#00FFFF </color> 
+		<color name="control">#00FFFF </color> 
+		<color name="list">#009900 </color>
+		<color name="line">#333000 </color>
+		<color name="baise">#FFFFFF </color>
+		<color name="huangse">#FFFF00 </color> 
+		<color name="hongse">#9900CC </color>
+		<color name="argb_00CCCC">#00CCCC</color>
+		<color name="argb_ff00ccc">#ff00cccc</color>
+		<color name="argb_ffffffff">#ffffffff</color>
+		<color name="ts"> #4D4D4D</color>
+		<color name="fense"> #FFC0CB</color>
+	    <color name="jiacu"> #2C2C2C</color>
+	    <color name="huise">#444444</color>
+		<color name="heise">#000000</color>
+		<color name="titleColor"> #28B443</color>
+		<color name="test"> #1C92DC</color>
+		<color name="transparent">#00000000</color>
+		<color name="lines">#DDDDDD</color>
+		
+		<color name="tt">#313131</color>
+		
+		
+			
+		
+</resources>

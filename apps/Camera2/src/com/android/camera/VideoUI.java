@@ -36,6 +36,8 @@ import com.android.camera.widget.VideoRecordingHints;
 import com.android.camera2.R;
 import com.android.ex.camera2.portability.CameraCapabilities;
 import com.android.ex.camera2.portability.CameraSettings;
+import android.widget.FrameLayout;
+import android.graphics.RectF;
 
 import java.util.List;
 
@@ -104,11 +106,12 @@ public class VideoUI implements PreviewStatusListener {
                 moduleRoot, true);
 
         mPreviewOverlay = (PreviewOverlay) mRootView.findViewById(R.id.preview_overlay);
+		mVideoHints = (VideoRecordingHints) mRootView.findViewById(R.id.video_shooting_hints);
 
         initializeMiscControls();
         mAnimationManager = new AnimationManager();
         mFocusUI = (FocusOverlay) mRootView.findViewById(R.id.focus_overlay);
-        mVideoHints = (VideoRecordingHints) mRootView.findViewById(R.id.video_shooting_hints);
+       
     }
 
     public void setPreviewSize(int width, int height) {
@@ -163,6 +166,21 @@ public class VideoUI implements PreviewStatusListener {
         // The R.id.labels can only be found in phone layout.
         // That is, mLabelsLinearLayout should be null in tablet layout.
         mLabelsLinearLayout = (LinearLayout) mRootView.findViewById(R.id.labels);
+		//zhoukai add
+		mActivity.getCameraAppUI().addPreviewAreaChangedListener(
+                new PreviewStatusListener.PreviewAreaChangedListener() {
+                    @Override
+                    public void onPreviewAreaChanged(RectF previewArea) {
+						
+                        FrameLayout.LayoutParams params =
+                            (FrameLayout.LayoutParams) mReviewImage.getLayoutParams();
+                        params.width = (int) previewArea.width();
+                        params.height = (int) previewArea.height();
+                        params.setMargins((int) previewArea.left, (int) previewArea.top, 0, 0);
+                        mReviewImage.setLayoutParams(params);
+						mVideoHints.mPreviewAreaChanged(previewArea);
+                    }
+                });
     }
 
     public void updateOnScreenIndicators(CameraSettings settings) {

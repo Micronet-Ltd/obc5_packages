@@ -54,6 +54,7 @@ public class ImageCrop extends ImageShow {
     private float mPrevY = 0;
     private int mMinSideSize = 90;
     private int mTouchTolerance = 40;
+	private Context mContext = null;
     private enum Mode {
         NONE, MOVE
     }
@@ -65,16 +66,19 @@ public class ImageCrop extends ImageShow {
     public ImageCrop(Context context) {
         super(context);
         setup(context);
+		mContext = context;
     }
 
     public ImageCrop(Context context, AttributeSet attrs) {
         super(context, attrs);
         setup(context);
+		mContext = context;
     }
 
     public ImageCrop(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         setup(context);
+		mContext = context;
     }
 
     private void setup(Context context) {
@@ -87,11 +91,17 @@ public class ImageCrop extends ImageShow {
 
     public void setFilterCropRepresentation(FilterCropRepresentation crop) {
         mLocalRep = (crop == null) ? new FilterCropRepresentation() : crop;
+		if (mContext != null) {    
+			mLocalRep.setName(mContext.getString(mLocalRep.getTextId()));
+		}
         GeometryMathUtils.initializeHolder(mUpdateHolder, mLocalRep);
         mValidDraw = true;
     }
 
     public FilterCropRepresentation getFinalRepresentation() {
+		if (mContext != null) {
+		 	mLocalRep.setName(mContext.getString(mLocalRep.getTextId()));
+		}
         return mLocalRep;
     }
 

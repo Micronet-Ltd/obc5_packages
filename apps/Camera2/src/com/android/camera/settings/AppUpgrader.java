@@ -263,6 +263,16 @@ public class AppUpgrader extends SettingsUpgrader {
                         true);
             }
         }
+		
+		//watercamera
+		
+        if (oldGlobalPreferences.contains(Keys.KEY_waterCamera_MODE)) {
+            String hdrPlus = removeString(oldGlobalPreferences, Keys.KEY_waterCamera_MODE);
+            if (OLD_SETTINGS_VALUE_ON.equals(hdrPlus)) {
+                settingsManager.set(SettingsManager.SCOPE_GLOBAL, Keys.KEY_waterCamera_MODE,
+                        true);
+            }
+        }
     }
 
     /**

@@ -60,4 +60,8 @@
     <string name="file_deleted">文件已经被删除 ！</string>
     <string name="in_call_record_error">通话中录音失败.</string>
     <string name="sd_change_to_local">"无法使用SD卡，已启用话机存储"</string>
+    <string name="recordinglist_setting">"录音列表"</string>
+    <string name="recordinglist_setting_sdcard_item">"SD卡"</string>
+    <string name="recordinglist_setting_local_item">"话机U盘"</string>
+    <string name="no_sd_card">"未插入SD卡"</string>
 </resources>

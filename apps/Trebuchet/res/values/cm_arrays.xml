@@ -63,4 +63,28 @@
         <item>@drawable/transition_carousel</item>
         <item>@drawable/transition_overview</item>
     </string-array>
+	<string-array name="user_defined_position">        
+        <item>com.android.settings.Settings$TetherSettingsActivity</item>
+        <item>com.android.providers.downloads.ui.DownloadList</item>
+        <item>com.yihang.gesture.activity.MainActivity</item>
+        <item>com.tools.mynotes.FoldersListActivity</item>
+	<item>com.android.soundrecorder.SoundRecorder</item>
+	<item>com.android.calculator2.Calculator</item>
+        <item>com.android.calendar.AllInOneActivity</item>
+        <item>com.android.quicksearchbox.SearchActivity</item>		
+	<item>com.caf.fmradio.FMRadio</item>
+	<item>com.android.deskclock.DeskClock</item>
+        <item>com.android.email.activity.Welcome</item>
+        <item>com.android.music.MusicBrowserActivity</item>
+        <item>com.android.music.VideoBrowserActivity</item>
+	<item>com.android.browser.BrowserActivity</item>
+        <item>com.cyanogenmod.filemanager.activities.NavigationActivity</item>
+	<item>com.android.camera.CameraLauncher</item>
+	<item>com.android.gallery3d.app.GalleryActivity</item>
+	<item>com.android.contacts.activities.PeopleActivity</item>
+        <item>com.android.dialer.DialtactsActivity</item>
+        <item>com.android.mms.ui.ConversationList</item>
+        <item>com.android.settings.Settings</item>
+        <item>com.ehangtoolkit.ToolkitActivity</item>				       
+    </string-array>
 </resources>

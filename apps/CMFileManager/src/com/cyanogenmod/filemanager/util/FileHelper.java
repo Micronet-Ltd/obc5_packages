@@ -65,6 +65,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.text.DecimalFormat;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -197,6 +198,24 @@ public final class FileHelper {
                                  R.string.size_gigabytes
                                 };
 
+		//wenjs add for display files size format begin
+		DecimalFormat fileSizeFormat = new DecimalFormat("0.00");
+		float aux = (float)size;
+        int cc = magnitude.length;
+        for (int i = 0; i < cc; i++) {
+            float s = aux /(float)1024;
+            if (aux < 1024) {
+				if(i <= 1){
+					return String.valueOf(new DecimalFormat("0").format(aux)) + " " + res.getString(magnitude[i]); 
+				}else{
+					return String.valueOf(fileSizeFormat.format(aux)) + " " + res.getString(magnitude[i]); 
+				}
+            }
+            aux = s;
+        }
+        return String.valueOf(fileSizeFormat.format(aux)) + " " + res.getString(magnitude[cc - 1]); //$NON-NLS-1$
+        
+		/*
         long aux = size;
         int cc = magnitude.length;
         for (int i = 0; i < cc; i++) {
@@ -207,6 +226,8 @@ public final class FileHelper {
             aux = s;
         }
         return Long.toString(aux) + " " + res.getString(magnitude[cc - 1]); //$NON-NLS-1$
+   		*/
+   		//wenjs add for display files size format end
     }
 
     /**

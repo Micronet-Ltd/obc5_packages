@@ -366,6 +366,9 @@ public class ImportExportDialogFragment extends AnalyticsDialogFragment
                         ContactListFilter
                                 .createFilterWithType(ContactListFilter.FILTER_TYPE_ALL_ACCOUNTS));
                 pickPhoneIntent.putExtra(EXT_NOT_SHOW_SIM_FLAG, true);
+				/*lihui @20160113 added for display sim's free contacts count when export contacts to sim card start*/
+				pickPhoneIntent.putExtra("sim_contacts_free_count", MoreContactUtils.getSimFreeCount(mActivity,mExportSub));
+				/*lihui @20160113 added for display sim's free contacts count when export contacts to sim card end*/
                 pickPhoneIntent.putExtra(SimContactsConstants.IS_CONTACT,true);
                 mActivity.startActivityForResult(pickPhoneIntent, SUBACTIVITY_MULTI_PICK_CONTACT);
             }
@@ -806,6 +809,9 @@ public class ImportExportDialogFragment extends AnalyticsDialogFragment
                     ContactListFilter
                             .createFilterWithType(ContactListFilter.FILTER_TYPE_ALL_ACCOUNTS));
             pickPhoneIntent.putExtra(EXT_NOT_SHOW_SIM_FLAG, true);
+			/*lihui @20160113 added for display sim's free contacts count when export contacts to sim card start*/
+			pickPhoneIntent.putExtra("sim_contacts_free_count", MoreContactUtils.getSimFreeCount(mActivity,mExportSub));
+			/*lihui @20160113 added for display sim's free contacts count when export contacts to sim card end*/
             pickPhoneIntent.putExtra(SimContactsConstants.IS_CONTACT,true);
             mActivity.startActivityForResult(pickPhoneIntent, SUBACTIVITY_MULTI_PICK_CONTACT);
         }

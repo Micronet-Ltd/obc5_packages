@@ -305,6 +305,11 @@
     <string name="hdr_plus_flash_on_desc" msgid="8323389161987561284">"HDR+开启闪光"</string>
     <string name="torch_on_desc" msgid="3069836196559213365">"手电筒已打开"</string>
     <string name="torch_off_desc" msgid="8304675202998742618">"手电筒已关闭"</string>
+    <!--water-->
+    <string name="watercamera_id_water_desc" msgid="3566327490758890635">"水下模式"</string>
+    <string name="watercamera_id_normal_desc" msgid="7497517948130254220">"正常模式"</string>
+    <!--SideLock-->
+    <string name="slider_text">滑动滑块可退出水下模式</string>
     <string name="camera_id_back_desc" msgid="3566327490758890635">"后置摄像头"</string>
     <string name="camera_id_front_desc" msgid="7497517948130254220">"前置摄像头"</string>
     <string name="grid_lines_off_desc" msgid="2022385817190451353">"网格线已关闭"</string>
@@ -365,4 +370,8 @@
     <string name="cropped_sensor_16x9_aspect_ratio" msgid="4742161537633251795">"剪裁传感器画面\n(16:9)"</string>
     <string name="pref_boolean_false" msgid="461317129020087333">"0"</string>
     <string name="pref_boolean_true" msgid="4131945223998878009">"1"</string>
+    <!--zhoukai modifier-->
+    <string name="dialog_prompt" >水下模式已启动</string>
+    <string name="TP_Context" >1.触摸屏及导航键不可用，滑动滑块可退出水下模式。</string>
+    <string name="power_Context" >2.为了更好地体验水下模式，请勿按下电源键。</string>
 </resources>

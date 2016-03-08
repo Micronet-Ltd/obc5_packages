@@ -11,32 +11,44 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.provider.MediaStore;
+import android.util.Log;
 
 public class CameraKeyReceiver extends BroadcastReceiver {
     Context mContext;
+	String TAG = "CameraKeyReceiver";
+	public static String KEYGUARD_LOCKED = "KEYGUARD_LOCKED";
 	@Override
     public void onReceive(Context context, Intent intent) {
 		mContext = context;
 		PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);  
 		boolean isScreenOn = pm.isScreenOn();
+		
+		Log.d(TAG, "------CameraKeyReceiver--isScreenOn = " + isScreenOn);
 		if (isScreenOn) {
+			KeyguardManager mKeyguardManager = (KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE);
+			boolean isLocked = mKeyguardManager.isKeyguardLocked();
+			boolean isSecure = mKeyguardManager.isKeyguardSecure();
 			if (getLollipopRecentTask().equals(mContext.getPackageName())) {
-		    }else {
-				KeyguardManager mKeyguardManager = (KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE);
-				boolean isRestrictedKey = mKeyguardManager.inKeyguardRestrictedInputMode();
-				boolean isSecure = mKeyguardManager.isKeyguardSecure();
-				Bundle b = new Bundle();
-				b.putBoolean("onKeyguard", true);
-				if (isRestrictedKey & isSecure){
+				if (isLocked){
+					Intent mIntent = new Intent("CAMERA_SHOW_WHEN_LOCKED"); 
+					context.sendBroadcast(mIntent);
+					Log.d(TAG, "------getLollipopRecentTask");
+				}
+			}else {
+				if (isLocked && isSecure){
+					Log.d(TAG, "----Open SecureCamera");
 					Intent i = new Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA_SECURE);
 					i.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK | android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP);
-					i.putExtras(b);
 					context.startActivity(i);
 				} else {
+					Log.d(TAG, "----Open GeneralCamera");
 					Intent it = new Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA);
-					it.putExtras(b);
 					it.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK | android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP);
+					if(isLocked){
+						it.putExtra(CameraKeyReceiver.KEYGUARD_LOCKED, true);
+					}
 					context.startActivity(it);
+					
 				}
 		    }
 		}

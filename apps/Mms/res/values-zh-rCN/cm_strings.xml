@@ -75,6 +75,8 @@
     <string name="type_to_reply_text_enter_to_send">键入信息</string>
     <string name="alert_dialog_no">否</string>
     <string name="no_recipients_mobile_only">没有找到匹配的联系人. 请尝试取消\'仅限手机号码\'过滤器</string>
+    <!-- Select recipients dialog -->
+    <string name="adding_selected_recipients_dialog_text">添加联系人&#8230;</string>
     <string name="button_templates">模板</string>
     <string name="blacklist_notification_list_private">私有</string>
     <string name="toast_sending_message">信息发送中</string>

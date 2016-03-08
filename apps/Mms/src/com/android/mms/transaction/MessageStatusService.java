@@ -65,7 +65,16 @@ public class MessageStatusService extends IntentService {
         SmsMessage message = updateMessageStatus(this, messageUri, pdu, format);
 
         // Called on a background thread, so it's OK to block.
-        if (message != null && message.getStatus() < Sms.STATUS_PENDING) {
+        /*lihui @20151222 added for convert status report for cdma sms start*/
+		boolean isCdmaNeedBlockingUpdate = false;
+		if(format.equals("3gpp2")){
+			log("message.getStatus()=" + message.getStatus()+ ",convertStatus=" + convertStatus(format,message.getStatus()));
+            if(convertStatus(format,message.getStatus())< Sms.STATUS_PENDING){
+                isCdmaNeedBlockingUpdate = true;
+			}
+		}
+        if (message != null && (message.getStatus() < Sms.STATUS_PENDING || isCdmaNeedBlockingUpdate)) {
+		/*lihui @20151222 added for convert status report for cdma sms end*/
             MessagingNotification.blockingUpdateNewMessageIndicator(this,
                     MessagingNotification.THREAD_NONE, message.isStatusReportMessage());
         }
@@ -95,8 +104,10 @@ public class MessageStatusService extends IntentService {
                     log("updateMessageStatus: msgUrl=" + messageUri + ", status=" + status +
                             ", isStatusReport=" + isStatusReport);
                 }
-
-                contentValues.put(Sms.STATUS, status);
+                /*lihui @20151222 added for convert status report for cdma sms start*/
+                //contentValues.put(Sms.STATUS, status);
+                contentValues.put(Sms.STATUS, convertStatus(format,status));
+				/*lihui @20151222 added for convert status report for cdma sms end*/
                 contentValues.put(Inbox.DATE_SENT, System.currentTimeMillis());
                 SqliteWrapper.update(context, context.getContentResolver(),
                                     updateUri, contentValues, null, null);
@@ -116,4 +127,18 @@ public class MessageStatusService extends IntentService {
     private void log(String message) {
         Log.d(LOG_TAG, "[MessageStatusReceiver] " + message);
     }
+	/*lihui @20151222 added for convert status report for cdma sms start*/
+	private int convertStatus(String format, int status) {
+    	int newstatus = status;
+    	
+    	if(format.equals("3gpp2")) {
+    		status = status >> 16;
+
+            if(status >=0 && status <=3) 
+            	newstatus = Sms.STATUS_COMPLETE;
+    	}
+
+    	return newstatus;
+    }
+	/*lihui @20151222 added for convert status report for cdma sms end*/
 }

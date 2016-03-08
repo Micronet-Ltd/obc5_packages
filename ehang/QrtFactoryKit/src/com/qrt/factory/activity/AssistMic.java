@@ -44,14 +44,14 @@ public class AssistMic extends AbstractActivity {
         openCmdList.add("tinymix 'DEC1 Volume' '84'");
         openCmdList.add("tinymix 'ADC2 Volume' '6'");
         openCmdList.add("tinymix 'IIR1 INP1 MUX' 'DEC1'");
-        openCmdList.add("tinymix 'IIR1 INP1 Volume' '95'");
+        openCmdList.add("tinymix 'IIR1 INP1 Volume' '84'");
         openCmdList.add("tinymix 'RX1 MIX1 INP1' 'IIR1'");
         openCmdList.add("tinymix 'RX2 MIX1 INP1' 'IIR1'");
         openCmdList.add("tinymix 'RDAC2 MUX' 'RX2'");
         openCmdList.add("tinymix 'HPHL' 'Switch'");
         openCmdList.add("tinymix 'HPHR' 'Switch'");
-        openCmdList.add("tinymix 'RX1 Digital Volume' '84'");
-        openCmdList.add("tinymix 'RX2 Digital Volume' '84'");
+        openCmdList.add("tinymix 'RX1 Digital Volume' '77'");
+        openCmdList.add("tinymix 'RX2 Digital Volume' '77'");
         openCmdList.add("tinymix 'Loopback MCLK' 'ENABLE'");
 		
 /*	    openCmdList.add("tinymix 'DEC1 MUX' 'ADC3'");

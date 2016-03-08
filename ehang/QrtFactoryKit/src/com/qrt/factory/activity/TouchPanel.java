@@ -110,7 +110,7 @@ public class TouchPanel extends AbstractActivity {
                 .setTitle(null)
                 .create();
         mDialog.getWindow().setType(
-                WindowManager.LayoutParams.TYPE_KEYGUARD_DIALOG);
+                WindowManager.LayoutParams.TYPE_KEYGUARD);
         mDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
   
             public boolean onKey(DialogInterface dialog, int keyCode,

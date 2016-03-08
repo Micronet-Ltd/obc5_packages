@@ -184,11 +184,12 @@ public class NotificationAppList extends PinnedHeaderListFragment
     }
 
     private String getSection(CharSequence label) {
-        if (label == null || label.length() == 0) return SECTION_BEFORE_A;
-        final char c = Character.toUpperCase(label.charAt(0));
-        if (c < 'A') return SECTION_BEFORE_A;
-        if (c > 'Z') return SECTION_AFTER_Z;
-        return Character.toString(c);
+		return "";
+        //if (label == null || label.length() == 0) return SECTION_BEFORE_A;
+        //final char c = Character.toUpperCase(label.charAt(0));
+        //if (c < 'A') return SECTION_BEFORE_A;
+        //if (c > 'Z') return SECTION_AFTER_Z;
+        //return Character.toString(c);
     }
 
     private void repositionScrollbar() {
@@ -281,7 +282,8 @@ public class NotificationAppList extends PinnedHeaderListFragment
             if (!(r instanceof AppRow)) {
                 // it's a section row
                 final TextView tv = (TextView)view.findViewById(android.R.id.title);
-                tv.setText(r.section);
+                //tv.setText(r.section);
+				tv.setText(R.string.profile_applist_title);
                 return;
             }
 

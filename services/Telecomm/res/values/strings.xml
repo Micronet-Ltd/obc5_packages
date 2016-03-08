@@ -119,4 +119,6 @@
 
     <string name="headset_plugin_view_text">Headset is plugged in.</string>
     <string name="headset_plugin_view_title">Headset</string>
+	
+	<string name="has_blachlist_recipient">Invalid recipient(s):recipient(s) not in WhiteList!</string>
 </resources>

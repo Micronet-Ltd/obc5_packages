@@ -56,12 +56,13 @@ public class GsmUmtsAdditionalCallOptions extends
                 mCLIRButton.init(this, false, mPhoneId);
             }
         }
-
-        ActionBar actionBar = getActionBar();
-        if (actionBar != null) {
-            // android.R.id.home will be triggered in onOptionsItemSelected()
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
+        /*lihui @20160108 delete for not display the return icon on the actio bar start*/
+        /*ActionBar actionBar = getActionBar();
+                if (actionBar != null) {
+                    // android.R.id.home will be triggered in onOptionsItemSelected()
+                    actionBar.setDisplayHomeAsUpEnabled(true);
+                }*/
+        /*lihui @20160108 delete for not display the return icon on the actio bar end*/
     }
 
     @Override

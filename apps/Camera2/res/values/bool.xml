@@ -15,4 +15,6 @@
 -->
 <resources>
     <bool name="show_action_bar_title">false</bool>
+    <!--fit A2001-->
+    <bool name="watercamera_enable">true</bool>
 </resources>

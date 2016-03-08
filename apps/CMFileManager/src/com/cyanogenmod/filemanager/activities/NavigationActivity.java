@@ -1729,7 +1729,8 @@ public class NavigationActivity extends Activity
     @Override
     public void onBackPressed() {
         if (checkBackAction()) {
-            performHideEasyMode();
+			//deleted by zhoukai ,because it lead to Can't directly exit
+			//performHideEasyMode();
             return;
         }
 

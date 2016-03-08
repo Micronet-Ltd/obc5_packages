@@ -2554,7 +2554,9 @@ public class Controller
                  */
                	/* add by wenjs for show exit dialog 20150422 begin */
                 //mActivity.moveTaskToBack(true);
-             //  exitAlert();
+               else{
+				  exitAlert(); 
+			   }
 				/* add by wenjs for show exit dialog 20150422 end */
             }
         }

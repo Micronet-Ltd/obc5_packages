@@ -188,6 +188,7 @@ import android.widget.Toast;
 import android.widget.Toolbar;
 import android.widget.Button;
 
+import com.android.internal.telephony.util.BlacklistUtils;
 import com.android.contacts.common.util.MaterialColorMapUtils;
 import com.android.contacts.common.util.MaterialColorMapUtils.MaterialPalette;
 import com.android.internal.telephony.PhoneConstants;
@@ -584,7 +585,7 @@ public class ComposeMessageActivity extends Activity
     // Whether or not we are currently enabled for SMS. This field is updated in onStart to make
     // sure we notice if the user has changed the default SMS app.
     private boolean mIsSmsEnabled;
-
+    private boolean mIsAirplaneModeOn = false;
     private static int mIsAirplain = 0;
     // Whether or not the RCS Service is installed and the Sim is supported RCS.
     private boolean mIsRcsEnabled;
@@ -1211,7 +1212,34 @@ public class ComposeMessageActivity extends Activity
     }
 
     private void confirmSendMessageIfNeeded(int subscription) {
-        if (isLTEOnlyMode(subscription)) {
+        /*lihui @20151127 added for enable black and white list function start*/
+		String isCloseBlackList = SystemProperties.get("persist.sys.whitelistenable", "");
+		if(isCloseBlackList.endsWith("true") && 
+		   2 == SystemProperties.getInt("persist.sys.bwlist", 0)){
+			boolean isNumberNotInWhiteList = false;
+			
+			if (isRecipientsEditorVisible()) {
+				for(String number : mRecipientsEditor.getNumbers()){
+					Log.d(TAG,"send number is " + mRecipientsEditor.getNumbers());
+					if(!isBlacklisted(number)){
+						 isNumberNotInWhiteList = true;
+					}
+				}
+			}else{
+				for(String number : getRecipients().getNumbers()){
+					Log.d(TAG,"send number is " + getRecipients().getNumbers());
+					if(!isBlacklisted(number)){
+						 isNumberNotInWhiteList = true;
+					}
+				}
+			}
+	        if(isNumberNotInWhiteList){
+				Log.d(TAG,"Some numbers are not in the White list,So block the mms.");
+				Toast.makeText(this, R.string.has_blachlist_recipient, Toast.LENGTH_LONG).show();
+			}
+		}
+		/*lihui @20151127 added for enable black and white list function end*/
+		if (isLTEOnlyMode(subscription)) {
             showDisableLTEOnlyDialog(subscription);
             return;
         }
@@ -1237,7 +1265,33 @@ public class ComposeMessageActivity extends Activity
             mWorkingMessage.setRcsType(RcsUtils.RCS_MSG_TYPE_VCARD);
             rcsShareVcard = false;
         }
-
+		/*lihui @20151127 added for enable black and white list function start*/
+		String isCloseBlackList = SystemProperties.get("persist.sys.whitelistenable", "");
+		if(isCloseBlackList.endsWith("true") && 
+		   2 == SystemProperties.getInt("persist.sys.bwlist", 0)){
+			boolean isNumberNotInWhiteList = false;
+			
+			if (isRecipientsEditorVisible()) {
+				for(String number : mRecipientsEditor.getNumbers()){
+					Log.d(TAG,"send number is " + mRecipientsEditor.getNumbers());
+					if(!isBlacklisted(number)){
+						 isNumberNotInWhiteList = true;
+					}
+				}
+			}else{
+				for(String number : getRecipients().getNumbers()){
+					Log.d(TAG,"send number is " + getRecipients().getNumbers());
+					if(!isBlacklisted(number)){
+						 isNumberNotInWhiteList = true;
+					}
+				}
+			}
+	        if(isNumberNotInWhiteList){
+				Log.d(TAG,"Some numbers are not in the White list,So block the mms.");
+				Toast.makeText(this, R.string.has_blachlist_recipient, Toast.LENGTH_LONG).show();
+			}
+		}
+		/*lihui @20151127 added for enable black and white list function end*/
         int slot = SubscriptionManager.getSlotId(SmsManager.getDefault().getDefaultSmsSubscriptionId());
         if ((TelephonyManager.getDefault().isMultiSimEnabled() &&
                 isLTEOnlyMode(slot))
@@ -1894,10 +1948,10 @@ public class ComposeMessageActivity extends Activity
                     //      /mnt/sdcard/Android/data/com.android.mms/cache/.temp1.3gp
                     fileName = new String(location);
                 }
+				
                 File originalFile = new File(fileName);
                 fileName = originalFile.getName();  // Strip the full path of where the "part" is
                                                     // stored down to just the leaf filename.
-
                 // Depending on the location, there may be an
                 // extension already on the name or not. If we've got audio, put the attachment
                 // in the Ringtones directory.
@@ -2310,6 +2364,9 @@ public class ComposeMessageActivity extends Activity
 
         updateAccentColorFromTheme(true);
         initialize(savedInstanceState, 0);
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED);
+        registerReceiver(mAirplaneModeBroadcastReceiver, intentFilter);
 
         if (TRACE) {
             android.os.Debug.startMethodTracing("compose");
@@ -2902,7 +2959,7 @@ public class ComposeMessageActivity extends Activity
         mConversation.markAsRead(true);
         mIsAirplain = Settings.System.getInt(ComposeMessageActivity.this.getContentResolver(),
                 Settings.System.AIRPLANE_MODE_ON, 0) ;
-
+        mIsAirplaneModeOn = mIsAirplain!=0?true:false;
         if (getResources().getBoolean(R.bool.def_custom_preferences_settings)) {
             setBackgroundWallpaper();
             setTextFontsize();
@@ -3008,7 +3065,8 @@ public class ComposeMessageActivity extends Activity
         } catch (Exception e) {
             Log.w(RCS_TAG, e);
         }
-
+		
+        unregisterReceiver(mAirplaneModeBroadcastReceiver);
         if (mMsgListAdapter != null) {
             mMsgListAdapter.changeCursor(null);
             mMsgListAdapter.cancelBackgroundLoading();
@@ -6143,6 +6201,11 @@ public class ComposeMessageActivity extends Activity
     }
 
     private boolean isPreparedForSending() {
+
+        if (mIsAirplaneModeOn) {
+            return false;
+        }
+
         int recipientCount = recipientCount();
 
 
@@ -6158,6 +6221,17 @@ public class ComposeMessageActivity extends Activity
                 (mWorkingMessage.hasAttachment() || mWorkingMessage.hasText() ||
                     mWorkingMessage.hasSubject());
     }
+	
+    private BroadcastReceiver mAirplaneModeBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (action.equals(Intent.ACTION_AIRPLANE_MODE_CHANGED)) {
+                mIsAirplaneModeOn = intent.getBooleanExtra("state", false);
+                updateSendButtonState();
+            }
+        }
+    };
 
     private boolean isCdmaNVMode() {
         if (TelephonyManager.getDefault().isMultiSimEnabled()) {
@@ -7608,6 +7682,11 @@ public class ComposeMessageActivity extends Activity
             mUnFavouriteCount = 0;
             MenuInflater inflater = getMenuInflater();
             inflater.inflate(R.menu.compose_multi_select_menu, menu);
+			//{{ begin,added by chenqi ,for rcs. 2015-12-08 
+			menu.removeItem(R.id.complain);
+			menu.removeItem(R.id.save_back);
+			menu.removeItem(R.id.favourite);
+			//}} ended,added by chenqi ,for rcs. 2015-12-08
             if (mMultiSelectActionBarView == null) {
                 mMultiSelectActionBarView = LayoutInflater.from(getContext())
                         .inflate(R.layout.action_mode, null);
@@ -7699,7 +7778,35 @@ public class ComposeMessageActivity extends Activity
                 Log.w(TAG, "No activity for share message intent", e);
             }
         }
-
+        /*lihui @20151224 added for save the attachment of MMS start*/
+		private void saveAttachmentForMms(){
+            ChatMessage message = null;
+			MessageItem messageItem = null;
+			Log.d(TAG,"saveAttachmentForMms()");
+			try {
+                Cursor cursor = (Cursor) mMsgListAdapter.getItem(mSelectedPos.get(0));
+                messageItem = mMsgListAdapter.getCachedMessageItem(cursor.getString(COLUMN_MSG_TYPE),
+                                                                   cursor.getLong(COLUMN_ID), cursor);
+                message = mMessageApi.getMessageById(messageItem.mMsgId + "");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            if (messageItem.mType ==  String.valueOf(SuntekMessageData.MSG_TYPE_PAID_EMO)) {
+                emotItemCheck(message, new EmotCheck() {
+                    @Override
+                    public void check(boolean canSend) {
+                        if (canSend) {
+                            toast(R.string.save_message_not_support);
+                        } else {
+                            saveMessage();
+                        }
+                    }
+                });
+            } else {
+                saveMessage();
+            }
+		}
+		/*lihui @20151224 added for save the attachment of MMS end*/
         private Intent getShareMessageIntent(String text) {
             Intent intent = new Intent();
             intent.setAction(Intent.ACTION_SEND);
@@ -7845,32 +7952,35 @@ public class ComposeMessageActivity extends Activity
                 shareMessage();
                 break;
             case R.id.save_attachment:
-                ChatMessage message;
-                try {
-                    Cursor cursor = (Cursor) mMsgListAdapter.getItem(mSelectedPos.get(0));
-                    MessageItem messageItem = mMsgListAdapter.getCachedMessageItem(
-                            cursor.getString(COLUMN_MSG_TYPE),
-                            cursor.getLong(COLUMN_ID), cursor);
-                    message = mMessageApi.getMessageById(messageItem.mMsgId + "");
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    return false;
-                }
-                if (message.getMsgType() == SuntekMessageData.MSG_TYPE_PAID_EMO) {
-                    emotItemCheck(message, new EmotCheck() {
-                        @Override
-                        public void check(boolean canSend) {
-                            if (canSend) {
-                                toast(R.string.save_message_not_support);
-                            } else {
-                                saveMessage();
-                            }
-                        }
-                    });
-                } else {
-                    saveMessage();
-                }
-                break;
+				 /*lihui @20151224 modified for save the attachment of MMS start*/
+				/*ChatMessage message;
+                         try {
+                             Cursor cursor = (Cursor) mMsgListAdapter.getItem(mSelectedPos.get(0));
+                             MessageItem messageItem = mMsgListAdapter.getCachedMessageItem(
+                                     cursor.getString(COLUMN_MSG_TYPE),
+                                     cursor.getLong(COLUMN_ID), cursor);
+                             message = mMessageApi.getMessageById(messageItem.mMsgId + "");
+                         } catch (Exception e) {
+                             e.printStackTrace();
+                             return false;
+                         }
+                         if (message.getMsgType() == SuntekMessageData.MSG_TYPE_PAID_EMO) {
+                             emotItemCheck(message, new EmotCheck() {
+                                 @Override
+                                 public void check(boolean canSend) {
+                                     if (canSend) {
+                                         toast(R.string.save_message_not_support);
+                                     } else {
+                                         saveMessage();
+                                     }
+                                 }
+                             });
+                         } else {
+                             saveMessage();
+                         }*/
+				saveAttachmentForMms();
+				/*lihui @20151224 modified for save the attachment of MMS end*/
+				break;
             case R.id.report:
                 showReport();
                 break;
@@ -8667,5 +8777,17 @@ public class ComposeMessageActivity extends Activity
             }
         }
     }
-
+    /*lihui @20151127 added for enable black and white list function start*/
+	private boolean isBlacklisted(String number) {
+	   Log.d(TAG, "isBlacklisted(). number: " + number);
+	   
+	   int listType = BlacklistUtils.isListed(getContext(), number, BlacklistUtils.BLOCK_MESSAGES);
+	   if (listType != BlacklistUtils.MATCH_NONE) {
+		   Log.v(TAG, "Outgoing message from " + number + " blocked.");
+		   //showBlacklistNotification(context, number, date, listType);
+		   return true;
+	   }
+	   return false;
+	}
+	/*lihui @20151127 added for enable black and white list function end*/
 }

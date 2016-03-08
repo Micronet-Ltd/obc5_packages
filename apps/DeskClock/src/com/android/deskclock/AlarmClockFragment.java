@@ -610,24 +610,28 @@ public class AlarmClockFragment extends DeskClockFragment implements
                 = new SimpleCursorAdapter(context, android.R.layout.simple_list_item_1, c,
                 new String[] {MediaStore.Audio.Playlists.NAME}, new int[]{android.R.id.text1}, 0);
 
-        new AlertDialog.Builder(context).setSingleChoiceItems(cursorAdapter, 0,
-
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Cursor c = (Cursor) cursorAdapter.getItem(which);
-                        if (c != null) {
-                            alarm.alert = Uri.withAppendedPath(
-                                    MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI,
-                                    String.valueOf(c.getLong(0)));
-                            asyncUpdateAlarm(alarm, false);
-                        }
-                        dialog.dismiss();
-                        cursorAdapter.changeCursor(null);
-                    }
-                })
-                .setNegativeButton(android.R.string.cancel, null)
-                .show();
+		String message= getActivity().getResources().getString(R.string.alarm_on_playlists_hint);
+        AlertDialog.Builder dialog =  new AlertDialog.Builder(context);
+        if(cursorAdapter.getCount()==0){
+        	dialog.setMessage(message);
+        }else{
+	        dialog.setSingleChoiceItems(cursorAdapter, 0,
+	                new DialogInterface.OnClickListener() {
+	                    @Override
+	                    public void onClick(DialogInterface dialog, int which) {
+	                        Cursor c = (Cursor) cursorAdapter.getItem(which);
+	                        if (c != null) {
+	                            alarm.alert = Uri.withAppendedPath(
+	                                    MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI,
+	                                    String.valueOf(c.getLong(0)));
+	                            asyncUpdateAlarm(alarm, false);
+	                        }
+	                        dialog.dismiss();
+	                        cursorAdapter.changeCursor(null);
+	                    }
+	                });
+        }      
+        dialog.setNegativeButton(android.R.string.cancel, null).show();
     }
 
     private void launchProfilePicker(Alarm alarm) {

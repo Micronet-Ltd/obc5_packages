@@ -150,7 +150,7 @@ public class CameraSettingsActivity extends FragmentActivity {
                 (PreferenceScreen) findPreference(PREF_CATEGORY_ADVANCED);
             setPreferenceScreenIntent(advancedScreen);
 
-            Preference helpPref = findPreference(PREF_LAUNCH_HELP);
+            /*Preference helpPref = findPreference(PREF_LAUNCH_HELP);
             helpPref.setOnPreferenceClickListener(
                 new OnPreferenceClickListener() {
                     @Override
@@ -158,7 +158,7 @@ public class CameraSettingsActivity extends FragmentActivity {
                         GoogleHelpHelper.launchGoogleHelp(activity);
                         return true;
                     }
-                });
+                });*/
             getPreferenceScreen().getSharedPreferences()
                     .registerOnSharedPreferenceChangeListener(this);
         }

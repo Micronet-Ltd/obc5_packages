@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">气压高度计</string>
+    <string name="action_settings">设置</string>
+    <string name="barometer">气压:</string>
+    <string name="barometer_value">0</string>
+    <string name="barometer_unit">帕斯卡</string>
+    <string name="temperature">温度:</string>
+    <string name="temperature_value">0</string>
+    <string name="temperature_unit">摄氏度</string>
+    <string name="altitude">海拔高度:</string>
+    <string name="altitude_value">0.0</string>
+    <string name="altitude_unit">米</string>
+    <string name="relative_height">相对高度:</string>
+    <string name="relative_height_value">0.0</string>
+    <string name="relative_height_unit">米</string>
+    
+    <string name="settings_current_barometer">当前所在地海平面气压(帕斯卡)</string>
+    <string name="settings_input_barometer">请输入气压值</string>
+    <string name="settings_current_temperature">当前气温(摄氏度)</string>
+    <string name="settings_input_temperature">请输入气温值</string>
+    <string name="settings_nodisplay_onstart">启动时不再显示</string>
+    <string name="settings_reference">基准面</string>
+    
+    <string name="text_about">关于</string>
+    <string name="text_ok">确定</string>
+    <string name="text_cancel">取消</string>
+    <string name="text_alert">提示</string>
+    <string name="text_set_reference">"\n是否设置当前设备所在位置为参考基准面？\n"</string>
+    <string name="text_settings">设置参数</string>
+    <string name="text_barometer_and_temperature_is_empty">"气压和气温值不能为空"</string>
+    <string name="text_barometer_is_empty">"气压值不能为空"</string>
+    <string name="text_temperature_is_empty">"气温值不能为空"</string>
+    
+    <string name="action_about">关于</string>
+    <string name="about_infos">"    气压会因高度、时段、地域、季节、天气、温度的不同有所不同。
+    为了提高测量准确度，使用该软件测量海拔高度前，需先将当前所在地海平面气压值和温度值输入，校准高度计。"</string>
+    <string name="company">一行科技有限责任公司</string>
+    <string name="copyrights">Copyright © 2015 YiHang Inc. All Rights Reserved.</string>
+</resources>

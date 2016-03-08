@@ -38,6 +38,7 @@ import com.android.gallery3d.filtershow.imageshow.GeometryMathUtils.GeometryHold
 
 import java.util.ArrayList;
 import java.util.Collection;
+import com.android.gallery3d.R;
 
 
 public class ImageStraighten extends ImageShow {
@@ -72,13 +73,16 @@ public class ImageStraighten extends ImageShow {
     private float mTouchCenterY;
     private RectF mCrop = new RectF();
     private final Paint mPaint = new Paint();
+	private Context mContext = null;
 
     public ImageStraighten(Context context) {
         super(context);
+		mContext = context;
     }
 
     public ImageStraighten(Context context, AttributeSet attrs) {
         super(context, attrs);
+		mContext = context;
     }
 
     @Override
@@ -104,15 +108,27 @@ public class ImageStraighten extends ImageShow {
 
     public void setFilterStraightenRepresentation(FilterStraightenRepresentation rep) {
         mLocalRep = (rep == null) ? new FilterStraightenRepresentation() : rep;
+		if (mContext != null) {
+			mLocalRep.setName(mContext.getString(mLocalRep.getTextId()));
+		}
         mInitialAngle = mBaseAngle = mAngle = mLocalRep.getStraighten();
     }
 
     public Collection<FilterRepresentation> getFinalRepresentation() {
         ArrayList<FilterRepresentation> reps = new ArrayList<FilterRepresentation>(2);
+		if (mContext != null) {
+			mLocalRep.setName(mContext.getString(mLocalRep.getTextId()));
+		}
         reps.add(mLocalRep);
+		
         if (mInitialAngle != mLocalRep.getStraighten()) {
-            reps.add(new FilterCropRepresentation(mCrop));
+			FilterCropRepresentation cropRep = new FilterCropRepresentation(mCrop); 
+			if (mContext != null) { 
+				cropRep.setName(mContext.getString(R.string.crop)); 
+			}
+			reps.add(new FilterCropRepresentation(cropRep)); 
         }
+        
         return reps;
     }
 

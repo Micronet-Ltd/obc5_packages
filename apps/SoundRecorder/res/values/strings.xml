@@ -102,4 +102,8 @@
     <string name="file_deleted">File has been deleted!</string>
     <string name="in_call_record_error">In call record error.</string>
     <string name="sd_change_to_local">Can\'t access SD card, using phone storage</string>
+    <string name="recordinglist_setting">Recording list</string>
+    <string name="recordinglist_setting_sdcard_item">SD card list</string>
+    <string name="recordinglist_setting_local_item">Phone storage list</string>
+    <string name="no_sd_card">No SD card</string>
 </resources>

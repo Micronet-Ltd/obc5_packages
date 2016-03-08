@@ -17,7 +17,7 @@
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <!-- Setting labels on Set alarm screen: Increasing volume on or off -->
-    <string name="alarm_increasing_volume">增加音量</string>
+    <string name="alarm_increasing_volume">铃声渐强</string>
 
     <!-- Setting labels on Set alarm screen: Choose profile -->
     <string name="profile_description">定义 <xliff:g id="profile">%s</xliff:g></string>

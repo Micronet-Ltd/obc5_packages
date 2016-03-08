@@ -34,7 +34,7 @@ import com.android.camera.one.OneCameraManager;
 import com.android.camera.settings.SettingsManager;
 import com.android.camera.ui.AbstractTutorialOverlay;
 import com.android.camera.ui.PreviewStatusListener;
-
+import com.android.camera.CameraActivity;
 /**
  * The controller at app level.
  */
@@ -69,6 +69,8 @@ public interface AppController {
      * @return the {@link android.content.Context} being used.
      */
     public Context getAndroidContext();
+	// shield home
+	 public CameraActivity getAndroidContextActivity();
 
     /**
      * @return the current camera id.

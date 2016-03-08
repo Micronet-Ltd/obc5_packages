@@ -389,6 +389,9 @@ public class MSimStatus extends PreferenceActivity {
 
                 String rawNumber = mPhone[i].getLine1Number(); // may be null or empty
                 String formattedNumber = null;
+				/*lihui @20151215 added for get iccid for all inserted sim start*/
+				mIccIdSummary[i] = getSimSummary(i, mPhone[i].getIccSerialNumber());
+				/*lihui @20151215 added for get iccid for all inserted sim end*/
                 if (!TextUtils.isEmpty(rawNumber)) {
                     formattedNumber = PhoneNumberUtils.formatNumber(rawNumber);
                 }
@@ -405,17 +408,19 @@ public class MSimStatus extends PreferenceActivity {
                     }
 
                     mImeiSVSummary[i] = null;
-
-                    if (mPhone[i].getLteOnCdmaMode() == PhoneConstants.LTE_ON_CDMA_TRUE) {
-                        // Show ICC ID and IMEI for LTE device
-                        mIccIdSummary[i] = getSimSummary(i, mPhone[i].getIccSerialNumber());
-                    } else {
-                        // device is not GSM/UMTS, do not display GSM/UMTS
-                        // features
-                        // check Null in case no specified preference in overlay
-                        // xml
-                        mIccIdSummary[i] = null;
-                    }
+                  /*lihui @20151215 delete for get iccid start*/
+                  /* if (mPhone[i].getLteOnCdmaMode() == PhoneConstants.LTE_ON_CDMA_TRUE) {
+                                // Show ICC ID and IMEI for LTE device
+                                
+                                mIccIdSummary[i] = getSimSummary(i, mPhone[i].getIccSerialNumber());
+                            } else {
+                                // device is not GSM/UMTS, do not display GSM/UMTS
+                                // features
+                                // check Null in case no specified preference in overlay
+                                // xml                     
+                                mIccIdSummary[i] = null;
+                             }*/
+                   /*lihui @20151215 delete for get iccid end*/
                     // For cdma, do not display IMEI.
                     mImeiSummary[i] = null;
 
@@ -424,7 +429,7 @@ public class MSimStatus extends PreferenceActivity {
                     mEsnNumberSummary[i] = null;
                     mMeidNumberSummary[i] = null;
                     mMinNumberSummary[i] = null;
-                    mIccIdSummary[i] = null;
+                    //mIccIdSummary[i] = null;   //lihui@20151215 deleted for get iccid 
                     mImeiSummary[i] = getSimSummary(i, mPhone[i].getDeviceId());
                     mImeiSVSummary[i] = getSimSummary(i, mPhone[i].getDeviceSvn());
 
@@ -662,7 +667,16 @@ public class MSimStatus extends PreferenceActivity {
         // Whether EDGE, UMTS, etc...
         int[] subId = SubscriptionManager.getSubId(phoneId);
 		/*yihang hanxiaoming 2015.12.4 modifyed for networktype display begin*/
+		
         int netwokType = mTelephonyManager.getVoiceNetworkType(subId[0]);
+		if((TelephonyManager.NETWORK_TYPE_1xRTT==netwokType
+		   ||TelephonyManager.NETWORK_TYPE_CDMA==netwokType)
+		   &&phoneId == PhoneConstants.PHONE_ID1)
+		{
+
+			
+           netwokType=mTelephonyManager.getDataNetworkType(subId[0]);
+		}
 		/*yihang hanxiaoming 2015.12.4 modifyed for networktype display end*/
         if (TelephonyManager.NETWORK_TYPE_UNKNOWN != netwokType) {
             mNetworkSummary[phoneId] = getSimSummary(phoneId,

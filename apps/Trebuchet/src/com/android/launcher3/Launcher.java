@@ -3723,7 +3723,8 @@ public class Launcher extends Activity
                 res.getInteger(R.integer.config_appsCustomizeItemsAlphaStagger);
 
         final float scale = (float) res.getInteger(R.integer.config_appsCustomizeZoomScaleFactor);
-        final View fromView = mWorkspace;
+        final View fromView = mWorkspace;		
+		if(drawer) fromView.setAlpha(0);
         final View toView;
 
         if (drawer && contentType == AppsCustomizePagedView.ContentType.Applications) {
@@ -4305,7 +4306,8 @@ public class Launcher extends Activity
         }
         if (ALLAPPS_BLUR_ENABLED) {
             setupAllappsBlur(false);
-        }
+        }		
+		if(drawer) toView.setAlpha(1);
     }
 
     @Override

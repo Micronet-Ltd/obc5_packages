@@ -89,7 +89,7 @@ public class TrampolineActivity extends Activity {
             case DownloadManager.STATUS_PAUSED:
                 if (reason == DownloadManager.PAUSED_QUEUED_FOR_WIFI) {
                     PausedDialogFragment.show(getFragmentManager(), id);
-                } else if (reason == DownloadManager.PAUSED_BY_APP) {
+                } else if (reason == DownloadManager.PAUSED_BY_APP||reason == DownloadManager.PAUSED_WAITING_TO_RETRY) {
                     dm.resumeDownload(id);
                     final Intent intent = new Intent(Constants.ACTION_RESUME);
                     intent.setClassName(Constants.PROVIDER_PACKAGE_NAME,

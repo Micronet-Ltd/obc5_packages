@@ -31,6 +31,7 @@ import android.content.Intent;
 import android.content.pm.UserInfo;
 import android.os.Bundle;
 import android.os.Process;
+import android.os.UserHandle;
 import android.os.UserManager;
 import android.preference.Preference;
 import android.preference.PreferenceScreen;
@@ -46,7 +47,11 @@ import android.widget.ListView;
 
 import com.android.internal.widget.LockPatternUtils;
 
+import java.util.Iterator;
 import java.util.List;
+
+import com.securespaces.android.ssm.SpaceInfo;
+import com.securespaces.android.ssm.SecureSpacesExtensions;
 
 public class ChooseLockGeneric extends SettingsActivity {
     public static final String CONFIRM_CREDENTIALS = "confirm_credentials";
@@ -318,6 +323,26 @@ public class ChooseLockGeneric extends SettingsActivity {
             // if there are multiple users, disable "None" setting
             UserManager mUm = (UserManager) getSystemService(Context.USER_SERVICE);
             List<UserInfo> users = mUm.getUsers(true);
+
+            // exclude the airlock space and hidden space from the list
+            if (SecureSpacesExtensions.hasSecureSpacesService()) {
+                for (final Iterator<UserInfo> iter = users.iterator(); iter.hasNext(); ) {
+                    UserInfo ui = iter.next();
+
+                    boolean exclude = false;
+                    if (SecureSpacesExtensions.hasExtension("HIDDEN_EXTENSION")) {
+                        exclude = SpaceInfo.isHidden(ui);
+                    }
+                    if (!exclude && SecureSpacesExtensions.hasExtension("ENCRYPTION_EXTENSION")) {
+                        exclude = SpaceInfo.isAirlockUser(ui);
+                    }
+
+                    if (exclude) {
+                        iter.remove();
+                    }
+                }
+            }
+
             final boolean singleUser = users.size() == 1;
 
             for (int i = entries.getPreferenceCount() - 1; i >= 0; --i) {

@@ -2,8 +2,8 @@ LOCAL_PATH:= $(call my-dir)
 
 include $(CLEAR_VARS)
 #LOCAL_FORCE_STATIC_EXECUTABLE := true
-LOCAL_SRC_FILES:= frame.c main.c
-LOCAL_MODULE := testframe
+LOCAL_SRC_FILES:= mctl.c iosocket.c api.c
+LOCAL_MODULE := mctl
 LOCAL_MODULE_TAGS := optional
 LOCAL_CFLAGS += -std=c99 -DUSE_THREADS
 #LOCAL_STATIC_LIBRARIES := libcutils libc

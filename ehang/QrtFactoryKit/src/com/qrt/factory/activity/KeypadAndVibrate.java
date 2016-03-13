@@ -212,6 +212,7 @@ public class KeypadAndVibrate extends AbstractActivity {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
 
         boolean isPass = true;
+		logd("onKeyDown keyCode :" + keyCode);
 
         for (PadTestKey testKey : mTestKeys) {
             if (testKey.getKeyCode() == keyCode) {

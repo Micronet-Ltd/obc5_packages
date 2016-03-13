@@ -31,6 +31,7 @@ import android.view.View;
 import android.content.ServiceConnection;
 import android.os.RemoteException;
 import android.content.ComponentName;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Handler;
 import android.os.IBinder;
@@ -41,6 +42,7 @@ import com.android.location.XT.IXTSrvCb.Stub;
 import android.text.Html;
 import android.content.Intent;
 import android.util.Log;
+import com.android.settings.Utils;
 
 import com.android.settings.R;
 
@@ -158,13 +160,22 @@ public class LocationMode extends LocationSettingsBase
             }
         }
     }
-
+	@Override
+	public void onCreate(Bundle icicle) {
+		super.onCreate(icicle);
+		if(Utils.IsAutoEnableIZat()){
+        	initUserPrefService();
+			createPreferenceHierarchy();
+		}
+	}
 
 
     @Override
     public void onStart() {
         super.onStart();
-        initUserPrefService();
+		if(!Utils.IsAutoEnableIZat()){
+        	initUserPrefService();
+		}
     }
 
     @Override
@@ -176,7 +187,9 @@ public class LocationMode extends LocationSettingsBase
     @Override
     public void onResume() {
         super.onResume();
-        createPreferenceHierarchy();
+		if(!Utils.IsAutoEnableIZat()){
+        	createPreferenceHierarchy();
+		}
     }
 
     @Override
@@ -226,8 +239,9 @@ public class LocationMode extends LocationSettingsBase
                         final boolean chooseValue = (Boolean) newValue;
                         if(chooseValue){
                             try{
-                                if(null != mXTService){
-                                    mXTService.showDialog();
+									if(null != mXTService){
+										Log.d(TAG, "mXTService.showDialog()");
+										mXTService.showDialog();
                                     }
                                 }catch(RemoteException e){
                                     e.printStackTrace();
@@ -247,6 +261,28 @@ public class LocationMode extends LocationSettingsBase
             );
         }
         refreshLocationMode();
+		if(Utils.IsAutoEnableIZat()){
+			new Thread(new Runnable() {
+				public void run() {
+					try {
+						if(!mIZat.isChecked()){
+							Thread.sleep(100);
+							Log.d(TAG, "auto tap izat");
+							ShellUtils.execCommand("input tap 148 496", false);
+							Thread.sleep(1000);
+							Log.d(TAG, "auto tap izat dialog");
+							ShellUtils.execCommand("input tap 622 708", false);
+						}
+						Thread.sleep(100);
+						Log.d(TAG, "auto SET LOCATION_MODE_HIGH_ACCURACY");
+						setLocationMode(Settings.Secure.LOCATION_MODE_HIGH_ACCURACY);
+					
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				 }
+			}).start();
+		}
         return root;
     }
 

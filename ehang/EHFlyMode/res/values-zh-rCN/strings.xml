@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources  xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="app_name">隐私模式</string>
+    <string name="tts_power_on">已开机</string>
+    <string name="tts_privacy_mode">隐私模式</string>
+    <string name="tts_normal_mode">待机模式</string>
+	<string name="tts_no_sim">无UIM卡</string>
+	<string name="tts_have_sim">已插入UIM卡</string>	
+	<string name="tts_sim_locked">UIM卡已锁定</string>
+	<string name="tts_factory_test">已进入功能自检模式</string>		
+	<string name="tts_get_volume">音量<xliff:g id="volume_rank">%1$d</xliff:g>级</string>	
+	<string name="wifi_disconnected">WLAN 已断开</string>
+	<string name="wifi_connected">WLAN 已连接</string>
+       <string name="wifi_disabled">WIFI功能已关闭</string>
+	<string name="wifi_enabled">WIFI功能已打开</string>	
+</resources>

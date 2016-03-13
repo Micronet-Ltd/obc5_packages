@@ -127,6 +127,10 @@ public class LocationSettings extends LocationSettingsBase
         mSwitchBar = activity.getSwitchBar();
         mSwitch = mSwitchBar.getSwitch();
         mSwitchBar.show();
+		if(Utils.IsAutoEnableIZat()){
+			activity.startPreferencePanel(LocationMode.class.getName(), null,
+				R.string.location_mode_screen_title, null, LocationSettings.this, 0);
+		}
     }
 
     @Override

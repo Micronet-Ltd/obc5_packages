@@ -132,13 +132,20 @@ int get_power_on_threshold_cfg(int * fd, uint16_t *wiggle_count, uint16_t * wig_
 	pwr_on_cfg_t power_on_params;
 	ret = get_command(fd, req, sizeof(req), (uint8_t *)&power_on_params, sizeof(power_on_params));
 	*wiggle_count = power_on_params.wiggle_count;
+	*wig_cnt_sample_period = power_on_params.wig_cnt_sample_period;
 	*ignition_threshold = power_on_params.ignition_threshold;
 	return ret;
 }
 
 int set_power_on_threshold_cfg(int * fd, uint16_t wiggle_count, uint16_t wig_cnt_sample_period, uint16_t ignition_threshold)
 {
-	uint8_t req[] = { MCTRL_MAPI, MAPI_WRITE_RQ, MAPI_SET_POWER_ON_THRESHOLD, wiggle_count, wig_cnt_sample_period, ignition_threshold};
+	pwr_on_cfg_t power_on_params;
+	uint8_t req[] = { MCTRL_MAPI, MAPI_WRITE_RQ, MAPI_SET_POWER_ON_THRESHOLD, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0};
+	power_on_params.wiggle_count = wiggle_count;
+	power_on_params.wig_cnt_sample_period = wig_cnt_sample_period;
+	power_on_params.ignition_threshold = ignition_threshold;
+	memcpy(&req[3], &power_on_params, sizeof(power_on_params));
+	printf("req = %x,%x,%x,%x,%x,%x\n", req[3], req[4], req[5], req[6], req[7], req[8]);
 	return set_command(fd, req, sizeof(req));
 }
 

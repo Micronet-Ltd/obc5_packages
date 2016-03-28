@@ -156,7 +156,7 @@ void send_api_hex2(int * fd, char * hexdata)
 		case MAPI_SET_POWER_ON_THRESHOLD:
 			wiggle_count = (uint16_t)((data[3]<<8)|data[2]); //little endian
 			wig_cnt_sample_period = (uint16_t)((data[5]<<8)|data[4]);;
-			ignition_threshold = (uint16_t)((data[3]<<8)|data[2]);;
+			ignition_threshold = (uint16_t)((data[7]<<8)|data[6]);;
 			ret = set_power_on_threshold_cfg(fd, wiggle_count, wig_cnt_sample_period, ignition_threshold);
 			printf("set power on threshold  wiggle_count = %d, wig_cnt_sample_period = %d, ignition_threshold = %d, ret = %d  \n", \
 								wiggle_count, wig_cnt_sample_period, ignition_threshold, ret);

@@ -30,6 +30,13 @@ typedef struct led_param_s
 	uint8_t blue;
 }led_param_t;
 
+typedef struct pwr_on_cfg_s
+{
+	uint16_t wiggle_count;
+	uint16_t wig_cnt_sample_period;
+	uint16_t ignition_threshold;
+}pwr_on_cfg_t;
+
 static int get_command(int * fd, uint8_t * req, size_t req_size, uint8_t * resp, size_t resp_size)
 {
 	int num_bytes = 0;
@@ -118,38 +125,27 @@ int set_led_status(int * fd, uint8_t led_num, uint8_t brightness, uint8_t red, u
 	return set_command(fd, req, sizeof(req));
 }
 
-int set_wiggle_count(int count)
+int get_power_on_threshold_cfg(int * fd, uint16_t *wiggle_count, uint16_t * wig_cnt_sample_period, uint16_t *ignition_threshold)
 {
-	int fd, num_bytes;
-	uint8_t payload[] = { MCTRL_MAPI, MAPI_WRITE_RQ, MAPI_SET_WIGGLE_CNT, 0 };
-	char status[64];
+	int ret = 0;
+	uint8_t req[] = { MCTRL_MAPI, MAPI_READ_RQ, MAPI_GET_POWER_ON_THRESHOLD };
+	pwr_on_cfg_t power_on_params;
+	ret = get_command(fd, req, sizeof(req), (uint8_t *)&power_on_params, sizeof(power_on_params));
+	*wiggle_count = power_on_params.wiggle_count;
+	*ignition_threshold = power_on_params.ignition_threshold;
+	return ret;
+}
 
-	payload[2] = count;
+int set_power_on_threshold_cfg(int * fd, uint16_t wiggle_count, uint16_t wig_cnt_sample_period, uint16_t ignition_threshold)
+{
+	uint8_t req[] = { MCTRL_MAPI, MAPI_WRITE_RQ, MAPI_SET_POWER_ON_THRESHOLD, wiggle_count, wig_cnt_sample_period, ignition_threshold};
+	return set_command(fd, req, sizeof(req));
+}
 
-	if(0 > (fd = iosocket_connect()))
-		return -1;
-
-	if(iosocket_sendmsg(&fd, payload, sizeof(payload)))
-	{
-		iosocket_disconnect(&fd);
-		return -1;
-	}
-
-	num_bytes = iosocket_recvmsg(&fd, (uint8_t *)status, sizeof(status));
-	if(-1 == num_bytes)
-	{
-		iosocket_disconnect(&fd);
-		return -1;
-	}
-	status[num_bytes] = '\0';
-	if(0 != strcmp("OK", status))
-	{
-		iosocket_disconnect(&fd);
-		return -1;
-	}
-
-
-	iosocket_disconnect(&fd);
-
-	return 0;
+int get_power_on_reason(int * fd, uint8_t *power_on_reason)
+{
+	int ret = 0;
+	uint8_t req[] = { MCTRL_MAPI, MAPI_READ_RQ, MAPI_GET_POWER_ON_REASON };
+	ret = get_command(fd, req, sizeof(req), power_on_reason, sizeof(uint8_t));
+	return ret;
 }

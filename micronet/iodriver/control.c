@@ -132,7 +132,7 @@ static int control_thread_wait(struct control_thread_context * context)
 			DTRACE("FD_SET gpio");
 		}
 
-		tv.tv_sec = 5; // 5 to make less output for now
+		tv.tv_sec = 1; // 1 to make less output for now
 		tv.tv_usec = 0;
 
 		//DTRACE("max_fd=%d about to select %d:%d", max_fd, (int)tv.tv_sec, (int)tv.tv_usec);

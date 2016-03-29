@@ -145,7 +145,6 @@ int set_power_on_threshold_cfg(int * fd, uint16_t wiggle_count, uint16_t wig_cnt
 	power_on_params.wig_cnt_sample_period = wig_cnt_sample_period;
 	power_on_params.ignition_threshold = ignition_threshold;
 	memcpy(&req[3], &power_on_params, sizeof(power_on_params));
-	printf("req = %x,%x,%x,%x,%x,%x\n", req[3], req[4], req[5], req[6], req[7], req[8]);
 	return set_command(fd, req, sizeof(req));
 }
 
@@ -155,4 +154,10 @@ int get_power_on_reason(int * fd, uint8_t *power_on_reason)
 	uint8_t req[] = { MCTRL_MAPI, MAPI_READ_RQ, MAPI_GET_POWER_ON_REASON };
 	ret = get_command(fd, req, sizeof(req), power_on_reason, sizeof(uint8_t));
 	return ret;
+}
+
+int set_device_power_off(int * fd, uint8_t wait_time)
+{
+	uint8_t req[] = { MCTRL_MAPI, MAPI_WRITE_RQ, MAPI_SET_DEVICE_POWER_OFF, wait_time};
+	return set_command(fd, req, sizeof(req));
 }

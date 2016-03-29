@@ -18,4 +18,5 @@ int set_led_status(int * fd, uint8_t led_num, uint8_t brightness, uint8_t red, u
 int get_power_on_threshold_cfg(int * fd, uint16_t *wiggle_count, uint16_t *wig_cnt_sample_period, uint16_t *ignition_threshold);
 int set_power_on_threshold_cfg(int * fd, uint16_t wiggle_count, uint16_t wig_cnt_sample_period, uint16_t ignition_threshold);
 int get_power_on_reason(int * fd, uint8_t *power_on_reason);
+int set_device_power_off(int * fd, uint8_t wait_time);
 

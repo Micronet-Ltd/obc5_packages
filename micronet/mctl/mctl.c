@@ -101,7 +101,7 @@ void send_api_hex2(int * fd, char * hexdata)
 	uint8_t data[4096];
 	uint32_t fpga_ver = 0;
 	uint32_t gpi_voltage = 0;
-	uint8_t led_num, brightness, red, green, blue, gpi_num, power_on_reason;
+	uint8_t led_num, brightness, red, green, blue, gpi_num, power_on_reason, wait_time;
 	uint16_t wiggle_count, wig_cnt_sample_period, ignition_threshold;
 	int i;
 	int ret = 0;
@@ -164,6 +164,11 @@ void send_api_hex2(int * fd, char * hexdata)
 		case MAPI_GET_POWER_ON_REASON:
 			ret = get_power_on_reason(fd, &power_on_reason);
 			printf("power on reason %d, ret = %d\n", power_on_reason, ret);
+			break;
+		case MAPI_SET_DEVICE_POWER_OFF:
+			wait_time = data[2];
+			ret = set_device_power_off(fd, wait_time);
+			printf("device power off req with wait time %d sec., ret = %d\n", wait_time, ret);
 			break;
 		default: break;
 	}

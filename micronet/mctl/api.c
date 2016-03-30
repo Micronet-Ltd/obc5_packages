@@ -22,6 +22,8 @@
 
 #include "api.h"
 
+#define RTC_BCD_SIZE	8
+
 typedef struct led_param_s
 {
 	uint8_t brightness;
@@ -159,5 +161,89 @@ int get_power_on_reason(int * fd, uint8_t *power_on_reason)
 int set_device_power_off(int * fd, uint8_t wait_time)
 {
 	uint8_t req[] = { MCTRL_MAPI, MAPI_WRITE_RQ, MAPI_SET_DEVICE_POWER_OFF, wait_time};
+	return set_command(fd, req, sizeof(req));
+}
+
+/* converts RTC bcd array format to string */
+void rtc_convert_bcd_to_string(uint8_t * dt_bcd, char * dt_str, bool print_time)
+{
+	uint8_t hundreth_sec_int = (dt_bcd[0]>>4) + (dt_bcd[0]&0x0F);
+	uint8_t seconds = (((dt_bcd[1]>>4)&0x7) * 10) + (dt_bcd[1]&0x0F);
+	uint8_t minutes = (((dt_bcd[2]>>4)&0x7) * 10) + (dt_bcd[2]&0x0F);
+	uint8_t hours = (((dt_bcd[3]>>4)&0x3) * 10) + (dt_bcd[3]&0x0F);
+	uint8_t century = (dt_bcd[3]>>6);
+	//uint8_t day_of_week = dt[4]&0x7;
+	uint8_t day_of_month = (((dt_bcd[5]>>4)&0x3) * 10) + (dt_bcd[5]&0x0F);
+	uint8_t month = (((dt_bcd[6]>>4)&0x1) * 10) + (dt_bcd[6]&0x0F);
+	uint16_t year = ((dt_bcd[7]>>4) * 10) + (dt_bcd[7]&0x0F);
+
+	year = 2000 + (century * 100) + year;
+
+	snprintf(dt_str, RTC_STRING_SIZE , "%04d-%02d-%02d %02d:%02d:%02d.%02d ",
+			year, month, day_of_month, hours, minutes, seconds, hundreth_sec_int);
+	if (print_time)
+	{
+		printf("rtc date_time: %04d-%02d-%02d %02d:%02d:%02d.%02d\n",
+				year, month, day_of_month, hours, minutes, seconds, hundreth_sec_int);
+	}
+}
+
+/* converts rtc string to bcd format array that RTC expects */
+void rtc_convert_string_to_bcd(uint8_t * dt_bcd, char * dt_str, bool print_bcd)
+{
+	unsigned int i;
+	unsigned int hundreth_sec_int = 0, seconds = 0, minutes = 0, hours = 0, \
+			century_bits = 0, day_of_month = 0, month = 0;
+	unsigned int year = 0;
+
+	sscanf(dt_str, "%04x-%02x-%02x %02x:%02x:%02x.%02x",
+			&year, &month, &day_of_month, &hours, &minutes, &seconds, &hundreth_sec_int);
+
+	century_bits = (year>>8)&0x0f;
+
+	dt_bcd[0] = (uint8_t)hundreth_sec_int;
+	dt_bcd[1] = (uint8_t)seconds;
+	dt_bcd[2] = (uint8_t)minutes;
+	dt_bcd[3] = (uint8_t)((century_bits<<6) | hours);
+	dt_bcd[4] = 0x0; /* Day of week is not used (might cause problems) */
+	dt_bcd[5] = (uint8_t)day_of_month;
+	dt_bcd[6] = (uint8_t)month;
+	dt_bcd[7] = (uint8_t)(year&0xff);
+
+	if (print_bcd)
+	{
+		printf("rtc bcd date_time: ");
+		for (i = 0; i < 8; i++)
+		{
+			printf("%x, ", dt_bcd[i]);
+		}
+		printf("\n");
+	}
+}
+
+/* returned dt_str format : year-month-day hour:min:sec.deciseconds
+ * 					   Ex :	2016-03-29 19:09:06.58
+*/
+int get_rtc_date_time(int * fd, char * dt_str)
+{
+	int ret = 0;
+	uint8_t dt_bcd[RTC_BCD_SIZE] = {0};
+	uint8_t req[] = { MCTRL_MAPI, MAPI_READ_RQ, MAPI_GET_RTC_DATE_TIME };
+
+	ret = get_command(fd, req, sizeof(req), dt_bcd, sizeof(dt_bcd));
+	rtc_convert_bcd_to_string(dt_bcd, dt_str, false);
+	return ret;
+}
+
+/* Expected dt_str format: year-month-day hour:min:sec.deciseconds
+ * 					  Ex : 2016-03-29 19:09:06.58
+*/
+int set_rtc_date_time(int * fd, char * dt_str)
+{
+	uint8_t dt_bcd[RTC_BCD_SIZE] = {0};
+	uint8_t req[] = { MCTRL_MAPI, MAPI_WRITE_RQ, MAPI_SET_RTC_DATE_TIME,
+					0, 0, 0, 0, 0, 0, 0, 0};
+	rtc_convert_string_to_bcd(dt_bcd, dt_str, false);
+	memcpy(&req[3],dt_bcd, sizeof(dt_bcd));
 	return set_command(fd, req, sizeof(req));
 }

@@ -1,6 +1,8 @@
 
 #include "api_constants.h"
 
+#define RTC_STRING_SIZE 23
+
 typedef enum api_err
 {
 	INVALID_RESP_MSG_TYPE = -4,
@@ -19,4 +21,6 @@ int get_power_on_threshold_cfg(int * fd, uint16_t *wiggle_count, uint16_t *wig_c
 int set_power_on_threshold_cfg(int * fd, uint16_t wiggle_count, uint16_t wig_cnt_sample_period, uint16_t ignition_threshold);
 int get_power_on_reason(int * fd, uint8_t *power_on_reason);
 int set_device_power_off(int * fd, uint8_t wait_time);
+int get_rtc_date_time(int * fd, char * dt_str);
+int set_rtc_date_time(int * fd, char * dt_str);
 

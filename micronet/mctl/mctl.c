@@ -103,7 +103,8 @@ void send_api_hex2(int * fd, char * hexdata)
 	uint8_t data[4096];
 	uint32_t fpga_ver = 0;
 	uint32_t gpi_voltage = 0;
-	uint8_t led_num, brightness, red, green, blue, gpi_num;
+	uint8_t led_num, brightness, red, green, blue, gpi_num, power_on_reason, wait_time;
+	uint16_t wiggle_count, wig_cnt_sample_period, ignition_threshold;
 	int i;
 	int ret = 0;
 
@@ -131,12 +132,13 @@ void send_api_hex2(int * fd, char * hexdata)
 		case MAPI_GET_GPI_INPUT_VOLTAGE:
 			gpi_num = data[2];
 			ret = get_gpi_voltage(fd, gpi_num, &gpi_voltage, sizeof(gpi_voltage));
-			printf("GPI %d, approx voltage = %d mV\n", gpi_num, gpi_voltage);
+			printf("GPI %d, approx voltage = %d mV, ret = %d \n", gpi_num, gpi_voltage, ret);
 			break;
 		case MAPI_GET_LED_STATUS:
 			led_num = data[2];
-			get_led_status(fd, led_num, &brightness, &red, &green, &blue);
-			printf("get led num %d, brightness = %d, red = %d, green = %d, blue = %d \n", led_num, brightness, red, green, blue);
+			ret = get_led_status(fd, led_num, &brightness, &red, &green, &blue);
+			printf("get led num %d, brightness = %d, red = %d, green = %d, blue = %d, ret = %d \n", \
+					led_num, brightness, red, green, blue, ret);
 			break;
 		case MAPI_SET_LED_STATUS:
 			led_num = data[2];
@@ -144,8 +146,31 @@ void send_api_hex2(int * fd, char * hexdata)
 			red = data[4];
 			green = data[5];
 			blue = data[6];
-			set_led_status(fd, led_num, brightness, red, green, blue);
-			printf("set led num %d, brightness = %d, red = %d, green = %d, blue = %d \n", led_num, brightness, red, green, blue);
+			ret = set_led_status(fd, led_num, brightness, red, green, blue);
+			printf("set led num %d, brightness = %d, red = %d, green = %d, blue = %d, ret = %d  \n", \
+					led_num, brightness, red, green, blue, ret);
+			break;
+		case MAPI_GET_POWER_ON_THRESHOLD:
+			ret = get_power_on_threshold_cfg(fd, &wiggle_count, &wig_cnt_sample_period, &ignition_threshold);
+			printf("get power on threshold  wiggle_count = %d, wig_cnt_sample_period = %d, ignition_threshold = %d, ret = %d  \n", \
+					wiggle_count, wig_cnt_sample_period, ignition_threshold, ret);
+			break;
+		case MAPI_SET_POWER_ON_THRESHOLD:
+			wiggle_count = (uint16_t)((data[3]<<8)|data[2]); //little endian
+			wig_cnt_sample_period = (uint16_t)((data[5]<<8)|data[4]);;
+			ignition_threshold = (uint16_t)((data[7]<<8)|data[6]);;
+			ret = set_power_on_threshold_cfg(fd, wiggle_count, wig_cnt_sample_period, ignition_threshold);
+			printf("set power on threshold  wiggle_count = %d, wig_cnt_sample_period = %d, ignition_threshold = %d, ret = %d  \n", \
+								wiggle_count, wig_cnt_sample_period, ignition_threshold, ret);
+			break;
+		case MAPI_GET_POWER_ON_REASON:
+			ret = get_power_on_reason(fd, &power_on_reason);
+			printf("power on reason %d, ret = %d\n", power_on_reason, ret);
+			break;
+		case MAPI_SET_DEVICE_POWER_OFF:
+			wait_time = data[2];
+			ret = set_device_power_off(fd, wait_time);
+			printf("device power off req with wait time %d sec., ret = %d\n", wait_time, ret);
 			break;
 		default: break;
 	}

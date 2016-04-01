@@ -148,9 +148,9 @@ void send_api_hex2(int * fd, char * hexdata)
 			ret = get_fpga_version(fd, &fpga_ver, 4);
 			printf("fpga ver %x, ret = %d \n", fpga_ver, ret);
 			break;
-		case MAPI_GET_GPI_INPUT_VOLTAGE:
+		case MAPI_GET_ADC_OR_GPI_INPUT_VOLTAGE:
 			gpi_num = data[2];
-			ret = get_gpi_voltage(fd, gpi_num, &gpi_voltage, sizeof(gpi_voltage));
+			ret = get_adc_or_gpi_voltage(fd, gpi_num, &gpi_voltage, sizeof(gpi_voltage));
 			printf("GPI %d, approx voltage = %d mV, ret = %d \n", gpi_num, gpi_voltage, ret);
 			break;
 		case MAPI_GET_LED_STATUS:

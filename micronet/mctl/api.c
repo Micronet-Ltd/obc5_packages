@@ -102,9 +102,9 @@ int get_fpga_version(int * fd, uint32_t * fpga_version, size_t size)
 	return get_command(fd, req, sizeof(req), (uint8_t *)fpga_version, size);
 }
 
-int get_gpi_voltage(int * fd, uint8_t gpi_num, uint32_t * gpi_voltage, size_t size)
+int get_adc_or_gpi_voltage(int * fd, uint8_t gpi_num, uint32_t * gpi_voltage, size_t size)
 {
-	uint8_t req[] = { MCTRL_MAPI, MAPI_READ_RQ, MAPI_GET_GPI_INPUT_VOLTAGE, gpi_num};
+	uint8_t req[] = { MCTRL_MAPI, MAPI_READ_RQ, MAPI_GET_ADC_OR_GPI_INPUT_VOLTAGE, gpi_num};
 	return get_command(fd, req, sizeof(req), (uint8_t *)gpi_voltage, size);
 }
 

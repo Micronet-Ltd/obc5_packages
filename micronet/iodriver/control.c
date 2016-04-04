@@ -618,6 +618,8 @@ void * control_proc(void * cntx)
 	int status;
 	uint8_t databuffer[1024]; // >= 10 * (8*2)
 	time_t last_sent_ping = 0;
+	bool on_init = true;
+	int ret = 0;
 
 	frame_setbuffer(&context->frame, databuffer, sizeof(databuffer));
 
@@ -641,10 +643,17 @@ void * control_proc(void * cntx)
 		// Check for devices that need to be opened/reopened
 		check_devices(context);
 
-
 		// TODO: Waiting for events
 		status = control_thread_wait(context);
 		//DTRACE("control_thread_wait returned %d", status);
+
+		if (on_init && (context->fd > -1 ))
+		{
+			on_init = false;
+			/* Request for all the GPInput values, in case they were missed on bootup */
+			uint8_t req[] = { MCTRL_MAPI, MAPI_WRITE_RQ, MAPI_SET_GPI_UPDATE_ALL_VALUES};
+			ret = control_handle_api_command(context, NULL, req+1, (sizeof(req)-1));
+		}
 
 		if((context->fd > -1) && FD_ISSET(context->fd, &context->fds))
 		{
@@ -678,7 +687,7 @@ void * control_proc(void * cntx)
 			DTRACE("After sock receive");
 		}
 
-//		if( (0 == last_sent_ping) || ((time(NULL) - last_sent_ping) > 10) )
+//		if( (0 == last_sent_ping) || ((time(NULL) - last_sent_ping) > 1) )
 //		{
 //			if(context->fd > 0)
 //			{

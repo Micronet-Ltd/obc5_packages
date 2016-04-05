@@ -44,12 +44,14 @@ int client_command(int * fd, uint8_t * payload, size_t msg_len)
 
 	if(iosocket_sendmsg(fd, payload, msg_len))
 	{
+        printf("%s: failure to send message\n", __func__);
 		exit(-1);
 	}
 
 	num_bytes = iosocket_recvmsg(fd, resp, sizeof(resp));
 	if(-1 == num_bytes)
 	{
+        printf("%s: failure to retrieve response\n", __func__);
 		exit(-1);
 	}
 
@@ -299,7 +301,7 @@ int main(int argc, char * argv[])
 			// The strings do NOT end with 0
 			memcpy(p, argv[i], strlen(argv[i]));
 			p += strlen(argv[i]);
-			//printf(" '%s' %d'\n", argv[i], (int)(pend-p));
+			printf(" '%s' %d'\n", argv[i], (int)(pend-p));
 		} while( ++i < argc);
 
 		client_command(&fd, (uint8_t*)cmd_string, p-cmd_string);

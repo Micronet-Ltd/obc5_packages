@@ -263,6 +263,7 @@ static int control_frame_process(struct control_thread_context * context, uint8_
 			break;
 
 		case PING_RESP: // PING response
+			DTRACE("PING_RESP: %d", context->pong_recv);
 			context->pong_recv++;
 			break;
 
@@ -321,9 +322,9 @@ static int control_receive_mcu(struct control_thread_context * context)
 		}
 	}
 
-	DTRACE("TODO: Read message from MCU");
-	DTRACE("TODO: Handle messages");
-	DTRACE("TODO: Check for more messages");
+	//DTRACE("TODO: Read message from MCU");
+	//DTRACE("TODO: Handle messages");
+	//DTRACE("TODO: Check for more messages");
 
 	return 0;
 }
@@ -531,6 +532,7 @@ static int control_receive_sock(struct control_thread_context * context)
 {
 	struct sockaddr_un c_addr = {0};
 	uint8_t buf[SOCK_MAX_MSG];
+	int ret = 0;
 	int r = -1;
 
 	socklen_t sock_len;
@@ -571,6 +573,12 @@ static int control_receive_sock(struct control_thread_context * context)
 		// 2 API Command
 		case MCTRL_MAPI:
 			r = control_handle_api_command(context, &c_addr, buf+1, num_bytes-1);
+			if (buf[2] == MAPI_SET_DEVICE_POWER_OFF)
+			{
+				/* send shell command for a shutdown request reboot -p */
+				//ret = execl ("/bin/pwd", "/bin/pwd", NULL);
+				ret = system("reboot -p");
+			}
 			break;
 
 		default:
@@ -617,7 +625,9 @@ void * control_proc(void * cntx)
 	struct control_thread_context * context = cntx;
 	int status;
 	uint8_t databuffer[1024]; // >= 10 * (8*2)
-	time_t last_sent_ping = 0;
+	time_t time_last_sent_ping = 0;
+	bool on_init = true;
+	int ret = 0;
 
 	frame_setbuffer(&context->frame, databuffer, sizeof(databuffer));
 
@@ -641,10 +651,17 @@ void * control_proc(void * cntx)
 		// Check for devices that need to be opened/reopened
 		check_devices(context);
 
-
 		// TODO: Waiting for events
 		status = control_thread_wait(context);
 		//DTRACE("control_thread_wait returned %d", status);
+
+		if (on_init && (context->fd > -1 ))
+		{
+			on_init = false;
+			/* Request for all the GPInput values, in case they were missed on bootup */
+			uint8_t req[] = { MCTRL_MAPI, MAPI_WRITE_RQ, MAPI_SET_GPI_UPDATE_ALL_VALUES};
+			ret = control_handle_api_command(context, NULL, req+1, (sizeof(req)-1));
+		}
 
 		if((context->fd > -1) && FD_ISSET(context->fd, &context->fds))
 		{
@@ -678,19 +695,19 @@ void * control_proc(void * cntx)
 			DTRACE("After sock receive");
 		}
 
-//		if( (0 == last_sent_ping) || ((time(NULL) - last_sent_ping) > 10) )
-//		{
-//			if(context->fd > 0)
-//			{
-//				uint8_t msg[2];
-//				msg[0] = control_get_seq(context);
-//				msg[1] = (uint8_t)PING_REQ;
-//				last_sent_ping = time(NULL);
-//				context->ping_sent++;
-//
-//				control_send_mcu(context, msg, sizeof(msg));
-//			}
-//		}
+		if(context->fd > -1)
+		{
+			if( (0 == time_last_sent_ping) || ((time(NULL) - time_last_sent_ping) > 1) )
+			{
+				uint8_t msg[2];
+				msg[0] = control_get_seq(context);
+				msg[1] = (uint8_t)PING_REQ;
+				time_last_sent_ping = time(NULL);
+				context->ping_sent++;
+
+				control_send_mcu(context, msg, sizeof(msg));
+			}
+		}
 
 	} while(context->running);
 

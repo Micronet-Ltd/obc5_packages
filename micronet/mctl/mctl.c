@@ -29,6 +29,7 @@
 #include <termios.h>
 #include <fcntl.h>
 #include <sys/ioctl.h>
+#include <sys/time.h>
 
 #include "util.h"
 #include "iosocket.h"
@@ -98,6 +99,24 @@ void send_api_hex(int * fd, char * hexdata)
 	client_command(fd, data, i);
 }
 
+ssize_t format_timeval(struct timeval *tv, char *buf, size_t sz)
+{
+  ssize_t written = -1;
+  struct tm *gm = gmtime(&tv->tv_sec);
+
+  if (gm)
+  {
+    written = (ssize_t)strftime(buf, sz, "%Y-%m-%d %H:%M:%S", gm);
+    if ((written > 0) && ((size_t)written < sz))
+    {
+      int w = snprintf(buf+written, sz-(size_t)written, ".%02d",(int) (tv->tv_usec/10000));
+      written = (w > 0) ? written + w : -1;
+      //printf("usec: %.06d, decisec: .%02d, buf_size = %d written = %d\n", (int) tv->tv_usec, (int) (tv->tv_usec/10000), (int) sz, (int)written);
+    }
+  }
+  return written;
+}
+
 void send_api_hex2(int * fd, char * hexdata)
 {
 	uint8_t data[4096];
@@ -107,6 +126,8 @@ void send_api_hex2(int * fd, char * hexdata)
 	uint16_t wiggle_count, wig_cnt_sample_period, ignition_threshold;
 	int i;
 	int ret = 0;
+	char dt_str[RTC_STRING_SIZE] = "2016-03-29 19:09:06.58\0";
+	struct timeval tv;
 
 	if(strlen(hexdata) > (sizeof(data)>>1))
 	{
@@ -129,9 +150,9 @@ void send_api_hex2(int * fd, char * hexdata)
 			ret = get_fpga_version(fd, &fpga_ver, 4);
 			printf("fpga ver %x, ret = %d \n", fpga_ver, ret);
 			break;
-		case MAPI_GET_GPI_INPUT_VOLTAGE:
+		case MAPI_GET_ADC_OR_GPI_INPUT_VOLTAGE:
 			gpi_num = data[2];
-			ret = get_gpi_voltage(fd, gpi_num, &gpi_voltage, sizeof(gpi_voltage));
+			ret = get_adc_or_gpi_voltage(fd, gpi_num, &gpi_voltage, sizeof(gpi_voltage));
 			printf("GPI %d, approx voltage = %d mV, ret = %d \n", gpi_num, gpi_voltage, ret);
 			break;
 		case MAPI_GET_LED_STATUS:
@@ -156,9 +177,9 @@ void send_api_hex2(int * fd, char * hexdata)
 					wiggle_count, wig_cnt_sample_period, ignition_threshold, ret);
 			break;
 		case MAPI_SET_POWER_ON_THRESHOLD:
-			wiggle_count = (uint16_t)((data[3]<<8)|data[2]); //little endian
-			wig_cnt_sample_period = (uint16_t)((data[5]<<8)|data[4]);;
-			ignition_threshold = (uint16_t)((data[7]<<8)|data[6]);;
+			wiggle_count = (uint16_t)((data[2]<<8)|data[3]); //Big endian data
+			wig_cnt_sample_period = (uint16_t)((data[4]<<8)|data[5]);;
+			ignition_threshold = (uint16_t)((data[6]<<8)|data[7]);;
 			ret = set_power_on_threshold_cfg(fd, wiggle_count, wig_cnt_sample_period, ignition_threshold);
 			printf("set power on threshold  wiggle_count = %d, wig_cnt_sample_period = %d, ignition_threshold = %d, ret = %d  \n", \
 								wiggle_count, wig_cnt_sample_period, ignition_threshold, ret);
@@ -172,6 +193,25 @@ void send_api_hex2(int * fd, char * hexdata)
 			ret = set_device_power_off(fd, wait_time);
 			printf("device power off req with wait time %d sec., ret = %d\n", wait_time, ret);
 			break;
+		case MAPI_GET_RTC_DATE_TIME:
+			ret = get_rtc_date_time(fd, dt_str);
+			printf("get rtc %s, ret = %d\n", dt_str, ret);
+			break;
+		case MAPI_SET_RTC_DATE_TIME:
+			if (gettimeofday(&tv, NULL) != 0)
+			{
+			    perror("gettimeofday");
+			    break;
+			}
+			if (!format_timeval(&tv, dt_str, sizeof(dt_str)) > 0)
+			{
+				perror("format_timeval");
+				break;
+			}
+			ret = set_rtc_date_time(fd, dt_str);
+			printf("set rtc %s, ret = %d\n", dt_str, ret);
+			break;
+
 		default: break;
 	}
 }

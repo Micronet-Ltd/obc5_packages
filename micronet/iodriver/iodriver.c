@@ -121,7 +121,7 @@ void do_run()
 	pthread_create(&accel_thread, NULL, accel_proc, &accelctx);
 
     property_set("iodriver.boot_complete", "1");
-    DINFO("s: booot_complete\n", __func__);
+    DINFO("%s: booot_complete\n", __func__);
 	// TODO: main thread processing
 	while(true) sleep(100);
 }

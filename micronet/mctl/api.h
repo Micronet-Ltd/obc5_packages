@@ -23,4 +23,6 @@ int get_power_on_reason(int * fd, uint8_t *power_on_reason);
 int set_device_power_off(int * fd, uint8_t wait_time);
 int get_rtc_date_time(int * fd, char * dt_str);
 int set_rtc_date_time(int * fd, char * dt_str);
+int get_rtc_cal_reg(int * fd, uint8_t * dig_cal, uint8_t * anal_cal);
+int set_rtc_cal_reg(int * fd, uint8_t dig_cal, uint8_t analog_cal);
 

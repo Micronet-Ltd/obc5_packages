@@ -247,3 +247,24 @@ int set_rtc_date_time(int * fd, char * dt_str)
 	memcpy(&req[3],dt_bcd, sizeof(dt_bcd));
 	return set_command(fd, req, sizeof(req));
 }
+
+/* get_rtc_cal_reg: get rtc analog and digital calibration registers */
+int get_rtc_cal_reg(int * fd, uint8_t * dig_cal, uint8_t * anal_cal)
+{
+	int ret = 0;
+	uint8_t rtc_cal_reg[] = {0, 0};
+	uint8_t req[] = { MCTRL_MAPI, MAPI_READ_RQ, MAPI_GET_RTC_CAL_REGISTERS };
+
+	ret = get_command(fd, req, sizeof(req), rtc_cal_reg, sizeof(rtc_cal_reg));
+	*dig_cal = rtc_cal_reg[0];
+	*anal_cal = rtc_cal_reg[1];
+	return ret;
+}
+
+/* set_rtc_cal_reg: set rtc analog and digital calibration registers */
+int set_rtc_cal_reg(int * fd, uint8_t dig_cal, uint8_t analog_cal)
+{
+	uint8_t req[] = { MCTRL_MAPI, MAPI_WRITE_RQ, MAPI_SET_RTC_CAL_REGISTERS,
+					dig_cal, analog_cal};
+	return set_command(fd, req, sizeof(req));
+}

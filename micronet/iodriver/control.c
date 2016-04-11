@@ -573,12 +573,6 @@ static int control_receive_sock(struct control_thread_context * context)
 		// 2 API Command
 		case MCTRL_MAPI:
 			r = control_handle_api_command(context, &c_addr, buf+1, num_bytes-1);
-			if (buf[2] == MAPI_SET_DEVICE_POWER_OFF)
-			{
-				/* send shell command for a shutdown request reboot -p */
-				//ret = execl ("/bin/pwd", "/bin/pwd", NULL);
-				ret = system("reboot -p");
-			}
 			break;
 
 		default:

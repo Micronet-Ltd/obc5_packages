@@ -2360,5 +2360,15 @@
                 </action>
             </intent-filter>
         </receiver>
+		<receiver android:name="com.android.settings.wifi.WifiStatusReceiver" >
+            <intent-filter>
+                <action android:name="com.android.telephony.GET_IMEI_DONE" >
+                </action>
+            </intent-filter>
+			<intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" >
+                </action>
+            </intent-filter>
+        </receiver>
     </application>
 </manifest>

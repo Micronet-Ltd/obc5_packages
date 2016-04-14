@@ -102,6 +102,8 @@ static int control_thread_wait(struct control_thread_context * context)
 		max_fd = context->sock_fd;
 	if(max_fd < context->gpio_fd)
 		max_fd = context->gpio_fd;
+    if(max_fd < context->vled_fd)
+        max_fd = context->vled_fd;
 
 	//DTRACE("max_fd=%d", max_fd);
 
@@ -132,7 +134,12 @@ static int control_thread_wait(struct control_thread_context * context)
 			DTRACE("FD_SET gpio");
 		}
 
-		tv.tv_sec = 1; // 1 to make less output for now
+        if (context->vled_fd >= 0) {
+            FD_SET(context->vled_fd, &context->fds);
+            DTRACE("select vled_fd");
+        }
+
+        tv.tv_sec = 1; // 1 to make less output for now
 		tv.tv_usec = 0;
 
 		//DTRACE("max_fd=%d about to select %d:%d", max_fd, (int)tv.tv_sec, (int)tv.tv_usec);
@@ -156,6 +163,10 @@ static int control_thread_wait(struct control_thread_context * context)
 			return 0;
 		if( (context->gpio_fd > -1) && FD_ISSET(context->gpio_fd, &context->fds))
 			return 0;
+        if ((context->vled_fd > -1) && FD_ISSET(context->vled_fd, &context->fds)) {
+            DTRACE("vled selected");
+            return 0;
+        }
 
 		//DTRACE("select returned %d but no fd is set", r);
 	}
@@ -528,6 +539,40 @@ static int control_receive_gpio(struct control_thread_context * context)
 	return control_send_mcu(context, msg, sizeof(msg));
 }
 
+#define LED_DAT_LEN 5
+static int control_leds(struct control_thread_context * context)
+{
+    int err, i;
+    uint8_t leds_data[16];
+    uint8_t msg[8];
+
+    err = read(context->vled_fd, leds_data, sizeof(leds_data));
+
+    if (-1 == err) {
+        DERR("failure to read[/dev/vleds] - %s", strerror(errno));
+        return -1;
+    }
+
+    if ((uint8_t)-1 == leds_data[15]) {
+        // nothing chenged
+        return 0;
+    }
+
+    if (leds_data[15] > 3) {
+        DERR("invalid led [%d]", leds_data[15]);
+        return -1;
+    }
+    i = LED_DAT_LEN * leds_data[15];
+    msg[0] = control_get_seq(context);
+    msg[1] = (uint8_t)COMM_WRITE_REQ;
+    msg[2] = (uint8_t)MAPI_SET_LED_STATUS;
+
+    memcpy(&msg[3], &leds_data[i], LED_DAT_LEN);
+    DINFO("set led req[%d:%d:%d:%d:%d", msg[3], msg[4], msg[5], msg[6], msg[7]);
+
+    return control_send_mcu(context, msg, sizeof(msg));
+}
+
 static int control_receive_sock(struct control_thread_context * context)
 {
 	struct sockaddr_un c_addr = {0};
@@ -630,12 +675,16 @@ void * control_proc(void * cntx)
 	context->gpio_fd = -1;
 	context->fd = -1;
 	context->sock_fd = -1;
+    context->vled_fd = -1;
 
 	// TODO: maby move to check_devies()
 	if(file_exists("/dev/vgpio"))
 		context->gpio_fd = open("/dev/vgpio", O_RDWR, O_NDELAY);
 
-	// TODO: maby move to check_devies()
+    if(file_exists("/dev/vleds"))
+        context->vled_fd = open("/dev/vleds", O_RDONLY, O_NDELAY);
+
+    // TODO: maby move to check_devies()
 	context->sock_fd = control_open_socket(context);
 
 	do
@@ -678,6 +727,14 @@ void * control_proc(void * cntx)
 			}
 			DTRACE("After sock receive");
 		}
+
+        if ((context->vled_fd > -1) && FD_ISSET(context->vled_fd, &context->fds)) {
+            status = control_leds(context);
+            if(status < 0) {
+                DERR("failure to set led %d\n", status);
+            }
+            DTRACE("After sock receive");
+        }
 
 		if((context->sock_fd > -1) && FD_ISSET(context->sock_fd, &context->fds))
 		{

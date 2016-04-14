@@ -30,6 +30,7 @@ struct control_thread_context
 
 	int ping_sent;
 	int pong_recv;
+    int vled_fd;
 };
 
 void * control_proc(void * cntx);

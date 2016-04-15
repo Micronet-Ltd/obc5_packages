@@ -558,7 +558,7 @@ static int control_leds(struct control_thread_context * context)
         return 0;
     }
 
-    if (leds_data[15] > 3) {
+    if (leds_data[15] > 1) {
         DERR("invalid led [%d]", leds_data[15]);
         return -1;
     }
@@ -568,7 +568,7 @@ static int control_leds(struct control_thread_context * context)
     msg[2] = (uint8_t)MAPI_SET_LED_STATUS;
 
     memcpy(&msg[3], &leds_data[i], LED_DAT_LEN);
-    DINFO("set led req[%d:%d:%d:%d:%d", msg[3], msg[4], msg[5], msg[6], msg[7]);
+    DINFO("set led[%d:%d] req[%d:%d:%d:%d]", msg[3], i, msg[4], msg[5], msg[6], msg[7]);
 
     return control_send_mcu(context, msg, sizeof(msg));
 }

@@ -49,6 +49,20 @@
 #include "control.h"
 #include "api_constants.h"
 
+//#define IO_CONTROL_RECOVERY_DEBUG 1
+
+#if defined (IO_CONTROL_RECOVERY_DEBUG)
+#define IO_CONTROL_LOG "/cache/io_control.log"
+static void redirect_stdio(const char* filename)
+{
+    // If these fail, there's not really anywhere to complain...
+    freopen(filename, "a", stdout);
+    setbuf(stdout, 0);
+    freopen(filename, "a", stderr);
+    setbuf(stderr, 0);
+}
+#endif
+
 static int send_sock_data(struct control_thread_context * context, struct sockaddr_un * addr, uint8_t * data, size_t len);
 
 struct sockaddr_un * g_rx_addr;
@@ -558,19 +572,45 @@ static int control_leds(struct control_thread_context * context)
         return 0;
     }
 
-    if (leds_data[15] > 1) {
+    if (leds_data[15] > 3 || leds_data[15] < 1) {
         DERR("invalid led [%d]", leds_data[15]);
         return -1;
     }
-    i = LED_DAT_LEN * leds_data[15];
+
     msg[0] = control_get_seq(context);
     msg[1] = (uint8_t)COMM_WRITE_REQ;
     msg[2] = (uint8_t)MAPI_SET_LED_STATUS;
 
-    memcpy(&msg[3], &leds_data[i], LED_DAT_LEN);
-    DINFO("set led[%d:%d] req[%d:%d:%d:%d]", msg[3], i, msg[4], msg[5], msg[6], msg[7]);
+    if (leds_data[15] & 1) {
+        i = 0; 
 
-    return control_send_mcu(context, msg, sizeof(msg));
+        memcpy(&msg[3], &leds_data[i], LED_DAT_LEN);
+        DINFO("set led[%d:%d] req[%d:%d:%d:%d]", msg[3], i, msg[4], msg[5], msg[6], msg[7]);
+    #if defined (IO_CONTROL_RECOVERY_DEBUG)
+        printf("%s: set led[%d:%d] req[%d:%d:%d:%d]\n", __func__, msg[3], i, msg[4], msg[5], msg[6], msg[7]);
+    #endif
+        err = control_send_mcu(context, msg, sizeof(msg));
+        if (-1 == err) {
+            DERR("failure to send command - %s", strerror(errno));
+            return -1;
+        }
+    }
+
+    if (leds_data[15] & 2) {
+        i = LED_DAT_LEN; 
+
+        memcpy(&msg[3], &leds_data[i], LED_DAT_LEN);
+        DINFO("set led[%d:%d] req[%d:%d:%d:%d]", msg[3], i, msg[4], msg[5], msg[6], msg[7]);
+    #if defined (IO_CONTROL_RECOVERY_DEBUG)
+        printf("%s: set led[%d:%d] req[%d:%d:%d:%d]\n", __func__, msg[3], i, msg[4], msg[5], msg[6], msg[7]);
+    #endif
+        err = control_send_mcu(context, msg, sizeof(msg));
+        if (-1 == err) {
+            DERR("failure to send command - %s", strerror(errno));
+            return -1;
+        }
+    }
+    return 0;
 }
 
 static int control_receive_sock(struct control_thread_context * context)
@@ -668,6 +708,9 @@ void * control_proc(void * cntx)
 	bool on_init = true;
 	int ret = 0;
 
+#if defined (IO_CONTROL_RECOVERY_DEBUG)
+    redirect_stdio(IO_CONTROL_LOG);
+#endif
 	frame_setbuffer(&context->frame, databuffer, sizeof(databuffer));
 
 	context->running = true;
@@ -762,6 +805,9 @@ void * control_proc(void * cntx)
 
 	} while(context->running);
 
+#if defined (IO_CONTROL_RECOVERY_DEBUG)
+    redirect_stdio("/dev/tty");
+#endif
 
 	DINFO("control thread exiting");
 	return NULL;

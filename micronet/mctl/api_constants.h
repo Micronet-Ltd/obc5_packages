@@ -27,6 +27,11 @@
 #define MAPI_GET_RTC_CAL_REGISTERS  0x0D
 #define MAPI_SET_RTC_CAL_REGISTERS  0x0E
 #define MAPI_SET_GPI_UPDATE_ALL_VALUES 0x0F
+#define MAPI_GET_RTC_REG_DBG  		0x10
+#define MAPI_SET_RTC_REG_DBG  		0x20
+
+// MCTL Commands that are not direct MCU commands
+#define MCTL_IS_RTC_BATTERY_GOOD    0xFD
 
 
 //#define MAPI_CONFIG_SWC			0x05

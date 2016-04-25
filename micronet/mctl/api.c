@@ -23,6 +23,7 @@
 #include "api.h"
 
 #define RTC_BCD_SIZE	8
+#define RTC_FLAGS_ADDR 	0x0F
 
 typedef struct led_param_s
 {
@@ -267,4 +268,36 @@ int set_rtc_cal_reg(int * fd, uint8_t dig_cal, uint8_t analog_cal)
 	uint8_t req[] = { MCTRL_MAPI, MAPI_WRITE_RQ, MAPI_SET_RTC_CAL_REGISTERS,
 					dig_cal, analog_cal};
 	return set_command(fd, req, sizeof(req));
+}
+
+/* get_rtc_reg_dbg: get any RTC register */
+int get_rtc_reg_dbg(int * fd, uint8_t address, uint8_t * data)
+{
+	int ret = 0;
+	uint8_t rtc_reg[] = {0};
+	uint8_t req[] = { MCTRL_MAPI, MAPI_READ_RQ, MAPI_GET_RTC_REG_DBG, address };
+
+	ret = get_command(fd, req, sizeof(req), rtc_reg, sizeof(rtc_reg));
+	data[0] = rtc_reg[0];
+	return ret;
+}
+
+/* set_rtc_reg_reg: set any RTC register */
+int set_rtc_reg_dbg(int * fd, uint8_t address, uint8_t data)
+{
+	uint8_t req[] = { MCTRL_MAPI, MAPI_WRITE_RQ, MAPI_SET_RTC_REG_DBG,
+					address, data};
+	return set_command(fd, req, sizeof(req));
+}
+
+bool check_rtc_battery(int * fd)
+{
+	uint8_t address = RTC_FLAGS_ADDR;
+	uint8_t flags = 0;
+	get_rtc_reg_dbg(fd, address, &flags);
+	if (flags & 0x10)
+	{
+		return false;
+	}
+	return true;
 }

@@ -18,7 +18,7 @@ struct control_thread_context
 	bool running;
 	char name[PATH_MAX];
 	fd_set fds;
-	int fd;
+	int mcu_fd;
 	int gpio_fd;
 	int sock_fd;
 	frame_t frame;

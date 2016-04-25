@@ -96,8 +96,8 @@ static int control_thread_wait(struct control_thread_context * context)
 	int r;
 	int max_fd = -1;
 
-	if(max_fd < context->fd)
-		max_fd = context->fd;
+	if(max_fd < context->mcu_fd)
+		max_fd = context->mcu_fd;
 	if(max_fd < context->sock_fd)
 		max_fd = context->sock_fd;
 	if(max_fd < context->gpio_fd)
@@ -114,9 +114,9 @@ static int control_thread_wait(struct control_thread_context * context)
 		struct timeval tv;
 		FD_ZERO(&context->fds);
 
-		if(context->fd >= 0)
+		if(context->mcu_fd >= 0)
 		{
-			FD_SET(context->fd, &context->fds);
+			FD_SET(context->mcu_fd, &context->fds);
 			//DTRACE("FD_SET fd");
 		}
 
@@ -150,7 +150,7 @@ static int control_thread_wait(struct control_thread_context * context)
 
 	if( r > 0)
 	{
-		if( (context->fd > -1) && FD_ISSET(context->fd, &context->fds))
+		if( (context->mcu_fd > -1) && FD_ISSET(context->mcu_fd, &context->fds))
 			return 0;
 		if( (context->sock_fd > -1) && FD_ISSET(context->sock_fd, &context->fds))
 			return 0;
@@ -176,7 +176,7 @@ static int  control_send_mcu(struct control_thread_context * context, uint8_t * 
 	if(r > 0)
 	{
 		size_t st;
-		st = write(context->fd, encoded_buffer, r);
+		st = write(context->mcu_fd, encoded_buffer, r);
 		if(st != r)
 			return -1;
 		return 0;
@@ -282,14 +282,14 @@ static int control_receive_mcu(struct control_thread_context * context)
 	uint8_t readbuffer[1024];
 	DTRACE("");
 
-	bytes_read = read(context->fd, readbuffer, sizeof(readbuffer));
+	bytes_read = read(context->mcu_fd, readbuffer, sizeof(readbuffer));
 	if(bytes_read < 0)
 	{
 		if(EAGAIN == errno)
 			return 0; //
 		DERR("read: %s", strerror(errno));
-		close(context->fd);
-		context->fd = -1;
+		close(context->mcu_fd);
+		context->mcu_fd = -1;
 		frame_reset(&context->frame);
 		return -1;
 		//abort();
@@ -588,7 +588,7 @@ static int control_receive_sock(struct control_thread_context * context)
 
 static void check_devices(struct control_thread_context * context)
 {
-	if( -1 == context->fd)
+	if( -1 == context->mcu_fd)
 	{
 		DTRACE("check for device '%s'", context->name);
 
@@ -599,8 +599,8 @@ static void check_devices(struct control_thread_context * context)
 		{
 			if(!file_exists("/data/disable_control_tty"))
 			{
-				context->fd = open_serial(context->name);
-				DINFO("opened %s fd = %d", context->name, context->fd);
+				context->mcu_fd = open_serial(context->name);
+				DINFO("opened %s fd = %d", context->name, context->mcu_fd);
 			}
 		}
 		else
@@ -628,7 +628,7 @@ void * control_proc(void * cntx)
 	context->running = true;
 
 	context->gpio_fd = -1;
-	context->fd = -1;
+	context->mcu_fd = -1;
 	context->sock_fd = -1;
 
 	// TODO: maby move to check_devies()
@@ -649,7 +649,7 @@ void * control_proc(void * cntx)
 		status = control_thread_wait(context);
 		//DTRACE("control_thread_wait returned %d", status);
 
-		if (on_init && (context->fd > -1 ))
+		if (on_init && (context->mcu_fd > -1 ))
 		{
 			on_init = false;
 			/* Request for all the GPInput values, in case they were missed on bootup */
@@ -657,7 +657,7 @@ void * control_proc(void * cntx)
 			ret = control_handle_api_command(context, NULL, req+1, (sizeof(req)-1));
 		}
 
-		if((context->fd > -1) && FD_ISSET(context->fd, &context->fds))
+		if((context->mcu_fd > -1) && FD_ISSET(context->mcu_fd, &context->fds))
 		{
 			status = control_receive_mcu(context);
 			if(status < 0)
@@ -689,7 +689,7 @@ void * control_proc(void * cntx)
 			DTRACE("After sock receive");
 		}
 
-		if(context->fd > -1)
+		if(context->mcu_fd > -1)
 		{
 			if( (0 == time_last_sent_ping) || ((time(NULL) - time_last_sent_ping) > 1) )
 			{

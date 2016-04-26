@@ -41,8 +41,18 @@ int iosocket_connect()
 {
 	struct sockaddr_un c_addr = {0};
 	int fd;
+	struct timeval timeout;
+	timeout.tv_sec = 1;
+	timeout.tv_usec = 0;
 
 	fd = socket(AF_UNIX, SOCK_DGRAM, 0);
+
+	if (setsockopt (fd, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout, sizeof(timeout)) < 0)
+		perror("setsockopt failed\n");
+
+	if (setsockopt (fd, SOL_SOCKET, SO_SNDTIMEO, (char *)&timeout, sizeof(timeout)) < 0)
+		perror("setsockopt failed\n");
+
 	if(-1 == fd)
 	{
         printf("%s: socket failure[%s]\n", __func__, strerror(errno));

@@ -43,6 +43,7 @@ typedef struct pwr_on_cfg_s
 static int get_command(int * fd, uint8_t * req, size_t req_size, uint8_t * resp, size_t resp_size)
 {
 	int num_bytes = 0;
+	uint8_t sock_resp[MAX_COMMAND_PACKET_SIZE];
 
 	if (*fd < 0)
 	{
@@ -57,20 +58,18 @@ static int get_command(int * fd, uint8_t * req, size_t req_size, uint8_t * resp,
 		return TX_MSG_FAILURE;
 	}
 
-	uint8_t * mresp = (uint8_t *) malloc(resp_size + 1);
-	num_bytes = iosocket_recvmsg(fd, mresp, resp_size + 1);
+	num_bytes = iosocket_recvmsg(fd, sock_resp, resp_size + 1);
 	if(-1 == num_bytes)
 	{
 		iosocket_disconnect(fd);
 		return RX_MSG_FAILURE;
 	}
 
-	if (req[2] != mresp[0])
+	if (req[2] != sock_resp[0])
 	{
 		return INVALID_RESP_MSG_TYPE;
 	}
-	memcpy(resp, &mresp[1], resp_size);
-	free(mresp);
+	memcpy(resp, &sock_resp[1], resp_size);
 	return num_bytes - 1;
 }
 

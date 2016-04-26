@@ -65,8 +65,6 @@ static void redirect_stdio(const char* filename)
 
 static int send_sock_data(struct control_thread_context * context, struct sockaddr_un * addr, uint8_t * data, size_t len);
 
-struct sockaddr_un * g_rx_addr;
-
 static uint8_t control_get_seq(struct control_thread_context * context)
 {
 	return context->seq++;
@@ -105,7 +103,7 @@ static int control_open_socket(struct control_thread_context * context __attribu
 }
 
 // returns < 0 on error, 0 on io, others undefined
-static int control_thread_wait(struct control_thread_context * context)
+static int control_thread_wait(struct control_thread_context * context, struct timeval * tv)
 {
 	int r;
 	int max_fd = -1;
@@ -127,7 +125,6 @@ static int control_thread_wait(struct control_thread_context * context)
 
 	do
 	{
-		struct timeval tv;
 		FD_ZERO(&context->fds);
 
 		if(context->mcu_fd >= 0)
@@ -153,11 +150,8 @@ static int control_thread_wait(struct control_thread_context * context)
             DTRACE("select vled_fd");
         }
 
-        tv.tv_sec = 1; // 1 to make less output for now
-		tv.tv_usec = 0;
-
 		//DTRACE("max_fd=%d about to select %d:%d", max_fd, (int)tv.tv_sec, (int)tv.tv_usec);
-		r = select(max_fd+1, &context->fds, NULL, NULL, &tv);
+		r = select(max_fd+1, &context->fds, NULL, NULL, tv);
 
 	} while(-1 == r && EINTR == errno);
 
@@ -275,7 +269,8 @@ static int control_frame_process(struct control_thread_context * context, uint8_
 		case COMM_READ_RESP: // register read response
 			DTRACE("COMM_READ_RESPONSE: %x, %x, %x ... %x, %x, len= %d",\
 					data[2], data[3], data[4], data[len -2], data[len-1], (int)len);
-			send_sock_data(context, g_rx_addr, &data[2], len);
+			send_sock_data(context, context->sock_resp_addr, &data[2], len);
+			context->sock_resp_addr = 0;
 			break;
 
 		case PING_REQ: // PING request
@@ -512,8 +507,12 @@ static int control_handle_sock_command(struct control_thread_context * context, 
 static int control_handle_api_command(struct control_thread_context * context, struct sockaddr_un * addr, uint8_t * data, size_t len)
 {
 	int r = -1;
+	int status;
+	struct timeval tv;
+	int i = 0;
 
-	uint8_t *  mdata = (uint8_t *) malloc(len + 1);
+	uint8_t mdata[MAX_COMMAND_PACKET_SIZE];
+
 	/* write req */
 	if (data[0] == MAPI_WRITE_RQ)
 	{
@@ -522,12 +521,11 @@ static int control_handle_api_command(struct control_thread_context * context, s
 	/* read req */
 	else if (data[0] == MAPI_READ_RQ)
 	{
-		g_rx_addr = addr; /* the response will be sent back on this address */
+		context->sock_resp_addr = addr; /* the response will be sent back on this address */
 		mdata[1] = COMM_READ_REQ;
 	}
 	memcpy(&mdata[2], &data[1], len - 1);
 	r = control_frame_process(context, mdata, len + 1);
-	free(mdata);
 	return r;
 }
 
@@ -617,7 +615,6 @@ static int control_receive_sock(struct control_thread_context * context)
 {
 	struct sockaddr_un c_addr = {0};
 	uint8_t buf[SOCK_MAX_MSG];
-	int ret = 0;
 	int r = -1;
 
 	socklen_t sock_len;
@@ -664,10 +661,10 @@ static int control_receive_sock(struct control_thread_context * context)
 			DERR("Error, unknown command type %d", buf[0]);
 			log_hex(buf, num_bytes);
 
-			return send_sock_string_message(context, &c_addr, "ERROR");
+			r = send_sock_string_message(context, &c_addr, "ERROR");
 	}
 
-	return 0;
+	return r;
 }
 
 
@@ -707,6 +704,10 @@ void * control_proc(void * cntx)
 	time_t time_last_sent_ping = 0;
 	bool on_init = true;
 	int ret = 0;
+	struct timeval tv;
+
+	tv.tv_sec = 1;
+	tv.tv_usec = 0;
 
 #if defined (IO_CONTROL_RECOVERY_DEBUG)
     redirect_stdio(IO_CONTROL_LOG);
@@ -738,7 +739,7 @@ void * control_proc(void * cntx)
 		check_devices(context);
 
 		// TODO: Waiting for events
-		status = control_thread_wait(context);
+		status = control_thread_wait(context, &tv);
 		//DTRACE("control_thread_wait returned %d", status);
 
 		if (on_init && (context->mcu_fd > -1 ))

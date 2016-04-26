@@ -22,6 +22,7 @@ struct control_thread_context
 	int gpio_fd;
 	int sock_fd;
 	frame_t frame;
+	struct sockaddr_un * sock_resp_addr;
 
 	uint8_t seq;
 

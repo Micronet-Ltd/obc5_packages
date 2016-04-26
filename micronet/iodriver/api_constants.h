@@ -10,6 +10,8 @@
 #define MAPI_WRITE_RQ 0
 #define MAPI_READ_RQ  1
 
+#define MAX_COMMAND_PACKET_SIZE 32
+
 // MAPI Commands
 #define MAPI_GET_MCU_FW_VERSION		0x00
 #define MAPI_GET_FPGA_VERSION		0x01

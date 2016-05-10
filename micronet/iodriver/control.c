@@ -649,16 +649,25 @@ void rtc_bcdconvert_and_set_systime(uint8_t * dt_bcd, char * dt_str, bool print_
 	tm_ptr->tm_min = minutes;
 	tm_ptr->tm_sec = seconds;
 
+	ret = setenv("TZ","UTC",1);
+
+	if(ret<0)
+	{
+	  DERR("setenv() returned an error %d.\n", ret);
+	}
+
 	const struct timeval tv = {mktime(tm_ptr), 0};
 	ret = settimeofday(&tv,0);
-
-	DTRACE("settimeofday returned %d errno: %s", ret, strerror(errno));
+	if (ret < 0)
+	{
+		DERR("settimeofday returned %d errno: %s", ret, strerror(errno));
+	}
 
 	snprintf(dt_str, 23 , "%04d-%02d-%02d %02d:%02d:%02d.%02d ",
 			year, month, day_of_month, hours, minutes, seconds, hundreth_sec_int);
 	if (print_time)
 	{
-		DTRACE("init rtc date_time: %04d-%02d-%02d %02d:%02d:%02d.%02d\n",
+		DINFO("init rtc date_time: %04d-%02d-%02d %02d:%02d:%02d.%02d\n",
 				year, month, day_of_month, hours, minutes, seconds, hundreth_sec_int);
 	}
 }
@@ -672,6 +681,7 @@ void update_system_time_with_rtc(struct control_thread_context * context)
 
 	context->rtc_req = true;
 	control_handle_api_command(context, NULL, req, sizeof(req));
+	DINFO("update_system_time_with_rtc: about to request RTC time\n");
 
 	while (context->rtc_req == true)
 	{
@@ -679,17 +689,14 @@ void update_system_time_with_rtc(struct control_thread_context * context)
 		if(ret < 0)
 		{
 			DERR("update_system_time_with_rtc, control_receive_mcu returned %d", ret);
-			//context->running = false;
 			context->rtc_req = false;
 			return;
-			//break;
 		}
 		DTRACE("update_system_time_with_rtc, After recv");
 	}
 
 	rtc_bcdconvert_and_set_systime(context->rtc_init_val, dt_str, true);
 	context->rtc_req = false;
-	//update android time with dt_str
 }
 
 /* Request for all the GPInput values, in case they were missed on bootup */

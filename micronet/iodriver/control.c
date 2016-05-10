@@ -656,7 +656,7 @@ void rtc_bcdconvert_and_set_systime(uint8_t * dt_bcd, char * dt_str, bool print_
 	  DERR("setenv() returned an error %d.\n", ret);
 	}
 
-	const struct timeval tv = {mktime(tm_ptr), 0};
+	const struct timeval tv = {mktime(tm_ptr), hundreth_sec_int*1000};
 	ret = settimeofday(&tv,0);
 	if (ret < 0)
 	{

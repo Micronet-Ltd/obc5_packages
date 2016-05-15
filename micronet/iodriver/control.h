@@ -18,10 +18,13 @@ struct control_thread_context
 	bool running;
 	char name[PATH_MAX];
 	fd_set fds;
-	int fd;
+	int mcu_fd;
 	int gpio_fd;
 	int sock_fd;
 	frame_t frame;
+	struct sockaddr_un * sock_resp_addr;
+	bool rtc_req;
+	uint8_t rtc_init_val[8];
 
 	uint8_t seq;
 
@@ -30,6 +33,7 @@ struct control_thread_context
 
 	int ping_sent;
 	int pong_recv;
+    int vled_fd;
 };
 
 void * control_proc(void * cntx);

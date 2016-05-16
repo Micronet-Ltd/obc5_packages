@@ -122,7 +122,7 @@ void send_api_hex2(int * fd, char * hexdata)
 	uint8_t data[4096];
 	uint32_t fpga_ver = 0;
 	uint32_t gpi_voltage = 0;
-	uint8_t led_num, brightness, red, green, blue, gpi_num, power_on_reason, wait_time, rtc_dig_cal, rtc_analog_cal;
+	uint8_t led_num, brightness, red, green, blue, gpi_num, power_on_reason, wait_time, rtc_dig_cal, rtc_analog_cal, rtc_reg_addr, rtc_reg_data;
 	uint16_t wiggle_count, wig_cnt_sample_period, ignition_threshold;
 	int i;
 	int ret = 0;
@@ -173,7 +173,7 @@ void send_api_hex2(int * fd, char * hexdata)
 			break;
 		case MAPI_GET_POWER_ON_THRESHOLD:
 			ret = get_power_on_threshold_cfg(fd, &wiggle_count, &wig_cnt_sample_period, &ignition_threshold);
-			printf("get power on threshold  wiggle_count = %d, wig_cnt_sample_period = %d, ignition_threshold = %d, ret = %d  \n", \
+			printf("get power on threshold  wiggle_count = %d, wig_cnt_sample_period = %d mS, ignition_threshold = %d mV, ret = %d  \n", \
 					wiggle_count, wig_cnt_sample_period, ignition_threshold, ret);
 			break;
 		case MAPI_SET_POWER_ON_THRESHOLD:
@@ -181,7 +181,7 @@ void send_api_hex2(int * fd, char * hexdata)
 			wig_cnt_sample_period = (uint16_t)((data[4]<<8)|data[5]);;
 			ignition_threshold = (uint16_t)((data[6]<<8)|data[7]);;
 			ret = set_power_on_threshold_cfg(fd, wiggle_count, wig_cnt_sample_period, ignition_threshold);
-			printf("set power on threshold  wiggle_count = %d, wig_cnt_sample_period = %d, ignition_threshold = %d, ret = %d  \n", \
+			printf("set power on threshold  wiggle_count = %d, wig_cnt_sample_period = %d ms, ignition_threshold = %d mV, ret = %d  \n", \
 								wiggle_count, wig_cnt_sample_period, ignition_threshold, ret);
 			break;
 		case MAPI_GET_POWER_ON_REASON:
@@ -214,14 +214,39 @@ void send_api_hex2(int * fd, char * hexdata)
 		case MAPI_GET_RTC_CAL_REGISTERS:
 			ret = get_rtc_cal_reg(fd, &rtc_dig_cal, &rtc_analog_cal);
 			printf("get rtc cal registers, dig cal: %x analog cal: %x, ret = %d  \n", \
-					rtc_dig_cal, rtc_dig_cal, ret);
+					rtc_dig_cal, rtc_analog_cal, ret);
 			break;
 		case MAPI_SET_RTC_CAL_REGISTERS:
 			rtc_dig_cal = data[2];
 			rtc_analog_cal = data[3];
-			ret = set_rtc_cal_reg(fd, rtc_dig_cal, rtc_dig_cal);
+			ret = set_rtc_cal_reg(fd, rtc_dig_cal, rtc_analog_cal);
 			printf("set rtc cal registers, dig cal: %x analog cal: %x, ret = %d  \n", \
-								rtc_dig_cal, rtc_dig_cal, ret);
+								rtc_dig_cal, rtc_analog_cal, ret);
+			break;
+		case MAPI_GET_RTC_REG_DBG:
+			rtc_reg_addr = data[2];
+			ret = get_rtc_reg_dbg(fd, rtc_reg_addr, &rtc_reg_data);
+			printf("get rtc registers @ addr: %x value read: %x, ret = %d  \n", \
+					rtc_reg_addr, rtc_reg_data, ret);
+			break;
+		case MAPI_SET_RTC_REG_DBG:
+			rtc_reg_addr = data[2];
+			rtc_reg_data = data[3];
+			ret = set_rtc_reg_dbg(fd, rtc_reg_addr, rtc_reg_data);
+			printf("set rtc registers @ addr: %x value set: %x, ret = %d  \n", \
+					rtc_reg_addr, rtc_reg_data, ret);
+			break;
+
+		case MCTL_IS_RTC_BATTERY_GOOD:
+			ret = check_rtc_battery(fd);
+			if (ret)
+			{
+				printf("rtc battery good\n");
+			}
+			else
+			{
+				printf("rtc battery low or not present\n");
+			}
 			break;
 
 		default: break;

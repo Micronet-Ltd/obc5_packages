@@ -48,6 +48,9 @@
 
 #include "control.h"
 #include "api_constants.h"
+#include <time.h>
+#include <sys/time.h>
+#include <errno.h>
 
 //#define IO_CONTROL_RECOVERY_DEBUG 1
 
@@ -64,8 +67,6 @@ static void redirect_stdio(const char* filename)
 #endif
 
 static int send_sock_data(struct control_thread_context * context, struct sockaddr_un * addr, uint8_t * data, size_t len);
-
-struct sockaddr_un * g_rx_addr;
 
 static uint8_t control_get_seq(struct control_thread_context * context)
 {
@@ -110,14 +111,16 @@ static int control_thread_wait(struct control_thread_context * context)
 	int r;
 	int max_fd = -1;
 
-	if(max_fd < context->fd)
-		max_fd = context->fd;
+	if(max_fd < context->mcu_fd)
+		max_fd = context->mcu_fd;
 	if(max_fd < context->sock_fd)
 		max_fd = context->sock_fd;
 	if(max_fd < context->gpio_fd)
 		max_fd = context->gpio_fd;
     if(max_fd < context->vled_fd)
         max_fd = context->vled_fd;
+
+    struct timeval tv = {1, 0};
 
 	//DTRACE("max_fd=%d", max_fd);
 
@@ -127,12 +130,11 @@ static int control_thread_wait(struct control_thread_context * context)
 
 	do
 	{
-		struct timeval tv;
 		FD_ZERO(&context->fds);
 
-		if(context->fd >= 0)
+		if(context->mcu_fd >= 0)
 		{
-			FD_SET(context->fd, &context->fds);
+			FD_SET(context->mcu_fd, &context->fds);
 			//DTRACE("FD_SET fd");
 		}
 
@@ -153,9 +155,8 @@ static int control_thread_wait(struct control_thread_context * context)
             DTRACE("select vled_fd");
         }
 
-        tv.tv_sec = 1; // 1 to make less output for now
-		tv.tv_usec = 0;
-
+        tv.tv_sec = 1;
+        tv.tv_usec = 0;
 		//DTRACE("max_fd=%d about to select %d:%d", max_fd, (int)tv.tv_sec, (int)tv.tv_usec);
 		r = select(max_fd+1, &context->fds, NULL, NULL, &tv);
 
@@ -171,7 +172,7 @@ static int control_thread_wait(struct control_thread_context * context)
 
 	if( r > 0)
 	{
-		if( (context->fd > -1) && FD_ISSET(context->fd, &context->fds))
+		if( (context->mcu_fd > -1) && FD_ISSET(context->mcu_fd, &context->fds))
 			return 0;
 		if( (context->sock_fd > -1) && FD_ISSET(context->sock_fd, &context->fds))
 			return 0;
@@ -201,7 +202,7 @@ static int  control_send_mcu(struct control_thread_context * context, uint8_t * 
 	if(r > 0)
 	{
 		size_t st;
-		st = write(context->fd, encoded_buffer, r);
+		st = write(context->mcu_fd, encoded_buffer, r);
 		if(st != r)
 			return -1;
 		return 0;
@@ -275,7 +276,16 @@ static int control_frame_process(struct control_thread_context * context, uint8_
 		case COMM_READ_RESP: // register read response
 			DTRACE("COMM_READ_RESPONSE: %x, %x, %x ... %x, %x, len= %d",\
 					data[2], data[3], data[4], data[len -2], data[len-1], (int)len);
-			send_sock_data(context, g_rx_addr, &data[2], len);
+			if (context->rtc_req == true)
+			{
+				memcpy(context->rtc_init_val ,&data[3], sizeof(context->rtc_init_val));
+				context->rtc_req = false;
+			}
+			else
+			{
+				send_sock_data(context, context->sock_resp_addr, &data[2], len);
+			}
+			context->sock_resp_addr = 0;
 			break;
 
 		case PING_REQ: // PING request
@@ -307,14 +317,14 @@ static int control_receive_mcu(struct control_thread_context * context)
 	uint8_t readbuffer[1024];
 	DTRACE("");
 
-	bytes_read = read(context->fd, readbuffer, sizeof(readbuffer));
+	bytes_read = read(context->mcu_fd, readbuffer, sizeof(readbuffer));
 	if(bytes_read < 0)
 	{
 		if(EAGAIN == errno)
 			return 0; //
 		DERR("read: %s", strerror(errno));
-		close(context->fd);
-		context->fd = -1;
+		close(context->mcu_fd);
+		context->mcu_fd = -1;
 		frame_reset(&context->frame);
 		return -1;
 		//abort();
@@ -476,10 +486,10 @@ static int control_handle_sock_raw(struct control_thread_context * context, stru
 
 static int control_handle_sock_command(struct control_thread_context * context, struct sockaddr_un * addr, uint8_t * data, size_t len)
 {
-	socklen_t sock_len;
+	//socklen_t sock_len;
 	int r = -1;
 
-	sock_len = sizeof(struct sockaddr_un);
+	//sock_len = sizeof(struct sockaddr_un);
 
 	if(0 == memcmp(data, "status", strlen("status")+1))
 	{
@@ -513,7 +523,8 @@ static int control_handle_api_command(struct control_thread_context * context, s
 {
 	int r = -1;
 
-	uint8_t *  mdata = (uint8_t *) malloc(len + 1);
+	uint8_t mdata[MAX_COMMAND_PACKET_SIZE];
+
 	/* write req */
 	if (data[0] == MAPI_WRITE_RQ)
 	{
@@ -522,12 +533,11 @@ static int control_handle_api_command(struct control_thread_context * context, s
 	/* read req */
 	else if (data[0] == MAPI_READ_RQ)
 	{
-		g_rx_addr = addr; /* the response will be sent back on this address */
+		context->sock_resp_addr = addr; /* the response will be sent back on this address */
 		mdata[1] = COMM_READ_REQ;
 	}
 	memcpy(&mdata[2], &data[1], len - 1);
 	r = control_frame_process(context, mdata, len + 1);
-	free(mdata);
 	return r;
 }
 
@@ -613,11 +623,93 @@ static int control_leds(struct control_thread_context * context)
     return 0;
 }
 
+/* converts RTC bcd array format to string */
+void rtc_bcdconvert_and_set_systime(uint8_t * dt_bcd, char * dt_str, bool print_time)
+{
+	uint8_t hundreth_sec_int = (dt_bcd[0]>>4) + (dt_bcd[0]&0x0F);
+	uint8_t seconds = (((dt_bcd[1]>>4)&0x7) * 10) + (dt_bcd[1]&0x0F);
+	uint8_t minutes = (((dt_bcd[2]>>4)&0x7) * 10) + (dt_bcd[2]&0x0F);
+	uint8_t hours = (((dt_bcd[3]>>4)&0x3) * 10) + (dt_bcd[3]&0x0F);
+	uint8_t century = (dt_bcd[3]>>6);
+	//uint8_t day_of_week = dt[4]&0x7;
+	uint8_t day_of_month = (((dt_bcd[5]>>4)&0x3) * 10) + (dt_bcd[5]&0x0F);
+	uint8_t month = (((dt_bcd[6]>>4)&0x1) * 10) + (dt_bcd[6]&0x0F);
+	uint16_t year = ((dt_bcd[7]>>4) * 10) + (dt_bcd[7]&0x0F);
+	int ret;
+
+	year = 2000 + (century * 100) + year;
+
+	time_t my_time = time(0);
+	struct tm* tm_ptr = gmtime(&my_time);
+	tm_ptr->tm_year = year - 1900;
+	tm_ptr->tm_mon = month-1;
+	tm_ptr->tm_mday = day_of_month;
+
+	tm_ptr->tm_hour = hours;
+	tm_ptr->tm_min = minutes;
+	tm_ptr->tm_sec = seconds;
+
+	ret = setenv("TZ","UTC",1);
+
+	if(ret<0)
+	{
+	  DERR("setenv() returned an error %d.\n", ret);
+	}
+
+	const struct timeval tv = {mktime(tm_ptr), hundreth_sec_int*1000};
+	ret = settimeofday(&tv,0);
+	if (ret < 0)
+	{
+		DERR("settimeofday returned %d errno: %s", ret, strerror(errno));
+	}
+
+	snprintf(dt_str, 23 , "%04d-%02d-%02d %02d:%02d:%02d.%02d ",
+			year, month, day_of_month, hours, minutes, seconds, hundreth_sec_int);
+	if (print_time)
+	{
+		DINFO("init rtc date_time: %04d-%02d-%02d %02d:%02d:%02d.%02d\n",
+				year, month, day_of_month, hours, minutes, seconds, hundreth_sec_int);
+	}
+}
+
+void update_system_time_with_rtc(struct control_thread_context * context)
+{
+	uint8_t req[] = {MAPI_READ_RQ, MAPI_GET_RTC_DATE_TIME };
+	char dt_str[23];
+	int ret = -1;
+	//struct sock_addr_un addr = RTC_SOCK_ADDR;
+
+	context->rtc_req = true;
+	control_handle_api_command(context, NULL, req, sizeof(req));
+	DINFO("update_system_time_with_rtc: about to request RTC time\n");
+
+	while (context->rtc_req == true)
+	{
+		ret = control_receive_mcu(context);
+		if(ret < 0)
+		{
+			DERR("update_system_time_with_rtc, control_receive_mcu returned %d", ret);
+			context->rtc_req = false;
+			return;
+		}
+		DTRACE("update_system_time_with_rtc, After recv");
+	}
+
+	rtc_bcdconvert_and_set_systime(context->rtc_init_val, dt_str, true);
+	context->rtc_req = false;
+}
+
+/* Request for all the GPInput values, in case they were missed on bootup */
+int update_all_GP_inputs(struct control_thread_context * context)
+{
+	uint8_t req[] = { 0, MAPI_WRITE_RQ, MAPI_SET_GPI_UPDATE_ALL_VALUES };
+	return control_frame_process(context, req, sizeof(req));
+}
+
 static int control_receive_sock(struct control_thread_context * context)
 {
 	struct sockaddr_un c_addr = {0};
 	uint8_t buf[SOCK_MAX_MSG];
-	int ret = 0;
 	int r = -1;
 
 	socklen_t sock_len;
@@ -664,16 +756,16 @@ static int control_receive_sock(struct control_thread_context * context)
 			DERR("Error, unknown command type %d", buf[0]);
 			log_hex(buf, num_bytes);
 
-			return send_sock_string_message(context, &c_addr, "ERROR");
+			r = send_sock_string_message(context, &c_addr, "ERROR");
 	}
 
-	return 0;
+	return r;
 }
 
 
 static void check_devices(struct control_thread_context * context)
 {
-	if( -1 == context->fd)
+	if( -1 == context->mcu_fd)
 	{
 		DTRACE("check for device '%s'", context->name);
 
@@ -684,8 +776,8 @@ static void check_devices(struct control_thread_context * context)
 		{
 			if(!file_exists("/data/disable_control_tty"))
 			{
-				context->fd = open_serial(context->name);
-				DINFO("opened %s fd = %d", context->name, context->fd);
+				context->mcu_fd = open_serial(context->name);
+				DINFO("opened %s fd = %d", context->name, context->mcu_fd);
 			}
 		}
 		else
@@ -706,7 +798,6 @@ void * control_proc(void * cntx)
 	uint8_t databuffer[1024]; // >= 10 * (8*2)
 	time_t time_last_sent_ping = 0;
 	bool on_init = true;
-	int ret = 0;
 
 #if defined (IO_CONTROL_RECOVERY_DEBUG)
     redirect_stdio(IO_CONTROL_LOG);
@@ -716,7 +807,7 @@ void * control_proc(void * cntx)
 	context->running = true;
 
 	context->gpio_fd = -1;
-	context->fd = -1;
+	context->mcu_fd = -1;
 	context->sock_fd = -1;
     context->vled_fd = -1;
 
@@ -741,15 +832,14 @@ void * control_proc(void * cntx)
 		status = control_thread_wait(context);
 		//DTRACE("control_thread_wait returned %d", status);
 
-		if (on_init && (context->fd > -1 ))
+		if (on_init && (context->mcu_fd > -1 ))
 		{
 			on_init = false;
-			/* Request for all the GPInput values, in case they were missed on bootup */
-			uint8_t req[] = { MCTRL_MAPI, MAPI_WRITE_RQ, MAPI_SET_GPI_UPDATE_ALL_VALUES};
-			ret = control_handle_api_command(context, NULL, req+1, (sizeof(req)-1));
+			update_system_time_with_rtc(context);
+			update_all_GP_inputs(context);
 		}
 
-		if((context->fd > -1) && FD_ISSET(context->fd, &context->fds))
+		if((context->mcu_fd > -1) && FD_ISSET(context->mcu_fd, &context->fds))
 		{
 			status = control_receive_mcu(context);
 			if(status < 0)
@@ -789,7 +879,7 @@ void * control_proc(void * cntx)
 			DTRACE("After sock receive");
 		}
 
-		if(context->fd > -1)
+		if(context->mcu_fd > -1)
 		{
 			if( (0 == time_last_sent_ping) || ((time(NULL) - time_last_sent_ping) > 1) )
 			{

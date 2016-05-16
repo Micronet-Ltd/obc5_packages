@@ -114,14 +114,14 @@ void do_run()
 	snprintf(controlctx.name, sizeof(controlctx.name)-1, "/dev/ttyACM0");
 	snprintf(accelctx.name, sizeof(accelctx.name)-1, "/dev/ttyACM1");
 
-
-
-	// Disable control since it is missing in MCU currently (neet USB framework)
 	pthread_create(&control_thread, NULL, control_proc, &controlctx);
 	pthread_create(&accel_thread, NULL, accel_proc, &accelctx);
 
+#ifndef LINUX_BUILD
     property_set("iodriver.boot_complete", "1");
-    DINFO("%s: booot_complete\n", __func__);
+    DINFO("%s: boot_complete\n", __func__);
+#endif
+
 	// TODO: main thread processing
 	while(true) sleep(100);
 }

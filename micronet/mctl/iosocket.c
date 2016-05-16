@@ -41,11 +41,21 @@ int iosocket_connect()
 {
 	struct sockaddr_un c_addr = {0};
 	int fd;
+	struct timeval timeout;
+	timeout.tv_sec = 1;
+	timeout.tv_usec = 0;
 
 	fd = socket(AF_UNIX, SOCK_DGRAM, 0);
+
+	if (setsockopt (fd, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout, sizeof(timeout)) < 0)
+		perror("setsockopt failed\n");
+
+	if (setsockopt (fd, SOL_SOCKET, SO_SNDTIMEO, (char *)&timeout, sizeof(timeout)) < 0)
+		perror("setsockopt failed\n");
+
 	if(-1 == fd)
 	{
-		perror("socket");
+        printf("%s: socket failure[%s]\n", __func__, strerror(errno));
 		exit(-1);
 	}
 
@@ -60,7 +70,7 @@ int iosocket_connect()
 
 	if(-1 == bind(fd, (struct sockaddr *)&c_addr, sizeof(struct sockaddr_un)))
 	{
-		perror("bind");
+        printf("%s: failure to bind[%s]\n", __func__, strerror(errno));
 		exit(-1);
 	}
 
@@ -83,7 +93,7 @@ int iosocket_sendmsg(int * fd, uint8_t * data, size_t len)
 
 	if(-1 == sendto(*fd, data, len, 0, (struct sockaddr *)&s_addr, sizeof(struct sockaddr_un)))
 	{
-		perror("sendto");
+        printf("%s: failure to send[%s]\n", __func__, strerror(errno));
 		return -1;
 	}
 	return 0;
@@ -97,7 +107,7 @@ int iosocket_recvmsg(int * fd, uint8_t * data, size_t len)
 	num_bytes = recvfrom(*fd, data, len, 0, NULL, NULL);
 	if(-1 == num_bytes)
 	{
-		perror("recvfrom");
+        printf("%s: failure to retrieve[%s]\n", __func__, strerror(errno));
 		return -1;
 	}
 	return num_bytes;

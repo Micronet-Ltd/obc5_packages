@@ -28,6 +28,8 @@ import android.provider.ContactsContract.CommonDataKinds.Phone;
 import com.android.internal.util.UserIcons;
 import com.android.settings.Utils;
 
+import com.securespaces.android.ssm.SpacesManager;
+import com.securespaces.android.ssm.SecureSpacesExtensions;
 
 /**
  * Watches for changes to Me Profile in Contacts and writes the photo to the User Manager.
@@ -58,6 +60,15 @@ public class ProfileUpdateReceiver extends BroadcastReceiver {
 
     static void copyProfileName(Context context) {
         int userId = UserHandle.myUserId();
+
+        if (SecureSpacesExtensions.hasSecureSpacesService()) {
+            UserHandle userHandle = new UserHandle(userId);
+            SpacesManager sm = new SpacesManager(context);
+            if (sm.getSpace(userHandle) != null) {
+                // Do not change a space's name
+                return;
+            }
+        }
         UserManager um = (UserManager) context.getSystemService(Context.USER_SERVICE);
         String profileName = Utils.getMeProfileName(context, false /* partial name */);
         if (profileName != null && profileName.length() > 0) {

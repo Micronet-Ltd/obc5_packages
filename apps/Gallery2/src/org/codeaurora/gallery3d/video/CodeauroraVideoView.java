@@ -265,6 +265,8 @@ public class CodeauroraVideoView extends SurfaceView implements MediaPlayerContr
                     mMediaController.hide();
                 }
 
+				stopPlayback(); //wenjs add 
+
                 /* If an error handler has been supplied, use it and finish. */
                 if (mOnErrorListener != null) {
                     if (mOnErrorListener.onError(mMediaPlayer, frameworkErr, implErr)) {

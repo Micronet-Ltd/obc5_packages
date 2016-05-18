@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/background"
+    android:orientation="horizontal" >
+
+    <LinearLayout
+        android:layout_width="120.0dip"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10.0dip"
+        android:layout_marginTop="10.0dip"
+        android:orientation="vertical" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/barometer"
+            android:textColor="#ffffffff"
+            android:textSize="25.0sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/altitude"
+            android:textColor="#ffffffff"
+            android:textSize="25.0sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/relative_height"
+            android:textColor="#ffffffff"
+            android:textSize="25.0sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="90.0dip"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10.0dip"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/barometer_value"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="right"
+            android:singleLine="true"
+            android:text="@string/barometer_value"
+            android:textColor="#ffffffff"
+            android:textSize="25.0sp" />
+
+        <TextView
+            android:id="@+id/altitude_value"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="right"
+            android:singleLine="true"
+            android:text="@string/altitude_value"
+            android:textColor="#ffffffff"
+            android:textSize="25.0sp" />
+
+        <TextView
+            android:id="@+id/relative_height_value"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="right"
+            android:singleLine="true"
+            android:text="@string/relative_height_value"
+            android:textColor="#ffffffff"
+            android:textSize="25.0sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10.0dip"
+        android:orientation="vertical" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10.0dip"
+            android:text="@string/barometer_unit"
+            android:textColor="#ffffffff"
+            android:textSize="25.0sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10.0dip"
+            android:text="@string/altitude_unit"
+            android:textColor="#ffffffff"
+            android:textSize="25.0sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10.0dip"
+            android:text="@string/relative_height_unit"
+            android:textColor="#ffffffff"
+            android:textSize="25.0sp" />
+
+    </LinearLayout>
+
+</LinearLayout>

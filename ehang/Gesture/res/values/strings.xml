@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">智能手势</string>
+    <string name="action_settings">Settings</string>
+    <string name="title">智能手势</string>
+    <string name="open_camera">灭屏情况下，手指画C打开相机</string>
+    <string name="light_screen">灭屏情况下，手指双击点亮屏幕</string>
+    <string name="open_counter">灭屏情况下，手指画M打开计算器</string>
+
+</resources>

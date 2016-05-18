@@ -578,7 +578,8 @@ public class LauncherModel extends BroadcastReceiver
                         // Add this icon to the db, creating a new page if necessary.  If there
                         // is only the empty page then we just add items to the first page.
                         // Otherwise, we add them to the next pages.
-                        int startSearchPageIndex = workspaceScreens.isEmpty() ? 0 : 1;
+                     //   int startSearchPageIndex = workspaceScreens.isEmpty() ? 0 : 1;
+						  int startSearchPageIndex = 0;
                         Pair<Long, int[]> coords = LauncherModel.findNextAvailableIconSpace(context,
                                 name, launchIntent, startSearchPageIndex, workspaceScreens);
                         if (coords == null) {
@@ -4084,8 +4085,8 @@ public class LauncherModel extends BroadcastReceiver
     public static final Comparator<AppInfo> APP_INSTALL_TIME_COMPARATOR
             = new Comparator<AppInfo>() {
         public final int compare(AppInfo a, AppInfo b) {
-            if (a.firstInstallTime < b.firstInstallTime) return 1;
-            if (a.firstInstallTime > b.firstInstallTime) return -1;
+            if (a.firstInstallTime < b.firstInstallTime) return -1;
+            if (a.firstInstallTime > b.firstInstallTime) return 1;
             return 0;
         }
     };

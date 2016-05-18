@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="app_name">EHPrivacyKit</string>
+    <string name="tts_power_on">Power On</string>
+    <string name="tts_privacy_mode">Privacy Mode</string>
+    <string name="tts_normal_mode">Normal Mode</string>
+	<string name="tts_no_sim">no sim card</string>
+	<string name="tts_sim_locked">no sim card</string>
+	<string name="tts_have_sim">sim card is inserted</string>	
+	<string name="tts_factory_test">Factory Test Mode</string>	
+	<string name="tts_get_volume">Volume<xliff:g id="volume_rank">%1$d</xliff:g>rank</string>		
+	<string name="wifi_disconnected">Your WLAN is disconnected</string>
+	<string name="wifi_connected">Your WLAN is connected</string>
+	<string name="wifi_disabled">Your WLAN is closed</string>
+	<string name="wifi_enabled">Your WLAN is open</string>	
+</resources>

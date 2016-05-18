@@ -261,6 +261,7 @@ public class SoundRecorder extends Activity
     
     static final int SETTING_TYPE_STORAGE_LOCATION = 0;
     static final int SETTING_TYPE_FILE_TYPE = 1;
+    static final int SETTING_TYPE_RECORDING_LIST = 2;//added by ao
     static final String STORAGE_PATH_LOCAL_PHONE = Environment.getExternalStorageDirectory()
             .toString() + "/SoundRecorder";
 
@@ -326,6 +327,7 @@ public class SoundRecorder extends Activity
     private PhoneStateListener[] mPhoneStateListener;
     private int mFileType = 0;
     private int mPath = 0;
+    private int mList = 0;//added by ao
     private String mStoragePath = STORAGE_PATH_LOCAL_PHONE;
     private SharedPreferences mSharedPreferences;
     private Editor mPrefsStoragePathEditor;
@@ -792,6 +794,11 @@ public class SoundRecorder extends Activity
             adapter.add(R.string.storage_setting_local_item);
             adapter.add(R.string.storage_setting_sdcard_item);
         }
+        //added by ao
+        else if (optionType == SETTING_TYPE_RECORDING_LIST) {
+            adapter.add(R.string.recordinglist_setting_local_item);
+            adapter.add(R.string.recordinglist_setting_sdcard_item);
+        }//end ao
 
         final DialogInterface.OnClickListener clickListener =
                 new DialogInterface.OnClickListener() {
@@ -858,6 +865,27 @@ public class SoundRecorder extends Activity
                         mPrefsStoragePathEditor.putInt("path", mPath);
                         mPrefsStoragePathEditor.commit();
                         break;
+                        
+                    //added by ao
+                    case R.string.recordinglist_setting_local_item:
+						Intent it = new Intent();
+                        it.setClassName("com.cyanogenmod.filemanager", "com.cyanogenmod.filemanager.activities.ShortcutActivity");
+                        it.putExtra("extra_shortcut_fso", "/storage/emulated/0/SoundRecorder");
+                        it.putExtra("extra_shortcut_type", "navigate");
+                        startActivity(it);
+                        break;
+                    case R.string.recordinglist_setting_sdcard_item:
+                        if (getSDState(SoundRecorder.this).equals(Environment.MEDIA_MOUNTED)) {
+							Intent mIt = new Intent();
+							mIt.setClassName("com.cyanogenmod.filemanager", "com.cyanogenmod.filemanager.activities.ShortcutActivity");
+							mIt.putExtra("extra_shortcut_fso", "/storage/sdcard1/SoundRecorder");
+							mIt.putExtra("extra_shortcut_type", "navigate");
+							startActivity(mIt);
+                        } else {
+                            Toast.makeText(SoundRecorder.this, R.string.no_sd_card, Toast.LENGTH_SHORT).show();
+                        }
+                        break;
+                    //end ao
 
                     default: {
                         Log.e(TAG, "Unexpected resource: "
@@ -879,6 +907,14 @@ public class SoundRecorder extends Activity
                     .setSingleChoiceItems(adapter, mFileType, clickListener)
                     .create();
         }
+        //added by ao
+	     else if (optionType == SETTING_TYPE_RECORDING_LIST) {
+	        ad = new AlertDialog.Builder(this)
+	                .setTitle(R.string.recordinglist_setting)
+	                .setSingleChoiceItems(adapter, mList, clickListener)
+	                .create();
+	    }//end ao
+        
         ad.setCanceledOnTouchOutside(true);
         ad.show();
     }
@@ -898,6 +934,7 @@ public class SoundRecorder extends Activity
          menu.findItem(R.id.menu_item_filetype).setEnabled(
                 (mRecorder.state() == Recorder.IDLE_STATE) && (!mExitAfterRecord));
         menu.findItem(R.id.menu_item_storage).setEnabled(mRecorder.state() == Recorder.IDLE_STATE);
+        menu.findItem(R.id.menu_item_recordingList).setEnabled(mRecorder.state() == Recorder.IDLE_STATE);//added by ao
         if (SystemProperties.getBoolean("debug.soundrecorder.enable", false)) {
             menu.findItem(R.id.menu_item_keyboard).setVisible(true);
         } else {
@@ -908,6 +945,7 @@ public class SoundRecorder extends Activity
             menu.findItem(R.id.menu_item_keyboard).setEnabled(false);
             menu.findItem(R.id.menu_item_filetype).setEnabled(false);
             menu.findItem(R.id.menu_item_storage).setEnabled(false);
+            menu.findItem(R.id.menu_item_recordingList).setEnabled(false);//added by ao
         }
         return true;
     }
@@ -933,6 +971,15 @@ public class SoundRecorder extends Activity
                     openOptionDialog(SETTING_TYPE_STORAGE_LOCATION);
                 }
                 break;
+			
+            //added by ao
+            case R.id.menu_item_recordingList:
+                if(mRecorder.state() == Recorder.IDLE_STATE) {
+                    openOptionDialog(SETTING_TYPE_RECORDING_LIST);
+                }
+                break;
+            //end
+			
         }
         return super.onOptionsItemSelected(item);
     }

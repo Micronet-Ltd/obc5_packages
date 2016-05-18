@@ -56,7 +56,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-
+import android.content.pm.ApplicationInfo;
 /**
  * A simple callback interface which also provides the results of the task.
  */
@@ -187,7 +187,7 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
             }
         }
     }
-    private SortMode mSortMode = SortMode.Title;
+    private SortMode mSortMode = SortMode.InstallTime;
 
     private int mFilterApps = FILTER_APPS_SYSTEM_FLAG | FILTER_APPS_DOWNLOADED_FLAG;
 
@@ -1700,8 +1700,34 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
     }
 
     public void sortApps() {
-        Collections.sort(mFilteredApps, getComparatorForSortMode());
-
+		//addd	sort app by user	
+		if(mSortMode == SortMode.InstallTime){
+			ArrayList<AppInfo> mFilteredAppsSYS =new ArrayList<AppInfo>();
+			ArrayList<AppInfo> mFilteredAppsUSER=new ArrayList<AppInfo>();
+			for(int i=0;i<mFilteredApps.size();i++){
+				if((mFilteredApps.get(i).flags&ApplicationInfo.FLAG_SYSTEM)==0){
+					mFilteredAppsSYS.add(mFilteredApps.get(i));
+				}else{
+					mFilteredAppsUSER.add(mFilteredApps.get(i));
+				}
+			}
+			//Collections.sort(mFilteredAppsSYS, getComparatorForSortMode());						
+			mFilteredApps.clear();
+			String[] allnames = mContext.getResources().getStringArray(R.array.user_defined_position);						
+			for(int j=0;j<allnames.length;j++){
+				for(int i=0;i<mFilteredAppsSYS.size();i++){		
+					if(mFilteredAppsSYS.get(i).componentName.getClassName().equals(allnames[j])){
+						mFilteredApps.add(mFilteredAppsSYS.get(i));
+						mFilteredAppsSYS.remove(mFilteredAppsSYS.get(i));
+					}
+				}
+			}
+			if(mFilteredAppsSYS.size()>0) mFilteredApps.addAll(mFilteredAppsSYS);
+			Collections.sort(mFilteredAppsUSER, getComparatorForSortMode());
+			mFilteredApps.addAll(mFilteredAppsUSER);
+    	}else{
+			Collections.sort(mFilteredApps, getComparatorForSortMode());
+		}
         if (mContentType == ContentType.Applications) {
             for (int i = 0; i < getChildCount(); i++) {
                 syncAppsPageItems(i, true);
@@ -1863,13 +1889,14 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
                 }
             } else {
                 int index = Collections.binarySearch(mApps, info,
-                                                     getComparatorForSortMode());
+                                                     LauncherModel.getAppNameComparator());
 
                 if (index < 0) {
                     mApps.add(-(index + 1), info);
                 }
             }
         }
+		Collections.sort(mApps,getComparatorForSortMode());
     }
 
     public void addApps(ArrayList<AppInfo> list) {
@@ -1982,8 +2009,34 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
                 iterator.remove();
             }
         }
-        Collections.sort(mFilteredApps, getComparatorForSortMode());
-
+		//addd sort app by user
+		if(mSortMode == SortMode.InstallTime){
+			ArrayList<AppInfo> mFilteredAppsSYS =new ArrayList<AppInfo>();
+			ArrayList<AppInfo> mFilteredAppsUSER=new ArrayList<AppInfo>();			
+			for(int i=0;i<mFilteredApps.size();i++){
+				if((mFilteredApps.get(i).flags&ApplicationInfo.FLAG_SYSTEM)==0){
+					mFilteredAppsSYS.add(mFilteredApps.get(i));
+				}else{
+					mFilteredAppsUSER.add(mFilteredApps.get(i));
+				}
+			}
+			//Collections.sort(mFilteredAppsSYS, getComparatorForSortMode());						
+			mFilteredApps.clear();
+				String[] allnames = mContext.getResources().getStringArray(R.array.user_defined_position);
+			for(int j=0;j<allnames.length;j++){
+				for(int i=0;i<mFilteredAppsSYS.size();i++){
+					if(mFilteredAppsSYS.get(i).componentName.getClassName().equals(allnames[j])){
+						mFilteredApps.add(mFilteredAppsSYS.get(i));
+						mFilteredAppsSYS.remove(mFilteredAppsSYS.get(i));
+					}
+				}
+			}
+			if(mFilteredAppsSYS.size()>0) mFilteredApps.addAll(mFilteredAppsSYS);
+			Collections.sort(mFilteredAppsUSER, getComparatorForSortMode());
+			mFilteredApps.addAll(mFilteredAppsUSER);
+		}else{
+			Collections.sort(mFilteredApps, getComparatorForSortMode());
+		}
         if (LauncherApplication.sConfigLauncherFixAllAppsScr1Scr2) {
             // common bug. Protected apps not filtered from ctApps and
             // ctFirstPageApps

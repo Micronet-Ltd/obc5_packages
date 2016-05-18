@@ -99,6 +99,10 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
+import com.android.camera.SlideView;
+
+
+
 
 public class PhotoModule
         extends CameraModule
@@ -795,6 +799,8 @@ public class PhotoModule
         bottomBarSpec.enableHdr = true;
         bottomBarSpec.hdrCallback = mHdrPlusCallback;
         bottomBarSpec.enableGridLines = true;
+		//water
+		bottomBarSpec.enablewaterCamera = true;
         if (mCameraCapabilities != null) {
             bottomBarSpec.enableExposureCompensation = true;
             bottomBarSpec.exposureCompensationSetCallback =
@@ -1755,7 +1761,14 @@ public class PhotoModule
 
     @Override
     public void onLayoutOrientationChanged(boolean isLandscape) {
-        setDisplayOrientation();
+		 setDisplayOrientation();
+		 SlideView slideview=(SlideView)mActivity.findViewById(R.id.slider);
+		   if(isLandscape){
+			 slideview.setRotation(270); 		 
+		   }else{
+			    slideview.setRotation(360);
+		   }
+       
     }
 
     @Override

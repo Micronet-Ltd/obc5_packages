@@ -1,15 +1,19 @@
 package com.android.settings.applications;
 
+import android.app.AppGlobals;
 import android.app.Application;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.IPackageManager;
 import android.content.pm.IPackageStatsObserver;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageStats;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.pm.UserInfo;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Handler;
@@ -17,10 +21,13 @@ import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
 import android.os.Process;
+import android.os.RemoteException;
 import android.os.SystemClock;
 import android.os.UserHandle;
+import android.os.UserManager;
 import android.text.format.Formatter;
 import android.util.Log;
+import android.util.SparseArray;
 
 import java.io.File;
 import java.text.Collator;
@@ -33,6 +40,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import com.securespaces.android.ssm.SpaceInfo;
+import com.securespaces.android.ssm.SpacesManager;
+import com.securespaces.android.ssm.SecureSpacesExtensions;
+
 /**
  * Keeps track of information about all installed applications, lazy-loading
  * as needed.
@@ -41,7 +52,6 @@ public class ApplicationsState {
     static final String TAG = "ApplicationsState";
     static final boolean DEBUG = false;
     static final boolean DEBUG_LOCKING = false;
-
     public static interface Callbacks {
         public void onRunningStateChanged(boolean running);
         public void onPackageListChanged();
@@ -265,6 +275,7 @@ public class ApplicationsState {
 
     final Context mContext;
     final PackageManager mPm;
+    final UserManager mUm;
     final int mRetrieveFlags;
     PackageIntentReceiver mPackageIntentReceiver;
 
@@ -430,6 +441,7 @@ public class ApplicationsState {
                 Process.THREAD_PRIORITY_BACKGROUND);
         mThread.start();
         mBackgroundHandler = new BackgroundHandler(mThread.getLooper());
+        mUm = (UserManager)mContext.getSystemService(Context.USER_SERVICE);
 
         // Only the owner can see all apps.
         if (UserHandle.myUserId() == 0) {
@@ -650,9 +662,58 @@ public class ApplicationsState {
             }
         }
 
+        // set up a list of what packages are installed for what users
+        final List<UserInfo> users = mUm.getUsers();
+        SparseArray<ArrayList<String>> userPackageMap = new SparseArray<ArrayList<String>>();
+        
+        if (SecureSpacesExtensions.hasExtension("HIDDEN_EXTENSION")) {
+            SpacesManager sm = new SpacesManager(mContext);
+            IPackageManager ipm = AppGlobals.getPackageManager();
+            try {
+                for (UserInfo user : users) {
+                    ArrayList<String> packages = new ArrayList<String>();
+                    List<PackageInfo> packageList = ipm.getInstalledPackages(0, user.id).getList();
+                    for (PackageInfo p : packageList) {
+                        packages.add(p.packageName);
+                    }
+                    userPackageMap.put(user.id, packages);
+                }
+            } catch (RemoteException rex) {
+            
+            }
+        }
+
         mHaveDisabledApps = false;
         for (int i=0; i<mApplications.size(); i++) {
             final ApplicationInfo info = mApplications.get(i);
+
+            // filter out apps that are only installed in hidden spaces
+            if (SecureSpacesExtensions.hasExtension("HIDDEN_EXTENSION")) {
+                if ((info.flags & ApplicationInfo.FLAG_INSTALLED) == 0) {
+                    boolean hide = true;
+                    for (UserInfo user : users) {
+                        if (SpaceInfo.isSpace(user) && SpaceInfo.isHidden(user)) 
+                            continue;
+                        ApplicationInfo currentApp;
+                        try {
+                            currentApp = mPm.getApplicationInfo(info.packageName, mRetrieveFlags);
+                            if (userPackageMap.get(user.id).contains(currentApp.packageName)) {
+                                hide = false;
+                                break;
+                            }
+                        } catch (NameNotFoundException e) {
+                            // Not expected, but doesn't matter.  Just skip this user.
+                            continue;
+                        }
+                    }
+                    if (hide) {
+                        mApplications.remove(i);
+                        i--;
+                        continue;
+                    }
+                }
+            }
+
             // Need to trim out any applications that are disabled by
             // something different than the user.
             if (!info.enabled) {

@@ -314,6 +314,7 @@ public class VideoBrowserActivity extends ListActivity implements MusicUtils.Def
         super.onDestroy();
     }
 
+/*
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
         if (event.getAction() == KeyEvent.ACTION_UP &&
@@ -323,7 +324,7 @@ public class VideoBrowserActivity extends ListActivity implements MusicUtils.Def
         }
         return super.dispatchKeyEvent(event);
     }
-
+*/
     private Cursor mCursor;
     private String mWhereClause;
     private String mSortOrder;

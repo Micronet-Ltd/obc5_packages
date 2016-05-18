@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:background="#696969"
+    	android:orientation="vertical" >
+    	
+	    <ImageButton
+	        android:id="@+id/btnClose"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentLeft="true"
+	        android:layout_alignParentTop="true"
+	        android:layout_marginLeft="20dp"
+	        android:layout_marginTop="28dp"
+	        android:background="@android:color/transparent"
+	        android:src="@drawable/button_back" />
+	    
+	    <TextView
+	        android:id="@+id/text_name"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_below="@+id/img_logo"
+	        android:layout_centerHorizontal="true"
+	        android:layout_marginTop="14dp"
+	        android:text="@string/ver_number"
+        	android:textColor="#FFFFFF"
+        	android:textSize="15sp" />
+
+	    <TextView
+	        android:id="@+id/copyright"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:gravity="center"
+	        android:layout_alignParentBottom="true"
+	        android:layout_centerHorizontal="true"
+	        android:layout_marginBottom="20dp" />
+
+	    <ImageView
+	        android:id="@+id/img_logo"
+	        android:layout_width="120dp"
+	        android:layout_height="120dp"
+	        android:layout_below="@+id/btnClose"
+	        android:layout_centerHorizontal="true"
+	        android:layout_marginTop="50dp"
+	        android:background="@drawable/bg_app_icon_ehang"
+	        android:scaleType="centerInside"
+	        android:src="@drawable/app_icon_ehang" />
+  
+</RelativeLayout>

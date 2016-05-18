@@ -327,4 +327,8 @@
     <string name="cancel_operation">"操作取消"</string>
     <string name="message_can_not_move_members">"不能移动成员"</string>
     <string name="message_from_you_prefix" msgid="7180706529908434482">"您：<xliff:g id="SMS_BODY">%s</xliff:g>"</string>
+    <!-- mod by chenqi 2015-12-30 18:25
+    reason:bug #3349,if profile info is empty...
+    -->
+	<string name="profile_not_exist">您的个人信息不存在。</string>
 </resources>

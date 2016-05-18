@@ -79,6 +79,8 @@ import com.android.phone.settings.AccountSelectionPreference;
 import com.android.services.telephony.sip.SipUtil;
 import com.android.internal.telephony.util.BlacklistUtils;
 
+import android.app.ActionBar;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -1685,6 +1687,14 @@ public class CallFeaturesSetting extends PreferenceActivity
         // ACTION_ADD_VOICEMAIL action.
         mShowVoicemailPreference = (icicle == null) &&
                 TextUtils.equals(getIntent().getAction(), ACTION_ADD_VOICEMAIL);
+        /*lihui @20160108 added for display the return icon on the actio bar start*/
+	    ActionBar actionBar = getActionBar();
+				
+        if (actionBar != null) {
+            // android.R.id.home will be triggered in onOptionsItemSelected()
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+		/*lihui @20160108 added for display the return icon on the actio bar end*/
     }
 
     private void initPhoneAccountPreferences() {
@@ -1948,8 +1958,10 @@ public class CallFeaturesSetting extends PreferenceActivity
         mVMProviderSettingsForced = false;
 
         // Blacklist screen - Needed for setting summary
+		String isCloseBlackList = SystemProperties.get("persist.sys.whitelistenable", "");
+		
         mButtonBlacklist = (PreferenceScreen) prefSet.findPreference(BUTTON_BLACKLIST);
-        if (!BlacklistUtils.isBlacklistFeaturePresent(this)) {
+        if (!BlacklistUtils.isBlacklistFeaturePresent(this) || isCloseBlackList.endsWith("true")) {
             PreferenceCategory parent =
                     (PreferenceCategory)findPreference("pref_advanced_settings");
             parent.removePreference(mButtonBlacklist);

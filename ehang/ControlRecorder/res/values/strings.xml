@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">防窃听助手</string>
+    <string name="xinren">信任</string>
+	<string name="help">帮助</string>
+    <string name="welcome">欢迎来到防窃听助手</string>
+    <string name="anquan">防窃听助手</string>
+    <string name="thief">防监听功能</string>
+	<string name="tuichu">您确定要退出？</string>
+	<string name="queding">确定</string>
+	<string name="quxiao">取消</string>
+    <string name="lie">录音应用列表</string>
+	<string name="quan">项权限</string>
+	<string name="switch_open">开启</string>
+	<string name="switch_close">关闭</string>
+    <string name="yihang">一行科技有限责任公司</string>
+    <string name="title_activity_show">防窃听助手</string>
+    <string name="title_activity_shows">ShowsActivity</string>
+    <string name="title_activity_welcome">WelcomeActivity</string>
+	<string name="unclick">功能不可用，请打开开关后再试</string>
+    <string name="open">(开关已打开，可以实现防监听。)</string>
+    <string name="close">(防监听功能失效，建议打开。)</string>
+    <string name="unload">软件已被卸载或者不存在。</string>
+	<string name="guanyu">防窃听助手是一款防窃听软件，您只需要打开开关，便可以屏蔽掉第三方带有录音功能的应用的录音权限，从而保护自身隐私，防止被窃听。</string>
+
+</resources>

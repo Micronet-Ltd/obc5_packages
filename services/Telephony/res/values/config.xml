@@ -149,7 +149,7 @@ as an enum (NONE, HFA, OTASP). -->
 <bool name="config_additional_call_setting">true</bool>
 
 <!-- Show APN Settings for some CDMA carriers -->
-<bool name="config_show_apn_setting_cdma">false</bool>
+<bool name="config_show_apn_setting_cdma">true</bool>
 
 <!-- Consolidate the unanswered and unreachable call forward -->
 <bool name="join_call_forward">false</bool>
@@ -317,7 +317,7 @@ as an enum (NONE, HFA, OTASP). -->
     <bool name="config_additional_call_setting">true</bool>
 
     <!-- Show APN Settings for some CDMA carriers -->
-    <bool name="config_show_apn_setting_cdma">false</bool>
+    <bool name="config_show_apn_setting_cdma">true</bool>
 
     <!-- Consolidate the unanswered and unreachable call forward -->
     <bool name="join_call_forward">false</bool>

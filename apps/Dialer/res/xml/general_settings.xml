@@ -17,6 +17,7 @@
   -->
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<!--removed by chenqi,2016-01-07 11:22
 
     <PreferenceCategory
         android:key="dialer_contact_display_options_category_key"
@@ -34,7 +35,7 @@
             android:dialogTitle="@string/display_options_view_names_as" />
 
     </PreferenceCategory>
-
+  -->
     <PreferenceCategory
         android:key="dialer_general_sounds_category_key"
         android:title="@string/sounds_and_vibrate_category_title"

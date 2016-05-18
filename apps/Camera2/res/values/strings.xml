@@ -51,6 +51,11 @@
     <!-- String used as a menu label. The user can choose to edit the image
          [CHAR_LIMIT=20]-->
     <string name="edit">Edit</string>
+    <!--SlideLock-->
+    <string name="slider_text">Slide the slider can exit the underwater mode</string>
+    <!-- water-->
+    <string name="slide_water">Underwater mode</string>
+    <string name="water">W_Camera</string>
 
     <!-- The title of the menu item to let user crop the image. [CHAR LIMIT=15] -->
     <string name="crop_action">Crop</string>
@@ -172,7 +177,9 @@
 
     <!-- Settings screen, location setting text. [CHAR LIMIT=20]-->
     <string name="pref_camera_save_location_title">Save location</string>
-
+    <!--water-->
+    <string name="watercamera_id_water_desc" msgid="3566327490758890635">"water camera"</string>
+    <string name="watercamera_id_normal_desc" msgid="7497517948130254220">"normal camera"</string>
     <string name="pref_camera_recordlocation_default" translatable="false">none</string>
 
     <!--  Label for record location preference [CHAR LIMIT=50] -->
@@ -916,4 +923,8 @@ CHAR LIMIT=NONE] -->
     <string name="pref_boolean_false">0</string>
     <!-- String representation of boolean true, allows for integer conversion. -->
     <string name="pref_boolean_true">1</string>
+	 <!--zhoukai modifier-->
+    <string name="dialog_prompt" >Underwater mode is started</string>
+   <string name="TP_Context" >1.Touch panel and navigation keys not available, Slide the slider can exit the underwater mode.</string>
+    <string name="power_Context" >2.In order to experience the underwater mode better, please do not press the power button.</string>
  </resources>

@@ -1,0 +1,98 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/baise"
+    android:orientation="vertical" >
+	<!--title-->
+	<RelativeLayout
+	android:layout_width="match_parent"
+    android:layout_height="50dp"
+	android:background="@color/heise" >
+    <TextView
+	 android:id="@+id/tdetails"
+	 android:layout_centerInParent="true"
+	 android:layout_alignParentLeft="true"
+	 android:layout_marginLeft="17dp"
+	 android:layout_width="wrap_content"
+     android:layout_height="wrap_content"
+	 android:text="@string/anquan" 
+	 android:textSize="24sp"
+	 android:textColor="@color/baise"
+	/>
+	<ImageView
+		android:id="@+id/details"
+		android:layout_marginRight="25dp"
+		android:layout_centerInParent="true"
+		android:layout_alignParentRight="true"
+		android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+		android:src="@drawable/details"
+		android:onClick="showDetails"
+	/>
+	</RelativeLayout>
+	<RelativeLayout
+	android:layout_width="match_parent"
+    android:layout_height="69dp"
+	android:background="@color/baise" >
+	 <TextView
+	 android:id="@+id/ToggleButtonTitle"
+	 android:layout_width="match_parent"
+     android:layout_height="wrap_content"
+	 android:layout_centerInParent="true"
+	 android:layout_alignParentLeft="true"
+     android:layout_marginLeft="20dp"
+	 android:text="@string/switch_open" 
+	 android:textSize="22sp"
+	 android:textColor="@color/tt"
+	/>
+	
+	<ToggleButton
+        android:id="@+id/bt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:button="@drawable/checkbox_iphone"
+		android:background="@color/transparent" 
+		android:layout_centerInParent="true"
+		android:layout_alignParentRight="true"
+		android:layout_marginRight="25dp"
+		android:textOff=""
+        android:textOn=""
+        android:checked="false"/>
+		<!--<TextView
+        android:id="@+id/ts"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+		android:layout_marginLeft="20dp"
+        android:textSize="17sp"
+        android:textColor="@color/ts"
+        android:layout_marginTop="45dp"
+         />-->
+	</RelativeLayout>
+	
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:background="@color/lines" />
+    <TextView
+        android:id="@+id/list"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+		android:layout_marginTop="20dp"
+        android:text="@string/lie"
+        android:textSize="22sp"
+		android:textColor="@color/tt"
+		android:layout_marginLeft="20dp"
+        android:background="@color/baise"  />
+    <ImageView
+        android:layout_width="match_parent" 
+        android:layout_height="2dp"
+        android:background="@color/lines" 
+		android:layout_marginLeft="14dp"
+        android:layout_marginRight="20dp"/>
+    <ListView
+        android:id="@+id/listview"
+		android:divider="@null" 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+    </ListView>
+</LinearLayout>

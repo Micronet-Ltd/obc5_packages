@@ -5,6 +5,9 @@
 
     <original-package android:name="com.android.settings" />
 
+    <!-- Secure Spaces Permission -->
+    <uses-permission android:name="com.securespaces.android.permission.MANAGE_SPACES_FULL" />
+
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_DREAM_STATE" />
@@ -76,7 +79,8 @@
     <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
     <uses-permission android:name="android.permission.READ_PHONE_BLACKLIST" />
     <uses-permission android:name="android.permission.CHANGE_PHONE_BLACKLIST" />
-
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+	
     <permission
         android:name="cyanogenmod.permission.PROTECTED_APP"
         android:protectionLevel="signatureOrSystem" />
@@ -2348,6 +2352,22 @@
         <receiver android:name=".AirplaneModeUpdateReceiver">
             <intent-filter>
                 <action android:name="android.action.SETTING_AIRPLANE_MODE_UPDATE" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name="com.android.settings.location.BootCompleteReceiver" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" >
+                </action>
+            </intent-filter>
+        </receiver>
+		<receiver android:name="com.android.settings.wifi.WifiStatusReceiver" >
+            <intent-filter>
+                <action android:name="com.android.telephony.GET_IMEI_DONE" >
+                </action>
+            </intent-filter>
+			<intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" >
+                </action>
             </intent-filter>
         </receiver>
     </application>

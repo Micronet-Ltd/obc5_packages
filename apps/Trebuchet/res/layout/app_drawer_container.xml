@@ -36,7 +36,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipChildren="false"
-            android:clipToPadding="false">
+            android:clipToPadding="false"
+            android:layout_marginTop="@*android:dimen/status_bar_height">
         <android.support.v7.widget.RecyclerView
                 android:id="@+id/app_drawer_recyclerview"
                 android:layout_width="match_parent"

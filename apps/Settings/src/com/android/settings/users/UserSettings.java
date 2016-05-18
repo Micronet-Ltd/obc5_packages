@@ -71,6 +71,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import com.securespaces.android.ssm.SpaceInfo;
+import com.securespaces.android.ssm.SecureSpacesExtensions;
+
 /**
  * Screen that manages the list of users on the device.
  * Guest user is an always visible entry, even if the guest is not currently
@@ -193,8 +196,14 @@ public class UserSettings extends SettingsPreferenceFragment
         final Context context = getActivity();
         mUserManager = (UserManager) context.getSystemService(Context.USER_SERVICE);
         boolean hasMultipleUsers = mUserManager.getUserCount() > 1;
+        boolean isSpace = false;
+
+        if (SecureSpacesExtensions.hasSecureSpacesService()) {
+            isSpace = SpaceInfo.isSpace(mUserManager.getUserInfo(UserHandle.myUserId()));
+        }
+
         if ((!UserManager.supportsMultipleUsers() && !hasMultipleUsers)
-                || Utils.isMonkeyRunning()) {
+                || Utils.isMonkeyRunning() || isSpace) {
             mEnabled = false;
             return;
         }
@@ -724,6 +733,13 @@ public class UserSettings extends SettingsPreferenceFragment
                 // Managed profiles appear under Accounts Settings instead
                 continue;
             }
+
+            if (SecureSpacesExtensions.hasSecureSpacesService()) {
+                if (SpaceInfo.isSpace(user)) {
+                    continue;
+                }
+            }
+
             Preference pref;
             if (user.id == UserHandle.myUserId()) {
                 pref = mMePreference;

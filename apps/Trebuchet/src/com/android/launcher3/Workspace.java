@@ -3077,13 +3077,14 @@ public class Workspace extends SmoothPagedView
 
         if (dropOverView instanceof FolderIcon) {
             FolderIcon fi = (FolderIcon) dropOverView;
+			if(fi.getFolder().isFull()){
+				fileisfull.show(); 
+				return false;
+			}
+			
             if (fi.acceptDrop(dragInfo)) {
                 return true;
             }
-			//add
-			else{
-			fileisfull.show();
-			}
         }
         return false;
     }
@@ -3317,9 +3318,9 @@ public class Workspace extends SmoothPagedView
             }
 
 			
-			//add
+			//add qcd
 			if(fileisfull!=null){
-						fileisfull.cancel();						
+				fileisfull.cancel();						
 			}
 			
             final CellLayout parent = (CellLayout) cell.getParent().getParent();

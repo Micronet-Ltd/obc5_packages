@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/jiaozhun_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20.0dip"
+        android:layout_marginRight="20.0dip"
+        android:gravity="left"
+        android:text="@string/settings_current_barometer"
+        android:textAppearance="?android:textAppearanceMedium"
+        android:textColor="#ff808080" />
+
+    <EditText
+        android:id="@+id/sealevel_edit"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20.0dip"
+        android:layout_marginRight="20.0dip"
+        android:autoText="false"
+        android:capitalize="none"
+        android:gravity="fill_horizontal"
+        android:hint="@string/settings_input_barometer"
+        android:maxLength="6"
+        android:numeric="integer"
+        android:scrollHorizontally="true"
+        android:textAppearance="?android:textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/jiaozhunqiwen_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20.0dip"
+        android:layout_marginRight="20.0dip"
+        android:gravity="left"
+        android:text="@string/settings_current_temperature"
+        android:textAppearance="?android:textAppearanceMedium"
+        android:textColor="#ff808080" />
+
+    <EditText
+        android:id="@+id/temperature_edit"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20.0dip"
+        android:layout_marginRight="20.0dip"
+        android:autoText="false"
+        android:capitalize="none"
+        android:ems="10"
+        android:gravity="fill_horizontal"
+        android:hint="@string/settings_input_temperature"
+        android:maxLength="6"
+        android:numeric="signed"
+        android:scrollHorizontally="true"
+        android:textAppearance="?android:textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/comment_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20.0dip"
+        android:layout_marginRight="20.0dip"
+        android:gravity="left"
+        android:textAppearance="?android:textAppearanceMedium" />
+
+</LinearLayout>

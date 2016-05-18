@@ -825,7 +825,7 @@
     <string name="screensaver_settings_summary_sleep" msgid="9086186698140423493">"While charging"</string>
     <string name="screensaver_settings_summary_dock" msgid="2072657401664633283">"While docked"</string>
     <string name="screensaver_settings_summary_off" msgid="2481581696365146473">"Off"</string>
-    <string name="screensaver_settings_disabled_prompt" msgid="3857507943322777651">"To control what happens when the phone is docked and/or sleeping, turn Dreams on."</string>
+    <string name="screensaver_settings_disabled_prompt" msgid="3857507943322777651">"To control what happens when the phone is sleeping, turn Dreams on."</string>
     <string name="screensaver_settings_when_to_dream" msgid="8352267826043957746">"When to daydream"</string>
     <string name="screensaver_settings_dream_start" msgid="4998187847985120168">"Start now"</string>
     <string name="screensaver_settings_button" msgid="7292214707625717013">"Settings"</string>

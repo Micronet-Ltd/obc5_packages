@@ -131,12 +131,13 @@ public class GsmUmtsCallForwardOptions extends TimeConsumingPreferenceActivity
 
         mFirstResume = true;
         mIcicle = icicle;
-
-        ActionBar actionBar = getActionBar();
-        if (actionBar != null) {
-            // android.R.id.home will be triggered in onOptionsItemSelected()
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
+        /*lihui @20160108 delete for not display the return icon on the actio bar start*/
+        /*ActionBar actionBar = getActionBar();
+               if (actionBar != null) {
+                   // android.R.id.home will be triggered in onOptionsItemSelected()
+                   actionBar.setDisplayHomeAsUpEnabled(true);
+               }*/
+        /*lihui @20160108 delete for not display the return icon on the actio bar end*/
     }
 
     private int getPhoneTypeBySubscription(int subscription) {

@@ -71,8 +71,8 @@
   </PreferenceScreen>
 
   <!-- Google Help and feedback launcher -->
-  <Preference
+  <!--<Preference
       android:key="pref_launch_help"
-      android:title="@string/setting_google_help_and_feedback" />
+      android:title="@string/setting_google_help_and_feedback" />-->
 
 </PreferenceScreen>

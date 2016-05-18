@@ -29,6 +29,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.os.RemoteException;
+import android.os.UserHandle;
 import android.os.UserManager;
 import android.os.storage.StorageManager;
 import android.os.storage.StorageVolume;
@@ -36,6 +37,9 @@ import android.preference.Preference;
 import android.preference.PreferenceCategory;
 import android.provider.MediaStore;
 import android.text.format.Formatter;
+
+import com.securespaces.android.ssm.SpaceInfo;
+import com.securespaces.android.ssm.SecureSpacesExtensions;
 
 import com.android.settings.MediaFormat;
 import com.android.settings.R;
@@ -575,7 +579,10 @@ public class StorageVolumePreferenceCategory extends PreferenceCategory {
         final List<UserInfo> users = mUserManager.getUsers();
         final Iterator<UserInfo> i = users.iterator();
         while (i.hasNext()) {
-            if (i.next().id == excluding.id) {
+            UserInfo current = i.next();
+            if (current.id == excluding.id) {
+                i.remove();
+            } else if (SecureSpacesExtensions.hasExtension("HIDDEN_EXTENSION") && SpaceInfo.isHidden(current)) {
                 i.remove();
             }
         }

@@ -35,6 +35,8 @@ import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityManager;
 import android.widget.FrameLayout;
+import android.view.WindowManager;
+
 
 import com.android.camera.AnimationManager;
 import com.android.camera.ButtonManager;
@@ -68,9 +70,16 @@ import com.android.camera.widget.IndicatorIconController;
 import com.android.camera.widget.ModeOptionsOverlay;
 import com.android.camera.widget.PeekView;
 import com.android.camera2.R;
-
+import com.android.camera.SlideView;
 import java.util.List;
-
+import com.android.camera.widget.ModeOptions;
+import com.android.camera.settings.Keys;
+import com.android.camera.settings.SettingsManager;
+import android.os.Handler;
+import android.app.Dialog;
+import android.app.AlertDialog;
+import android.view.WindowManager;
+import android.view.Window;
 /**
  * CameraAppUI centralizes control of views shared across modules. Whereas module
  * specific views will be handled in each Module UI. For example, we can now
@@ -340,7 +349,11 @@ public class CameraAppUI implements ModeListView.ModeSwitchListener,
          * the hardware.
          */
         public boolean enableGridLines;
-
+      
+        /**
+         * waterCamera
+         */
+	    public boolean enablewaterCamera;
         /**
          * Set true if grid lines should not be visible.
          */
@@ -403,6 +416,10 @@ public class CameraAppUI implements ModeListView.ModeSwitchListener,
          * callback can be null.
          */
         public ButtonManager.ButtonCallback gridLinesCallback;
+	    /**
+         * waterCamera
+         */
+		public ButtonManager.ButtonCallback waterCameraCallback;
 
         /**
          * A {@link com.android.camera.ButtonManager.ButtonCallback}
@@ -510,6 +527,9 @@ public class CameraAppUI implements ModeListView.ModeSwitchListener,
     private TextureView mTextureView;
     private FrameLayout mModuleUI;
     private ShutterButton mShutterButton;
+	//water
+	private ModeOptions mModeOptions;
+	private SlideView mSliderView;
     private BottomBar mBottomBar;
     private ModeOptionsOverlay mModeOptionsOverlay;
     private IndicatorIconController mIndicatorIconController;
@@ -695,6 +715,13 @@ public class CameraAppUI implements ModeListView.ModeSwitchListener,
         private boolean mScaleStarted = false;
         @Override
         public boolean onTouch(View v, MotionEvent event) {
+			
+			SettingsManager settingsManager = mController.getSettingsManager();
+			if(Keys.arewaterCameraOn(settingsManager)){
+			
+				return true;
+			}
+			 
             if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
                 mScaleStarted = false;
             } else if (event.getActionMasked() == MotionEvent.ACTION_POINTER_DOWN) {
@@ -756,7 +783,7 @@ public class CameraAppUI implements ModeListView.ModeSwitchListener,
         mSlop = ViewConfiguration.get(controller.getAndroidContext()).getScaledTouchSlop();
         mController = controller;
         mIsCaptureIntent = isCaptureIntent;
-
+        SlideView slideView = (SlideView) appRootView.findViewById(R.id.slider);
         mAppRootView = appRootView;
         mFilmstripLayout = (FilmstripLayout) appRootView.findViewById(R.id.filmstrip_layout);
         mCameraRootView = (FrameLayout) appRootView.findViewById(R.id.camera_app_root);
@@ -1230,6 +1257,23 @@ public class CameraAppUI implements ModeListView.ModeSwitchListener,
         mModeOptionsOverlay.setCaptureLayoutHelper(mCaptureLayoutHelper);
 
         mShutterButton = (ShutterButton) mCameraRootView.findViewById(R.id.shutter_button);
+		//water
+		mSliderView=(SlideView)mCameraRootView.findViewById(R.id.slider);
+		mSliderView.setSlideListener(new SlideView.SlideListener() {
+            @Override
+    public void onDone() {
+		 mController.getAndroidContextActivity().getWindow().setType(WindowManager.LayoutParams.TYPE_BASE_APPLICATION);
+         setSwipeEnabled(true);
+		 mPreviewOverlay.setOnTouchListener(new MyTouchListener());
+		 mShutterButton.setClickable(true);
+         mShutterButton.setVisibility(View.VISIBLE);
+		 mSliderView.setVisibility(View.GONE);
+		 mModeOptionsToggle.setClickable(true);
+		 mController.getSettingsManager().set(SettingsManager.SCOPE_GLOBAL,
+                                             Keys.KEY_waterCamera_MODE, false);
+			  
+    }
+        });
         addShutterListener(mController.getCurrentModuleController());
         addShutterListener(mModeOptionsOverlay);
         addShutterListener(this);
@@ -1256,6 +1300,7 @@ public class CameraAppUI implements ModeListView.ModeSwitchListener,
         mController.getSettingsManager().addListener(mIndicatorIconController);
 
         mModeOptionsToggle = mCameraRootView.findViewById(R.id.mode_options_toggle);
+		mModeOptions = (ModeOptions) mCameraRootView.findViewById(R.id.mode_options);
         mFocusOverlay = mCameraRootView.findViewById(R.id.focus_overlay);
         mTutorialsPlaceHolderWrapper = (FrameLayout) mCameraRootView
                 .findViewById(R.id.tutorials_placeholder_wrapper);
@@ -1388,7 +1433,13 @@ public class CameraAppUI implements ModeListView.ModeSwitchListener,
          * per module implementation.
          */
         if (!mDisableAllUserInteractions) {
-            mModeOptionsOverlay.setToggleClickable(true);
+			if(Keys.arewaterCameraOn(mController.getSettingsManager())){
+				
+			  }else{
+			  
+				 mModeOptionsOverlay.setToggleClickable(true);
+			}
+           
         }
     }
 
@@ -1637,6 +1688,58 @@ public class CameraAppUI implements ModeListView.ModeSwitchListener,
         };
     }
 
+  //water   
+   public ButtonManager.ButtonCallback getwaterCameraCallback() {
+	  
+        return new ButtonManager.ButtonCallback() {
+            @Override
+           public void onStateChanged(int state) {
+                if (Keys.arewaterCameraOn(mController.getSettingsManager())) {
+					//mPreviewOverlay.setOnTouchListener(new waterMyTouchListener());
+					//fuyuan
+					dialog_prompt();
+	                mShutterButton.setClickable(false);
+	                mShutterButton.setVisibility(View.GONE);
+	                mSliderView.setVisibility(View.VISIBLE);
+				    setSwipeEnabled(false);
+				    //closeModeOptions();
+				    mModeOptionsToggle.setClickable(false);	
+				    mController.getAndroidContextActivity().getWindow().setType(WindowManager.LayoutParams.TYPE_KEYGUARD);
+					mModeOptions.animateHidden();  
+                } else {	
+				  setSwipeEnabled(true);
+				  //mPreviewOverlay.setOnTouchListener(new normalMyTouchListener());
+				  mShutterButton.setClickable(true);
+                  mShutterButton.setVisibility(View.VISIBLE);
+				  mSliderView.setVisibility(View.GONE);
+                }
+            }
+        };
+    }
+
+	
+	 public void dialog_prompt(){
+  
+		AlertDialog.Builder builder =new AlertDialog.Builder(mController.getAndroidContextActivity());
+        LayoutInflater inflater = mController.getAndroidContextActivity().getLayoutInflater();
+        View layout = inflater.inflate(R.layout.water_dialog, null);
+        builder.setView(layout); 
+        final Dialog dialog= builder.create();
+		//dialog.setCancelable(false);
+		dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_OVERLAY); 
+        dialog.show();
+        new Handler().postDelayed(new Runnable() {
+			
+         @Override
+     public void run() {
+	    // TODO Auto-generated method stub
+	    dialog.dismiss();	
+			}
+		},3000);
+    }
+
+
+ 
     /***************************Mode options api *****************************/
 
     /**
@@ -1943,6 +2046,21 @@ public class CameraAppUI implements ModeListView.ModeSwitchListener,
                 hideGridLines();
             }
         }
+       //water
+
+       if (bottomBarSpec.enablewaterCamera) {
+
+          buttonManager.initializeButton(ButtonManager.WATERCAMERA,
+                        bottomBarSpec.waterCameraCallback != null ?
+                        bottomBarSpec.waterCameraCallback : getwaterCameraCallback()
+          );
+       } else {
+       	  buttonManager.disableButton(ButtonManager.WATERCAMERA);
+       	  //hideGridLines();
+       }
+        
+
+
 
         if (bottomBarSpec.enableSelfTimer) {
             buttonManager.initializeButton(ButtonManager.BUTTON_COUNTDOWN, null);

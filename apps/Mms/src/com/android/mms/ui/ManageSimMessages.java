@@ -689,9 +689,16 @@ public class ManageSimMessages extends Activity
                     new PopupList.OnPopupItemClickListener() {
                         @Override
                         public boolean onPopupItemClick(int itemId) {
+
+                            //{{begin,mod by chenqi 2016-01-13 14:48
+                            //reason:bug3586,no unselect all
                             if (itemId == RcsSelectionMenu.SELECT_OR_DESELECT) {
-                                checkAll(!mHasSelectAll);
+								boolean selectAll = getListView().getCheckedItemCount() <
+                                        getListView().getCount() ? true : false;
+                                checkAll(selectAll);
+                                mSelectionMenu.updateSelectAllMode(selectAll);
                             }
+                            //}}end,mod by chenqi
                             return true;
                         }
                     });
@@ -723,6 +730,18 @@ public class ManageSimMessages extends Activity
                 recoredCheckedItemPositions();
             }
             customMenuVisibility(mode, checkedCount);
+			
+            //{{begin,mod by chenqi 2016-01-13 14:52
+            //reason:bug3586,no unselect all;no count number to display
+            mSelectionMenu.setTitle(getString(R.string.selected_count,
+                    checkedCount));
+            if (getListView().getCount() == checkedCount) {
+                mHasSelectAll = true;
+            } else {
+                mHasSelectAll = false;
+            }
+            mSelectionMenu.updateSelectAllMode(mHasSelectAll);
+            //}}end,mod by chenqi
 
             MenuItem item = mode.getMenu().findItem(R.id.selection_toggle);
             if (item != null) {

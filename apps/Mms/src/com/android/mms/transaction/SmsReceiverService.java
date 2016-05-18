@@ -81,7 +81,7 @@ import com.android.mms.util.Recycler;
 import com.android.mms.util.SendingProgressTokenManager;
 import com.android.mms.widget.MmsWidgetProvider;
 import com.google.android.mms.MmsException;
-
+import android.os.SystemProperties;
 /**
  * This service essentially plays the role of a "worker thread", allowing us to store
  * incoming messages to the database, update notifications, etc. without blocking the
@@ -688,14 +688,20 @@ public class SmsReceiverService extends Service {
     private Uri insertMessage(Context context, SmsMessage[] msgs, int error, String format) {
         // Build the helper classes to parse the messages.
         SmsMessage sms = msgs[0];
-
+        String isCloseBlackList = SystemProperties.get("persist.sys.whitelistenable", "");
         if (sms.getMessageClass() == SmsMessage.MessageClass.CLASS_0) {
             displayClassZeroMessage(context, sms, format);
             return null;
         } else if (sms.isReplace()) {
             return replaceMessage(context, msgs, error);
-        } else if (isBlacklisted(context, sms.getOriginatingAddress(), sms.getTimestampMillis())) {
+		 /*lihui @20151127 modified for enable black and white list function start*/
+        } else if (isCloseBlackList.endsWith("false") && 
+                    isBlacklisted(context, sms.getOriginatingAddress(), sms.getTimestampMillis())) {
             return null;
+        } else if (isCloseBlackList.endsWith("true") && 2 == SystemProperties.getInt("persist.sys.bwlist", 0) && 
+                   !isBlacklisted(context, sms.getOriginatingAddress(), sms.getTimestampMillis())){
+            return null;
+        /*lihui @20151127 modified for enable black and white list function end*/
         } else {
             return storeMessage(context, msgs, error);
         }
@@ -719,7 +725,10 @@ public class SmsReceiverService extends Service {
     }
 
     private void showBlacklistNotification(Context context, String number, long date, int matchType) {
-        if (!BlacklistUtils.isBlacklistNotifyEnabled(context)) {
+        String isCloseBlackList = SystemProperties.get("persist.sys.whitelistenable", "");
+		
+        if (!BlacklistUtils.isBlacklistNotifyEnabled(context)||
+			isCloseBlackList.endsWith("true")) {
             return;
         }
 

@@ -220,6 +220,7 @@ static int control_gpio_input(struct control_thread_context * context, uint8_t m
 		data[3] = value;
 		// The driver should never block, or return -EAGAIN, if the driver changes
 		// this will need to be updated. NOTE: this can not block, so take care
+        DTRACE("%s [%x, %x]", __func__, mask, value);
 		r = write(context->gpio_fd, data, sizeof(data));
 		if(r != sizeof(data))
 		{
@@ -303,7 +304,7 @@ static int control_frame_process(struct control_thread_context * context, uint8_
 			break;
 
 		case GPIO_INT_STATUS: // GPIO Interrupt
-			DTRACE("GPIO_INT data2 %d data3 %d", data[2], data[3]);
+			DTRACE("%s: GPIO_INT_STATUS data2 %d data3 %d", __func__, data[2], data[3]);
 			control_gpio_input(context, data[2], data[3]);
 			break;
 	}
@@ -702,7 +703,7 @@ void update_system_time_with_rtc(struct control_thread_context * context)
 /* Request for all the GPInput values, in case they were missed on bootup */
 int update_all_GP_inputs(struct control_thread_context * context)
 {
-	uint8_t req[] = { 0, MAPI_WRITE_RQ, MAPI_SET_GPI_UPDATE_ALL_VALUES };
+	uint8_t req[] = { 0, COMM_WRITE_REQ, MAPI_SET_GPI_UPDATE_ALL_VALUES };
 	return control_frame_process(context, req, sizeof(req));
 }
 
@@ -814,6 +815,8 @@ void * control_proc(void * cntx)
 	// TODO: maby move to check_devies()
 	if(file_exists("/dev/vgpio"))
 		context->gpio_fd = open("/dev/vgpio", O_RDWR, O_NDELAY);
+    else
+        DINFO("%s /dev/vgpio does not exist", __func__);
 
     if(file_exists("/dev/vleds"))
         context->vled_fd = open("/dev/vleds", O_RDONLY, O_NDELAY);

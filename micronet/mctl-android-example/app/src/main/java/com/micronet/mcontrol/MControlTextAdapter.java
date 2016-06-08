@@ -60,9 +60,9 @@ public class MControlTextAdapter extends BaseAdapter {
         String dig_rtc_cal_reg = String.valueOf(rtc_cal[0]);
         String ana_rtc_cal_reg = String.valueOf(rtc_cal[1]);
 
-        LEDs left = mc.get_led_status(LED.LEFT);
-        LEDs center = mc.get_led_status(LED.CENTER);
-        LEDs right = mc.get_led_status(LED.RIGHT);
+        LEDs left = mc.get_led_status(LEDInterface.LEFT);
+        LEDs center = mc.get_led_status(LEDInterface.CENTER);
+        LEDs right = mc.get_led_status(LEDInterface.RIGHT);
         String leftLED = String.format("RGB"+BRIGHTNESS+"(%d, %d, %d, %d)", left.RED, left.GREEN, left.BLUE, left.BRIGHTNESS);
         String centerLED = String.format("RGB"+BRIGHTNESS+"(%d, %d, %d, %d)", center.RED, center.GREEN, center.BLUE, center.BRIGHTNESS);
         String rightLED = String.format("RGB"+BRIGHTNESS+"(%d, %d, %d, %d)", right.RED, right.GREEN, right.BLUE, center.BRIGHTNESS);
@@ -84,11 +84,11 @@ public class MControlTextAdapter extends BaseAdapter {
         pairList.add(new Pair<String, String>("CABLE TYPE", adc_cable_type));
         pairList.add(new Pair<String, String>("DIG RTC CAL REG", dig_rtc_cal_reg));
         pairList.add(new Pair<String, String>("ANA RTC CAL REG", ana_rtc_cal_reg));
-        //leftLEDVal = new int[] {pairList.size(), left.getColorValue()};
+        leftLEDVal = new int[] {pairList.size(), left.getColorValue()};
         pairList.add(new Pair<String, String>("LEFT LED", leftLED));
-        //centerLEDVal = new int[] {pairList.size(), center.getColorValue()};
+        centerLEDVal = new int[] {pairList.size(), center.getColorValue()};
         pairList.add(new Pair<String, String>("CENTER LED", centerLED));
-        //rightLEDVal = new int[] {pairList.size(), right.getColorValue()};
+        rightLEDVal = new int[] {pairList.size(), right.getColorValue()};
         pairList.add(new Pair<String, String>("RIGHT LED", rightLED));
 
     }

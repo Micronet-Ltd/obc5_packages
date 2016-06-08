@@ -2,12 +2,10 @@ package com.micronet.mcontrol;
 
 import android.graphics.Color;
 
-import com.micronet.mcontrol.MControl;
-
 /**
  * Created by brigham.diaz on 5/25/2016.
  */
-public class LEDs implements LED {
+public class LEDs implements LEDInterface {
     public int RED = 0;
     public int GREEN = 0;
     public int BLUE = 0;

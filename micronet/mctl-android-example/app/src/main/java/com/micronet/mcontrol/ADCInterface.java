@@ -3,7 +3,7 @@ package com.micronet.mcontrol;
 /**
  * Created by brigham.diaz on 5/25/2016.
  */
-public interface ADC {
+public interface ADCInterface {
     int kADC_ANALOG_IN1 = 0x00; // (Ignition)
     int kADC_GPIO_IN1= 0x01;
     int kADC_GPIO_IN2= 0x02;

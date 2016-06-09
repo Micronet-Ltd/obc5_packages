@@ -1,6 +1,8 @@
 package com.micronet.mcontrol;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +20,6 @@ public class MControlTextAdapter extends BaseAdapter {
 
     private Context context;
     private static final String TAG = "MControlTextAdapter";
-    private static LayoutInflater inflater = null;
     final String DEGREE  = "\u00b0";
     final String BRIGHTNESS = "\u2600";
     final MControl mc;
@@ -129,6 +130,15 @@ public class MControlTextAdapter extends BaseAdapter {
             rowView.setBackgroundColor(rightLEDVal[1]);
         }
 
+        int c = ((ColorDrawable)rowView.getBackground()).getColor();
+        if(isBrightColor(c)) {
+            holder.title.setTextColor(Color.BLACK);
+            holder.subitem.setTextColor(Color.BLACK);
+        } else {
+            holder.title.setTextColor(Color.WHITE);
+            holder.subitem.setTextColor(Color.WHITE);
+        }
+
         rowView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -145,5 +155,26 @@ public class MControlTextAdapter extends BaseAdapter {
     {
         TextView title;
         TextView subitem;
+    }
+
+    public static boolean isBrightColor(int color) {
+        if (android.R.color.transparent == color)
+            return true;
+
+        boolean rtnValue = false;
+
+        int[] rgb = { Color.red(color), Color.green(color), Color.blue(color) };
+
+        // Brightness math based on:
+        //   http://www.nbdtech.com/Blog/archive/2008/04/27/Calculating-the-Perceived-Brightness-of-a-Color.aspx
+        int brightness = (int) Math.sqrt(rgb[0] * rgb[0] * .241 + rgb[1]
+                * rgb[1] * .691 + rgb[2] * rgb[2] * .068);
+
+        // color is light
+        if (brightness >= 200) {
+            rtnValue = true;
+        }
+
+        return rtnValue;
     }
 }

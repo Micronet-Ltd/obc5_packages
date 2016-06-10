@@ -6,6 +6,8 @@ import android.content.Intent;
 
 /**
  * Created by brigham.diaz on 6/8/2016.
+ *
+ * Starts the main activity on boot
  */
 public class BootReceiver extends BroadcastReceiver {
     @Override

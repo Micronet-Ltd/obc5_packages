@@ -21,15 +21,18 @@ static pthread_mutex_t mutexlock;
 JNIEXPORT jstring JNICALL
 Java_com_micronet_mcontrol_MControl_jniGetMCUVersion(JNIEnv *env, jclass type) {
     uint8_t data[255];
+    memset(data, 0, sizeof(data)); // for automatically-allocated arrays
+
     int result = 0;
     jstring jresult = NULL;
 
     int fd = iosocket_connect();
     if (fd != 0) {
         result = get_mcu_version(&fd, data, 4);
-        snprintf((char *)data, sizeof(data), "%X.%X.%X.%X", data[0], data[1], data[2], data[3]);
         iosocket_disconnect(&fd);
-        jresult = env->NewStringUTF((char *)data);
+        snprintf((char *) data, sizeof(data), "%X.%X.%X.%X", data[0], data[1], data[2],
+                 data[3]);
+        jresult = env->NewStringUTF((char *) data);
         return jresult;
     }
 
@@ -46,9 +49,7 @@ Java_com_micronet_mcontrol_MControl_jniGetFPGAVersion(JNIEnv *env, jclass type) 
     if (fd != 0) {
         result = get_fpga_version(&fd, &fpga_ver, 4);
         //LOGI("result: %d, FPGA Version: %X", result, fpga_ver);
-
         iosocket_disconnect(&fd);
-
         return fpga_ver;
     }
 
@@ -65,7 +66,6 @@ Java_com_micronet_mcontrol_MControl_jniGetADCorGPIVoltage(JNIEnv *env, jclass ty
     if (fd != 0) {
         result = get_adc_or_gpi_voltage(&fd, gpi_num, &voltage, sizeof(voltage));
         //LOGI("result: %d, FPGA Version: %X", result, fpga_ver);
-
         iosocket_disconnect(&fd);
     }
 

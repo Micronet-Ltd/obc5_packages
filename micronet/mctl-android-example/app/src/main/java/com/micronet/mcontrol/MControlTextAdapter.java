@@ -26,6 +26,7 @@ public class MControlTextAdapter extends BaseAdapter {
     private int[] leftLEDVal = new int[]{-1, 0xFFFFFF};
     private int[] centerLEDVal = new int[]{-1, 0xFFFFFF};
     private int[] rightLEDVal = new int[]{-1, 0xFFFFFF};
+    private int logInterval = 1;
 
 
     private List<Pair<String,String>> pairList = new ArrayList<Pair<String,String>>();
@@ -55,7 +56,7 @@ public class MControlTextAdapter extends BaseAdapter {
         String adc_gpio_in7 = ADCs.ADC_GPIO_IN7.getValue()+ " mv";
         String adc_power_in = ADCs.ADC_POWER_IN.getValue() + " mv";
         String adc_power_cap = ADCs.ADC_POWER_VCAP.getValue() + " mv";
-        String celsius = ((ADCs.ADC_TEMPERATURE.getValue() - 500.0f) / 10) + " " + DEGREE +"C";
+        String celsius = ((ADCs.ADC_TEMPERATURE.getValue() - 500.0f) / 10) + "C";
         String adc_cable_type = ADCs.ADC_CABLE_TYPE.getValue() + " mv";
         int[] rtc_cal = mc.get_rtc_cal_reg();
         String dig_rtc_cal_reg = String.valueOf(rtc_cal[0]);
@@ -64,33 +65,34 @@ public class MControlTextAdapter extends BaseAdapter {
         LEDs left = mc.get_led_status(LEDInterface.LEFT);
         LEDs center = mc.get_led_status(LEDInterface.CENTER);
         LEDs right = mc.get_led_status(LEDInterface.RIGHT);
-        String leftLED = String.format("RGB"+BRIGHTNESS+"(%d, %d, %d, %d)", left.RED, left.GREEN, left.BLUE, left.BRIGHTNESS);
-        String centerLED = String.format("RGB"+BRIGHTNESS+"(%d, %d, %d, %d)", center.RED, center.GREEN, center.BLUE, center.BRIGHTNESS);
-        String rightLED = String.format("RGB"+BRIGHTNESS+"(%d, %d, %d, %d)", right.RED, right.GREEN, right.BLUE, center.BRIGHTNESS);
+        String leftLED = String.format("%d %d %d %d", left.RED, left.GREEN, left.BLUE, left.BRIGHTNESS);
+        String centerLED = String.format("%d %d %d %d", center.RED, center.GREEN, center.BLUE, center.BRIGHTNESS);
+        String rightLED = String.format("%d %d %d %d", right.RED, right.GREEN, right.BLUE, center.BRIGHTNESS);
 
         pairList.clear();
-        pairList.add(new Pair<String, String>("RTC Date/Time", rtc));
-        pairList.add(new Pair<String, String>("MCU VER", mcuver));
-        pairList.add(new Pair<String, String>("FPGA VER", fpgaver));
-        pairList.add(new Pair<String, String>("GPIO IN1", adc_gpio_in1));
-        pairList.add(new Pair<String, String>("GPIO IN2", adc_gpio_in2));
-        pairList.add(new Pair<String, String>("GPIO IN3", adc_gpio_in3));
-        pairList.add(new Pair<String, String>("GPIO IN4", adc_gpio_in4));
-        pairList.add(new Pair<String, String>("GPIO IN5", adc_gpio_in5));
-        pairList.add(new Pair<String, String>("GPIO IN6", adc_gpio_in6));
-        pairList.add(new Pair<String, String>("GPIO IN7", adc_gpio_in7));
-        pairList.add(new Pair<String, String>("POWER IN", adc_power_in));
-        pairList.add(new Pair<String, String>("POWER VCAP", adc_power_cap));
-        pairList.add(new Pair<String, String>("TEMPERATURE", celsius));
-        pairList.add(new Pair<String, String>("CABLE TYPE", adc_cable_type));
-        pairList.add(new Pair<String, String>("DIG RTC CAL REG", dig_rtc_cal_reg));
-        pairList.add(new Pair<String, String>("ANA RTC CAL REG", ana_rtc_cal_reg));
+        pairList.add(new Pair<>("LOG INTERVAL", String.valueOf(logInterval)));
+        pairList.add(new Pair<>("RTC", rtc));
+        pairList.add(new Pair<>("MCU VER", mcuver));
+        pairList.add(new Pair<>("FPGA VER", fpgaver));
+        pairList.add(new Pair<>("GPIO IN1", adc_gpio_in1));
+        pairList.add(new Pair<>("GPIO IN2", adc_gpio_in2));
+        pairList.add(new Pair<>("GPIO IN3", adc_gpio_in3));
+        pairList.add(new Pair<>("GPIO IN4", adc_gpio_in4));
+        pairList.add(new Pair<>("GPIO IN5", adc_gpio_in5));
+        pairList.add(new Pair<>("GPIO IN6", adc_gpio_in6));
+        pairList.add(new Pair<>("GPIO IN7", adc_gpio_in7));
+        pairList.add(new Pair<>("POWER IN", adc_power_in));
+        pairList.add(new Pair<>("POWER VCAP", adc_power_cap));
+        pairList.add(new Pair<>("TEMPERATURE", celsius));
+        pairList.add(new Pair<>("CABLE TYPE", adc_cable_type));
+        pairList.add(new Pair<>("DIG RTC CAL REG", dig_rtc_cal_reg));
+        pairList.add(new Pair<>("ANA RTC CAL REG", ana_rtc_cal_reg));
         leftLEDVal = new int[] {pairList.size(), left.getColorValue()};
-        pairList.add(new Pair<String, String>("LEFT LED", leftLED));
+        pairList.add(new Pair<>("LEFT LED", leftLED));
         centerLEDVal = new int[] {pairList.size(), center.getColorValue()};
-        pairList.add(new Pair<String, String>("CENTER LED", centerLED));
+        pairList.add(new Pair<>("CENTER LED", centerLED));
         rightLEDVal = new int[] {pairList.size(), right.getColorValue()};
-        pairList.add(new Pair<String, String>("RIGHT LED", rightLED));
+        pairList.add(new Pair<>("RIGHT LED", rightLED));
 
     }
 
@@ -150,6 +152,19 @@ public class MControlTextAdapter extends BaseAdapter {
 
         return rowView;
     }
+
+    public int getLogInterval() {
+        return logInterval;
+    }
+
+    public void increaseLogInterval() {
+        logInterval++;
+    }
+
+    public void clearLogInterval() {
+        logInterval = 0;
+    }
+
 
     public class TextHolder
     {

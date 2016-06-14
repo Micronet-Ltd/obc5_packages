@@ -84,6 +84,7 @@ static int control_open_socket(struct control_thread_context * context __attribu
 {
 	struct sockaddr_un s_addr = {0};
 	int fd;
+	//int option = 1;
 
 	s_addr.sun_family = AF_UNIX;
 	strncpy(s_addr.sun_path, UD_NAMESPACE, sizeof(s_addr.sun_path) - 1);
@@ -94,6 +95,8 @@ static int control_open_socket(struct control_thread_context * context __attribu
 		DERR("socket: %s", strerror(errno));
 		exit(-1);
 	}
+
+	//setsockopt(fd,SOL_SOCKET,(SO_REUSEPORT | SO_REUSEADDR),(char*)&option,sizeof(option));
 
 	if(-1 == bind(fd, (struct sockaddr *)&s_addr, sizeof(struct sockaddr_un)))
 	{
@@ -204,7 +207,10 @@ static int  control_send_mcu(struct control_thread_context * context, uint8_t * 
 		size_t st;
 		st = write(context->mcu_fd, encoded_buffer, r);
 		if(st != r)
+		{
+			DERR("Bytes written don't match request: %s", strerror(errno));
 			return -1;
+		}
 		return 0;
 	}
 	return -1;
@@ -797,7 +803,8 @@ void * control_proc(void * cntx)
 	struct control_thread_context * context = cntx;
 	int status;
 	uint8_t databuffer[1024]; // >= 10 * (8*2)
-	time_t time_last_sent_ping = 0;
+	time_t time_last_sent_ping = time(NULL);
+	time_t time_diff = 0;
 	bool on_init = true;
 
 #if defined (IO_CONTROL_RECOVERY_DEBUG)
@@ -884,9 +891,18 @@ void * control_proc(void * cntx)
 
 		if(context->mcu_fd > -1)
 		{
-			if( (0 == time_last_sent_ping) || ((time(NULL) - time_last_sent_ping) > 1) )
+			time_diff = time(NULL) - time_last_sent_ping;
+			if ((0 == time_last_sent_ping)
+					|| ((time_diff) > 1) )
 			{
+				if (context->ping_sent != context->pong_recv)
+				{
+					DERR("ping sent %d, ping rx %d", context->ping_sent, context->pong_recv);
+					context->running = false;
+					break;
+				}
 				uint8_t msg[2];
+				DTRACE("ping time diff %d\n",(int)time_diff);
 				msg[0] = control_get_seq(context);
 				msg[1] = (uint8_t)PING_REQ;
 				time_last_sent_ping = time(NULL);
@@ -902,6 +918,9 @@ void * control_proc(void * cntx)
     redirect_stdio("/dev/tty");
 #endif
 
+    close(context->sock_fd);
+	close(context->gpio_fd);
+	close(context->vled_fd);
 	DINFO("control thread exiting");
 	return NULL;
 }

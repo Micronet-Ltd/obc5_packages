@@ -111,7 +111,7 @@ int get_adc_or_gpi_voltage(int * fd, uint8_t gpi_num, uint32_t * gpi_voltage, si
 int get_led_status(int * fd, uint8_t led_num, uint8_t *brightness, uint8_t *red, uint8_t *green, uint8_t *blue)
 {
 	int ret = 0;
-	uint8_t req[] = { MCTRL_MAPI, MAPI_READ_RQ, MAPI_GET_LED_STATUS };
+	uint8_t req[] = { MCTRL_MAPI, MAPI_READ_RQ, MAPI_GET_LED_STATUS, led_num};
 	led_param_t led_params;
 	ret = get_command(fd, req, sizeof(req), (uint8_t *)&led_params, sizeof(led_params));
 	*brightness = led_params.brightness;

@@ -322,8 +322,26 @@ static int control_receive_mcu(struct control_thread_context * context)
 	ssize_t bytes_read; // NOTE signed type
 	int offset;
 	uint8_t readbuffer[1024];
-	DTRACE("");
+	int ret;
+	fd_set set;
+	struct timeval timeout;
+	/* Initialize the file descriptor set. */
+	FD_ZERO (&set);
+	FD_SET (context->mcu_fd, &set);
 
+	/* Initialize the timeout data structure. */
+	timeout.tv_sec = 2;
+	timeout.tv_usec = 0;
+
+	DTRACE("");
+	/* select returns 0 if timeout, 1 if input available, -1 if error. */
+	ret = select (FD_SETSIZE, (fd_set *)&set, NULL, NULL, &timeout);
+	if (ret != 1)
+	{
+		DERR("control_receive_mcu read select failure: %s", strerror(errno));
+		context->running = false;
+		return -1;
+	}
 	bytes_read = read(context->mcu_fd, readbuffer, sizeof(readbuffer));
 	if(bytes_read < 0)
 	{

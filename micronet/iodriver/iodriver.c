@@ -125,14 +125,14 @@ void do_run()
 	// TODO: main thread processing
 	while(true)
 	{
-		sleep(10);
+		sleep(5);
 		if (controlctx.running == false)
 		{
 			DINFO("control thread has exited");
-//			memset(&controlctx, 0, sizeof(controlctx)); 				// GCC bug #53119
-//			snprintf(controlctx.name, sizeof(controlctx.name)-1, "/dev/ttyMICRONET_CONTROL"); //"/dev/ttyACM0");
-//			pthread_create(&control_thread, NULL, control_proc, &controlctx);
-			break;
+			memset(&controlctx, 0, sizeof(controlctx)); 				// GCC bug #53119
+			snprintf(controlctx.name, sizeof(controlctx.name)-1, "/dev/ttyMICRONET_CONTROL"); //"/dev/ttyACM0");
+			pthread_create(&control_thread, NULL, control_proc, &controlctx);
+			//break;
 		}
 	}
 }

@@ -117,7 +117,7 @@ ssize_t format_timeval(struct timeval *tv, char *buf, size_t sz)
   return written;
 }
 
-void send_api_hex2(int * fd, char * hexdata)
+int send_api_hex2(int * fd, char * hexdata)
 {
 	uint8_t data[4096];
 	uint32_t fpga_ver = 0;
@@ -132,7 +132,7 @@ void send_api_hex2(int * fd, char * hexdata)
 	if(strlen(hexdata) > (sizeof(data)>>1))
 	{
 		fprintf(stderr, "too much data\n");
-		return;
+		return -1;
 	}
 	//FIXME: strlen(hexdata)%2 != 0
 	for(i = 0; i*2 < (int)strlen(hexdata); i++)
@@ -203,7 +203,7 @@ void send_api_hex2(int * fd, char * hexdata)
 			    perror("gettimeofday");
 			    break;
 			}
-			if (!format_timeval(&tv, dt_str, sizeof(dt_str)) > 0)
+			if (format_timeval(&tv, dt_str, sizeof(dt_str)) < 0)
 			{
 				perror("format_timeval");
 				break;
@@ -251,6 +251,7 @@ void send_api_hex2(int * fd, char * hexdata)
 
 		default: break;
 	}
+	return ret;
 }
 
 void send_raw(int * fd, char * hexdata)
@@ -282,6 +283,7 @@ static void display_help()
 int main(int argc, char * argv[])
 {
 	int fd;
+	int ret;
 
 	if(argc < 2)
 	{
@@ -304,11 +306,18 @@ int main(int argc, char * argv[])
 	else if(CMD("api"))
 	{
 		if(argv[2] != NULL && strlen(argv[2])%2 == 0)
-			send_api_hex2(&fd,argv[2]);
-			//send_api_hex(fd, argv[2]);
-
+		{
+			ret = send_api_hex2(&fd,argv[2]);
+			if (ret < 0)
+			{
+				iosocket_disconnect(&fd);
+				return EXIT_FAILURE;
+			}
+		}
 		else
+		{
 			fprintf(stderr, "hex string must be multiple of 2 and non null\n");
+		}
 	}
 	else if(CMD("raw"))
 	{

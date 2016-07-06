@@ -84,6 +84,7 @@ static int control_open_socket(struct control_thread_context * context __attribu
 {
 	struct sockaddr_un s_addr = {0};
 	int fd;
+	//int option = 1;
 
 	s_addr.sun_family = AF_UNIX;
 	strncpy(s_addr.sun_path, UD_NAMESPACE, sizeof(s_addr.sun_path) - 1);
@@ -94,6 +95,8 @@ static int control_open_socket(struct control_thread_context * context __attribu
 		DERR("socket: %s", strerror(errno));
 		exit(-1);
 	}
+
+	//setsockopt(fd,SOL_SOCKET,(SO_REUSEPORT | SO_REUSEADDR),(char*)&option,sizeof(option));
 
 	if(-1 == bind(fd, (struct sockaddr *)&s_addr, sizeof(struct sockaddr_un)))
 	{
@@ -204,7 +207,10 @@ static int  control_send_mcu(struct control_thread_context * context, uint8_t * 
 		size_t st;
 		st = write(context->mcu_fd, encoded_buffer, r);
 		if(st != r)
+		{
+			DERR("Bytes written don't match request: %s", strerror(errno));
 			return -1;
+		}
 		return 0;
 	}
 	return -1;
@@ -260,6 +266,7 @@ static int control_frame_process(struct control_thread_context * context, uint8_
 	switch (packet_type)
 	{
 		case SYNC_INFO:	// Sync/Info
+			DTRACE("control_frame_process: Packet type SYNC_INFO !!!");
 			break;
 
 		case COMM_WRITE_REQ: // Write register
@@ -316,8 +323,29 @@ static int control_receive_mcu(struct control_thread_context * context)
 	ssize_t bytes_read; // NOTE signed type
 	int offset;
 	uint8_t readbuffer[1024];
-	DTRACE("");
+	int ret;
+	fd_set set;
+	struct timeval timeout;
+	/* Initialize the file descriptor set. */
+	FD_ZERO (&set);
+	FD_SET (context->mcu_fd, &set);
 
+	/* Initialize the timeout data structure. */
+	timeout.tv_sec = 2;
+	timeout.tv_usec = 0;
+
+	DTRACE("");
+	/* select returns 0 if timeout, 1 if input available, -1 if error. */
+	ret = select (FD_SETSIZE, (fd_set *)&set, NULL, NULL, &timeout);
+	if (ret != 1)
+	{
+		DERR("control_receive_mcu read select failure:ret=%d , %s", ret, strerror(errno));
+		if (ret == -1)
+		{
+			context->running = false;
+		}
+		return -1;
+	}
 	bytes_read = read(context->mcu_fd, readbuffer, sizeof(readbuffer));
 	if(bytes_read < 0)
 	{
@@ -797,7 +825,8 @@ void * control_proc(void * cntx)
 	struct control_thread_context * context = cntx;
 	int status;
 	uint8_t databuffer[1024]; // >= 10 * (8*2)
-	time_t time_last_sent_ping = 0;
+	time_t time_last_sent_ping = time(NULL);
+	time_t time_diff = 0;
 	bool on_init = true;
 
 #if defined (IO_CONTROL_RECOVERY_DEBUG)
@@ -835,7 +864,7 @@ void * control_proc(void * cntx)
 		status = control_thread_wait(context);
 		//DTRACE("control_thread_wait returned %d", status);
 
-		if (on_init && (context->mcu_fd > -1 ))
+		if (on_init && (context->mcu_fd > -1 ) && !FD_ISSET(context->mcu_fd, &context->fds))
 		{
 			on_init = false;
 			update_system_time_with_rtc(context);
@@ -864,7 +893,8 @@ void * control_proc(void * cntx)
 			DTRACE("After sock receive");
 		}
 
-        if ((context->vled_fd > -1) && FD_ISSET(context->vled_fd, &context->fds)) {
+        if ((context->vled_fd > -1) && FD_ISSET(context->vled_fd, &context->fds))
+        {
             status = control_leds(context);
             if(status < 0) {
                 DERR("failure to set led %d\n", status);
@@ -882,17 +912,24 @@ void * control_proc(void * cntx)
 			DTRACE("After sock receive");
 		}
 
-		if(context->mcu_fd > -1)
+		if((context->mcu_fd > -1) && !FD_ISSET(context->mcu_fd, &context->fds))
 		{
-			if( (0 == time_last_sent_ping) || ((time(NULL) - time_last_sent_ping) > 1) )
+			time_diff = time(NULL) - time_last_sent_ping;
+			if ((0 == time_last_sent_ping) || ((time_diff) > 2))
 			{
+				if (context->ping_sent != context->pong_recv)
+				{
+					DERR("ping sent %d, ping rx %d", context->ping_sent, context->pong_recv);
+					context->running = false;
+					break;
+				}
 				uint8_t msg[2];
+				DTRACE("ping time diff %d\n",(int)time_diff);
 				msg[0] = control_get_seq(context);
 				msg[1] = (uint8_t)PING_REQ;
+				control_send_mcu(context, msg, sizeof(msg));
 				time_last_sent_ping = time(NULL);
 				context->ping_sent++;
-
-				control_send_mcu(context, msg, sizeof(msg));
 			}
 		}
 
@@ -902,6 +939,9 @@ void * control_proc(void * cntx)
     redirect_stdio("/dev/tty");
 #endif
 
+    close(context->sock_fd);
+	close(context->gpio_fd);
+	close(context->vled_fd);
 	DINFO("control thread exiting");
 	return NULL;
 }

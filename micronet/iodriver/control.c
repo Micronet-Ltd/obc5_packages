@@ -860,16 +860,38 @@ void * control_proc(void * cntx)
 		// Check for devices that need to be opened/reopened
 		check_devices(context);
 
-		// TODO: Waiting for events
-		status = control_thread_wait(context);
-		//DTRACE("control_thread_wait returned %d", status);
-
+		/* Only done once and does not depend on data being received */
 		if (on_init && (context->mcu_fd > -1 ) && !FD_ISSET(context->mcu_fd, &context->fds))
 		{
 			on_init = false;
 			update_system_time_with_rtc(context);
 			update_all_GP_inputs(context);
 		}
+
+		if((context->mcu_fd > -1) && !FD_ISSET(context->mcu_fd, &context->fds))
+		{
+			time_diff = time(NULL) - time_last_sent_ping;
+			if ((0 == time_last_sent_ping) || ((time_diff) > 2))
+			{
+				if (context->ping_sent != context->pong_recv)
+				{
+					DERR("ping sent %d, ping rx %d", context->ping_sent, context->pong_recv);
+					context->running = false;
+					break;
+				}
+				uint8_t msg[2];
+				DTRACE("ping time diff %d\n",(int)time_diff);
+				msg[0] = control_get_seq(context);
+				msg[1] = (uint8_t)PING_REQ;
+				control_send_mcu(context, msg, sizeof(msg));
+				time_last_sent_ping = time(NULL);
+				context->ping_sent++;
+			}
+		}
+
+		// TODO: Waiting for events
+		status = control_thread_wait(context);
+		DTRACE("control_thread_wait returned %d", status);
 
 		if((context->mcu_fd > -1) && FD_ISSET(context->mcu_fd, &context->fds))
 		{
@@ -910,27 +932,6 @@ void * control_proc(void * cntx)
 				DERR("control_receive_sock returned %d\n", status);
 			}
 			DTRACE("After sock receive");
-		}
-
-		if((context->mcu_fd > -1) && !FD_ISSET(context->mcu_fd, &context->fds))
-		{
-			time_diff = time(NULL) - time_last_sent_ping;
-			if ((0 == time_last_sent_ping) || ((time_diff) > 2))
-			{
-				if (context->ping_sent != context->pong_recv)
-				{
-					DERR("ping sent %d, ping rx %d", context->ping_sent, context->pong_recv);
-					context->running = false;
-					break;
-				}
-				uint8_t msg[2];
-				DTRACE("ping time diff %d\n",(int)time_diff);
-				msg[0] = control_get_seq(context);
-				msg[1] = (uint8_t)PING_REQ;
-				control_send_mcu(context, msg, sizeof(msg));
-				time_last_sent_ping = time(NULL);
-				context->ping_sent++;
-			}
 		}
 
 	} while(context->running);

@@ -111,8 +111,8 @@ void do_run()
 #endif
 
 	// TODO: the thread should dynamically detect the device name based on physical connection
-	snprintf(controlctx.name, sizeof(controlctx.name)-1, "/dev/ttyACM0");
-	snprintf(accelctx.name, sizeof(accelctx.name)-1, "/dev/ttyACM1");
+	snprintf(controlctx.name, sizeof(controlctx.name)-1, "/dev/ttyMICRONET_CONTROL"); //"/dev/ttyACM0");
+	snprintf(accelctx.name, sizeof(accelctx.name)-1, "/dev/ttyMICRONET_ACCEL");//"/dev/ttyACM1");
 
 	pthread_create(&control_thread, NULL, control_proc, &controlctx);
 	pthread_create(&accel_thread, NULL, accel_proc, &accelctx);
@@ -123,7 +123,18 @@ void do_run()
 #endif
 
 	// TODO: main thread processing
-	while(true) sleep(100);
+	while(true)
+	{
+		sleep(5);
+		if (controlctx.running == false)
+		{
+			DINFO("control thread has exited");
+			memset(&controlctx, 0, sizeof(controlctx)); 				// GCC bug #53119
+			snprintf(controlctx.name, sizeof(controlctx.name)-1, "/dev/ttyMICRONET_CONTROL"); //"/dev/ttyACM0");
+			pthread_create(&control_thread, NULL, control_proc, &controlctx);
+			//break;
+		}
+	}
 }
 
 int main(int argc __attribute__((unused)), char * argv[] __attribute__((unused)))

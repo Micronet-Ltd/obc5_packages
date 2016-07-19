@@ -15,7 +15,7 @@ typedef enum
 
 struct control_thread_context
 {
-	bool running;
+	volatile bool running;
 	char name[PATH_MAX];
 	fd_set fds;
 	int mcu_fd;

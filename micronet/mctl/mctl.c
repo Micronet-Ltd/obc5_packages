@@ -262,12 +262,12 @@ int send_api_hex2(int * fd, char * hexdata)
 			printf("set mcu gpio state, gpio: %d value set: %d, ret = %d  \n", \
 					gpio_num, gpio_val, ret);
 			break;
-		case MAPI_GET_CAN1_J1708_PWR_ENABLE_GPIO:
+		case MCTL_GET_CAN1_J1708_PWR_ENABLE_GPIO:
 			ret = get_gpio_state_dbg(fd, CAN1_J1708_PWR_ENABLE, &gpio_val);
 			printf("get CAN1 J1708 pwr enable gpio: %d, value read: %d, ret = %d  \n", \
 					CAN1_J1708_PWR_ENABLE, gpio_val, ret);
 			break;
-		case MAPI_SET_CAN1_J1708_PWR_ENABLE_GPIO:
+		case MCTL_SET_CAN1_J1708_PWR_ENABLE_GPIO:
 			gpio_val = data[2];
 			ret = set_gpio_state_dbg(fd, CAN1_J1708_PWR_ENABLE, gpio_val);
 			printf("set CAN1 J1708 pwr enable , gpio: %d, value set: %d, ret = %d  \n", \

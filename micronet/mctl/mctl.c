@@ -145,11 +145,11 @@ int send_api_hex2(int * fd, char * hexdata)
 	{
 		case MAPI_GET_MCU_FW_VERSION:
 			ret = get_mcu_version(fd, data, 4);
-			printf("MCU firmware version %x.%x.%x.%x ret = %d \n", data[0], data[1], data[2], data[3], ret);
+			printf("MCU firmware version in hex %x.%x.%x.%x ret = %d \n", data[0], data[1], data[2], data[3], ret);
 			break;
 		case MAPI_GET_FPGA_VERSION:
 			ret = get_fpga_version(fd, &fpga_ver, 4);
-			printf("fpga ver %x, ret = %d \n", fpga_ver, ret);
+			printf("fpga ver 0x%x, ret = %d \n", fpga_ver, ret);
 			break;
 		case MAPI_GET_ADC_OR_GPI_INPUT_VOLTAGE:
 			gpi_num = data[2];
@@ -214,27 +214,27 @@ int send_api_hex2(int * fd, char * hexdata)
 			break;
 		case MAPI_GET_RTC_CAL_REGISTERS:
 			ret = get_rtc_cal_reg(fd, &rtc_dig_cal, &rtc_analog_cal);
-			printf("get rtc cal registers, dig cal: %x analog cal: %x, ret = %d  \n", \
+			printf("get rtc cal registers, dig cal: 0x%x analog cal: 0x%x, ret = %d  \n", \
 					rtc_dig_cal, rtc_analog_cal, ret);
 			break;
 		case MAPI_SET_RTC_CAL_REGISTERS:
 			rtc_dig_cal = data[2];
 			rtc_analog_cal = data[3];
 			ret = set_rtc_cal_reg(fd, rtc_dig_cal, rtc_analog_cal);
-			printf("set rtc cal registers, dig cal: %x analog cal: %x, ret = %d  \n", \
+			printf("set rtc cal registers, dig cal: 0x%x analog cal: 0x%x, ret = %d  \n", \
 								rtc_dig_cal, rtc_analog_cal, ret);
 			break;
 		case MAPI_GET_RTC_REG_DBG:
 			rtc_reg_addr = data[2];
 			ret = get_rtc_reg_dbg(fd, rtc_reg_addr, &rtc_reg_data);
-			printf("get rtc registers @ addr: %x value read: %x, ret = %d  \n", \
+			printf("get rtc registers @ addr: 0x%x value read: 0x%x, ret = %d  \n", \
 					rtc_reg_addr, rtc_reg_data, ret);
 			break;
 		case MAPI_SET_RTC_REG_DBG:
 			rtc_reg_addr = data[2];
 			rtc_reg_data = data[3];
 			ret = set_rtc_reg_dbg(fd, rtc_reg_addr, rtc_reg_data);
-			printf("set rtc registers @ addr: %x value set: %x, ret = %d  \n", \
+			printf("set rtc registers @ addr: 0x%x value set: 0x%x, ret = %d  \n", \
 					rtc_reg_addr, rtc_reg_data, ret);
 			break;
 

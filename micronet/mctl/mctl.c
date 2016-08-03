@@ -34,6 +34,7 @@
 #include "util.h"
 #include "iosocket.h"
 #include "api.h"
+#include "mcu_gpio_pins.h"
 
 
 int client_command(int * fd, uint8_t * payload, size_t msg_len)
@@ -122,8 +123,8 @@ int send_api_hex2(int * fd, char * hexdata)
 	uint8_t data[4096];
 	uint32_t fpga_ver = 0;
 	uint32_t gpi_voltage = 0;
-	uint8_t led_num, brightness, red, green, blue, gpi_num, power_on_reason, wait_time, rtc_dig_cal, rtc_analog_cal, rtc_reg_addr, rtc_reg_data;
-	uint16_t wiggle_count, wig_cnt_sample_period, ignition_threshold;
+	uint8_t led_num, brightness, red, green, blue, gpi_num, power_on_reason, wait_time, rtc_dig_cal, rtc_analog_cal, rtc_reg_addr, rtc_reg_data, gpio_val;
+	uint16_t wiggle_count, wig_cnt_sample_period, ignition_threshold, gpio_num;
 	int i;
 	int ret = 0;
 	char dt_str[RTC_STRING_SIZE] = "2016-03-29 19:09:06.58\0";
@@ -248,7 +249,30 @@ int send_api_hex2(int * fd, char * hexdata)
 				printf("rtc battery low or not present\n");
 			}
 			break;
-
+		case MAPI_GET_MCU_GPIO_STATE_DBG:
+			gpio_num = (data[2]<<8) | data[3];
+			ret = get_gpio_state_dbg(fd, gpio_num, &gpio_val);
+			printf("get mcu gpio state, gpio: %d value read: %d, ret = %d  \n", \
+						gpio_num, gpio_val, ret);
+			break;
+		case MAPI_SET_MCU_GPIO_STATE_DBG:
+			gpio_num = (data[2]<<8)| data[3];
+			gpio_val = data[4];
+			ret = set_gpio_state_dbg(fd, gpio_num, gpio_val);
+			printf("set mcu gpio state, gpio: %d value set: %d, ret = %d  \n", \
+					gpio_num, gpio_val, ret);
+			break;
+		case MAPI_GET_CAN1_J1708_PWR_ENABLE_GPIO:
+			ret = get_gpio_state_dbg(fd, CAN1_J1708_PWR_ENABLE, &gpio_val);
+			printf("get CAN1 J1708 pwr enable gpio: %d, value read: %d, ret = %d  \n", \
+					CAN1_J1708_PWR_ENABLE, gpio_val, ret);
+			break;
+		case MAPI_SET_CAN1_J1708_PWR_ENABLE_GPIO:
+			gpio_val = data[2];
+			ret = set_gpio_state_dbg(fd, CAN1_J1708_PWR_ENABLE, gpio_val);
+			printf("set CAN1 J1708 pwr enable , gpio: %d, value set: %d, ret = %d  \n", \
+					CAN1_J1708_PWR_ENABLE, gpio_val, ret);
+			break;
 		default: break;
 	}
 	return ret;

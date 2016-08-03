@@ -300,3 +300,23 @@ bool check_rtc_battery(int * fd)
 	}
 	return true;
 }
+
+/* get_gpio_state_dbg: get MCU GPIO, be careful, gpio needs to be valid */
+int get_gpio_state_dbg(int * fd, uint16_t gpio_num, uint8_t * gpio_val)
+{
+	int ret = 0;
+	uint8_t gpio_value[] = {0};
+	uint8_t req[] = { MCTRL_MAPI, MAPI_READ_RQ, MAPI_GET_MCU_GPIO_STATE_DBG, (uint8_t)(gpio_num>>8),(uint8_t)(gpio_num&0xFF)};
+
+	ret = get_command(fd, req, sizeof(req), gpio_value, sizeof(gpio_value));
+	gpio_val[0] = gpio_value[0];
+	return ret;
+}
+
+/* set_gpio_state_dbg: set MCU GPIO, be careful, gpio needs to be valid */
+int set_gpio_state_dbg(int * fd, uint16_t gpio_num, uint8_t gpio_val)
+{
+	uint8_t req[] = { MCTRL_MAPI, MAPI_WRITE_RQ, MAPI_SET_MCU_GPIO_STATE_DBG,
+					(uint8_t)(gpio_num>>8),(uint8_t)(gpio_num&0xFF), gpio_val};
+	return set_command(fd, req, sizeof(req));
+}

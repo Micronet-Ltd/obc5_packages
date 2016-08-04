@@ -34,6 +34,7 @@
 #include "tty.h"
 #include "control.h"
 #include "accel.h"
+#include "j1708.h"
 
 /// structs and defines
 
@@ -94,12 +95,15 @@ void do_run()
 {
 	pthread_t control_thread;
 	pthread_t accel_thread;
+    pthread_t j1708_thread;
 
 	struct control_thread_context controlctx /* = {0} */; 		// GCC bug #53119
 	struct accel_thread_context accelctx /* = {0}*/; 	// GCC bug #53119
+    struct j1708_thread_context j1708ctx;
 
 	memset(&controlctx, 0, sizeof(controlctx)); 				// GCC bug #53119
 	memset(&accelctx, 0, sizeof(accelctx)); 			// GCC bug #53119
+    memset(&j1708ctx, 0, sizeof(j1708ctx));
 
 	// A8 rev C does switch is pulled high, this does nothing but add delay.
 #if SWITCH_OTG
@@ -113,9 +117,11 @@ void do_run()
 	// TODO: the thread should dynamically detect the device name based on physical connection
 	snprintf(controlctx.name, sizeof(controlctx.name)-1, "/dev/ttyMICRONET_CONTROL"); //"/dev/ttyACM0");
 	snprintf(accelctx.name, sizeof(accelctx.name)-1, "/dev/ttyMICRONET_ACCEL");//"/dev/ttyACM1");
+    snprintf(j1708ctx.name, sizeof(j1708ctx.name)-1, "/dev/ttyMICRONET_J1708");//"/dev/ttyACM4");
 
 	pthread_create(&control_thread, NULL, control_proc, &controlctx);
 	pthread_create(&accel_thread, NULL, accel_proc, &accelctx);
+    pthread_create(&j1708_thread, NULL, j1708_proc, &j1708ctx);
 
 #ifndef LINUX_BUILD
     property_set("iodriver.boot_complete", "1");

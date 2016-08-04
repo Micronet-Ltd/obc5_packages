@@ -32,6 +32,9 @@
 #define MAPI_GET_RTC_REG_DBG  		0x10
 #define MAPI_SET_RTC_REG_DBG  		0x20
 
+#define MAPI_J1708_CONFIG			0x30
+
+
 // MCTL Commands that are not direct MCU commands
 #define MCTL_IS_RTC_BATTERY_GOOD    0xFD
 

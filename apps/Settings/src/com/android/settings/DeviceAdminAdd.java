@@ -475,6 +475,16 @@ public class DeviceAdminAdd extends Activity {
             }
             mActionButton.setText(getText(R.string.add_device_admin));
             mAdding = true;
+            
+            if (!mAddingProfileOwner) {
+
+                Log.i(TAG, " PackageName " + mDeviceAdmin.getPackageName());
+                
+	         	if (mDeviceAdmin.getPackageName().startsWith("com.redbend.client")){
+	             	mActionButton.performClick();
+	            }
+	         	
+            }
         }
     }
 

@@ -34,6 +34,7 @@
 #include "util.h"
 #include "iosocket.h"
 #include "api.h"
+#include "mcu_gpio_pins.h"
 
 
 int client_command(int * fd, uint8_t * payload, size_t msg_len)
@@ -122,8 +123,8 @@ int send_api_hex2(int * fd, char * hexdata)
 	uint8_t data[4096];
 	uint32_t fpga_ver = 0;
 	uint32_t gpi_voltage = 0;
-	uint8_t led_num, brightness, red, green, blue, gpi_num, power_on_reason, wait_time, rtc_dig_cal, rtc_analog_cal, rtc_reg_addr, rtc_reg_data;
-	uint16_t wiggle_count, wig_cnt_sample_period, ignition_threshold;
+	uint8_t led_num, brightness, red, green, blue, gpi_num, power_on_reason, wait_time, rtc_dig_cal, rtc_analog_cal, rtc_reg_addr, rtc_reg_data, gpio_val;
+	uint16_t wiggle_count, wig_cnt_sample_period, ignition_threshold, gpio_num;
 	int i;
 	int ret = 0;
 	char dt_str[RTC_STRING_SIZE] = "2016-03-29 19:09:06.58\0";
@@ -144,11 +145,11 @@ int send_api_hex2(int * fd, char * hexdata)
 	{
 		case MAPI_GET_MCU_FW_VERSION:
 			ret = get_mcu_version(fd, data, 4);
-			printf("MCU firmware version %x.%x.%x.%x ret = %d \n", data[0], data[1], data[2], data[3], ret);
+			printf("MCU firmware version in hex %x.%x.%x.%x ret = %d \n", data[0], data[1], data[2], data[3], ret);
 			break;
 		case MAPI_GET_FPGA_VERSION:
 			ret = get_fpga_version(fd, &fpga_ver, 4);
-			printf("fpga ver %x, ret = %d \n", fpga_ver, ret);
+			printf("fpga ver 0x%x, ret = %d \n", fpga_ver, ret);
 			break;
 		case MAPI_GET_ADC_OR_GPI_INPUT_VOLTAGE:
 			gpi_num = data[2];
@@ -213,27 +214,27 @@ int send_api_hex2(int * fd, char * hexdata)
 			break;
 		case MAPI_GET_RTC_CAL_REGISTERS:
 			ret = get_rtc_cal_reg(fd, &rtc_dig_cal, &rtc_analog_cal);
-			printf("get rtc cal registers, dig cal: %x analog cal: %x, ret = %d  \n", \
+			printf("get rtc cal registers, dig cal: 0x%x analog cal: 0x%x, ret = %d  \n", \
 					rtc_dig_cal, rtc_analog_cal, ret);
 			break;
 		case MAPI_SET_RTC_CAL_REGISTERS:
 			rtc_dig_cal = data[2];
 			rtc_analog_cal = data[3];
 			ret = set_rtc_cal_reg(fd, rtc_dig_cal, rtc_analog_cal);
-			printf("set rtc cal registers, dig cal: %x analog cal: %x, ret = %d  \n", \
+			printf("set rtc cal registers, dig cal: 0x%x analog cal: 0x%x, ret = %d  \n", \
 								rtc_dig_cal, rtc_analog_cal, ret);
 			break;
 		case MAPI_GET_RTC_REG_DBG:
 			rtc_reg_addr = data[2];
 			ret = get_rtc_reg_dbg(fd, rtc_reg_addr, &rtc_reg_data);
-			printf("get rtc registers @ addr: %x value read: %x, ret = %d  \n", \
+			printf("get rtc registers @ addr: 0x%x value read: 0x%x, ret = %d  \n", \
 					rtc_reg_addr, rtc_reg_data, ret);
 			break;
 		case MAPI_SET_RTC_REG_DBG:
 			rtc_reg_addr = data[2];
 			rtc_reg_data = data[3];
 			ret = set_rtc_reg_dbg(fd, rtc_reg_addr, rtc_reg_data);
-			printf("set rtc registers @ addr: %x value set: %x, ret = %d  \n", \
+			printf("set rtc registers @ addr: 0x%x value set: 0x%x, ret = %d  \n", \
 					rtc_reg_addr, rtc_reg_data, ret);
 			break;
 
@@ -248,7 +249,30 @@ int send_api_hex2(int * fd, char * hexdata)
 				printf("rtc battery low or not present\n");
 			}
 			break;
-
+		case MAPI_GET_MCU_GPIO_STATE_DBG:
+			gpio_num = (data[2]<<8) | data[3];
+			ret = get_gpio_state_dbg(fd, gpio_num, &gpio_val);
+			printf("get mcu gpio state, gpio: %d value read: %d, ret = %d  \n", \
+						gpio_num, gpio_val, ret);
+			break;
+		case MAPI_SET_MCU_GPIO_STATE_DBG:
+			gpio_num = (data[2]<<8)| data[3];
+			gpio_val = data[4];
+			ret = set_gpio_state_dbg(fd, gpio_num, gpio_val);
+			printf("set mcu gpio state, gpio: %d value set: %d, ret = %d  \n", \
+					gpio_num, gpio_val, ret);
+			break;
+		case MCTL_GET_CAN1_J1708_PWR_ENABLE_GPIO:
+			ret = get_gpio_state_dbg(fd, CAN1_J1708_PWR_ENABLE, &gpio_val);
+			printf("get CAN1 J1708 pwr enable gpio: %d, value read: %d, ret = %d  \n", \
+					CAN1_J1708_PWR_ENABLE, gpio_val, ret);
+			break;
+		case MCTL_SET_CAN1_J1708_PWR_ENABLE_GPIO:
+			gpio_val = data[2];
+			ret = set_gpio_state_dbg(fd, CAN1_J1708_PWR_ENABLE, gpio_val);
+			printf("set CAN1 J1708 pwr enable , gpio: %d, value set: %d, ret = %d  \n", \
+					CAN1_J1708_PWR_ENABLE, gpio_val, ret);
+			break;
 		default: break;
 	}
 	return ret;

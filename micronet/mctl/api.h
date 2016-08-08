@@ -28,4 +28,6 @@ int set_rtc_cal_reg(int * fd, uint8_t dig_cal, uint8_t analog_cal);
 int get_rtc_reg_dbg(int * fd, uint8_t address, uint8_t * data);
 int set_rtc_reg_dbg(int * fd, uint8_t address, uint8_t data);
 bool check_rtc_battery(int * fd);
+int get_gpio_state_dbg(int * fd, uint16_t gpio_num, uint8_t * gpio_val);
+int set_gpio_state_dbg(int * fd, uint16_t gpio_num, uint8_t gpio_val);
 

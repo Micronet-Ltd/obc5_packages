@@ -36,6 +36,8 @@
 #include "tty.h"
 #include "j1708.h"
 
+//#define J1708_DEBUG
+
 #define MIC_J1708_MAX_DATA_LEN ((21<<1)+2)
 
 void * j1708_proc(void * cntx)
@@ -143,9 +145,28 @@ void * j1708_proc(void * cntx)
 				abort();
 			}
 
+#if J1708_DEBUG
+			//Print message
+			{
+				int count;
+				for (count = 0; count < ready; count++) {
+					DERR("Byte %d -- %x", count, readbuffer[count] );
+				}
+			}
+#endif
 			frame_setbuffer(&frame, databuffer, sizeof(databuffer));
 
 			ready = frame_process_buffer(&frame, readbuffer, ready);
+
+#if J1708_DEBUG
+			//Print message
+			{
+				int count;
+				for (count = 0; count < ready; count++) {
+					DERR("RByte %d -- %x", count, readbuffer[count] );
+				}
+			}
+#endif
 
 			if(0 >= ready) {
 				DERR("frame_process_buffer return ready is <= 0");
@@ -156,6 +177,7 @@ void * j1708_proc(void * cntx)
 				tmp = write(fd_dev, frame.data, frame.data_len);
 				if(-1 == tmp)
 				{
+					DERR("fd_dev %x datalen %x",(unsigned int)fd_dev, (unsigned int)(frame.data_len) );
 					DERR("write: %s", strerror(errno));
 					close(fd_dev);
 					fd_dev = -1;

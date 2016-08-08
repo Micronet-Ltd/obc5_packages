@@ -727,6 +727,61 @@ void update_system_time_with_rtc(struct control_thread_context * context)
 	rtc_bcdconvert_and_set_systime(context->rtc_init_val, dt_str, true);
 	context->rtc_req = false;
 }
+void set_fw_vers_files(struct control_thread_context * context)
+{
+	uint8_t req[2];
+	int8_t ver[16] = {0};
+	uint32_t ret = -1;
+	uint32_t fdw = -1, cnt;
+	int8_t* mcu_file = "/data/mcu_version";
+	int8_t*	fpga_file = "/data/fpga_version";
+	int8_t*	fn;
+
+
+	for(cnt = 0; cnt < 2; ++cnt)
+	{
+	    req[0] = MAPI_READ_RQ;
+	    if(0 == cnt)
+	    {
+	    	fn = mcu_file;
+	    	req[1] = MAPI_GET_MCU_FW_VERSION;
+	    }
+	    else
+	    {
+	    	fn = fpga_file;
+	    	req[1] = MAPI_GET_FPGA_VERSION;
+	    }
+
+	    fdw = open(fn, O_WRONLY, 0666);
+    	if(0 > fdw)
+    	{
+    		DERR("set_fw_vers_files cannot open /proc/mcu_version\n");
+    		continue;
+    	}
+
+		control_handle_api_command(context, NULL, req, sizeof(req));
+
+		context->rtc_req = true;
+		while (context->rtc_req == true)
+		{
+			ret = control_receive_mcu(context);
+			if(ret < 0)
+			{
+				DERR("set_fw_vers_files failed - %d\n", ret);
+				context->rtc_req = false;
+				return;
+			}
+		}
+
+		if(0 == cnt)
+			sprintf(ver, "%X.%X.%X.%X\n", context->frame.data[3], context->frame.data[4], context->frame.data[5], context->frame.data[6]);
+		else
+			sprintf(ver, "%X\n", *((uint32_t*)&context->frame.data[3]));
+
+		write(fdw, ver, strlen(ver));
+		close(fdw);
+	}
+}
 
 /* Request for all the GPInput values, in case they were missed on bootup */
 int update_all_GP_inputs(struct control_thread_context * context)
@@ -866,6 +921,7 @@ void * control_proc(void * cntx)
 			on_init = false;
 			update_system_time_with_rtc(context);
 			update_all_GP_inputs(context);
+			set_fw_vers_files(context);
 		}
 
 		if((context->mcu_fd > -1) && !FD_ISSET(context->mcu_fd, &context->fds))

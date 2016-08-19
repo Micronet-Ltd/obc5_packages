@@ -53,6 +53,7 @@
 #include <errno.h>
 
 //#define IO_CONTROL_RECOVERY_DEBUG 1
+#define TIME_BETWEEN_MCU_PINGS 2 /* 2 sec */
 
 #if defined (IO_CONTROL_RECOVERY_DEBUG)
 #define IO_CONTROL_LOG "/cache/io_control.log"
@@ -538,6 +539,15 @@ static int control_handle_sock_command(struct control_thread_context * context, 
 		else
 			r = 0;
 	}
+	else if (0 == memcmp(data, "app_ping", strlen("app_ping")+1))
+	{
+		context->last_app_ping_time = time(NULL);
+		DTRACE("app_ping %d\n",(int)context->last_app_ping_time);
+		if(send_sock_string_message(context, addr, "app_pong"))
+			r = -1;
+		else
+			r = 0;
+	}
 
 	if(0 > r)
 		return send_sock_string_message(context, addr, "ERROR");
@@ -873,7 +883,44 @@ static void check_devices(struct control_thread_context * context)
 	// TODO: add vgpio, and sockets here if needed
 }
 
+/* get_app_watchdog_val(): checks device for micronet_app_watchdog.cfg and
+ * if present, reads the app watchdog time and returns the value (in seconds).
+ * if not present returns zero as the app watchdog time */
+static int get_app_watchdog_val(void)
+{
+	char app_wdg_file_name[] = "/data/micronet_app_watchdog.cfg";
+	int app_wdg_file_desc;
+	ssize_t bytes_read; // NOTE signed type
+	char readbuffer[8];
+	int app_watchdog_max_time = 0;
 
+	app_wdg_file_desc = open(app_wdg_file_name, O_RDONLY, O_NDELAY);
+	if(0 > app_wdg_file_desc)
+	{
+		DINFO("Cannot open /data/micronet_app_watchdog.cfg\n");
+		app_watchdog_max_time = 0;
+		return app_watchdog_max_time;
+	}
+	bytes_read = read(app_wdg_file_desc, readbuffer, sizeof(readbuffer));
+	if(bytes_read > 0)
+	{
+		app_watchdog_max_time = atoi(readbuffer);
+	}
+	else
+	{
+		DINFO("read: %s", strerror(errno));
+		app_watchdog_max_time = 0;
+	}
+
+	/* make sure it's valid */
+	if (app_watchdog_max_time < 60 || app_watchdog_max_time > 5000)
+	{
+		app_watchdog_max_time = 0;
+	}
+	close(app_wdg_file_desc);
+	DINFO("app_watchdog_max_time = %d", app_watchdog_max_time);
+	return app_watchdog_max_time;
+}
 
 void * control_proc(void * cntx)
 {
@@ -883,6 +930,7 @@ void * control_proc(void * cntx)
 	time_t time_last_sent_ping = time(NULL);
 	time_t time_diff = 0;
 	bool on_init = true;
+	int max_app_watchdog_ping_time = get_app_watchdog_val();
 
 #if defined (IO_CONTROL_RECOVERY_DEBUG)
     redirect_stdio(IO_CONTROL_LOG);
@@ -895,6 +943,7 @@ void * control_proc(void * cntx)
 	context->mcu_fd = -1;
 	context->sock_fd = -1;
     context->vled_fd = -1;
+    context->last_app_ping_time = time(NULL);
 
 	// TODO: maby move to check_devies()
 	if(file_exists("/dev/vgpio"))
@@ -927,21 +976,27 @@ void * control_proc(void * cntx)
 		if((context->mcu_fd > -1) && !FD_ISSET(context->mcu_fd, &context->fds))
 		{
 			time_diff = time(NULL) - time_last_sent_ping;
-			if ((0 == time_last_sent_ping) || ((time_diff) > 2))
+			if ((time_diff) > TIME_BETWEEN_MCU_PINGS)
 			{
-				if (context->ping_sent != context->pong_recv)
+				/*Stop sending pings to the MCU if the user app has not pinged us */
+				time_diff = time(NULL) - context->last_app_ping_time;
+				if ((max_app_watchdog_ping_time == 0) || (time_diff < max_app_watchdog_ping_time))
 				{
-					DERR("ping sent %d, ping rx %d", context->ping_sent, context->pong_recv);
-					context->running = false;
-					break;
+					DTRACE("APP ping time diff %d\n",(int)time_diff);
+					if (context->ping_sent != context->pong_recv)
+					{
+						DERR("ping sent %d, ping rx %d", context->ping_sent, context->pong_recv);
+						context->running = false;
+						break;
+					}
+					uint8_t msg[2];
+
+					msg[0] = control_get_seq(context);
+					msg[1] = (uint8_t)PING_REQ;
+					control_send_mcu(context, msg, sizeof(msg));
+					time_last_sent_ping = time(NULL);
+					context->ping_sent++;
 				}
-				uint8_t msg[2];
-				DTRACE("ping time diff %d\n",(int)time_diff);
-				msg[0] = control_get_seq(context);
-				msg[1] = (uint8_t)PING_REQ;
-				control_send_mcu(context, msg, sizeof(msg));
-				time_last_sent_ping = time(NULL);
-				context->ping_sent++;
 			}
 		}
 

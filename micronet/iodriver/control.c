@@ -888,7 +888,7 @@ static void check_devices(struct control_thread_context * context)
  * if not present returns zero as the app watchdog time */
 static int get_app_watchdog_val(void)
 {
-	char app_wdg_file_name[] = "/data/micronet_app_watchdog.cfg";
+	char app_wdg_file_name[] = "/sdcard/micronet_app_watchdog.cfg";
 	int app_wdg_file_desc;
 	ssize_t bytes_read; // NOTE signed type
 	char readbuffer[8];
@@ -897,7 +897,7 @@ static int get_app_watchdog_val(void)
 	app_wdg_file_desc = open(app_wdg_file_name, O_RDONLY, O_NDELAY);
 	if(0 > app_wdg_file_desc)
 	{
-		DINFO("Cannot open /data/micronet_app_watchdog.cfg\n");
+		DINFO("Cannot open /sdcard/micronet_app_watchdog.cfg\n");
 		app_watchdog_max_time = 0;
 		return app_watchdog_max_time;
 	}

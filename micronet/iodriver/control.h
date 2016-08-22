@@ -1,3 +1,7 @@
+
+#ifndef __MIC_CONTROL_H__
+#define __MIC_CONTROL_H__
+
 // Possibly safest max in linux (see TLPI 57.3)
 // This is usually page size or less
 #define SOCK_MAX_MSG 4*1024
@@ -15,7 +19,7 @@ typedef enum
 
 struct control_thread_context
 {
-	bool running;
+	volatile bool running;
 	char name[PATH_MAX];
 	fd_set fds;
 	int mcu_fd;
@@ -34,12 +38,14 @@ struct control_thread_context
 	int ping_sent;
 	int pong_recv;
     int vled_fd;
+    time_t last_app_ping_time;
 };
 
-void * control_proc(void * cntx);
 
 // '#' will be replaced with '\0'
 #define UD_NAMESPACE "#micronet_control"
 
-void * control_proc(void * cntx);
+extern void * control_proc(void * cntx);
+
+#endif //__MIC_CONTROL_H__
 

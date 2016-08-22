@@ -74,7 +74,7 @@ public final class WifiStatusReceiver extends BroadcastReceiver {
 			
 			String imei = telephonyManager.getImei(0);
 		       
-			if(imei == null){
+			if(imei == null || imei.length() < 15){
 	            Log.v(TAG, "imei is invalid,return ");
 				return;
 			}else{						   
@@ -86,6 +86,15 @@ public final class WifiStatusReceiver extends BroadcastReceiver {
 			}
         }else if(action.equals("android.intent.action.BOOT_COMPLETED") && isWifiConfigured){ 		  
             starthotspot(true);			
+		}else if(action.equals("android.intent.action.AIRPLANE_MODE") && isWifiConfigured){
+		    boolean isAirplaneMode = Settings.Global.getInt(mContext.getContentResolver(),
+                Settings.Global.AIRPLANE_MODE_ON, 0) != 0;
+	        if(!isAirplaneMode && isHotspotEnabled) {
+	            Log.e(TAG, "isAirplaneMode is closed,open host ap");
+				starthotspot(true);
+	        } else {
+	            Log.e(TAG, "isAirplaneMode is open,do nothing");
+	        }
 		}
     }
 

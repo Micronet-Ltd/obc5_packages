@@ -2229,6 +2229,10 @@
     <!-- About phone screen,  setting option name  [CHAR LIMIT=40] -->
     <string name="kernel_version">Kernel version</string>
     <!-- About phone screen,  setting option name  [CHAR LIMIT=40] -->
+    <string name="mcu_version">MCU version</string>
+    <!-- About phone screen,  setting option name  [CHAR LIMIT=40] -->
+    <string name="fpga_version">FPGA version</string>
+    <!-- About phone screen,  setting option name  [CHAR LIMIT=40] -->
     <string name="build_number">Build number</string>
     <!-- About phone screen,  setting option name  [CHAR LIMIT=40] -->
     <string name="custom_build_version">Custom build version</string>

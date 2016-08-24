@@ -125,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
         btnReboot.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                MControlTextAdapter.mc.set_led_status(1, 127, Color.argb(255, 255, 255, 0));
             }
         });
 

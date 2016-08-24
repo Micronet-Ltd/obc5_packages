@@ -97,11 +97,11 @@ Java_com_micronet_mcontrol_MControl_jniGetLEDStatus(JNIEnv *env, jobject instanc
 }
 
 JNIEXPORT void JNICALL
-Java_com_micronet_mcontrol_MControl_jniSetLEDValue(JNIEnv *env, jclass type, jint led, jint rgb) {
+Java_com_micronet_mcontrol_MControl_jniSetLEDValue(JNIEnv *env, jclass type, jint led, jint brightness, jint rgb) {
 
     int result = 0;
 
-    uint8_t brightness = 0xFF;
+
     uint8_t red = (rgb & 0xFF0000) >> 16;
     uint8_t green = (rgb & 0x00FF00) >> 8;
     uint8_t blue = rgb & 0x0000FF;

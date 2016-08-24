@@ -18,9 +18,9 @@ public class LEDs implements LEDInterface {
     }
 
     @Override
-    public void setValue(int rgb) {
+    public void setValue(int rgb, int brightness) {
         MControl mc = new MControl();
-        mc.set_led_status(led, rgb);
+        mc.set_led_status(led, brightness, rgb);
     }
 
     @Override

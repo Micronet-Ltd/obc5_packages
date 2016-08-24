@@ -21,7 +21,7 @@ public class MControl {
     private native static int jniGetFPGAVersion();
     private native static int jniGetADCorGPIVoltage(int gpi_num);
     private native static int[] jniGetLEDStatus(int led_num);
-    private native static void jniSetLEDValue(int led, int rgb);
+    private native static void jniSetLEDValue(int led, int brightness, int rgb);
     private native static int jniGetPowerOnThresholdCfg();
     private native static int jniSetPowerOnThresholdCfg();
     private native static int jniGetPowerOnReason();
@@ -44,8 +44,8 @@ public class MControl {
         return Integer.toHexString(jniGetFPGAVersion());
     }
 
-    public void set_led_status(int led, int rgb) {
-        jniSetLEDValue (led, rgb);
+    public void set_led_status(int led, int brightness, int rgb) {
+        jniSetLEDValue (led, brightness, rgb);
     }
 
     public int get_adc_or_gpi_voltage(int gpi_num) {

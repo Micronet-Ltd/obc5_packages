@@ -140,10 +140,18 @@ Java_com_micronet_mcontrol_MControl_jniGetPowerOnReason(JNIEnv *env, jobject ins
 }
 
 JNIEXPORT jint JNICALL
-Java_com_micronet_mcontrol_MControl_jniSetDevicePowerOff(JNIEnv *env, jobject instance) {
+Java_com_micronet_mcontrol_MControl_jniSetDevicePowerOff(JNIEnv *env, jobject instance, jint wait_time) {
 
-    // TODO
+    int result = 0;
 
+    int fd = iosocket_connect();
+
+    if (fd != 0) {
+        result = set_device_power_off(&fd, wait_time);
+        iosocket_disconnect(&fd);
+
+    }
+    return result;
 }
 
 JNIEXPORT jstring JNICALL

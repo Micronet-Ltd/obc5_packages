@@ -25,7 +25,7 @@ public class MControl {
     private native static int jniGetPowerOnThresholdCfg();
     private native static int jniSetPowerOnThresholdCfg();
     private native static int jniGetPowerOnReason();
-    private native static int jniSetDevicePowerOff();
+    private native static int jniSetDevicePowerOff(int wait_time);
     private native static String jniGetRTCDateTime();
     private native static int jniSetRTCDateTime(String dateTime);
     private native static int[] jniGetRTCCalReg();
@@ -53,8 +53,9 @@ public class MControl {
         return jniGetADCorGPIVoltage(gpi_num);
     }
 
-    public void set_device_power_off() {
-
+    public int set_device_power_off(int wait_time) {
+        if(DBG) return 1234;
+        return jniSetDevicePowerOff(wait_time);
     }
 
     public String get_rtc_date_time() {

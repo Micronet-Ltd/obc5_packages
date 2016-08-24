@@ -6,23 +6,19 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.format.DateFormat;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
@@ -121,11 +117,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        final Button btnReboot = (Button) findViewById(R.id.btnReboot);
-        btnReboot.setOnClickListener(new View.OnClickListener() {
+        final Button btnPowerOff = (Button) findViewById(R.id.btnPowerOff);
+        btnPowerOff.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MControlTextAdapter.mc.set_led_status(1, 127, Color.argb(255, 255, 255, 0));
+                MControlTextAdapter.mc.set_device_power_off(10);
             }
         });
 

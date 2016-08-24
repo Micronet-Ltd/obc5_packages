@@ -41,6 +41,16 @@
             android:layout_height="wrap_content"
             android:text="Pause Logging"
             android:id="@+id/btnPauseLog"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Set RTC"
+            android:id="@+id/btnSetRTC"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Reboot"
+            android:id="@+id/btnReboot"/>
     </LinearLayout>
 
 

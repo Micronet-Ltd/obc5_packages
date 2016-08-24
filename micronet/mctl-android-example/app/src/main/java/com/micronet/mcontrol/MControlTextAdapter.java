@@ -22,7 +22,7 @@ public class MControlTextAdapter extends BaseAdapter {
     private static final String TAG = "MControlTextAdapter";
     final String DEGREE  = "\u00b0";
     final String BRIGHTNESS = "\u2600";
-    final MControl mc;
+    static public MControl mc = null;
     private int[] leftLEDVal = new int[]{-1, 0xFFFFFF};
     private int[] centerLEDVal = new int[]{-1, 0xFFFFFF};
     private int[] rightLEDVal = new int[]{-1, 0xFFFFFF};
@@ -44,7 +44,8 @@ public class MControlTextAdapter extends BaseAdapter {
 
     public void populateMctlTable() {
 
-        String rtc = mc.get_rtc_date_time();
+
+        String getrtc = mc.get_rtc_date_time();
         String mcuver = mc.get_mcu_version();
         String fpgaver = mc.get_fpga_version();
         String adc_gpio_in1 = ADCs.ADC_GPIO_IN1.getValue()+ " mv";
@@ -71,7 +72,7 @@ public class MControlTextAdapter extends BaseAdapter {
 
         pairList.clear();
         pairList.add(new Pair<>("LOG INTERVAL", String.valueOf(logInterval)));
-        pairList.add(new Pair<>("RTC", rtc));
+        pairList.add(new Pair<>("RTC", getrtc));
         pairList.add(new Pair<>("MCU VER", mcuver));
         pairList.add(new Pair<>("FPGA VER", fpgaver));
         pairList.add(new Pair<>("GPIO IN1", adc_gpio_in1));

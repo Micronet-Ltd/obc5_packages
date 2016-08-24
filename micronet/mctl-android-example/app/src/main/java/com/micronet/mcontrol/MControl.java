@@ -1,5 +1,7 @@
 package com.micronet.mcontrol;
 
+import android.util.Log;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -25,7 +27,7 @@ public class MControl {
     private native static int jniGetPowerOnReason();
     private native static int jniSetDevicePowerOff();
     private native static String jniGetRTCDateTime();
-    private native static int jniSetRTCDateTime(long time);
+    private native static int jniSetRTCDateTime(String dateTime);
     private native static int[] jniGetRTCCalReg();
     private native static int jniSetRTCCalReg();
     private native static int jniGetRTCRegDBG();
@@ -51,6 +53,10 @@ public class MControl {
         return jniGetADCorGPIVoltage(gpi_num);
     }
 
+    public void set_device_power_off() {
+
+    }
+
     public String get_rtc_date_time() {
         if(DBG) {
             SimpleDateFormat formatter = new SimpleDateFormat("hh.mm.ss");
@@ -58,6 +64,10 @@ public class MControl {
             return formatter.format(today);
         }
         return jniGetRTCDateTime();
+    }
+
+    public int set_rtc_date_time(String dateTime) {
+        return jniSetRTCDateTime(dateTime);
     }
 
     /**

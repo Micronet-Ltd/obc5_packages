@@ -31,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean writeLogHeader = true;
     private boolean pauseLog = false;
     private boolean deleteLog = false;
+    private String filename = null;
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
@@ -173,9 +174,14 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void run() {
             try {
-                if(deleteLog) {
+                // generate the filename only once to reuse during app lifetime
+                if (filename == null || filename.isEmpty()) {
+                    filename = String.format("%s_%s", Utils.formatDateShort(System.currentTimeMillis()), Build.SERIAL);
+                }
+
+                if (deleteLog) {
                     // deleting log here to make prevent race condition on file
-                    if(Logger.deleteLog()) {
+                    if (Logger.deleteLog()) {
                         mctlAdapter.clearLogInterval();
                         Toast.makeText(MainActivity.this, "Log Cleared", Toast.LENGTH_SHORT).show();
                         writeLogHeader = true;
@@ -199,18 +205,32 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 sb = new StringBuilder();
-                // write data
+                // build csv
                 for (Pair<String, String> pair : mctlAdapter.getPairList()) {
                     sb.append(pair.getRight() + ",");
                 }
 
                 Logger.log(sb.toString());
-
-                if(Logger.saveLog()) {
+                Logger.createNewLogFile(String.format("%s_mctl.csv", filename), false);
+                if (Logger.saveLog()) {
                     Toast.makeText(MainActivity.this, "Logs saved to " + Logger.getLogFilePath(), Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(MainActivity.this, "Log saving error", Toast.LENGTH_SHORT).show();
                 }
+
+                // create and save snapshot that includes header and last saved buffer
+                StringBuilder header = new StringBuilder();
+                header.append("Timestamp,");
+                for (Pair<String, String> pair : mctlAdapter.getPairList()) {
+                    header.append(pair.getLeft() + ",");
+                }
+                Logger.log(header.toString(), false);
+
+                Logger.createNewLogFile(String.format("%s_snapshot.csv", filename), true);
+                Logger.log(sb.toString());
+                Logger.saveLog();
+
+
             } catch (Exception ex) {
                 Toast.makeText(MainActivity.this, "Log saving exception", Toast.LENGTH_SHORT).show();
                 Log.d(TAG, ex.getMessage());

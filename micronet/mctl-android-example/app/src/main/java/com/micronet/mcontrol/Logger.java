@@ -1,7 +1,5 @@
 package com.micronet.mcontrol;
 
-import android.os.Build;
-import android.os.Environment;
 import android.util.Log;
 
 import java.io.BufferedOutputStream;
@@ -28,14 +26,15 @@ public class Logger {
     private static StringBuilder logLines = new StringBuilder();
 
     /**
-     * Read the first line to get the current file path
+     * Get the current file path
      */
     private static String getLogPath() {
         return logpath;
     }
 
     /**
-     * Log a newline with timestamp
+     * Log a new line with timestamp to the buffer.
+     * Call createNewLogFile and saveLog to write buffer to file.
      * @param line line that will get logged
      */
     public static void log(String line) {
@@ -43,41 +42,37 @@ public class Logger {
     }
 
     /**
-     * Log a new line
+     * Log a new line to the buffer.
+     * Call createNewLogFile and saveLog to write buffer to file.
      * @param line line that will get logged
      * @param timestamp true to prepend timestamp and comma, false for no timestamp
      */
     public static void log(String line, boolean timestamp) {
         if(timestamp) {
-            logLines.append(formatDate(System.currentTimeMillis()) + "," + line + CRLF);
+            logLines.append(Utils.formatDate(System.currentTimeMillis()) + "," + line + CRLF);
         } else {
             logLines.append(line + CRLF);
         }
     }
 
-    public static String formatDate(Date date) {
-        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date);
-    }
-
-    public static String formatDateShort(Date date) {
-        return new SimpleDateFormat("yyyy-MM-dd").format(date);
-    }
-
-    public static String formatDateShort(long time) {
-        return formatDateShort(new Date(time));
-    }
-
-    public static String formatDate(long time) {
-        return formatDate(new Date(time));
-    }
-
-    private static void setLogFilePath() {
+    /**
+     * Build the full file path (directory + file name + ext)
+     *
+     * @param filename The file name + ext. Example: String.format("%s_%s_mctl.csv", formatDateShort(System.currentTimeMillis(), Build.SERIAL)
+     */
+    public static void setLogFilePath(String filename) {
         LOG_DIR = ExternalStorage.getSdCardPath() + "mcontrol/";
-        logpath = LOG_DIR + formatDateShort(System.currentTimeMillis()) + "_" +  Build.SERIAL +  "_mctl.csv";
+        logpath = LOG_DIR + filename;
     }
 
-    private static File createNewLogFile() {
-        setLogFilePath();
+    /**
+     * Create a new log file in the log directory /sdcard/mcontrol/
+     *
+     * @param filename The file name + ext. Example: String.format("%s_%s_mctl.csv", formatDateShort(System.currentTimeMillis(), Build.SERIAL)
+     * @param overwrite Overwrite the existing log file, erasing any existing file content. False to append to any existing content.
+     */
+    public static File createNewLogFile(String filename, boolean overwrite) {
+        setLogFilePath(filename);
         File logFile = new File(logpath);
         try {
             // create the new log directory
@@ -90,9 +85,12 @@ public class Logger {
                 }
             }
 
+            if(logFile.exists() && overwrite) {
+                logFile.delete();
+            }
+
             // create the new log file
             if (!logFile.exists()) {
-
                 if(logFile.createNewFile()) {
                     Log.d(TAG, "Created log file");
                 } else {
@@ -112,36 +110,36 @@ public class Logger {
     }
 
     /**
-     *
+     * Writes the log buffer to file and clears the log buffer.
+     * Must call createNewLogFile first in order to create file.
      */
     public static synchronized boolean saveLog() {
         if (logLines == null || logLines.length() == 0) {
             return false;
         }
 
-        // make sure file exists
-        File logFile;
+
         if(logpath == null) {
-            logFile = createNewLogFile();
-        } else {
-            logFile = new File(logpath);
+            Log.d(TAG, "Log directory must be created before it can be saved!");
+            return false;
         }
 
+        // open the existing log file
+        File logFile = new File(logpath);
         if(!logFile.exists()) {
-            logFile = createNewLogFile();
+            Log.d(TAG, String.format("Failed to create %s", logpath));
+            return false;
         }
-
 
         // writes data to file
         while(logLines.length() > 0) {
-            int length = logLines.length();
-
             PrintStream out = null;
             try {
-                out = new PrintStream(new BufferedOutputStream(new FileOutputStream(logFile, true), (int)(5*M)));
+                // FileOutputStream, append = true
+                out = new PrintStream(new BufferedOutputStream(new FileOutputStream(logFile, true)));
                 // copy strings from builder and them delete them
-                out.print(logLines.substring(0, length));
-                logLines.delete(0, length);
+                out.print(logLines.toString());
+                logLines.setLength(0);
             } catch (FileNotFoundException ex) {
                 Log.d(TAG, ex.getMessage());
                 return false;
@@ -160,7 +158,10 @@ public class Logger {
             return false;
         }
 
+        // sanity check
         File logFile = new File(logpath);
+        if(logFile == null) { return false; }
+
         return logFile.delete();
     }
 }

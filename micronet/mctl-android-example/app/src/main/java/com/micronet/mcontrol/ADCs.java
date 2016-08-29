@@ -19,7 +19,7 @@ public enum ADCs implements ADCInterface {
 
     public final int gpi_num;
 
-    private ADCs(int gpi_num) {
+    ADCs(int gpi_num) {
         this.gpi_num= gpi_num;
     }
 

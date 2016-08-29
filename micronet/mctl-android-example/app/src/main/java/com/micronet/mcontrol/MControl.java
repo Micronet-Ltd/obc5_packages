@@ -18,35 +18,20 @@ public class MControl {
     }
 
     private native static String jniGetMCUVersion();
-
     private native static int jniGetFPGAVersion();
-
     private native static int jniGetADCorGPIVoltage(int gpi_num);
-
     private native static int[] jniGetLEDStatus(int led_num);
-
     private native static void jniSetLEDValue(int led, int brightness, int rgb);
-
     private native static int jniGetPowerOnThresholdCfg();
-
     private native static int jniSetPowerOnThresholdCfg();
-
     private native static int jniGetPowerOnReason();
-
     private native static int jniSetDevicePowerOff(int wait_time);
-
     private native static String jniGetRTCDateTime();
-
     private native static int jniSetRTCDateTime(String dateTime);
-
     private native static int[] jniGetRTCCalReg();
-
     private native static int jniSetRTCCalReg();
-
     private native static int jniGetRTCRegDBG();
-
     private native static int jniSetRTCRegDBG();
-
     private native static boolean jniCheckRTCBattery();
 
     /**

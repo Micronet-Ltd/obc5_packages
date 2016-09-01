@@ -261,7 +261,7 @@ static int accel_read(struct context_s * context)
 	{
 		int status;
 		if(context->frame.data_len != 68)
-			printf("Wrong size %d\n", context->frame.data_len);
+			printf("Wrong size %d\n", (int)context->frame.data_len);
 		status = process_payload(context, context->frame.data, context->frame.data_len);
 		if(status < 0)
 			fprintf(stderr, "status = %d\n", status );
@@ -322,7 +322,7 @@ static int accel_loop(struct context_s * context)
 		if(context->fd < 0)
 		{
 			fprintf(stderr, "no dev\n");
-			if(0 > (context->fd = open_serial("/dev/ttyACM1")) )
+			if(0 > (context->fd = open_serial("/dev/ttyMICRONET_ACCEL")) )
 			{
 				fprintf(stderr, "failed to open serial\n");
 				sleep(1);

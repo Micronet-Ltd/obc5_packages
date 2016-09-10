@@ -68,6 +68,10 @@ static void redirect_stdio(const char* filename)
 #endif
 
 static int send_sock_data(struct control_thread_context * context, struct sockaddr_un * addr, uint8_t * data, size_t len);
+static bool set_app_watchdog_expire_time(int max_time);
+static int get_app_watchdog_expire_time(void);
+static bool set_app_watchdog_count(int count);
+static bool get_app_watchdog_count(int * count);
 
 static uint8_t control_get_seq(struct control_thread_context * context)
 {
@@ -516,10 +520,9 @@ static int control_handle_sock_raw(struct control_thread_context * context, stru
 
 static int control_handle_sock_command(struct control_thread_context * context, struct sockaddr_un * addr, uint8_t * data, size_t len)
 {
-	//socklen_t sock_len;
 	int r = -1;
-
-	//sock_len = sizeof(struct sockaddr_un);
+	char buf[64] = {0};
+	int wdg_max_time = 0, count = 0;
 
 	if(0 == memcmp(data, "status", strlen("status")+1))
 	{
@@ -544,6 +547,82 @@ static int control_handle_sock_command(struct control_thread_context * context, 
 		context->last_app_ping_time = time(NULL);
 		DTRACE("app_ping %d\n",(int)context->last_app_ping_time);
 		if(send_sock_string_message(context, addr, "app_pong"))
+			r = -1;
+		else
+			r = 0;
+	}
+	else if (0 == memcmp(data, "get_app_watchdog_time", strlen("get_app_watchdog_time")+1))
+	{
+		wdg_max_time = get_app_watchdog_expire_time();
+		sprintf(buf, "get_app_watchdog_time=%d sec\r", wdg_max_time);
+		DTRACE("get_app_watchdog_time %d sec\n",wdg_max_time);
+		if(send_sock_string_message(context, addr, buf))
+			r = -1;
+		else
+			r = 0;
+	}
+	else if (0 == memcmp(data, "set_app_watchdog_time=", strlen("set_app_watchdog_time=")))
+	{
+		sscanf(data, "set_app_watchdog_time=%d\r",&wdg_max_time);
+
+		/* make sure it's valid */
+		if (wdg_max_time >= 60 && wdg_max_time < 5000)
+		{
+			if (set_app_watchdog_expire_time(wdg_max_time))
+			{
+				DTRACE("set_app_watchdog_time = %d sec\n",wdg_max_time);
+				sprintf(buf, "set_app_watchdog_time=%d sec\r", wdg_max_time);
+				context->max_app_watchdog_ping_time = wdg_max_time;
+				context->last_app_ping_time = time(NULL);
+			}
+			else
+			{
+				sprintf(buf, "ERROR:file write failure\r");
+			}
+		}
+		else
+		{
+			DERR("Invalid app watchdog time: %d\n", wdg_max_time);
+			sprintf(buf, "ERROR:invalid app_watchdog_time");
+		}
+
+		if(send_sock_string_message(context, addr, buf))
+			r = -1;
+		else
+			r = 0;
+	}
+	else if (0 == memcmp(data, "get_app_watchdog_count", strlen("get_app_watchdog_count")+1))
+	{
+		if(get_app_watchdog_count(&count))
+		{
+			sprintf(buf, "get_app_watchdog_count=%d\r", count);
+			DTRACE("get_app_watchdog_count %d \n",count);
+		}
+		else
+		{
+			DERR("Could not get app watchdog count\n");
+			sprintf(buf, "ERROR:could not get app watchdog count\r");
+		}
+
+		if(send_sock_string_message(context, addr, buf))
+			r = -1;
+		else
+			r = 0;
+	}
+	else if (0 == memcmp(data, "clear_app_watchdog_count", strlen("clear_app_watchdog_count")+1))
+	{
+		if(set_app_watchdog_count(0))
+		{
+			sprintf(buf, "set_app_watchdog_count=%d\r", count);
+			DTRACE("get_app_watchdog_count %d \n",count);
+		}
+		else
+		{
+			DERR("Could not get app watchdog count\n");
+			sprintf(buf, "ERROR:could not set app watchdog count\r");
+		}
+
+		if(send_sock_string_message(context, addr, buf))
 			r = -1;
 		else
 			r = 0;
@@ -800,10 +879,17 @@ int update_all_GP_inputs(struct control_thread_context * context)
 	return control_frame_process(context, req, sizeof(req));
 }
 
+/* Send a request to the MCU to issue a watchdog reset */
+int send_app_watchdog(struct control_thread_context * context)
+{
+	uint8_t req[] = { 0, COMM_WRITE_REQ, MAPI_SET_APP_WATCHDOG_REQ };
+	return control_frame_process(context, req, sizeof(req));
+}
+
 static int control_receive_sock(struct control_thread_context * context)
 {
 	struct sockaddr_un c_addr = {0};
-	uint8_t buf[SOCK_MAX_MSG];
+	uint8_t buf[SOCK_MAX_MSG] = {0};
 	int r = -1;
 
 	socklen_t sock_len;
@@ -883,25 +969,26 @@ static void check_devices(struct control_thread_context * context)
 	// TODO: add vgpio, and sockets here if needed
 }
 
-/* get_app_watchdog_val(): checks device for micronet_app_watchdog.cfg and
+/* get_app_watchdog_expire_time(): checks device for micronet_app_watchdog_time.cfg and
  * if present, reads the app watchdog time and returns the value (in seconds).
  * if not present returns zero as the app watchdog time */
-static int get_app_watchdog_val(void)
+static int get_app_watchdog_expire_time(void)
 {
-	char app_wdg_file_name[] = "/sdcard/micronet_app_watchdog.cfg";
-	int app_wdg_file_desc;
+	char app_wdg_file_name[] = "/sdcard/micronet_app_watchdog_time.cfg";
+	int fd;
 	ssize_t bytes_read; // NOTE signed type
 	char readbuffer[8];
 	int app_watchdog_max_time = 0;
 
-	app_wdg_file_desc = open(app_wdg_file_name, O_RDONLY, O_NDELAY);
-	if(0 > app_wdg_file_desc)
+	fd = open(app_wdg_file_name, O_RDONLY, O_NDELAY);
+	if(0 > fd)
 	{
-		DINFO("Cannot open /sdcard/micronet_app_watchdog.cfg\n");
+		DINFO("Cannot open /sdcard/micronet_app_watchdog_time.cfg\n");
 		app_watchdog_max_time = 0;
+		close(fd);
 		return app_watchdog_max_time;
 	}
-	bytes_read = read(app_wdg_file_desc, readbuffer, sizeof(readbuffer));
+	bytes_read = read(fd, readbuffer, sizeof(readbuffer));
 	if(bytes_read > 0)
 	{
 		app_watchdog_max_time = atoi(readbuffer);
@@ -917,9 +1004,108 @@ static int get_app_watchdog_val(void)
 	{
 		app_watchdog_max_time = 0;
 	}
-	close(app_wdg_file_desc);
+	close(fd);
 	DINFO("app_watchdog_max_time = %d", app_watchdog_max_time);
 	return app_watchdog_max_time;
+}
+
+/* set_app_watchdog_expire_time(): replaces the value of app_watchdog_max_time with
+ * the value provided in max_time in micronet_app_watchdog_time.cfg.
+ * Returns true on success  */
+static bool set_app_watchdog_expire_time(int max_time)
+{
+	char app_wdg_file_name[] = "/sdcard/micronet_app_watchdog_time.cfg";
+	int fd, bytes_to_write;
+	ssize_t bytes_written; // NOTE signed type
+	char writebuf[8] = {0};
+	mode_t mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
+
+	fd = open(app_wdg_file_name, O_WRONLY | O_CREAT | O_TRUNC, mode);
+	if(0 > fd)
+	{
+		DERR("Cannot open /sdcard/micronet_app_watchdog_time.cfg\n");
+		close(fd);
+		return false;
+	}
+	bytes_to_write = sprintf(writebuf, "%d", max_time);
+	bytes_written = write(fd, writebuf, bytes_to_write);
+	if((int)(bytes_written) == bytes_to_write)
+	{
+		DINFO("wrote %s to micronet_app_watchdog_time.cfg\n", writebuf);
+	}
+	else
+	{
+		DINFO("error writing: %s", strerror(errno));
+		close(fd);
+		return false;
+	}
+
+	close(fd);
+	return true;
+}
+
+static bool get_app_watchdog_count(int * count)
+{
+	char app_wdg_file_name[] = "/sdcard/micronet_app_watchdog_count.cfg";
+	int fd;
+	ssize_t bytes_read; // NOTE signed type
+	char readbuffer[8];
+
+	fd = open(app_wdg_file_name, O_RDONLY, O_NDELAY);
+	if(0 > fd)
+	{
+		DINFO("Cannot open /sdcard/micronet_app_watchdog_time.cfg\n");
+		close(fd);
+		return false;
+	}
+	bytes_read = read(fd, readbuffer, sizeof(readbuffer));
+	if(bytes_read > 0)
+	{
+		*count = atoi(readbuffer);
+	}
+	else
+	{
+		DINFO("read: %s", strerror(errno));
+	}
+
+	close(fd);
+	DINFO("app watchdog count = %d", *count);
+	return true;
+}
+
+/* set app watchdog count to the value provided in count */
+static bool set_app_watchdog_count(int count)
+{
+	char app_wdg_file_name[] = "/sdcard/micronet_app_watchdog_count.cfg";
+	int fd, bytes_to_write;
+	ssize_t bytes_written, bytes_read; // NOTE signed type
+	char buf[8] = {0};
+
+	mode_t mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
+
+	fd = open(app_wdg_file_name, O_RDWR | O_CREAT | O_TRUNC, mode);
+	if(0 > fd)
+	{
+		DERR("Cannot open /sdcard/micronet_app_watchdog_count.cfg\n");
+		close(fd);
+		return false;
+	}
+
+	bytes_to_write = sprintf(buf, "%d", count);
+	bytes_written = write(fd, buf, bytes_to_write);
+	if((int)(bytes_written) == bytes_to_write)
+	{
+		DINFO("wrote %s to micronet_app_watchdog_count.cfg\n", buf);
+	}
+	else
+	{
+		DINFO("error writing: %s", strerror(errno));
+		close(fd);
+		return false;
+	}
+
+	close(fd);
+	return true;
 }
 
 void * control_proc(void * cntx)
@@ -930,7 +1116,8 @@ void * control_proc(void * cntx)
 	time_t time_last_sent_ping = time(NULL);
 	time_t time_diff = 0;
 	bool on_init = true;
-	int max_app_watchdog_ping_time = get_app_watchdog_val();
+	context->max_app_watchdog_ping_time = get_app_watchdog_expire_time();
+	int app_watchdog_count = 0;
 
 #if defined (IO_CONTROL_RECOVERY_DEBUG)
     redirect_stdio(IO_CONTROL_LOG);
@@ -975,34 +1162,42 @@ void * control_proc(void * cntx)
 
 		if((context->mcu_fd > -1) && !FD_ISSET(context->mcu_fd, &context->fds))
 		{
+			/* MCU to periodic A8 pings */
 			time_diff = time(NULL) - time_last_sent_ping;
 			if ((time_diff) > TIME_BETWEEN_MCU_PINGS)
 			{
-				/*Stop sending pings to the MCU if the user app has not pinged us */
-				time_diff = time(NULL) - context->last_app_ping_time;
-				if ((max_app_watchdog_ping_time == 0) || (time_diff < max_app_watchdog_ping_time))
+				if (context->ping_sent != context->pong_recv)
 				{
-					DTRACE("APP ping time diff %d\n",(int)time_diff);
-					if (context->ping_sent != context->pong_recv)
-					{
-						DERR("ping sent %d, ping rx %d", context->ping_sent, context->pong_recv);
-						context->running = false;
-						break;
-					}
-					uint8_t msg[2];
+					DERR("ping sent %d, ping rx %d", context->ping_sent, context->pong_recv);
+					context->running = false;
+					break;
+				}
+				uint8_t msg[2];
 
-					msg[0] = control_get_seq(context);
-					msg[1] = (uint8_t)PING_REQ;
-					control_send_mcu(context, msg, sizeof(msg));
-					time_last_sent_ping = time(NULL);
-					context->ping_sent++;
+				msg[0] = control_get_seq(context);
+				msg[1] = (uint8_t)PING_REQ;
+				control_send_mcu(context, msg, sizeof(msg));
+				time_last_sent_ping = time(NULL);
+				context->ping_sent++;
+
+				/* Check if we are still getting app pings */
+				time_diff = time(NULL) - context->last_app_ping_time;
+				DTRACE("Time since App ping: %d sec, maxtime: %d sec\n",(int)time_diff, context->max_app_watchdog_ping_time);
+				if ((context->max_app_watchdog_ping_time != 0) && (time_diff > context->max_app_watchdog_ping_time))
+				{
+					get_app_watchdog_count(&app_watchdog_count);
+					set_app_watchdog_count(++app_watchdog_count);
+					DTRACE("APP ping time expired, causing a watchdog reset, app_watchdog_count %d!!\n", app_watchdog_count);
+					send_app_watchdog(context);
+					/* wait for the watchdog to occur */
+					sleep(60);
+					context->running = false;
 				}
 			}
 		}
 
 		// TODO: Waiting for events
 		status = control_thread_wait(context);
-		DTRACE("control_thread_wait returned %d", status);
 
 		if((context->mcu_fd > -1) && FD_ISSET(context->mcu_fd, &context->fds))
 		{

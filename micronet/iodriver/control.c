@@ -1056,7 +1056,8 @@ static bool get_app_watchdog_count(int * count)
 	{
 		DINFO("Cannot open /sdcard/micronet_app_watchdog_time.cfg\n");
 		close(fd);
-		return false;
+		*count = 0; /* If app_watchdog doesn't exist, it means no watchdog has happened */
+		return true;
 	}
 	bytes_read = read(fd, readbuffer, sizeof(readbuffer));
 	if(bytes_read > 0)
@@ -1066,6 +1067,8 @@ static bool get_app_watchdog_count(int * count)
 	else
 	{
 		DINFO("read: %s", strerror(errno));
+		close(fd);
+		return false;
 	}
 
 	close(fd);

@@ -566,7 +566,7 @@ static int control_handle_sock_command(struct control_thread_context * context, 
 		sscanf(data, "set_app_watchdog_time=%d\r",&wdg_max_time);
 
 		/* make sure it's valid */
-		if (wdg_max_time >= 60 && wdg_max_time < 5000)
+		if ((wdg_max_time >= 60 && wdg_max_time < 5000) || (wdg_max_time == 0) )
 		{
 			if (set_app_watchdog_expire_time(wdg_max_time))
 			{

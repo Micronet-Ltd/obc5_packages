@@ -545,7 +545,7 @@ static int control_handle_sock_command(struct control_thread_context * context, 
 	else if (0 == memcmp(data, "app_ping", strlen("app_ping")+1))
 	{
 		context->last_app_ping_time = time(NULL);
-		DTRACE("app_ping %d\n",(int)context->last_app_ping_time);
+		DINFO("app_ping %d\n",(int)context->last_app_ping_time);
 		if(send_sock_string_message(context, addr, "app_pong"))
 			r = -1;
 		else
@@ -555,7 +555,7 @@ static int control_handle_sock_command(struct control_thread_context * context, 
 	{
 		wdg_max_time = get_app_watchdog_expire_time();
 		sprintf(buf, "get_app_watchdog_time=%d sec\r", wdg_max_time);
-		DTRACE("get_app_watchdog_time %d sec\n",wdg_max_time);
+		DINFO("get_app_watchdog_time %d sec\n",wdg_max_time);
 		if(send_sock_string_message(context, addr, buf))
 			r = -1;
 		else
@@ -566,11 +566,11 @@ static int control_handle_sock_command(struct control_thread_context * context, 
 		sscanf(data, "set_app_watchdog_time=%d\r",&wdg_max_time);
 
 		/* make sure it's valid */
-		if (wdg_max_time >= 60 && wdg_max_time < 5000)
+		if ((wdg_max_time >= 60 && wdg_max_time < 5000) || (wdg_max_time == 0) )
 		{
 			if (set_app_watchdog_expire_time(wdg_max_time))
 			{
-				DTRACE("set_app_watchdog_time = %d sec\n",wdg_max_time);
+				DINFO("set_app_watchdog_time = %d sec\n",wdg_max_time);
 				sprintf(buf, "set_app_watchdog_time=%d sec\r", wdg_max_time);
 				context->max_app_watchdog_ping_time = wdg_max_time;
 				context->last_app_ping_time = time(NULL);
@@ -596,7 +596,7 @@ static int control_handle_sock_command(struct control_thread_context * context, 
 		if(get_app_watchdog_count(&count))
 		{
 			sprintf(buf, "get_app_watchdog_count=%d\r", count);
-			DTRACE("get_app_watchdog_count %d \n",count);
+			DINFO("get_app_watchdog_count %d \n",count);
 		}
 		else
 		{
@@ -614,7 +614,7 @@ static int control_handle_sock_command(struct control_thread_context * context, 
 		if(set_app_watchdog_count(0))
 		{
 			sprintf(buf, "set_app_watchdog_count=%d\r", count);
-			DTRACE("get_app_watchdog_count %d \n",count);
+			DINFO("get_app_watchdog_count %d \n",count);
 		}
 		else
 		{
@@ -1187,12 +1187,12 @@ void * control_proc(void * cntx)
 
 				/* Check if we are still getting app pings */
 				time_diff = time(NULL) - context->last_app_ping_time;
-				DTRACE("Time since App ping: %d sec, maxtime: %d sec\n",(int)time_diff, context->max_app_watchdog_ping_time);
+				DINFO("Time since App ping: %d sec, maxtime: %d sec\n",(int)time_diff, context->max_app_watchdog_ping_time);
 				if ((context->max_app_watchdog_ping_time != 0) && (time_diff > context->max_app_watchdog_ping_time))
 				{
 					get_app_watchdog_count(&app_watchdog_count);
 					set_app_watchdog_count(++app_watchdog_count);
-					DTRACE("APP ping time expired, causing a watchdog reset, app_watchdog_count %d!!\n", app_watchdog_count);
+					DERR("APP ping time expired, causing a watchdog reset, app_watchdog_count %d!!\n", app_watchdog_count);
 					send_app_watchdog(context);
 					/* wait for the watchdog to occur */
 					sleep(60);
@@ -1254,7 +1254,7 @@ void * control_proc(void * cntx)
     close(context->sock_fd);
 	close(context->gpio_fd);
 	close(context->vled_fd);
-	DINFO("control thread exiting");
+	DERR("control thread exiting");
 	return NULL;
 }
 

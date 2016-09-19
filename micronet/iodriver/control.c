@@ -207,7 +207,7 @@ static int  control_send_mcu(struct control_thread_context * context, uint8_t * 
 	{
 		size_t st;
 		st = write(context->mcu_fd, encoded_buffer, r);
-		if(st != r)
+		if(st != (size_t)r)
 		{
 			DERR("Bytes written don't match request: %s", strerror(errno));
 			return -1;
@@ -289,6 +289,10 @@ static int control_frame_process(struct control_thread_context * context, uint8_
 			{
 				memcpy(context->rtc_init_val ,&data[3], sizeof(context->rtc_init_val));
 				context->rtc_req = false;
+			}
+			else if(true == context->dont_send)
+			{
+				context->dont_send = false;
 			}
 			else
 			{
@@ -488,8 +492,8 @@ static int hex_value(uint8_t hex)
 static int control_handle_sock_raw(struct control_thread_context * context, struct sockaddr_un * addr, uint8_t * hex_data, size_t len)
 {
 	uint8_t data[1024];
-	int i;
-	int r;
+	uint32_t i;
+	int32_t r;
 
 
 	if(len%2)
@@ -741,11 +745,12 @@ void set_fw_vers_files(struct control_thread_context * context)
 {
 	uint8_t req[2];
 	int8_t ver[16] = {0};
-	uint32_t ret = -1;
-	uint32_t fdw = -1, cnt;
-	int8_t* mcu_file = "/data/mcu_version";
-	int8_t*	fpga_file = "/data/fpga_version";
-	int8_t*	fn;
+	int32_t ret = -1;
+	int32_t fdw = -1;
+	uint32_t cnt;
+	char* mcu_file = "/data/mcu_version";
+	char* fpga_file = "/data/fpga_version";
+	char* fn;
 
 
 	for(cnt = 0; cnt < 2; ++cnt)
@@ -771,24 +776,24 @@ void set_fw_vers_files(struct control_thread_context * context)
 
 		control_handle_api_command(context, NULL, req, sizeof(req));
 
-		context->rtc_req = true;
-		while (context->rtc_req == true)
+		context->dont_send = true;
+		while (context->dont_send == true)
 		{
 			ret = control_receive_mcu(context);
 			if(ret < 0)
 			{
 				DERR("set_fw_vers_files failed - %d\n", ret);
-				context->rtc_req = false;
+				context->dont_send = false;
 				return;
 			}
 		}
 
 		if(0 == cnt)
-			sprintf(ver, "%X.%X.%X.%X\n", context->frame.data[3], context->frame.data[4], context->frame.data[5], context->frame.data[6]);
+			sprintf((char*)ver, "%X.%X.%X.%X\n", (uint8_t)context->frame.data[3], (uint8_t)context->frame.data[4], (uint8_t)context->frame.data[5], (uint8_t)context->frame.data[6]);
 		else
-			sprintf(ver, "%X\n", *((uint32_t*)&context->frame.data[3]));
+			sprintf((char*)ver, "%X\n", *((uint32_t*)&context->frame.data[3]));
 
-		write(fdw, ver, strlen(ver));
+		write(fdw, ver, strlen((const char*)ver));
 		close(fdw);
 	}
 }
@@ -944,6 +949,7 @@ void * control_proc(void * cntx)
 	context->sock_fd = -1;
     context->vled_fd = -1;
     context->last_app_ping_time = time(NULL);
+    context->dont_send = false;
 
 	// TODO: maby move to check_devies()
 	if(file_exists("/dev/vgpio"))

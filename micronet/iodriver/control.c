@@ -1159,6 +1159,8 @@ void * control_proc(void * cntx)
 		{
 			on_init = false;
 			update_system_time_with_rtc(context);
+			time_last_sent_ping = time(NULL);
+			context->last_app_ping_time = time(NULL);
 			update_all_GP_inputs(context);
 			set_fw_vers_files(context);
 		}

@@ -320,3 +320,9 @@ int set_gpio_state_dbg(int * fd, uint16_t gpio_num, uint8_t gpio_val)
 					(uint8_t)(gpio_num>>8),(uint8_t)(gpio_num&0xFF), gpio_val};
 	return set_command(fd, req, sizeof(req));
 }
+
+int set_app_watchdog_dbg(int * fd)
+{
+	uint8_t req[] = { MCTRL_MAPI, MAPI_WRITE_RQ, MAPI_SET_APP_WATCHDOG_REQ};
+	return set_command(fd, req, sizeof(req));
+}

@@ -262,6 +262,10 @@ int send_api_hex2(int * fd, char * hexdata)
 			printf("set mcu gpio state, gpio: %d value set: %d, ret = %d  \n", \
 					gpio_num, gpio_val, ret);
 			break;
+		case MAPI_SET_APP_WATCHDOG_REQ:
+			ret = set_app_watchdog_dbg(fd);
+			printf("set app watchdog req, ret = %d  \n", ret);
+			break;
 		case MCTL_GET_CAN1_J1708_PWR_ENABLE_GPIO:
 			ret = get_gpio_state_dbg(fd, CAN1_J1708_PWR_ENABLE, &gpio_val);
 			printf("get CAN1 J1708 pwr enable gpio: %d, value read: %d, ret = %d  \n", \

@@ -75,9 +75,9 @@ public class MControlTextAdapter extends BaseAdapter {
         String adc_power_in = ADCs.ADC_POWER_IN.getValue() + " mv";
         String adc_power_cap = ADCs.ADC_POWER_VCAP.getValue() + " mv";
         String rtc_battery = mc.check_rtc_battery();
-        String celsius = ((ADCs.ADC_TEMPERATURE.getValue() - 500.0f) / 10) + "C";
+        String celsius = String.valueOf((ADCs.ADC_TEMPERATURE.getValue() - 500.0f) / 10);
         getThermalZoneTemps();
-        String thermalZone = thermalZone0 + "C " + thermalZone1 + "C " + thermalZone2 + "C " + thermalZone3 + "C " + thermalZone4 + "C";
+        String thermalZone = thermalZone0 + ", " + thermalZone1 + ", " + thermalZone2 + ", " + thermalZone3 + ", " + thermalZone4;
         String accelerometer = "X: " + linear_acceleration[0] + " Y: " + linear_acceleration[1] + " Z: " + linear_acceleration[2];
         String adc_cable_type = ADCs.ADC_CABLE_TYPE.getValue() + " mv";
         int[] rtc_cal = mc.get_rtc_cal_reg();
@@ -87,9 +87,10 @@ public class MControlTextAdapter extends BaseAdapter {
         LEDs left = mc.get_led_status(LEDInterface.LEFT);
         LEDs center = mc.get_led_status(LEDInterface.CENTER);
         LEDs right = mc.get_led_status(LEDInterface.RIGHT);
+        String brightness = left.BRIGHTNESS + " " + center.BRIGHTNESS + " " + right.BRIGHTNESS;
         String leftLED = String.format("%d %d %d %d", left.RED, left.GREEN, left.BLUE, left.BRIGHTNESS);
         String centerLED = String.format("%d %d %d %d", center.RED, center.GREEN, center.BLUE, center.BRIGHTNESS);
-        String rightLED = String.format("%d %d %d %d", right.RED, right.GREEN, right.BLUE, center.BRIGHTNESS);
+        String rightLED = String.format("%d %d %d %d", right.RED, right.GREEN, right.BLUE, right.BRIGHTNESS);
 
         pairList.clear();
         pairList.add(new Pair<>("LOG INTERVAL", String.valueOf(logInterval)));
@@ -112,6 +113,7 @@ public class MControlTextAdapter extends BaseAdapter {
         pairList.add(new Pair<>("CABLE TYPE", adc_cable_type));
         pairList.add(new Pair<>("DIG RTC CAL REG", dig_rtc_cal_reg));
         pairList.add(new Pair<>("ANA RTC CAL REG", ana_rtc_cal_reg));
+        pairList.add(new Pair<>("BRIGHTNESS", brightness));
         leftLEDVal = new int[]{pairList.size(), left.getColorValue()};
         pairList.add(new Pair<>("LEFT LED", leftLED));
         centerLEDVal = new int[]{pairList.size(), center.getColorValue()};
@@ -197,6 +199,9 @@ public class MControlTextAdapter extends BaseAdapter {
                     case("LEFT LED"):
                         checkSetLedColor(2);
                         break;
+                    case("BRIGHTNESS"):
+                        checkSetBrightness();
+                        break;
                 }
 
                 /*if (pairList.get(position).getLeft() == "RIGHT LED") {
@@ -218,16 +223,48 @@ public class MControlTextAdapter extends BaseAdapter {
         return rowView;
     }
 
-    //Rotates LED thru colors RED, GREEN, and then BLUE. If it is none of those colors it will change to RED.
+    //Keeps the same colors and adjusts the brightness of the LED. If the brightness is none of those values it will go to 255.
+    private void checkSetBrightness() {
+        for (int i = 0; i < 3; i++) {
+            int red = mc.get_led_status(i).RED;
+            int green = mc.get_led_status(i).GREEN;
+            int blue = mc.get_led_status(i).BLUE;
+
+            switch(mc.get_led_status(i).BRIGHTNESS){
+                case(255):
+                    mc.set_led_status(i, 191, Color.argb(255, red, green, blue));
+                    break;
+                case(191):
+                    mc.set_led_status(i, 127, Color.argb(255, red, green, blue));
+                    break;
+                case(127):
+                    mc.set_led_status(i, 64, Color.argb(255, red, green, blue));
+                    break;
+                case(64):
+                    mc.set_led_status(i, 0, Color.argb(255, red, green, blue));
+                    break;
+                case(0):
+                    mc.set_led_status(i, 255, Color.argb(255, red, green, blue));
+                    break;
+                default:
+                    mc.set_led_status(i, 255, Color.argb(255, red, green, blue));
+                    break;
+            }
+        }
+    }
+
+    //Rotates LED thru colors RED, GREEN, and then BLUE. If it is none of those colors it will change to RED. Brightness is not changed.
     private void checkSetLedColor(int led_num) {
+        int brightness = mc.get_led_status(led_num).BRIGHTNESS;
+
         if (mc.get_led_status(led_num).RED == 255) {
-            mc.set_led_status(led_num, 127, Color.argb(255, 0, 255, 0));
+            mc.set_led_status(led_num, brightness, Color.argb(255, 0, 255, 0));
         } else if (mc.get_led_status(led_num).GREEN == 255) {
-            mc.set_led_status(led_num, 127, Color.argb(255, 0, 0, 255));
+            mc.set_led_status(led_num, brightness, Color.argb(255, 0, 0, 255));
         } else if (mc.get_led_status(led_num).BLUE == 255) {
-            mc.set_led_status(led_num, 127, Color.argb(255, 255, 0, 0));
+            mc.set_led_status(led_num, brightness, Color.argb(255, 255, 0, 0));
         } else {
-            mc.set_led_status(led_num, 127, Color.argb(255, 255, 0, 0));
+            mc.set_led_status(led_num, brightness, Color.argb(255, 255, 0, 0));
         }
     }
 

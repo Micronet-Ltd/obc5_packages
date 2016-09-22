@@ -24,7 +24,7 @@ import java.util.Date;
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MCTL - MainActivity";
     private static final int REQUEST_WRITE_STORAGE = 112;
-    public static final long LOG_INTERVAL_MS = 5000;
+    public static final long LOG_INTERVAL_MS = 30000;
 
     private MControlTextAdapter mctlAdapter;
     private Handler saveLogHandler = null;
@@ -110,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 SimpleDateFormat simpleDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SS");
-                String currentDateTime =simpleDate.format(new Date());
+                String currentDateTime = simpleDate.format(new Date());
                 MControlTextAdapter.mc.set_rtc_date_time(currentDateTime);
                 mctlAdapter.populateMctlTable();
                 mctlAdapter.notifyDataSetChanged();
@@ -198,7 +198,13 @@ public class MainActivity extends AppCompatActivity {
                 if (writeLogHeader) {
                     sb.append("Timestamp,");
                     for (Pair<String, String> pair : mctlAdapter.getPairList()) {
-                        sb.append(pair.getLeft() + ",");
+                        if(pair.getLeft() == "THERMAL ZONES"){
+                            sb.append("THERMAL ZONE 0, THERMAL ZONE 1, THERMAL ZONE 2, THERMAL ZONE 3, THERMAL ZONE 4,");
+                        }else{
+                            sb.append(pair.getLeft() + ",");
+                        }
+
+
                     }
                     // save header without prepending timestamp
                     Logger.log(sb.toString(), false);

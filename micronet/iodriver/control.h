@@ -39,6 +39,8 @@ struct control_thread_context
 	int pong_recv;
     int vled_fd;
     time_t last_app_ping_time;
+    int max_app_watchdog_ping_time;
+    bool dont_send;
 };
 
 

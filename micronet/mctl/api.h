@@ -30,4 +30,4 @@ int set_rtc_reg_dbg(int * fd, uint8_t address, uint8_t data);
 bool check_rtc_battery(int * fd);
 int get_gpio_state_dbg(int * fd, uint16_t gpio_num, uint8_t * gpio_val);
 int set_gpio_state_dbg(int * fd, uint16_t gpio_num, uint8_t gpio_val);
-
+int set_app_watchdog_dbg(int * fd);

@@ -69,6 +69,22 @@ public class MControl {
         return jniGetADCorGPIVoltage(gpi_num);
     }
 
+    public String get_power_on_reason(){
+        switch(jniGetPowerOnReason()){
+            case(0):
+                return "Ignition Trigger";
+            case(1):
+                return "Wiggle Trigger";
+            case(2):
+                return "Arm Lockup";
+            case(3):
+                return "Watchdog Reset";
+            default:
+                return "Error";
+        }
+
+    }
+
     /**
      * To shutdown the A8/CPU and go into low power mode(pulling less than 5mA at 12V), the following command can be sent.
      * A wait time in seconds can be provided to inform the MCU to wait that period before shutting down and going into a

@@ -123,6 +123,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 MControlTextAdapter.mc.set_device_power_off(10);
+                Toast.makeText(MainActivity.this, "Device Power Off in 10 Seconds", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -164,7 +165,7 @@ public class MainActivity extends AppCompatActivity {
     private void startSaveLogThread() {
         try {
             saveLogHandler = new Handler();
-            saveLogHandler.postAtTime(saveLogRunnable, 0);
+            saveLogHandler.postAtTime(saveLogRunnable, 5000);
         } catch (Exception e) {
             Log.d(TAG, e.getMessage());
         }
@@ -200,6 +201,8 @@ public class MainActivity extends AppCompatActivity {
                     for (Pair<String, String> pair : mctlAdapter.getPairList()) {
                         if(pair.getLeft() == "THERMAL ZONES"){
                             sb.append("THERMAL ZONE 0, THERMAL ZONE 1, THERMAL ZONE 2, THERMAL ZONE 3, THERMAL ZONE 4,");
+                        }else if(pair.getLeft() == "SCALING CPU FREQ"){
+                            sb.append("CPU 0, CPU 1, CPU 2, CPU 3,");
                         }else{
                             sb.append(pair.getLeft() + ",");
                         }

@@ -43,7 +43,11 @@ public class MControlTextAdapter extends BaseAdapter {
     private String thermalZone2 = "";
     private String thermalZone3 = "";
     private String thermalZone4 = "";
-
+    private String scaling_cur_freq = "";
+    private int cpu0 = 0;
+    private int cpu1 = 0;
+    private int cpu2 = 0;
+    private int cpu3 = 0;
 
     private List<Pair<String, String>> pairList = new ArrayList<Pair<String, String>>();
 
@@ -75,6 +79,9 @@ public class MControlTextAdapter extends BaseAdapter {
         String adc_power_in = ADCs.ADC_POWER_IN.getValue() + " mv";
         String adc_power_cap = ADCs.ADC_POWER_VCAP.getValue() + " mv";
         String rtc_battery = mc.check_rtc_battery();
+        String power_on_reason = mc.get_power_on_reason();
+        scaling_cur_freq = "";
+        getCoreFrequencies();
         String celsius = String.valueOf((ADCs.ADC_TEMPERATURE.getValue() - 500.0f) / 10);
         getThermalZoneTemps();
         String thermalZone = thermalZone0 + ", " + thermalZone1 + ", " + thermalZone2 + ", " + thermalZone3 + ", " + thermalZone4;
@@ -107,6 +114,8 @@ public class MControlTextAdapter extends BaseAdapter {
         pairList.add(new Pair<>("POWER IN", adc_power_in));
         pairList.add(new Pair<>("POWER VCAP", adc_power_cap));
         pairList.add(new Pair<>("RTC BATTERY STATUS", rtc_battery));
+        pairList.add(new Pair<>("POWER ON REASON", power_on_reason));
+        pairList.add(new Pair<>("SCALING CPU FREQ", scaling_cur_freq));
         pairList.add(new Pair<>("MCU TEMP", celsius));
         pairList.add(new Pair<>("THERMAL ZONES", thermalZone));
         pairList.add(new Pair<>("ACCELEROMETER", accelerometer));
@@ -123,6 +132,30 @@ public class MControlTextAdapter extends BaseAdapter {
 
     }
 
+    private void getCoreFrequencies() {
+        try {
+            br = new BufferedReader(new FileReader("/sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq"));
+            cpu0 = Integer.valueOf(br.readLine());
+            br = new BufferedReader(new FileReader("/sys/devices/system/cpu/cpu1/cpufreq/scaling_cur_freq"));
+            cpu1 = Integer.valueOf(br.readLine());
+            br = new BufferedReader(new FileReader("/sys/devices/system/cpu/cpu2/cpufreq/scaling_cur_freq"));
+            cpu2 = Integer.valueOf(br.readLine());
+            br = new BufferedReader(new FileReader("/sys/devices/system/cpu/cpu3/cpufreq/scaling_cur_freq"));
+            cpu3 = Integer.valueOf(br.readLine());
+
+            cpu0 /= 1000;
+            cpu1 /= 1000;
+            cpu2 /= 1000;
+            cpu3 /= 1000;
+
+            scaling_cur_freq = cpu0 + ", " + cpu1 + ", " + cpu2 + ", " + cpu3;
+            br.close();
+        } catch (Exception e) {
+            scaling_cur_freq = " , , , ";
+            e.printStackTrace();
+        }
+    }
+
     private void getThermalZoneTemps() {
         try {
             br = new BufferedReader(new FileReader("/sys/devices/virtual/thermal/thermal_zone0/temp"));
@@ -135,6 +168,7 @@ public class MControlTextAdapter extends BaseAdapter {
             thermalZone3 = br.readLine();
             br = new BufferedReader(new FileReader("/sys/devices/virtual/thermal/thermal_zone4/temp"));
             thermalZone4 = br.readLine();
+            br.close();
         } catch (Exception e) {
             e.printStackTrace();
         }

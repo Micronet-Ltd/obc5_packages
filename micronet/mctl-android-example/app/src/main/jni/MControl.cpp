@@ -135,7 +135,15 @@ Java_com_micronet_mcontrol_MControl_jniSetPowerOnThresholdCfg(JNIEnv *env, jobje
 JNIEXPORT jint JNICALL
 Java_com_micronet_mcontrol_MControl_jniGetPowerOnReason(JNIEnv *env, jobject instance) {
 
-    // TODO
+    uint8_t power_on_reason = -3;
+    int fd = iosocket_connect();
+
+    if(fd != 0) {
+        get_power_on_reason(&fd, &power_on_reason);
+        iosocket_disconnect(&fd);
+    }
+
+    return power_on_reason;
 
 }
 

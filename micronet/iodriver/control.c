@@ -9,6 +9,8 @@
 
 #define __need_timespec
 #define __USE_POSIX199309
+#define __USE_XOPEN2K
+#define __USE_MISC
 
 #include <stdlib.h>
 #include <unistd.h>
@@ -51,6 +53,7 @@
 
 #include "control.h"
 #include "api_constants.h"
+#include <sys/time.h>
 #include <time.h>
 #include <errno.h>
 
@@ -569,7 +572,7 @@ static int control_handle_sock_command(struct control_thread_context * context, 
 	}
 	else if (0 == memcmp(data, "set_app_watchdog_time=", strlen("set_app_watchdog_time=")))
 	{
-		sscanf(data, "set_app_watchdog_time=%d\r",&wdg_max_time);
+		sscanf((const char *)data, "set_app_watchdog_time=%d\r", &wdg_max_time);
 
 		/* make sure it's valid */
 		if ((wdg_max_time >= 60 && wdg_max_time < 5000) || (wdg_max_time == 0) )
@@ -1088,7 +1091,7 @@ static bool set_app_watchdog_count(int count)
 {
 	char app_wdg_file_name[] = "/sdcard/micronet_app_watchdog_count.cfg";
 	int fd, bytes_to_write;
-	ssize_t bytes_written, bytes_read; // NOTE signed type
+	ssize_t bytes_written; // NOTE signed type
 	char buf[8] = {0};
 
 	mode_t mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;

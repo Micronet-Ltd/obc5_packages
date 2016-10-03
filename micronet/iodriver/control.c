@@ -7,6 +7,9 @@
 
 #define DEBUG_TRACE
 
+#define __need_timespec
+#define __USE_POSIX199309
+
 #include <stdlib.h>
 #include <unistd.h>
 #include <libgen.h>
@@ -49,7 +52,6 @@
 #include "control.h"
 #include "api_constants.h"
 #include <time.h>
-#include <sys/time.h>
 #include <errno.h>
 
 //#define IO_CONTROL_RECOVERY_DEBUG 1
@@ -548,8 +550,8 @@ static int control_handle_sock_command(struct control_thread_context * context, 
 	}
 	else if (0 == memcmp(data, "app_ping", strlen("app_ping")+1))
 	{
-		context->last_app_ping_time = time(NULL);
-		DINFO("app_ping %d\n",(int)context->last_app_ping_time);
+		clock_gettime(CLOCK_MONOTONIC_RAW, &(context->last_app_ping_time));
+		DINFO("app_ping %d\n", (int)(context->last_app_ping_time.tv_sec));
 		if(send_sock_string_message(context, addr, "app_pong"))
 			r = -1;
 		else
@@ -577,7 +579,7 @@ static int control_handle_sock_command(struct control_thread_context * context, 
 				DINFO("set_app_watchdog_time = %d sec\n",wdg_max_time);
 				sprintf(buf, "set_app_watchdog_time=%d sec\r", wdg_max_time);
 				context->max_app_watchdog_ping_time = wdg_max_time;
-				context->last_app_ping_time = time(NULL);
+				clock_gettime(CLOCK_MONOTONIC_RAW, &(context->last_app_ping_time));
 			}
 			else
 			{
@@ -1121,7 +1123,9 @@ void * control_proc(void * cntx)
 	struct control_thread_context * context = cntx;
 	int status;
 	uint8_t databuffer[1024]; // >= 10 * (8*2)
-	time_t time_last_sent_ping = time(NULL);
+	struct timespec time_last_sent_ping;
+	clock_gettime(CLOCK_MONOTONIC_RAW, &time_last_sent_ping);
+	struct timespec curr_time;
 	time_t time_diff = 0;
 	bool on_init = true;
 	context->max_app_watchdog_ping_time = get_app_watchdog_expire_time();
@@ -1138,7 +1142,7 @@ void * control_proc(void * cntx)
 	context->mcu_fd = -1;
 	context->sock_fd = -1;
     context->vled_fd = -1;
-    context->last_app_ping_time = time(NULL);
+    clock_gettime(CLOCK_MONOTONIC_RAW, &(context->last_app_ping_time));
     context->dont_send = false;
 
 	// TODO: maby move to check_devies()
@@ -1165,8 +1169,8 @@ void * control_proc(void * cntx)
 		{
 			on_init = false;
 			update_system_time_with_rtc(context);
-			time_last_sent_ping = time(NULL);
-			context->last_app_ping_time = time(NULL);
+			clock_gettime(CLOCK_MONOTONIC_RAW, &time_last_sent_ping);
+			clock_gettime(CLOCK_MONOTONIC_RAW, &(context->last_app_ping_time));
 			update_all_GP_inputs(context);
 			set_fw_vers_files(context);
 		}
@@ -1174,7 +1178,8 @@ void * control_proc(void * cntx)
 		if((context->mcu_fd > -1) && !FD_ISSET(context->mcu_fd, &context->fds))
 		{
 			/* MCU to periodic A8 pings */
-			time_diff = time(NULL) - time_last_sent_ping;
+			clock_gettime(CLOCK_MONOTONIC_RAW, &curr_time);
+			time_diff = curr_time.tv_sec - time_last_sent_ping.tv_sec;
 			if ((time_diff) > TIME_BETWEEN_MCU_PINGS)
 			{
 				if (context->ping_sent != context->pong_recv)
@@ -1188,11 +1193,12 @@ void * control_proc(void * cntx)
 				msg[0] = control_get_seq(context);
 				msg[1] = (uint8_t)PING_REQ;
 				control_send_mcu(context, msg, sizeof(msg));
-				time_last_sent_ping = time(NULL);
+				clock_gettime(CLOCK_MONOTONIC_RAW, &time_last_sent_ping);
 				context->ping_sent++;
 
 				/* Check if we are still getting app pings */
-				time_diff = time(NULL) - context->last_app_ping_time;
+				clock_gettime(CLOCK_MONOTONIC_RAW, &curr_time);
+				time_diff = curr_time.tv_sec  - context->last_app_ping_time.tv_sec;
 				DINFO("Time since App ping: %d sec, maxtime: %d sec\n",(int)time_diff, context->max_app_watchdog_ping_time);
 				if ((context->max_app_watchdog_ping_time != 0) && (time_diff > context->max_app_watchdog_ping_time))
 				{

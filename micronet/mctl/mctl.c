@@ -123,8 +123,9 @@ int send_api_hex2(int * fd, char * hexdata)
 	uint8_t data[4096];
 	uint32_t fpga_ver = 0;
 	uint32_t gpi_voltage = 0;
-	uint8_t led_num, brightness, red, green, blue, gpi_num, power_on_reason, wait_time, rtc_dig_cal, rtc_analog_cal, rtc_reg_addr, rtc_reg_data, gpio_val;
+	uint8_t led_num, brightness, red, green, blue, gpi_num, power_on_reason, wait_time, rtc_dig_cal, rtc_analog_cal, rtc_reg_addr, rtc_reg_data, gpio_val, wig_en;
 	uint16_t wiggle_count, wig_cnt_sample_period, ignition_threshold, gpio_num;
+	uint32_t wiggle_count_32;
 	int i;
 	int ret = 0;
 	char dt_str[RTC_STRING_SIZE] = "2016-03-29 19:09:06.58\0";
@@ -271,11 +272,15 @@ int send_api_hex2(int * fd, char * hexdata)
 			printf("get CAN1 J1708 pwr enable gpio: %d, value read: %d, ret = %d  \n", \
 					CAN1_J1708_PWR_ENABLE, gpio_val, ret);
 			break;
-		case MCTL_SET_CAN1_J1708_PWR_ENABLE_GPIO:
-			gpio_val = data[2];
-			ret = set_gpio_state_dbg(fd, CAN1_J1708_PWR_ENABLE, gpio_val);
-			printf("set CAN1 J1708 pwr enable , gpio: %d, value set: %d, ret = %d  \n", \
-					CAN1_J1708_PWR_ENABLE, gpio_val, ret);
+		case MAPI_SET_WIGGLE_EN_REQ_DBG:
+			wig_en = data[2];
+			ret = set_app_wiggle_en_dbg(fd, wig_en);
+			printf("set app wiggle en to %d, ret = %d  \n", wig_en, ret);
+			break;
+		case MAPI_GET_WIGGLE_COUNT_REQ_DBG:
+			wiggle_count_32 = data[2];
+			ret = get_app_wiggle_count_dbg(fd, &wiggle_count_32);
+			printf("get wiggle count:  %d, ret = %d  \n", wiggle_count_32, ret);
 			break;
 		default: break;
 	}

@@ -31,3 +31,5 @@ bool check_rtc_battery(int * fd);
 int get_gpio_state_dbg(int * fd, uint16_t gpio_num, uint8_t * gpio_val);
 int set_gpio_state_dbg(int * fd, uint16_t gpio_num, uint8_t gpio_val);
 int set_app_watchdog_dbg(int * fd);
+int set_app_wiggle_en_dbg(int * fd, uint8_t dis_en);
+int get_app_wiggle_count_dbg(int * fd, uint32_t * wiggle_count);

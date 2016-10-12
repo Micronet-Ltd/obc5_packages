@@ -33,3 +33,6 @@ int set_gpio_state_dbg(int * fd, uint16_t gpio_num, uint8_t gpio_val);
 int set_app_watchdog_dbg(int * fd);
 int set_app_wiggle_en_dbg(int * fd, uint8_t dis_en);
 int get_app_wiggle_count_dbg(int * fd, uint32_t * wiggle_count);
+int set_accel_standby_active_dbg(int * fd, uint8_t standbye_active);
+int get_accel_reg_dbg(int * fd, uint8_t address, uint8_t * data);
+int set_accel_reg_dbg(int * fd, uint8_t address, uint8_t data);

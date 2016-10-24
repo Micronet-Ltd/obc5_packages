@@ -64,11 +64,25 @@ public class MControl {
         jniSetLEDValue(led, brightness, rgb);
     }
 
+    /**
+     * Get GPI or ADC voltage. Response is in milliVolts.
+     * @param gpi_num
+     * @return milliVolts
+     */
     public int get_adc_or_gpi_voltage(int gpi_num) {
         if (DBG) return 1234;
         return jniGetADCorGPIVoltage(gpi_num);
     }
 
+
+    /**
+     * To get the reason for the A8/CPU power up, the following command can be sent. The response is a bit field:
+     *   #define POWER_MGM_DEVICE_ON_IGNITION_TRIGGER		(1 << 0)
+     *   #define POWER_MGM_DEVICE_ON_WIGGLE_TRIGGER			(1 << 1)
+     *   #define POWER_MGM_DEVICE_ARM_LOCKUP				(1 << 2)
+     *   #define POWER_MGM_DEVICE_WATCHDOG_RESET			(1 << 3)
+     * @return
+     */
     public String get_power_on_reason(){
         switch(jniGetPowerOnReason()){
             case(0):

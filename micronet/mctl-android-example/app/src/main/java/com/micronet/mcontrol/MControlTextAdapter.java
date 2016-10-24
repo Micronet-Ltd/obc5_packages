@@ -7,6 +7,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,8 +16,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +41,8 @@ public class MControlTextAdapter extends BaseAdapter {
     private int[] rightLEDVal = new int[]{-1, 0xFFFFFF};
     private int logInterval = 1;
     private BufferedReader br;
+    private BufferedWriter bw;
+    String gpio917Value = null;
     private float linear_acceleration[];
     private String thermalZone0 = "";
     private String thermalZone1 = "";
@@ -79,6 +85,7 @@ public class MControlTextAdapter extends BaseAdapter {
         String adc_power_in = ADCs.ADC_POWER_IN.getValue() + " mv";
         String adc_power_cap = ADCs.ADC_POWER_VCAP.getValue() + " mv";
         String rtc_battery = mc.check_rtc_battery();
+        requestGPIO917();
         String power_on_reason = mc.get_power_on_reason();
         scaling_cur_freq = "";
         getCoreFrequencies();
@@ -114,6 +121,7 @@ public class MControlTextAdapter extends BaseAdapter {
         pairList.add(new Pair<>("POWER IN", adc_power_in));
         pairList.add(new Pair<>("POWER VCAP", adc_power_cap));
         pairList.add(new Pair<>("RTC BATTERY STATUS", rtc_battery));
+        pairList.add(new Pair<>("GPIO 917 VALUE", gpio917Value));
         pairList.add(new Pair<>("POWER ON REASON", power_on_reason));
         pairList.add(new Pair<>("SCALING CPU FREQ", scaling_cur_freq));
         pairList.add(new Pair<>("MCU TEMP", celsius));
@@ -132,28 +140,125 @@ public class MControlTextAdapter extends BaseAdapter {
 
     }
 
-    private void getCoreFrequencies() {
-        try {
-            br = new BufferedReader(new FileReader("/sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq"));
-            cpu0 = Integer.valueOf(br.readLine());
-            br = new BufferedReader(new FileReader("/sys/devices/system/cpu/cpu1/cpufreq/scaling_cur_freq"));
-            cpu1 = Integer.valueOf(br.readLine());
-            br = new BufferedReader(new FileReader("/sys/devices/system/cpu/cpu2/cpufreq/scaling_cur_freq"));
-            cpu2 = Integer.valueOf(br.readLine());
-            br = new BufferedReader(new FileReader("/sys/devices/system/cpu/cpu3/cpufreq/scaling_cur_freq"));
-            cpu3 = Integer.valueOf(br.readLine());
+    private void requestGPIO917(){
 
-            cpu0 /= 1000;
-            cpu1 /= 1000;
-            cpu2 /= 1000;
-            cpu3 /= 1000;
+        File gpio917File = new File("/sys/class/gpio/gpio917/value");
 
-            scaling_cur_freq = cpu0 + ", " + cpu1 + ", " + cpu2 + ", " + cpu3;
-            br.close();
-        } catch (Exception e) {
-            scaling_cur_freq = " , , , ";
-            e.printStackTrace();
+        // Write to file to request info. Check and see if file already exists.
+        if(!gpio917File.exists()){
+            try{
+                File file = new File("/sys/class/gpio/export");
+
+                bw = new BufferedWriter(new FileWriter(file));
+                bw.write("917");
+
+                bw.close();
+            }catch(Exception e){
+                Log.e(TAG, e.toString());
+                gpio917Value = "Error";
+            }
         }
+
+
+        // Read value from file
+        try{
+            File file = new File("/sys/class/gpio/gpio917/value");
+
+            br = new BufferedReader(new FileReader(file));
+            gpio917Value = br.readLine();
+
+            br.close();
+
+        }catch(Exception e){
+            Log.e(TAG, e.toString());
+            gpio917Value = "Error";
+        }
+
+
+
+    }
+
+    // Gets the scaling_cur_freq for the four cores. Extended code to check for bugs from indiviual files.
+    // Will return -1 for the core if it has problems reading the file. Will return 0 if file doesn't exist.
+    private void getCoreFrequencies() {
+
+        try{
+
+            File file = new File("/sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq");
+
+            if(!file.exists()){
+                cpu0 = 0;
+
+            }else{
+                br = new BufferedReader(new FileReader(file));
+                cpu0 = Integer.valueOf(br.readLine());
+                cpu0 /= 1000;
+            }
+
+            br.close();
+        }catch(Exception e){
+            Log.e(TAG, e.toString());
+            cpu0 = -1;
+        }
+
+        try{
+
+            File file = new File("/sys/devices/system/cpu/cpu1/cpufreq/scaling_cur_freq");
+
+            if(!file.exists()){
+                cpu1 = 0;
+
+            }else{
+                br = new BufferedReader(new FileReader(file));
+                cpu1 = Integer.valueOf(br.readLine());
+                cpu1 /= 1000;
+            }
+
+            br.close();
+        }catch(Exception e){
+            Log.e(TAG, e.toString());
+            cpu1 = -1;
+        }
+
+        try{
+
+            File file = new File("/sys/devices/system/cpu/cpu2/cpufreq/scaling_cur_freq");
+
+            if(!file.exists()){
+                cpu2 = 0;
+
+            }else{
+                br = new BufferedReader(new FileReader(file));
+                cpu2 = Integer.valueOf(br.readLine());
+                cpu2 /= 1000;
+            }
+
+            br.close();
+        }catch(Exception e){
+            Log.e(TAG, e.toString());
+            cpu2 = -1;
+        }
+
+        try{
+
+            File file = new File("/sys/devices/system/cpu/cpu3/cpufreq/scaling_cur_freq");
+
+            if(!file.exists()){
+                cpu3 = 0;
+
+            }else{
+                br = new BufferedReader(new FileReader(file));
+                cpu3 = Integer.valueOf(br.readLine());
+                cpu3 /= 1000;
+            }
+
+            br.close();
+        }catch(Exception e){
+            Log.e(TAG, e.toString());
+            cpu3 = -1;
+        }
+
+        scaling_cur_freq = cpu0 + ", " + cpu1 + ", " + cpu2 + ", " + cpu3;
     }
 
     private void getThermalZoneTemps() {
@@ -238,16 +343,6 @@ public class MControlTextAdapter extends BaseAdapter {
                         break;
                 }
 
-                /*if (pairList.get(position).getLeft() == "RIGHT LED") {
-                    checkSetLedColor(0);
-                }
-                if (pairList.get(position).getLeft() == "CENTER LED") {
-                    checkSetLedColor(1);
-                }
-                if (pairList.get(position).getLeft() == "LEFT LED") {
-                    checkSetLedColor(2);
-                }*/
-
                 populateMctlTable();
                 notifyDataSetChanged();
                 Toast.makeText(context, pairList.get(position).getLeft() + " Data Refreshed", Toast.LENGTH_SHORT).show();
@@ -258,33 +353,45 @@ public class MControlTextAdapter extends BaseAdapter {
     }
 
     //Keeps the same colors and adjusts the brightness of the LED. If the brightness is none of those values it will go to 255.
+    //If the brightness of the three LEDs is not equal, it will set them all to 127 brightness.
     private void checkSetBrightness() {
-        for (int i = 0; i < 3; i++) {
-            int red = mc.get_led_status(i).RED;
-            int green = mc.get_led_status(i).GREEN;
-            int blue = mc.get_led_status(i).BLUE;
+        if(mc.get_led_status(0).BRIGHTNESS == mc.get_led_status(1).BRIGHTNESS && mc.get_led_status(1).BRIGHTNESS == mc.get_led_status(2).BRIGHTNESS){
+            for (int i = 0; i < 3; i++) {
+                int red = mc.get_led_status(i).RED;
+                int green = mc.get_led_status(i).GREEN;
+                int blue = mc.get_led_status(i).BLUE;
 
-            switch(mc.get_led_status(i).BRIGHTNESS){
-                case(255):
-                    mc.set_led_status(i, 191, Color.argb(255, red, green, blue));
-                    break;
-                case(191):
-                    mc.set_led_status(i, 127, Color.argb(255, red, green, blue));
-                    break;
-                case(127):
-                    mc.set_led_status(i, 64, Color.argb(255, red, green, blue));
-                    break;
-                case(64):
-                    mc.set_led_status(i, 0, Color.argb(255, red, green, blue));
-                    break;
-                case(0):
-                    mc.set_led_status(i, 255, Color.argb(255, red, green, blue));
-                    break;
-                default:
-                    mc.set_led_status(i, 255, Color.argb(255, red, green, blue));
-                    break;
+                switch(mc.get_led_status(i).BRIGHTNESS){
+                    case(255):
+                        mc.set_led_status(i, 191, Color.argb(255, red, green, blue));
+                        break;
+                    case(191):
+                        mc.set_led_status(i, 127, Color.argb(255, red, green, blue));
+                        break;
+                    case(127):
+                        mc.set_led_status(i, 64, Color.argb(255, red, green, blue));
+                        break;
+                    case(64):
+                        mc.set_led_status(i, 0, Color.argb(255, red, green, blue));
+                        break;
+                    case(0):
+                        mc.set_led_status(i, 255, Color.argb(255, red, green, blue));
+                        break;
+                    default:
+                        mc.set_led_status(i, 255, Color.argb(255, red, green, blue));
+                        break;
+                }
+            }
+        }else{
+            for (int i = 0; i < 3; i++) {
+                int red = mc.get_led_status(i).RED;
+                int green = mc.get_led_status(i).GREEN;
+                int blue = mc.get_led_status(i).BLUE;
+
+                mc.set_led_status(i, 127, Color.argb(255, red, green, blue));
             }
         }
+
     }
 
     //Rotates LED thru colors RED, GREEN, and then BLUE. If it is none of those colors it will change to RED. Brightness is not changed.

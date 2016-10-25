@@ -274,6 +274,12 @@ int send_api_hex2(int * fd, char * hexdata)
 			printf("get CAN1 J1708 pwr enable gpio: %d, value read: %d, ret = %d  \n", \
 					CAN1_J1708_PWR_ENABLE, gpio_val, ret);
 			break;
+		case MCTL_SET_CAN1_J1708_PWR_ENABLE_GPIO:
+			gpio_val = data[2];
+			ret = set_gpio_state_dbg(fd, CAN1_J1708_PWR_ENABLE, gpio_val);
+			printf("set CAN1 J1708 pwr enable , gpio: %d, value set: %d, ret = %d  \n", \
+					CAN1_J1708_PWR_ENABLE, gpio_val, ret);
+			break;
 		case MAPI_SET_WIGGLE_EN_REQ_DBG:
 			wig_en = data[2];
 			ret = set_app_wiggle_en_dbg(fd, wig_en);
@@ -303,7 +309,9 @@ int send_api_hex2(int * fd, char * hexdata)
 					accel_reg_addr, accel_reg_data, ret);
 			break;
 
-		default: break;
+		default:
+			printf("invalid api command \n");
+		   	break;
 	}
 	return ret;
 }

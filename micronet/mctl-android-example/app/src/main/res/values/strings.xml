@@ -1,6 +1,5 @@
 <resources>
-    <string name="app_name">Micronet Control</string>
-    <string name="notification_title">Micronet Control</string>
-    <string name="notification_subtext">Running...</string>
-
+    <string name="app_name">Micronet OBC Pro </string>
+    <string name="notification_title">MCU Control Monitor</string>
+    <string name="notification_subtext">Logging...</string>
 </resources>

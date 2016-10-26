@@ -11,7 +11,7 @@ import java.util.Date;
  */
 public class MControl {
 
-    private static boolean DBG = false;
+    public static boolean DBG = false;
 
     static {
         System.loadLibrary("mctl");
@@ -61,6 +61,7 @@ public class MControl {
      * @param rgb        input a color as an int.
      */
     public void set_led_status(int led, int brightness, int rgb) {
+        if (DBG) return;
         jniSetLEDValue(led, brightness, rgb);
     }
 
@@ -84,6 +85,7 @@ public class MControl {
      * @return
      */
     public String get_power_on_reason(){
+        if (DBG) return "1234DBG";
         switch(jniGetPowerOnReason()){
             case(0):
                 return "Ignition Trigger";
@@ -139,6 +141,7 @@ public class MControl {
      * @return
      */
     public int set_rtc_date_time(String dateTime) {
+        if (DBG) return 1234;
         return jniSetRTCDateTime(dateTime);
     }
 
@@ -188,6 +191,7 @@ public class MControl {
      */
 
     public String check_rtc_battery() {
+        if (DBG) return "1234DBG";
         if (jniCheckRTCBattery()) {
             return "Good";
         } else {

@@ -141,7 +141,7 @@ public class MControlTextAdapter extends BaseAdapter {
     }
 
     private void requestGPIO917(){
-
+        if(MControl.DBG) { return; }
         File gpio917File = new File("/sys/class/gpio/gpio917/value");
 
         // Write to file to request info. Check and see if file already exists.
@@ -181,6 +181,7 @@ public class MControlTextAdapter extends BaseAdapter {
     // Gets the scaling_cur_freq for the four cores. Extended code to check for bugs from indiviual files.
     // Will return -1 for the core if it has problems reading the file. Will return 0 if file doesn't exist.
     private void getCoreFrequencies() {
+        if(MControl.DBG) { return; }
 
         try{
 
@@ -262,6 +263,7 @@ public class MControlTextAdapter extends BaseAdapter {
     }
 
     private void getThermalZoneTemps() {
+        if(MControl.DBG) { return; }
         try {
             br = new BufferedReader(new FileReader("/sys/devices/virtual/thermal/thermal_zone0/temp"));
             thermalZone0 = br.readLine();

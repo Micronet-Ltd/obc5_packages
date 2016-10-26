@@ -7,31 +7,34 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
-import android.os.Handler;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.NotificationCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.GridView;
-import android.widget.Toast;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import com.micronet.mcontrol.fragments.AboutFragment;
+import com.micronet.mcontrol.fragments.CanbusFragment;
+import com.micronet.mcontrol.fragments.MControlFragment;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    private static final String TAG = "MCTL - MainActivity";
-    private static final int REQUEST_WRITE_STORAGE = 112;
-    public static final long LOG_INTERVAL_MS = 30000;
 
-    private MControlTextAdapter mctlAdapter;
-    private Handler saveLogHandler = null;
-    private boolean writeLogHeader = true;
-    private boolean pauseLog = false;
-    private boolean deleteLog = false;
-    private String filename = null;
+    private static final String TAG = "MCTL";
+    private static final int REQUEST_WRITE_STORAGE = 112;
+
+    private Toolbar toolbar;
+    private TabLayout tabLayout;
+    private ViewPager viewPager;
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
@@ -65,68 +68,58 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         isStoragePermissionGranted();
-        mctlAdapter = new MControlTextAdapter(this);
 
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setHomeButtonEnabled(false);
 
-        final GridView gridview = (GridView) findViewById(R.id.gridview);
-        gridview.setAdapter(mctlAdapter);
+        viewPager = (ViewPager) findViewById(R.id.viewpager);
+        setupViewPager(viewPager);
 
-        final Button btnRefresh = (Button) findViewById(R.id.btnRefresh);
-        btnRefresh.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mctlAdapter.populateMctlTable();
-                mctlAdapter.notifyDataSetChanged();
-                Toast.makeText(MainActivity.this, "Data Refreshed", Toast.LENGTH_SHORT).show();
-            }
-        });
+        tabLayout = (TabLayout) findViewById(R.id.tabs);
+        tabLayout.setupWithViewPager(viewPager);
 
-        final Button btnDeleteLog = (Button) findViewById(R.id.btnDeleteLog);
-        btnDeleteLog.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                deleteLog = true;
-            }
-        });
+        updateActionBarName();
+        showStatusBarNotification();
+    }
+    private void setupViewPager(ViewPager viewPager) {
+        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
+        adapter.addFragment(new MControlFragment(), "MCU Control");
+        adapter.addFragment(new CanbusFragment(), "Canbus");
+        adapter.addFragment(new AboutFragment(), "About");
+        viewPager.setAdapter(adapter);
+    }
 
-        final Button btnPauseLogging = (Button) findViewById(R.id.btnPauseLog);
-        btnPauseLogging.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(pauseLog) {
-                    btnPauseLogging.setText("Pause Logging");
-                    saveLogHandler.postDelayed(saveLogRunnable, 0);
+    class ViewPagerAdapter extends FragmentPagerAdapter {
+        private final List<Fragment> mFragmentList = new ArrayList<>();
+        private final List<String> mFragmentTitleList = new ArrayList<>();
 
-                } else {
-                    btnPauseLogging.setText("Resume Logging");
-                    saveLogHandler.removeCallbacks(saveLogRunnable);
-                }
-                pauseLog = !pauseLog;
-            }
-        });
+        public ViewPagerAdapter(FragmentManager manager) {
+            super(manager);
+        }
 
-        final Button btnSetRTC = (Button) findViewById(R.id.btnSetRTC);
-        btnSetRTC.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                SimpleDateFormat simpleDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SS");
-                String currentDateTime = simpleDate.format(new Date());
-                MControlTextAdapter.mc.set_rtc_date_time(currentDateTime);
-                mctlAdapter.populateMctlTable();
-                mctlAdapter.notifyDataSetChanged();
-                Toast.makeText(MainActivity.this, "RTC Set", Toast.LENGTH_SHORT).show();
-            }
-        });
+        @Override
+        public Fragment getItem(int position) {
+            return mFragmentList.get(position);
+        }
 
-        final Button btnPowerOff = (Button) findViewById(R.id.btnPowerOff);
-        btnPowerOff.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                MControlTextAdapter.mc.set_device_power_off(10);
-                Toast.makeText(MainActivity.this, "Device Power Off in 10 Seconds", Toast.LENGTH_SHORT).show();
-            }
-        });
+        @Override
+        public int getCount() {
+            return mFragmentList.size();
+        }
 
+        public void addFragment(Fragment fragment, String title) {
+            mFragmentList.add(fragment);
+            mFragmentTitleList.add(title);
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return mFragmentTitleList.get(position);
+        }
+    }
+
+    private void showStatusBarNotification() {
         Intent resultIntent = new Intent(this, MainActivity.class);
         // Because clicking the notification opens a new ("special") activity, there's
         // no need to create an artificial back stack.
@@ -143,9 +136,7 @@ public class MainActivity extends AppCompatActivity {
 
         try {
             PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
-            String version = pInfo.versionName;
-            int versionCode = pInfo.versionCode;
-            builder.setContentInfo(String.format("%s (%d)", version, versionCode));
+            builder.setContentInfo(String.format("%s.%d", pInfo.versionName, pInfo.versionCode));
         } catch (PackageManager.NameNotFoundException ex) {
 
         }
@@ -158,97 +149,18 @@ public class MainActivity extends AppCompatActivity {
         NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         // Builds the notification and issues it.
         mNotifyMgr.notify(mNotificationId, builder.build());
-
-        startSaveLogThread();
     }
 
-    private void startSaveLogThread() {
+
+    private void updateActionBarName() {
         try {
-            saveLogHandler = new Handler();
-            saveLogHandler.postAtTime(saveLogRunnable, 5000);
-        } catch (Exception e) {
-            Log.d(TAG, e.getMessage());
+            PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            getSupportActionBar().setTitle(String.format("%s v%s.%d",
+                    getSupportActionBar().getTitle(),
+                    pInfo.versionName,
+                    pInfo.versionCode));
+        } catch(Exception e) {
+            Log.d(TAG, "Couldn't update action bar.");
         }
     }
-
-    Runnable saveLogRunnable = new Runnable() {
-        @Override
-        public void run() {
-            try {
-                // generate the filename only once to reuse during app lifetime
-                if (filename == null || filename.isEmpty()) {
-                    filename = String.format("%s_%s", Utils.formatDateShort(System.currentTimeMillis()), Build.SERIAL);
-                }
-
-                if (deleteLog) {
-                    // deleting log here to make prevent race condition on file
-                    if (Logger.deleteLog()) {
-                        mctlAdapter.clearLogInterval();
-                        Toast.makeText(MainActivity.this, "Log Cleared", Toast.LENGTH_SHORT).show();
-                        writeLogHeader = true;
-                    } else {
-                        Toast.makeText(MainActivity.this, "Could not clear log", Toast.LENGTH_SHORT).show();
-                    }
-                }
-
-                mctlAdapter.increaseLogInterval();
-                mctlAdapter.populateMctlTable();
-                mctlAdapter.notifyDataSetChanged();
-                StringBuilder sb = new StringBuilder();
-
-                if (writeLogHeader) {
-                    sb.append("Timestamp,");
-                    for (Pair<String, String> pair : mctlAdapter.getPairList()) {
-                        if(pair.getLeft() == "THERMAL ZONES"){
-                            sb.append("THERMAL ZONE 0, THERMAL ZONE 1, THERMAL ZONE 2, THERMAL ZONE 3, THERMAL ZONE 4,");
-                        }else if(pair.getLeft() == "SCALING CPU FREQ"){
-                            sb.append("CPU 0, CPU 1, CPU 2, CPU 3,");
-                        }else{
-                            sb.append(pair.getLeft() + ",");
-                        }
-
-
-                    }
-                    // save header without prepending timestamp
-                    Logger.log(sb.toString(), false);
-                }
-
-                sb = new StringBuilder();
-                // build csv
-                for (Pair<String, String> pair : mctlAdapter.getPairList()) {
-                    sb.append(pair.getRight() + ",");
-                }
-
-                Logger.log(sb.toString());
-                Logger.createNewLogFile(String.format("%s_mctl.csv", filename), false);
-                if (Logger.saveLog()) {
-                    Toast.makeText(MainActivity.this, "Logs saved to " + Logger.getLogFilePath(), Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(MainActivity.this, "Log saving error", Toast.LENGTH_SHORT).show();
-                }
-
-                // create and save snapshot that includes header and last saved buffer
-                StringBuilder header = new StringBuilder();
-                header.append("Timestamp,");
-                for (Pair<String, String> pair : mctlAdapter.getPairList()) {
-                    header.append(pair.getLeft() + ",");
-                }
-                Logger.log(header.toString(), false);
-
-                Logger.createNewLogFile(String.format("%s_snapshot.csv", filename), true);
-                Logger.log(sb.toString());
-                Logger.saveLog();
-
-
-            } catch (Exception ex) {
-                Toast.makeText(MainActivity.this, "Log saving exception", Toast.LENGTH_SHORT).show();
-                Log.d(TAG, ex.getMessage());
-            } finally {
-                writeLogHeader = false;
-                deleteLog = false;
-
-                saveLogHandler.postDelayed(this, LOG_INTERVAL_MS);
-            }
-        }
-    };
 }

@@ -42,8 +42,8 @@ int iosocket_connect()
 	struct sockaddr_un c_addr = {0};
 	int fd;
 	struct timeval timeout;
-	timeout.tv_sec = 0;
-	timeout.tv_usec = 100000;
+	timeout.tv_sec = 1;
+	timeout.tv_usec = 0;
 
 	fd = socket(AF_UNIX, SOCK_DGRAM, 0);
 

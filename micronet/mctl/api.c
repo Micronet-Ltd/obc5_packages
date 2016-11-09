@@ -326,3 +326,55 @@ int set_app_watchdog_dbg(int * fd)
 	uint8_t req[] = { MCTRL_MAPI, MAPI_WRITE_RQ, MAPI_SET_APP_WATCHDOG_REQ};
 	return set_command(fd, req, sizeof(req));
 }
+
+/* set_app_wiggle_en_dbg: dis_en = 0 disables wiggle count interrupt,
+ * 						  dis_en = 1 enables wiggle count interrupt
+ */
+int set_app_wiggle_en_dbg(int * fd, uint8_t dis_en)
+{
+	uint8_t req[] = { MCTRL_MAPI, MAPI_WRITE_RQ, MAPI_SET_WIGGLE_EN_REQ_DBG, dis_en};
+	return set_command(fd, req, sizeof(req));
+}
+
+/* get_app_wiggle_count_dbg: Gets the app wiggle count */
+int get_app_wiggle_count_dbg(int * fd, uint32_t * wiggle_count)
+{
+	int ret = 0;
+	uint8_t wig_cnt_b[4] = {0, 0, 0, 0};
+	uint8_t req[] = { MCTRL_MAPI, MAPI_READ_RQ, MAPI_GET_WIGGLE_COUNT_REQ_DBG};
+
+	ret = get_command(fd, req, sizeof(req), wig_cnt_b, sizeof(wig_cnt_b));
+	*wiggle_count = (wig_cnt_b[3]<<24) | (wig_cnt_b[2]<<16) | (wig_cnt_b[1]<<8) | wig_cnt_b[0];
+	return ret;
+}
+
+/* set_accel_standby_active_dbg: set accel chip in standbye mode (0)
+ * or set accel chip in active mode(1). fifo is disabled in standbye mode
+ */
+int set_accel_standby_active_dbg(int * fd, uint8_t standbye_active)
+{
+	uint8_t req[] = { MCTRL_MAPI, MAPI_WRITE_RQ, MAPI_SET_ACCEL_STANDBY_ACTIVE_DBG, standbye_active};
+	return set_command(fd, req, sizeof(req));
+}
+
+/* get_accel_reg_dbg: get any accelerometer chip register
+ * Returns 1 byte of data
+ *  */
+int get_accel_reg_dbg(int * fd, uint8_t address, uint8_t * data)
+{
+	int ret = 0;
+	uint8_t accel_req[] = {0};
+	uint8_t req[] = { MCTRL_MAPI, MAPI_READ_RQ, MAPI_GET_ACCEL_REGISTER_DBG, address };
+
+	ret = get_command(fd, req, sizeof(req), accel_req, sizeof(accel_req));
+	data[0] = accel_req[0];
+	return ret;
+}
+
+/* set_accel_reg_dbg: set any accelerometer chip register */
+int set_accel_reg_dbg(int * fd, uint8_t address, uint8_t data)
+{
+	uint8_t req[] = { MCTRL_MAPI, MAPI_WRITE_RQ, MAPI_SET_ACCEL_REGISTER_DBG,
+					address, data};
+	return set_command(fd, req, sizeof(req));
+}

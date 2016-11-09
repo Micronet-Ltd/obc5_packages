@@ -123,8 +123,11 @@ int send_api_hex2(int * fd, char * hexdata)
 	uint8_t data[4096];
 	uint32_t fpga_ver = 0;
 	uint32_t gpi_voltage = 0;
-	uint8_t led_num, brightness, red, green, blue, gpi_num, power_on_reason, wait_time, rtc_dig_cal, rtc_analog_cal, rtc_reg_addr, rtc_reg_data, gpio_val;
+	uint8_t led_num, brightness, red, green, blue, gpi_num, power_on_reason, wait_time;
+	uint8_t rtc_dig_cal, rtc_analog_cal, rtc_reg_addr, rtc_reg_data, gpio_val, wig_en;
+	uint8_t accel_standby_active, accel_reg_addr, accel_reg_data;
 	uint16_t wiggle_count, wig_cnt_sample_period, ignition_threshold, gpio_num;
+	uint32_t wiggle_count_32;
 	int i;
 	int ret = 0;
 	char dt_str[RTC_STRING_SIZE] = "2016-03-29 19:09:06.58\0";
@@ -277,7 +280,38 @@ int send_api_hex2(int * fd, char * hexdata)
 			printf("set CAN1 J1708 pwr enable , gpio: %d, value set: %d, ret = %d  \n", \
 					CAN1_J1708_PWR_ENABLE, gpio_val, ret);
 			break;
-		default: break;
+		case MAPI_SET_WIGGLE_EN_REQ_DBG:
+			wig_en = data[2];
+			ret = set_app_wiggle_en_dbg(fd, wig_en);
+			printf("set app wiggle en to %d, ret = %d  \n", wig_en, ret);
+			break;
+		case MAPI_GET_WIGGLE_COUNT_REQ_DBG:
+			wiggle_count_32 = data[2];
+			ret = get_app_wiggle_count_dbg(fd, &wiggle_count_32);
+			printf("get wiggle count:  %d, ret = %d  \n", wiggle_count_32, ret);
+			break;
+		case MAPI_SET_ACCEL_STANDBY_ACTIVE_DBG:
+			accel_standby_active = data[2];
+			ret = set_accel_standby_active_dbg(fd, accel_standby_active);
+			printf("set accel standby active to %d, ret = %d  \n", accel_standby_active, ret);
+			break;
+		case MAPI_GET_ACCEL_REGISTER_DBG:
+			accel_reg_addr = data[2];
+			ret = get_accel_reg_dbg(fd, accel_reg_addr, &accel_reg_data);
+			printf("get accel registers @ addr: 0x%x value read: 0x%x, ret = %d  \n", \
+					accel_reg_addr, accel_reg_data, ret);
+			break;
+		case MAPI_SET_ACCEL_REGISTER_DBG:
+			accel_reg_addr = data[2];
+			accel_reg_data = data[3];
+			ret = set_accel_reg_dbg(fd, accel_reg_addr, accel_reg_data);
+			printf("set accel registers @ addr: 0x%x value set: 0x%x, ret = %d  \n", \
+					accel_reg_addr, accel_reg_data, ret);
+			break;
+
+		default:
+			printf("invalid api command \n");
+		   	break;
 	}
 	return ret;
 }

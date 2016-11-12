@@ -97,6 +97,18 @@ public class MControlFragment extends Fragment {
         btnPowerOff.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+/*
+                try{
+                    Process proc = Runtime.getRuntime()
+                            .exec(new String[] {"/bin/sh", "-c", "reboot -p" });
+
+                    proc.waitFor();
+                }
+                catch (Exception ex){
+                    ex.printStackTrace();
+                }
+                Toast.makeText(getContext(), "Device Power Off in 2 Seconds", Toast.LENGTH_SHORT).show();
+*/
                 MControlTextAdapter.mc.set_device_power_off(10);
                 Toast.makeText(getContext(), "Device Power Off in 10 Seconds", Toast.LENGTH_SHORT).show();
             }

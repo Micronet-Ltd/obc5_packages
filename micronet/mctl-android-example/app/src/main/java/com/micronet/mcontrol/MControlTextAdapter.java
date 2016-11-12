@@ -92,7 +92,19 @@ public class MControlTextAdapter extends BaseAdapter {
         String celsius = String.valueOf((ADCs.ADC_TEMPERATURE.getValue() - 500.0f) / 10);
         getThermalZoneTemps();
         String thermalZone = thermalZone0 + ", " + thermalZone1 + ", " + thermalZone2 + ", " + thermalZone3 + ", " + thermalZone4;
-        String accelerometer = "X: " + linear_acceleration[0] + " Y: " + linear_acceleration[1] + " Z: " + linear_acceleration[2];
+
+        try {
+            Accelerometer accel = new Accelerometer();
+            accel.getAccel();
+            linear_acceleration[0] = accel.accelData[0];
+            linear_acceleration[1] = accel.accelData[1];
+            linear_acceleration[2] = accel.accelData[2];
+        } catch (IOException e) {
+            Log.e(TAG, e.toString());
+        }
+
+        String accelerometer = "X:" + (String.format ("%.4f", linear_acceleration[0])) + " Y:" + (String.format ("%.4f", linear_acceleration[1]))
+                + " Z:" + (String.format ("%.4f", linear_acceleration[2]));
         String adc_cable_type = ADCs.ADC_CABLE_TYPE.getValue() + " mv";
         int[] rtc_cal = mc.get_rtc_cal_reg();
         String dig_rtc_cal_reg = String.valueOf(rtc_cal[0]);

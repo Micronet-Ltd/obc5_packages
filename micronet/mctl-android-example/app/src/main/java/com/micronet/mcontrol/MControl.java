@@ -22,7 +22,7 @@ public class MControl {
     private native static int jniGetADCorGPIVoltage(int gpi_num);
     private native static int[] jniGetLEDStatus(int led_num);
     private native static void jniSetLEDValue(int led, int brightness, int rgb);
-    private native static int jniGetPowerOnThresholdCfg();
+    private native static int[] jniGetPowerOnThresholdCfg();
     private native static int jniSetPowerOnThresholdCfg();
     private native static int jniGetPowerOnReason();
     private native static int jniSetDevicePowerOff(int wait_time);
@@ -197,5 +197,17 @@ public class MControl {
         } else {
             return "Bad";
         }
+    }
+
+    /**
+     * To get the power on threshold, use the following command.
+     * The response returned gives the wiggle count, wiggle count sample period and the ignition threshold.
+     * The wiggle count sample period (in mS) refers to how long to collect samples for before making a decision on whether a wiggle event happened.
+     * The ignition threshold is in milliVolts. Values are big Endian format.
+     * @return
+     */
+    public int[] get_power_on(){
+        int[] arr=jniGetPowerOnThresholdCfg();
+        return arr;
     }
 }

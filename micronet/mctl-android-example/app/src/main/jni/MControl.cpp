@@ -118,11 +118,26 @@ Java_com_micronet_mcontrol_MControl_jniSetLEDValue(JNIEnv *env, jclass type, jin
 
 }
 
-JNIEXPORT jint JNICALL
+JNIEXPORT jintArray JNICALL
 Java_com_micronet_mcontrol_MControl_jniGetPowerOnThresholdCfg(JNIEnv *env, jobject instance) {
 
-    // TODO
+    int ret = 0;
+    int size = 3;
+    jintArray newArray = env->NewIntArray(size);
+    int fd = iosocket_connect();
+    if (fd != 0) {
+        jint tmp[3];
+        uint16_t wiggle_count, wig_cnt_sample_period, ignition_threshold;
+        get_power_on_threshold_cfg(&fd, &wiggle_count, &wig_cnt_sample_period, &ignition_threshold);
 
+        iosocket_disconnect(&fd);
+        tmp[0] =wiggle_count;
+        tmp[1] =wig_cnt_sample_period;
+        tmp[2] = ignition_threshold;
+        env->SetIntArrayRegion(newArray, 0, size, tmp);
+    }
+
+    return newArray;
 }
 
 JNIEXPORT jint JNICALL

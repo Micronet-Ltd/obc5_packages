@@ -7,6 +7,12 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkInfo;
+import android.net.wifi.WifiConfiguration;
+import android.net.wifi.WifiManager;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,15 +28,18 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+
+import static android.content.ContentValues.TAG;
 
 
 /**
  * Created by brigham.diaz on 5/24/2016.
  */
 public class MControlTextAdapter extends BaseAdapter {
-
+    
     private Context context;
     private static final String TAG = "MControlTextAdapter";
     final String DEGREE = "\u00b0";
@@ -92,6 +101,8 @@ public class MControlTextAdapter extends BaseAdapter {
         String celsius = String.valueOf((ADCs.ADC_TEMPERATURE.getValue() - 500.0f) / 10);
         getThermalZoneTemps();
         String thermalZone = thermalZone0 + ", " + thermalZone1 + ", " + thermalZone2 + ", " + thermalZone3 + ", " + thermalZone4;
+        String mobileDataStatus=String.valueOf(isMobileConnected(context));
+        String wifiAPStatus=String.valueOf(getWifiApState(context));
 
         try {
             Accelerometer accel = new Accelerometer();
@@ -138,6 +149,8 @@ public class MControlTextAdapter extends BaseAdapter {
         pairList.add(new Pair<>("SCALING CPU FREQ", scaling_cur_freq));
         pairList.add(new Pair<>("MCU TEMP", celsius));
         pairList.add(new Pair<>("THERMAL ZONES", thermalZone));
+        pairList.add(new Pair<>("MOBILEDATA STATE",mobileDataStatus));
+        pairList.add(new Pair<>("WIFI AP STATE", wifiAPStatus));
         pairList.add(new Pair<>("ACCELEROMETER", accelerometer));
         pairList.add(new Pair<>("CABLE TYPE", adc_cable_type));
         pairList.add(new Pair<>("DIG RTC CAL REG", dig_rtc_cal_reg));
@@ -291,6 +304,35 @@ public class MControlTextAdapter extends BaseAdapter {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    public static boolean isMobileConnected(Context context) {
+        return isConnected(context, ConnectivityManager.TYPE_MOBILE);}
+    private static boolean isConnected(Context context, int type) {
+        ConnectivityManager connMgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        Network[] networks = connMgr.getAllNetworks();
+        NetworkInfo networkInfo;
+        for (Network network : networks) {
+            networkInfo = connMgr.getNetworkInfo(network);
+            if (networkInfo != null && networkInfo.getType() == type && networkInfo.isConnected()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public int getWifiApState(Context context) {
+        WifiManager wifiManager = (WifiManager) context.getSystemService(context.WIFI_SERVICE);
+        WifiConfiguration wificonfiguration = null;
+        try {
+            // access isWifiApEnabled method by reflection
+            Method isWifiApEnabledMethod = wifiManager.getClass().getDeclaredMethod("getWifiApState");
+            isWifiApEnabledMethod.setAccessible(true);
+            int isWifiAponvalue= (Integer) isWifiApEnabledMethod.invoke(wifiManager);
+            return isWifiAponvalue;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return WIFI_AP_STATE_FAILED;
     }
 
     public int getCount() {

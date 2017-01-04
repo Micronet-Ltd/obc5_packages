@@ -41,7 +41,7 @@
 const char* fname = "/dev/suspend_timeout";
 const char* db_fname = "/data/data/com.android.providers.settings/databases/settings.db";
 const char* tmp_fname = "/sys/devices/suspend_timeout/suspend_timeout_tmp";
-//const char* val_fname = "/sys/devices/suspend_timeout/suspend_timeout_val";
+//const char* val_fname = "/sys/devices/suspend_timeout/suspend_timeout_value";
 
 const char* db_put = "settings put system screen_off_timeout";
 const char* db_get = "settings get system screen_off_timeout";
@@ -67,7 +67,7 @@ int get_settings(char* buf, const char* cmd, const char* tmp_file)
         return -1;
     }
     length = read(fd_tmp, buf, (sizeof(uint32_t) + 1) * 2);
-    DINFO("%s: read len %d:: %s", __func__, length, buf);
+    DTRACE("read len %d:: %s", length, buf);
     close(fd_tmp);
 
     return length;
@@ -77,6 +77,7 @@ int test_timeout(const char* buf)
     uint32_t val = strtol(buf, 0, 10);
     if((-1 != (int32_t)val) && (MIN_SUSPEND_TM > val || MAX_SUSPEND_TM < val) )
     {
+        DERR ("value is not valid %d (%s)", val, buf);
         return 0;
     }
     return 1;
@@ -96,7 +97,6 @@ void * db_proc(void * cntx)
 {
     struct suspend_tm_thcontext* ptc = (struct suspend_tm_thcontext*)cntx;
     int fd_db, wd, length, i, found = 0;
- //   int fd_tmp  = -1;
     uint32_t last_val = 0, tmp_val = 0;
     char cmd_buf[256];
 
@@ -119,26 +119,12 @@ void * db_proc(void * cntx)
     {
         if(found) 
         {
-/*            sprintf(cmd_buf, "%s > %s", db_get, tmp_fname);
-            i = system(cmd_buf);
-            memset(cmd_buf, sizeof(cmd_buf), 0);
-            fd_tmp = open(tmp_fname, O_RDWR, O_NDELAY);
-            if (0 > fd_tmp) {
-                DERR ("cannot open file %s err %s", tmp_fname, strerror(errno));
-                return NULL;
-            }
-            length = read(fd_tmp, cmd_buf, sizeof(cmd_buf));
-            DINFO("%s: read len %d:: %s", __func__, length, cmd_buf);
-            close(fd_tmp);
-            fd_tmp = -1;
-*/
-
             memset(cmd_buf, sizeof(cmd_buf), 0);
             length = get_settings(cmd_buf, db_get, tmp_fname);
             if(0 < length) 
             {
                 tmp_val = strtol(cmd_buf, 0, 10);
-                DTRACE("%s: tmp_val %d; last_val %d", __func__, tmp_val, last_val);
+                DINFO("tmp_val %d; last_val %d", tmp_val, last_val);
                 if(0 != tmp_val && tmp_val != last_val) 
                 {
                     length = write(ptc->fd_dev, cmd_buf, length); 
@@ -170,7 +156,7 @@ void * db_proc(void * cntx)
             for(i = 0; i < length; i += sizeof(struct inotify_event) + event->len) 
             {
                 event = (struct inotify_event*)&cmd_buf[i];
-                DTRACE("%s: mask = %d; len = %d", __func__, event->mask, event->len);
+                DTRACE("mask = %d; len = %d", event->mask, event->len);
 
                 if(event->mask & IN_MODIFY) 
                 {
@@ -199,7 +185,6 @@ int main(int argc __attribute__((unused)), char * argv[] __attribute__((unused))
 
     DINFO("started.");
 
-
     tc.fd_dev = open(fname, O_RDWR, O_NDELAY);
     if(0 > tc.fd_dev)
     {
@@ -223,7 +208,8 @@ int main(int argc __attribute__((unused)), char * argv[] __attribute__((unused))
             continue;
     	}
 	ret = read(tc.fd_dev, readbuffer, sizeof(readbuffer)/sizeof(readbuffer[0]));
-        if (ret < 1) {
+        if (ret < 1) 
+        {
             DTRACE ("read error size %d", ret);
             continue;
         }
@@ -236,12 +222,24 @@ int main(int argc __attribute__((unused)), char * argv[] __attribute__((unused))
             }
 	}
 #endif
-        sprintf(outbuffer, "%s %s\n", db_put, readbuffer); 
         if(0 == test_timeout(readbuffer)) 
         {
             continue;
         }
+
+        sprintf(outbuffer, "%s %s\n", db_put, readbuffer); 
         system(outbuffer);
+///temp!!!
+//        memset(cmd_buf, 0, sizeof(cmd_buf)/sizeof(cmd_buf[0]));    
+//        ret = get_settings(cmd_buf, db_get, tmp_fname);
+//        if(0 < ret) 
+//        {
+//            int32_t tmp_val = strtol(cmd_buf, 0, 10);
+//            DINFO("val %d", tmp_val);
+//            //always write for the end of operation
+//            ret = write(tc.fd_dev, cmd_buf, ret); 
+//        }
+///////
         DINFO("%s", outbuffer);
     }
 

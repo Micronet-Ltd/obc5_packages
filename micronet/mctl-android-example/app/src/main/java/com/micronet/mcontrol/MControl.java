@@ -33,6 +33,7 @@ public class MControl {
     private native static int jniGetRTCRegDBG();
     private native static int jniSetRTCRegDBG();
     private native static boolean jniCheckRTCBattery();
+    private native static String jniSetSysPropPowerCtlShutdown();
 
     /**
      * Gets the MCU version
@@ -210,4 +211,7 @@ public class MControl {
         int[] arr=jniGetPowerOnThresholdCfg();
         return arr;
     }
+
+    /* shutdown the device via OS command */
+    public static void setSysPropPowerCtlShutdown() { jniSetSysPropPowerCtlShutdown(); }
 }

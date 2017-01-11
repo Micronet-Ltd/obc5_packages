@@ -21,6 +21,8 @@ import com.micronet.mcontrol.Utils;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import static com.micronet.mcontrol.MControl.setSysPropPowerCtlShutdown;
+
 /**
  * Created by brigham.diaz on 10/26/2016.
  */
@@ -109,8 +111,14 @@ public class MControlFragment extends Fragment {
                 }
                 Toast.makeText(getContext(), "Device Power Off in 2 Seconds", Toast.LENGTH_SHORT).show();
 */
+                Toast.makeText(getContext(), "Device via OS Power Off in 2 Seconds", Toast.LENGTH_SHORT).show();
+                //Shutdown using the OS
+                setSysPropPowerCtlShutdown();
+/*
+                //shutdown via the MCU
                 MControlTextAdapter.mc.set_device_power_off(10);
                 Toast.makeText(getContext(), "Device Power Off in 10 Seconds", Toast.LENGTH_SHORT).show();
+*/
             }
         });
 

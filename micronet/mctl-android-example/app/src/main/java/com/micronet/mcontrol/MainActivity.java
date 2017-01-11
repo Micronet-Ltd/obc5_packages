@@ -3,11 +3,15 @@ package com.micronet.mcontrol;
 import android.Manifest;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -24,8 +28,17 @@ import com.micronet.mcontrol.fragments.AboutFragment;
 import com.micronet.mcontrol.fragments.CanbusFragment;
 import com.micronet.mcontrol.fragments.MControlFragment;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.LogRecord;
+
+import static com.micronet.mcontrol.MControl.setSysPropPowerCtlShutdown;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -35,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private TabLayout tabLayout;
     private ViewPager viewPager;
+    private File Dir;
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
@@ -81,7 +95,126 @@ public class MainActivity extends AppCompatActivity {
 
         updateActionBarName();
         showStatusBarNotification();
+
+        createMicronetServiceDir();
+
+        incrementRestartCount(this);
+
+        /* Used for testing continuous rebooting */
+        int shutdownTime =  this.getShutdownTime(this);
+        if (shutdownTime != 0){
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable(){
+                @Override
+                public void run(){
+                    setSysPropPowerCtlShutdown();
+                }
+            }, shutdownTime*1000);
+        }
     }
+
+    private void createMicronetServiceDir(){
+        //Creating a Directory if it isn't available
+        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
+            File Root = Environment.getExternalStorageDirectory(); //Creating File Storage
+            Dir = new File(Root.getAbsolutePath() + "/MicronetService");
+            if (!Dir.exists()) {
+                Dir.mkdir();
+            }
+        }
+    }
+
+    //Write function
+    public void writeToFile(String sValue, Context context, String filename){
+
+        File file = new File(Dir, filename); //Created a Text File
+        if(!file.exists()) {
+            sValue = "0";
+        }
+        try {
+            FileOutputStream fileOutputStream = new FileOutputStream(file);
+            fileOutputStream.write(sValue.getBytes());
+            fileOutputStream.close();
+        }
+        catch (IOException e) {
+            Log.e("Exception", "File write failed: " + e.toString());
+        }
+    }
+
+    //Read Function
+    private String readFromFile(Context context, String filename) {
+
+        String ret = "";
+        File file = new File(Dir, filename); //Created a Text File
+        if(!file.exists()) { return ret;}
+        try {
+            FileReader fileReader = new FileReader(file);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            String receiveString = "";
+            StringBuilder stringBuilder = new StringBuilder();
+
+            while ((receiveString = bufferedReader.readLine()) != null) {
+                stringBuilder.append(receiveString);
+            }
+
+            fileReader.close();
+            ret = stringBuilder.toString();
+
+        } catch (FileNotFoundException e) {
+            Log.e(TAG, "File not found: " + e.toString());
+        } catch (Exception e) {
+            Log.e(TAG, "Can not read file: " + e.toString());
+        }
+        return ret;
+    }
+
+    private void setShutdownTime(Context context, int restartTime){
+        writeToFile(String.valueOf(restartTime), context, "shutdownTime.txt");
+    }
+
+    /*  getRestartTime: Returns the time to restart the device (in seconds):
+        0: Do not not restart device
+    */
+    private int getShutdownTime(Context context) {
+        String strShutdownTime = "";
+
+        if((strShutdownTime = readFromFile(context, "shutdownTime.txt")) == "") {
+            setShutdownTime(context, 0);
+            return 0;
+        }
+
+        int shutdownTime = Integer.parseInt(strShutdownTime);
+
+        /* Do not allow restart times that wouldn't allow enough time to disable it */
+        if (shutdownTime < 30 ){
+            shutdownTime = 0;
+        }
+
+        return shutdownTime; //in seconds
+    }
+
+    private void setRestartCount(Context context, int restartCount){
+        writeToFile(String.valueOf(restartCount), context, "restartCount.txt");
+    }
+
+    private int getRestartCount(Context context){
+        int restartCount = 0;
+        String sRestartCount = "";
+        if ((sRestartCount = readFromFile(context, "restartCount.txt")) == ""){
+            setRestartCount(context, 0);
+        }
+
+        restartCount = Integer.parseInt(sRestartCount);
+
+        return restartCount;
+    }
+
+    private void incrementRestartCount(Context context){
+        int restartCount = getRestartCount(context);
+        restartCount++;
+        setRestartCount(context, restartCount);
+    }
+
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(new MControlFragment(), "MCU Control");

@@ -276,6 +276,12 @@ Java_com_micronet_mcontrol_MControl_jniCheckRTCBattery(JNIEnv *env, jobject inst
     return result != 0;
 }
 
+JNIEXPORT void JNICALL
+Java_com_micronet_mcontrol_MControl_jniSetSysPropPowerCtlShutdown(JNIEnv *env, jclass clazz) {
+    // preferred method shutting down Android
+    system("setprop sys.powerctl shutdown");
+}
+
 #ifdef __cplusplus
 }
 #endif

@@ -12,6 +12,7 @@ import android.net.Network;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
+import android.os.Environment;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -78,7 +79,6 @@ public class MControlTextAdapter extends BaseAdapter {
     }
 
     public void populateMctlTable() {
-
         linear_acceleration = new float[]{0.0f, 0.0f, 0.0f};
 
         String getrtc = mc.get_rtc_date_time();
@@ -319,6 +319,14 @@ public class MControlTextAdapter extends BaseAdapter {
         }
         return false;
     }
+
+    /* Wifi AP values and intent string from obc_android SDK */
+    public static final int WIFI_AP_STATE_DISABLING = 10; // Wi-Fi AP is currently being disabled. The state will change to WIFI_AP_STATE_DISABLED if it finishes successfully.
+    public static final int WIFI_AP_STATE_DISABLED = 11; // Wi-Fi AP is disabled.
+    public static final int WIFI_AP_STATE_ENABLING = 12; // Wi-Fi AP is currently being enabled. The state will change to WIFI_AP_STATE_ENABLED if it finishes successfully.
+    public static final int WIFI_AP_STATE_ENABLED = 13; // Wi-Fi AP is enabled.
+    public static final int WIFI_AP_STATE_FAILED = 14;  // Wi-Fi AP is in a failed state. This state will occur when an error occurs during enabling or disabling
+
 
     public int getWifiApState(Context context) {
         WifiManager wifiManager = (WifiManager) context.getSystemService(context.WIFI_SERVICE);

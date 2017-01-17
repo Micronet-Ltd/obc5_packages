@@ -77,11 +77,29 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private int shutdownTime = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         isStoragePermissionGranted();
+
+        createMicronetServiceDir();
+
+        incrementRestartCount(this);
+
+        /* Used for testing continuous rebooting */
+        shutdownTime =  this.getShutdownTime(this);
+        if (shutdownTime != 0){
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable(){
+                @Override
+                public void run(){
+                    setSysPropPowerCtlShutdown();
+                }
+            }, shutdownTime*1000);
+        }
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -95,13 +113,11 @@ public class MainActivity extends AppCompatActivity {
 
         updateActionBarName();
         showStatusBarNotification();
+    }
 
-        createMicronetServiceDir();
-
-        incrementRestartCount(this);
-
-        /* Used for testing continuous rebooting */
-        int shutdownTime =  this.getShutdownTime(this);
+    @Override
+    protected void onPause() {
+        super.onPause();
         if (shutdownTime != 0){
             final Handler handler = new Handler();
             handler.postDelayed(new Runnable(){
@@ -112,6 +128,7 @@ public class MainActivity extends AppCompatActivity {
             }, shutdownTime*1000);
         }
     }
+
 
     private void createMicronetServiceDir(){
         //Creating a Directory if it isn't available

@@ -10,7 +10,7 @@ model {
             minSdkVersion.apiLevel = 22
             targetSdkVersion.apiLevel = 23
             versionCode = 1
-            versionName = "1.2"
+            versionName = "1.3"
             archivesBaseName = "MControl-$versionName-$versionCode"
         }
         buildTypes {

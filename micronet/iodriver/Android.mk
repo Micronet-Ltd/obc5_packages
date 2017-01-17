@@ -1,7 +1,7 @@
 LOCAL_PATH:= $(call my-dir)
 
 include $(CLEAR_VARS)
-LOCAL_SRC_FILES:= iodriver.c control.c accel.c util.c tty.c queue.c frame.c
+LOCAL_SRC_FILES:= iodriver.c control.c accel.c util.c tty.c queue.c frame.c j1708.c
 LOCAL_MODULE := iodriver
 LOCAL_MODULE_TAGS := optional
 LOCAL_CFLAGS += -std=c99 -DUSE_THREADS -D__ANDROID__

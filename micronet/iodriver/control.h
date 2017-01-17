@@ -1,3 +1,7 @@
+
+#ifndef __MIC_CONTROL_H__
+#define __MIC_CONTROL_H__
+
 // Possibly safest max in linux (see TLPI 57.3)
 // This is usually page size or less
 #define SOCK_MAX_MSG 4*1024
@@ -34,12 +38,16 @@ struct control_thread_context
 	int ping_sent;
 	int pong_recv;
     int vled_fd;
+    bool dont_send;
+    int max_app_watchdog_ping_time;
+    struct timespec last_app_ping_time;
 };
 
-void * control_proc(void * cntx);
 
 // '#' will be replaced with '\0'
 #define UD_NAMESPACE "#micronet_control"
 
-void * control_proc(void * cntx);
+extern void * control_proc(void * cntx);
+
+#endif //__MIC_CONTROL_H__
 

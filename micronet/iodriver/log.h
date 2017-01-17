@@ -1,3 +1,7 @@
+
+#ifndef __MIC_LOG_H__
+#define __MIC_LOG_H__
+
 #ifdef __ANDROID__
 #define LOG_TAG "iodriver"
 #include <cutils/log.h>
@@ -20,6 +24,7 @@
 #define DINFO(x, ...) do { fprintf(stderr, "INFO:%s:%d %s(): " x "\n", basename(__FILE__), __LINE__, __func__, ##__VA_ARGS__); } while(0)
 #define DERR(x, ...) do { fprintf(stderr, "ERR:%s:%d %s(): " x "\n", basename(__FILE__), __LINE__, __func__, ##__VA_ARGS__); } while(0)
 
+#endif //__ANDROID__
 
-#endif
+#endif //__MIC_LOG_H__
 

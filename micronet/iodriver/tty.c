@@ -79,6 +79,7 @@ int open_serial(const char * name)
 	if( 0 > (fd = open(name, O_RDWR | O_NOCTTY)))
 	{
 		DERR("open: %s", strerror(errno));
+		close(fd);
 		return -1;
 	}
 

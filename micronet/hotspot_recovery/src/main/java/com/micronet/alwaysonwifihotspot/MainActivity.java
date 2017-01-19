@@ -20,6 +20,11 @@ public class MainActivity extends Activity {
         // start the auto date/time reset service
         Intent service = new Intent(this, AlwaysOnWiFiHotspotService.class);
         startService(service);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
         finish();
     }
 }

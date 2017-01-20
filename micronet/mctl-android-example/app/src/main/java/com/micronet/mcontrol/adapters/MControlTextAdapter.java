@@ -1,19 +1,13 @@
-package com.micronet.mcontrol;
+package com.micronet.mcontrol.adapters;
 
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
-import android.os.Environment;
-import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,18 +16,23 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.micronet.mcontrol.ADCs;
+import com.micronet.mcontrol.Accelerometer;
+import com.micronet.mcontrol.interfaces.LEDInterface;
+import com.micronet.mcontrol.LEDs;
+import com.micronet.mcontrol.MControl;
+import com.micronet.mcontrol.Pair;
+import com.micronet.mcontrol.R;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-
-import static android.content.ContentValues.TAG;
 
 
 /**
@@ -121,8 +120,7 @@ public class MControlTextAdapter extends BaseAdapter {
             Log.e(TAG, e.toString());
         }
 
-        String accelerometer = "X:" + (String.format ("%.4f", linear_acceleration[0])) + " Y:" + (String.format ("%.4f", linear_acceleration[1]))
-                + " Z:" + (String.format ("%.4f", linear_acceleration[2]));
+        String accelerometer = String.format ("X:%.4f Y:%.4f Z:%.4f", linear_acceleration[0], linear_acceleration[1], linear_acceleration[2]);
         String adc_cable_type = ADCs.ADC_CABLE_TYPE.getValue() + " mv";
         int[] rtc_cal = mc.get_rtc_cal_reg();
         String dig_rtc_cal_reg = String.valueOf(rtc_cal[0]);

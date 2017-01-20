@@ -14,7 +14,7 @@ import android.widget.Toast;
 
 import com.micronet.mcontrol.R;
 import com.micronet.mcontrol.Logger;
-import com.micronet.mcontrol.MControlTextAdapter;
+import com.micronet.mcontrol.adapters.MControlTextAdapter;
 import com.micronet.mcontrol.Pair;
 import com.micronet.mcontrol.Utils;
 
@@ -43,7 +43,7 @@ public class MControlFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_section_hardware, container, false);
 
-        mctlAdapter = new MControlTextAdapter(getActivity());
+        mctlAdapter = new MControlTextAdapter(getContext().getApplicationContext());
 
         final GridView gridview = (GridView) rootView.findViewById(R.id.gridview);
         gridview.setAdapter(mctlAdapter);
@@ -123,9 +123,15 @@ public class MControlFragment extends Fragment {
         });
 
 
-        startSaveLogThread();
+
 
         return rootView;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        startSaveLogThread();
     }
 
     private void startSaveLogThread() {

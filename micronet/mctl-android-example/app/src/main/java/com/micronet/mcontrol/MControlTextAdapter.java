@@ -64,6 +64,7 @@ public class MControlTextAdapter extends BaseAdapter {
     private int cpu1 = 0;
     private int cpu2 = 0;
     private int cpu3 = 0;
+    private Thread thread;
 
     private List<Pair<String, String>> pairList = new ArrayList<Pair<String, String>>();
 
@@ -71,7 +72,13 @@ public class MControlTextAdapter extends BaseAdapter {
         this.context = context;
         // initialize mctl
         mc = new MControl();
-        populateMctlTable();
+        thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                populateMctlTable();
+            }
+        });
+        thread.start();
     }
 
     public List<Pair<String, String>> getPairList() {

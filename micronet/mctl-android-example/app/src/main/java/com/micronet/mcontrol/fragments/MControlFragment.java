@@ -29,7 +29,7 @@ import static com.micronet.mcontrol.MControl.setSysPropPowerCtlShutdown;
 
 public class MControlFragment extends Fragment {
     public static final long LOG_INTERVAL_MS = 30000;
-    private final String TAG = "MCTL";
+    private final String TAG = "MControlFragment";
     private Handler saveLogHandler = null;
     private boolean writeLogHeader = true;
     private boolean pauseLog = false;
@@ -128,10 +128,31 @@ public class MControlFragment extends Fragment {
         return rootView;
     }
 
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         startSaveLogThread();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Log.d(TAG, "onStart");
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.d(TAG, "onPause");
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mctlAdapter.populateMctlTable();
+        mctlAdapter.notifyDataSetChanged();
+        Log.d(TAG, "onResume");
     }
 
     private void startSaveLogThread() {

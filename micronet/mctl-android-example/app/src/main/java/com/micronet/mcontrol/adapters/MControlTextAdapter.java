@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.micronet.mcontrol.ADCs;
 import com.micronet.mcontrol.Accelerometer;
+import com.micronet.mcontrol.ThermalZoneTemperature;
 import com.micronet.mcontrol.interfaces.LEDInterface;
 import com.micronet.mcontrol.LEDs;
 import com.micronet.mcontrol.MControl;
@@ -32,6 +33,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -63,21 +65,12 @@ public class MControlTextAdapter extends BaseAdapter {
     private int cpu1 = 0;
     private int cpu2 = 0;
     private int cpu3 = 0;
-    private Thread thread;
 
     private List<Pair<String, String>> pairList = new ArrayList<Pair<String, String>>();
 
     public MControlTextAdapter(Context context) {
         this.context = context;
-        // initialize mctl
         mc = new MControl();
-        thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                populateMctlTable();
-            }
-        });
-        thread.start();
     }
 
     public List<Pair<String, String>> getPairList() {
@@ -105,8 +98,7 @@ public class MControlTextAdapter extends BaseAdapter {
         scaling_cur_freq = "";
         getCoreFrequencies();
         String celsius = String.valueOf((ADCs.ADC_TEMPERATURE.getValue() - 500.0f) / 10);
-        getThermalZoneTemps();
-        String thermalZone = thermalZone0 + ", " + thermalZone1 + ", " + thermalZone2 + ", " + thermalZone3 + ", " + thermalZone4;
+        ThermalZoneTemperature thermalZone = new ThermalZoneTemperature();
         String mobileDataStatus=String.valueOf(isMobileConnected(context));
         String wifiAPStatus=String.valueOf(getWifiApState(context));
 
@@ -153,7 +145,7 @@ public class MControlTextAdapter extends BaseAdapter {
         pairList.add(new Pair<>("POWER ON REASON", power_on_reason));
         pairList.add(new Pair<>("SCALING CPU FREQ", scaling_cur_freq));
         pairList.add(new Pair<>("MCU TEMP", celsius));
-        pairList.add(new Pair<>("THERMAL ZONES", thermalZone));
+        pairList.add(new Pair<>("THERMAL ZONES", thermalZone.toString()));
         pairList.add(new Pair<>("MOBILEDATA STATE",mobileDataStatus));
         pairList.add(new Pair<>("WIFI AP STATE", wifiAPStatus));
         pairList.add(new Pair<>("ACCELEROMETER", accelerometer));
@@ -292,24 +284,6 @@ public class MControlTextAdapter extends BaseAdapter {
         scaling_cur_freq = cpu0 + ", " + cpu1 + ", " + cpu2 + ", " + cpu3;
     }
 
-    private void getThermalZoneTemps() {
-        if(MControl.DBG) { return; }
-        try {
-            br = new BufferedReader(new FileReader("/sys/devices/virtual/thermal/thermal_zone0/temp"));
-            thermalZone0 = br.readLine();
-            br = new BufferedReader(new FileReader("/sys/devices/virtual/thermal/thermal_zone1/temp"));
-            thermalZone1 = br.readLine();
-            br = new BufferedReader(new FileReader("/sys/devices/virtual/thermal/thermal_zone2/temp"));
-            thermalZone2 = br.readLine();
-            br = new BufferedReader(new FileReader("/sys/devices/virtual/thermal/thermal_zone3/temp"));
-            thermalZone3 = br.readLine();
-            br = new BufferedReader(new FileReader("/sys/devices/virtual/thermal/thermal_zone4/temp"));
-            thermalZone4 = br.readLine();
-            br.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
     public static boolean isMobileConnected(Context context) {
         return isConnected(context, ConnectivityManager.TYPE_MOBILE);}
     private static boolean isConnected(Context context, int type) {

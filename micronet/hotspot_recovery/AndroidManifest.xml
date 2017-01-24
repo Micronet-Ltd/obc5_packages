@@ -22,7 +22,7 @@
             android:name=".MainActivity"
             android:allowBackup="true"
             android:icon="@mipmap/ic_launcher"
-            android:theme="@android:style/Theme.Holo.NoActionBar">
+            android:theme="@android:style/Theme.NoDisplay">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>

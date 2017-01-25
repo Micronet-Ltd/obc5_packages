@@ -32,6 +32,7 @@ import static android.content.ContentValues.TAG;
  * to enable hotspot or it didn't receive change.
  */
 public class AlwaysOnWiFiHotspotService extends Service {
+    private static String TAG = "AlwaysOnHotspotService";
     private final BroadcastReceiver wifiApStatusReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -40,8 +41,9 @@ public class AlwaysOnWiFiHotspotService extends Service {
             if (WiFiApManager.WIFI_AP_STATE_CHANGED_ACTION.equals(action)) {
                 // get Wi-Fi Hotspot state
                 int state = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, WiFiApManager.WIFI_AP_STATE_FAILED);
-                Log.d(this.toString(), "wifiApState=" + state);
+                Log.d(TAG, String.format("WIFI_AP_STATE_CHANGED_ACTION, new state=%s(%d)", Utils.getWifiApStateName(state), state));
                 if (state == WiFiApManager.WIFI_AP_STATE_DISABLED) {
+                    Log.d(TAG, "Attempting to enable hotspot since Wifi AP is disabled");
                     enableWiFi();
                 }
             }
@@ -69,28 +71,25 @@ public class AlwaysOnWiFiHotspotService extends Service {
     private String handlerValue;
     private File Dir;
 
-    private void enableWiFi(){
+    private void enableWiFi() {
         // re-enable Wifi AP
-       Utils.isAirplaneMode(getContentResolver());
-
-        if(Utils.isAirplaneMode(getContentResolver())==false)
-        {
+        if (Utils.isAirplaneMode(getContentResolver()) == false) {
             WiFiApManager.setWiFiApState(context, true);
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            int state = WiFiApManager.getWifiApState(context);
+            Log.d(TAG, String.format("State after attempting to enable hotspot %s(%d)", Utils.getWifiApStateName(state), state));
+            if (WiFiApManager.getWifiApState(context) == WiFiApManager.WIFI_AP_STATE_ENABLED
+                    || WiFiApManager.getWifiApState(context) == WiFiApManager.WIFI_AP_STATE_ENABLING) {
+                increaseHC();
+                Log.d(TAG, "enable wifi count=" + handlerValue);
+            }
+        } else {
+            Log.d(TAG, "Airplane mode is On, Cant disable");
         }
-        Log.d(this.toString(), "getWiFiApState=" + WiFiApManager.getWifiApState(context));
-        if(WiFiApManager.getWifiApState(context)==WiFiApManager.WIFI_AP_STATE_ENABLED
-                ||WiFiApManager.getWifiApState(context)==WiFiApManager.WIFI_AP_STATE_ENABLING )
-        {
-            increaseHC();
-            Log.d(TAG, "enableWififunc:" +handlerValue);
-        }
-        }
-        else
-            Log.d(TAG,"Airplane mode is On, Cant disable");
     }
     //Function that increases th handler count
     private void increaseHC(){
@@ -143,14 +142,14 @@ public class AlwaysOnWiFiHotspotService extends Service {
     }
     @Override
     public void onCreate() {
-
+        Log.d(TAG, String.format("AlwaysOnWifiHotspotService v%s started.", BuildConfig.VERSION_NAME));
         // The service is being created
         IntentFilter intentFilter = new IntentFilter(WiFiApManager.WIFI_AP_STATE_CHANGED_ACTION);
         registerReceiver(wifiApStatusReceiver, intentFilter);
         context = this;
         if (wifiApHandler == null) {
             wifiApHandler = new Handler(Looper.myLooper());
-			wifiApHandler.postDelayed(wifiApCheck, TEN_SECONDS);
+            wifiApHandler.postDelayed(wifiApCheck, TEN_SECONDS);
         }
         //Creating a Directory if it isn't available
         if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
@@ -172,18 +171,22 @@ public class AlwaysOnWiFiHotspotService extends Service {
             handlerCount=Integer.parseInt(handlerValue);
         }
     }
+
     final Runnable wifiApCheck = new Runnable() {
         @Override
         public void run() {
             wifiApvalue = WiFiApManager.getWifiApState(context);
+            Log.d(TAG, String.format("Current AP State=%s(%d)", Utils.getWifiApStateName(wifiApvalue), wifiApvalue));
 
             try {
                 switch (wifiApvalue) {
                     case WiFiApManager.WIFI_AP_STATE_DISABLING: //WiFi AP is currently disabling
                         //Doing Nothing and Setting post to 10s
+                        Log.d(TAG, "WiFi AP is currently disabling, check again in 10 seconds");
                         wifiApHandler.postDelayed(this, TEN_SECONDS);
                     case WiFiApManager.WIFI_AP_STATE_DISABLED: //WiFi AP is currently disabled
-                        //Re-enable the WiFi Hotspot state
+                        //Re-enable the WiFi Hotspot state if Airplane Mode is Off
+                        Log.d(TAG, "WiFi AP is currently disabled, attempt to enable wifi, check again in 60 seconds");
                             enableWiFi();
                         /* WifiManager wifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
                            wifi.setWifiEnabled(true);*/ //To disable Wi-Fi
@@ -192,15 +195,18 @@ public class AlwaysOnWiFiHotspotService extends Service {
                         break;
                     case WiFiApManager.WIFI_AP_STATE_ENABLING: //Wifi AP is currently enabling
                         //Do nothing Setting post to 10s
+                        Log.d(TAG, "WiFi AP is currently enabling, check again in 10 seconds");
                         wifiApHandler.postDelayed(this, TEN_SECONDS);
                         break;
                     case WiFiApManager.WIFI_AP_STATE_ENABLED:// WiFi AP is currently enabled
                         // Do nothing
+                        Log.d(TAG, "WiFi AP is currently enabled, check again in 10 seconds");
                         wifiApHandler.postDelayed(this, SIXTY_SECONDS);
                         break;
-                    case WiFiApManager.WIFI_AP_STATE_FAILED://WiFi Ap failed
-                        // Re enable the WiFi Hotspot state
-                       enableWiFi();
+                    case WiFiApManager.WIFI_AP_STATE_FAILED://WiFi AP failed
+                        // Re enable the WiFi Hotspot state if airplane mode is off
+                        Log.d(TAG, "WiFi AP is in failed state, attempt to enable wifi, check again in 60 seconds");
+                        enableWiFi();
                         wifiApHandler.postDelayed(this, SIXTY_SECONDS);
                         break;
                     default:
@@ -221,6 +227,7 @@ public class AlwaysOnWiFiHotspotService extends Service {
 
     @Override
     public void onDestroy() {
+        wifiApHandler.removeCallbacks(wifiApCheck);
         unregisterReceiver(wifiApStatusReceiver);
     }
 

@@ -12,6 +12,7 @@ import java.lang.reflect.Method;
  *
  */
 public class WiFiApManager {
+    private static String TAG = "WifiApManager";
 
   /*  private static Method getWifiApStateMethod;
     private static Method isWifiApEnabledMethod;
@@ -80,7 +81,7 @@ public class WiFiApManager {
          * 6. Get a handle to setWifiApEnabled
          * 6. Pass enabled and Wifi AP configuration as argument values to setWifiApEnabled for WifiManager
          */
-        Boolean result = false;
+        boolean result = false;
 
         try {
             WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
@@ -94,7 +95,8 @@ public class WiFiApManager {
             WifiConfiguration wifiApConfig = (WifiConfiguration) getWifiApMethod.invoke(wifiManager);
             Method setWifiApMethod = wifiManager.getClass().getMethod("setWifiApEnabled", WifiConfiguration.class, boolean.class);
             // pass in the ObjectReceiver, WifiConfiguration, boolean
-            result = (Boolean) setWifiApMethod.invoke(wifiManager, wifiApConfig, enabled);
+            result = (boolean) setWifiApMethod.invoke(wifiManager, wifiApConfig, enabled);
+            Log.d(TAG, (enabled ? "Enabling" : "Disabling") + " Wifi AP state, result = " + result);
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -972,7 +972,7 @@ static void check_devices(struct control_thread_context * context)
 		}
 		else
 		{
-			DINFO("%s does not exist", context->name);
+			DTRACE("%s does not exist", context->name);
 		}
 	}
 

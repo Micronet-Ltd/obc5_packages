@@ -12,7 +12,7 @@ import java.lang.reflect.Method;
  *
  */
 public class WiFiApManager {
-    private static String TAG = "WifiApManager";
+    private static String TAG = "AOWHS - WifiApManager";
 
   /*  private static Method getWifiApStateMethod;
     private static Method isWifiApEnabledMethod;
@@ -103,4 +103,5 @@ public class WiFiApManager {
 
         return result;
     }
+
 }

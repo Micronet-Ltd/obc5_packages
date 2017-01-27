@@ -8,6 +8,6 @@ extern "C" {
      * Method:    createInterface
      * Signature: ()I
      */
-    JNIEXPORT jint JNICALL Java_com_micronet_canlib_FlexCANCanbusInterfaceBridge_createInterface(JNIEnv *env, jobject obj);
+    JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_createInterface(JNIEnv *env, jobject obj);
 
 };

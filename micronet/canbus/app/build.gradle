@@ -1,31 +1,46 @@
-apply plugin: 'com.android.application'
+apply plugin: 'com.android.model.application'
 
-android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.1"
-    defaultConfig {
-        applicationId "com.micronet.canbus"
-        minSdkVersion 21
-        targetSdkVersion 25
-        versionCode 1
-        versionName "1.0"
+model {
 
-        ndk {
-            moduleName "canbus"
+    android {
+
+        compileSdkVersion = 25
+        buildToolsVersion = "25.0.1"
+        defaultConfig {
+            applicationId "com.micronet.canbus"
+            minSdkVersion.apiLevel = 21
+            targetSdkVersion.apiLevel = 25
+            versionCode 1
+            versionName "1.0"
         }
-
-        sourceSets {
-            main {
-                jni.srcDir "src/main/jni"
-                jniLibs.srcDir "src/main/libs"
+        buildTypes {
+            release {
+                minifyEnabled = false
+                proguardFiles.add(file('proguard-rules.txt'))
+                signingConfig = $("android.signingConfigs.treqr5platformkey")
             }
+            debug {
+                signingConfig = $("android.signingConfigs.treqr5platformkey")
+            }
+        }
+        ndk {
+            debuggable true
+            moduleName = 'canbus'
+            toolchain = 'gcc'
+            stl = 'gnustl_static'
+            cppFlags.addAll(['-std=c++11'])
+            ldLibs.addAll(['android', 'log'])
+            // build a default combined apk including all ABIs.
+            abiFilters.addAll(['armeabi'])
         }
     }
 
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+    android.signingConfigs {
+        create("treqr5platformkey") {
+            storeFile "micronet-treqr5-platform.keystore"
+            storePassword "micronet"
+            keyAlias "micronet"
+            keyPassword "micronet"
         }
     }
 }

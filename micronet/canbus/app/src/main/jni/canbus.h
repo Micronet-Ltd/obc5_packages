@@ -2,6 +2,10 @@
 #include <jni.h>
 /* Header for class com_micronet_canbus_FlexCANCanbusInterfaceBridge */
 
+#define CAN1_TTY    "/dev/ttyACM2"
+#define CAN2_TTY    "/dev/ttyACM3"
+#define J1708_TTY   "/dev/ttyACM4"
+
 extern "C" {
     /*
      * Class:     com_micronet_canbus_FlexCANCanbusInterfaceBridge

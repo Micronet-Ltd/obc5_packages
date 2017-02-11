@@ -30,6 +30,74 @@
 static pthread_t thread;
 static int fd=-1; //File Descriptor (Handle)
 
+static void throwRuntimeException(JNIEnv *env, const char *message)
+{
+    jclass clazz = env->FindClass("java/lang/RuntimeException");
+
+    if(clazz)
+    {
+        env->ThrowNew(clazz, message);
+    }
+
+}
+
+
+jint JNI_OnLoad(JavaVM* vm, void* reserved)
+{
+    JNIEnv* env;
+    g_canbus.g_vm = vm;
+    g_canbus.args.version = JNI_VERSION_1_6;
+    g_canbus.args.name = "canbus_monitor_data_thread";
+    if (vm->GetEnv(reinterpret_cast<void**>(&env), JNI_VERSION_1_6) != JNI_OK) {
+        return -1;
+    }
+
+    // Check JAR libs version
+    {
+        jclass infoClass = env->FindClass("com/micronet/canbus/Info");
+        if(!infoClass)
+        {
+            LOGE("Canbus Library mismatch, JNI '%s'\n", CANBUS_JNI_VER);
+            throwRuntimeException(env, "Canbus Library mismatch. Unable to load class com.micronet.canbus.Info");
+            return -1;
+
+        }
+        jfieldID versionField = env->GetStaticFieldID(infoClass, "VERSION", "Ljava/lang/String;");
+        jstring versionString = (jstring)env->GetStaticObjectField(infoClass, versionField);
+        const char * versionCString = env->GetStringUTFChars(versionString, 0);
+
+        if(strcmp(versionCString, CANBUS_JNI_VER))
+        {
+            LOGE("Canbus Library mismatch, JNI '%s' != JAR '%s'\n", CANBUS_JNI_VER, versionCString);
+            throwRuntimeException(env, "Canbus Library mismatch. canbus_api.jar does not match libcanbus.so");
+            env->ReleaseStringUTFChars(versionString, versionCString);
+            return -1;
+        }
+
+        env->ReleaseStringUTFChars(versionString, versionCString);
+    }
+
+
+    // Initialization for QBridge Implementation
+    jclass cls = env->FindClass("com/micronet/canbus/CanbusFrame");
+    g_canbus.canbusFrameClass = (jclass)env->NewGlobalRef(cls);
+
+    jclass j1708Class = env->FindClass("com/micronet/canbus/J1708Frame");
+    g_canbus.j1708FrameClass = (jclass)env->NewGlobalRef(j1708Class);
+
+    jclass clsCanbusFrameType = env->FindClass("com/micronet/canbus/CanbusFrameType");
+    jfieldID typeStandardField = env->GetStaticFieldID(clsCanbusFrameType, "STANDARD", "Lcom/micronet/canbus/CanbusFrameType;");
+    jfieldID typeExtendedField = env->GetStaticFieldID(clsCanbusFrameType, "EXTENDED", "Lcom/micronet/canbus/CanbusFrameType;");
+
+    g_canbus.type_s = (jobject) env->NewGlobalRef(env->GetStaticObjectField(clsCanbusFrameType, typeStandardField));
+    g_canbus.type_e = (jobject) env->NewGlobalRef(env->GetStaticObjectField(clsCanbusFrameType, typeExtendedField));
+    // end QBridge
+
+
+    return JNI_VERSION_1_6;
+}
+
+
 int initTerminalInterface(int fd) {
     if (isatty(fd)) {
         struct termios ios;
@@ -108,8 +176,45 @@ int closeCAN(int fd) {
 }
 
 int setBitrate(int fd, int speed) {
+    int baud;
+    switch(speed) {
+        case 10000:
+            baud = 0;
+            break;
+        case 20000:
+            baud = 1;
+            break;
+        case 33330:
+            baud = 2;
+            break;
+        case 50000:
+            baud = 3;
+            break;
+        case 100000:
+            baud = 4;
+            break;
+        case 125000:
+            baud = 5;
+            break;
+        case 250000:
+            baud = 6;
+            break;
+        case 500000:
+            baud = 7;
+            break;
+        case 800000:
+            baud = 8;
+            break;
+        case 1000000:
+            baud = 9;
+            break;
+        default:
+            baud = 6;
+            //J1939 Specifies 250K as default baud rate
+            break;
+    }
     char buf[256];
-    sprintf(buf, "C\rS%d\r", speed);
+    sprintf(buf, "C\rS%d\r", baud);
     if (-1 == write(fd, buf, strlen(buf))) {
         ERR("Error write %s command\n", buf);
         return -1;
@@ -117,11 +222,25 @@ int setBitrate(int fd, int speed) {
     return 0;
 }
 
-int setTermination(int fd, int term) {
+int setTermination(int fd, bool term) {
+    int termination = term ? 1 : 0;
+
     char buf[256];
-    sprintf(buf, "O%d\r", term);
-    if ( -1 == write(fd, buf, strlen(buf)) ) {
-        ERR("Error write %s command\n", buf );
+    sprintf(buf, "O%d\r", termination);
+    if (-1 == write(fd, buf, strlen(buf))) {
+        ERR("Error write %s command\n", buf);
+        return -1;
+    }
+    return 0;
+}
+
+int setListeningMode(int fd, bool term) {
+    int termination = term ? 1 : 0;
+
+    char buf[256];
+    sprintf(buf, "L%d\r", termination);
+    if (-1 == write(fd, buf, strlen(buf))) {
+        ERR("Error write %s command\n", buf);
         return -1;
     }
     return 0;
@@ -150,7 +269,7 @@ int sendMessage(int fd, const char * message) {
 static void *monitor_data_thread(void *param)
 {
     uint8_t data[8*1024];
-    uint8_t * p = data;
+    uint8_t * pdata = data;
 
     prctl(PR_SET_NAME, "monitor_thread", 0, 0, 0);
     LOGD("monitor_thread started");
@@ -163,101 +282,93 @@ static void *monitor_data_thread(void *param)
             LOGD("read thread stale, thread=%d, pthread_self=%d", thread, pthread_self());
             break;
         }*/
+
         if(!wait_for_data())
         {
-            int r;
+            int readData;
             uint8_t * pend = NULL;
-
-            r = read(fd, p, sizeof(data) - (p - data));
-
-            if(0 == r)
+            //Returns the number of bytes read
+            readData = read(fd, pdata, sizeof(data) - (pdata - data));
+            if(0 == readData)
             {
                 quit = true;
                 LOGD("quit1=%d", quit);
                 break;
             }
-
-            if(-1 == r)
+            if(-1 == readData)
             {
                 if(EAGAIN == errno)
                     continue;
                 LOGE("%s:%d read: %s\n", __func__, __LINE__, strerror(errno));
                 abort();
             }
+/*
+            if ((char *)data[0] == "t"){
+                print("1");
+            }
 
-//            pend = p + r;
-//
-//            if(data[0] != 0x02)
-//            {
-//                uint8_t * sof;
-//                LOGD("missing SOF\n");
-//                sof = (uint8_t*)memchr(data, 0x02, pend - data);
-//                if(sof)
-//                {
-//                    LOGD("Found offset\n");
-//                    memmove(data, sof, pend - sof);
-//                    pend = data + (pend-sof);  // todo: test this is correct
-//                }
-//                else
-//                {
-//                    p = data;
-//                    continue;
-//                }
-//            }
-//
-//            if(pend - data < 6)
-//            {
-//                LOGD("not min size\n");
-//                p = pend;
-//                continue;
-//            }
-//
-//            if(pend - data < data[1])
-//            {
-//                //LOGD("not full frame\n");
-//                p = pend;
-//                continue;
-//            }
-//
-//            uint8_t * start;
-//
-//
-//            start = process_buffer(data, pend);
-//
-//
-//            if(start == data)
-//            {
-//                LOGD("start == data\n");
-//                p = pend;
-//                continue;
-//            }
-//            else
-//            {
-//                if( start == pend)
-//                {
-//                    p = data;
-//                    continue;
-//                }
-//                else
-//                {
-//                    //LOGD("trailing data\n");
-//                    memmove(data, start, pend-start);
-//                    p = data + (pend - start);
-//                }
-//            }
-        }
-    }
 
-//    LOGD("quit2=%d, thread=%d, pthread_self=%d", quit, thread, pthread_self());
-//    LOGD("DetachCurrentThread");
-//    g_canbus.g_vm->DetachCurrentThread();
-    //LOGD("Must have received a Quit Event\n");
+            if (data[0] == 0x31){
+                print("1");
+            }
+
+            if (data[0] == 49){
+                print("1");
+            }
+*/
+
+            //TODO: Check validity (Packet)
+            /*To check validity of a packet we need to look for '/r
+             * /r- Data is correct
+             * BEL - Data is incorect
+             */
+            int i;
+            int packetCount=0;
+            int j=0;
+            int start = 0;
+            for(i=j; i<=readData; i++){
+                uint8_t idata=data[i];
+                if(idata=='\r'){
+                    continue;
+                }
+                if(data[i]=='T'){//T0x54
+                    start = i;
+                    uint8_t dataLength=(data[i+9] - '0'); // get the actual value
+                    // TODO validate dataLength is an actual number range (0-8)
+                    int carriageReturn=i+14+2*dataLength; //
+                    i = carriageReturn;
+                   // uint valueAtCR=data[carriageReturn];
+                    if(data[carriageReturn]==13){
+                        packetCount++;
+                        LOGD("One packet is complete, Data Length- %d", dataLength);
+                        j=carriageReturn;
+                    }
+                    else {
+                        LOGD("Incomplete packet");
+                    }
+                }
+                if(data[i]=='t'){//T=0x74
+                    uint8_t dataLength=(data[i+4] - '0');
+                    int carriageReturn=i+9+2*dataLength;
+                    // uint valueAtCR=data[carriageReturn];
+                    if(data[carriageReturn]==13){
+                        packetCount++;
+                        LOGD("One packet is complete, Data Length- %d", dataLength);
+                        j=carriageReturn;
+                    }
+                    else
+                        LOGD("Incomplete packet");
+                }
+            }
+
+            // TODO: process message
+            // processbuffer(data, start, end)
+
+
     return 0;
 }
 JNIEXPORT jint JNICALL
-Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_createInterface(JNIEnv *env,
-                                                                      jobject instance) {
-
+Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_createInterface(JNIEnv *env, jobject instance, jboolean listeningModeEnable, jint bitrate, jboolean termination) {
 //    int fd;
     char *tty;
     DD("opening port: '%s'\n", CAN1_TTY);
@@ -267,7 +378,7 @@ Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_createInterface(JNIEnv *en
         exit(EXIT_FAILURE);
     }
 
- //   int r = pthread_create(&thread, NULL, monitor_data_thread, 0);
+    int r = pthread_create(&thread, NULL, monitor_data_thread, 0);
     if (initTerminalInterface(fd) == -1) {
         return -1;
     }
@@ -278,7 +389,7 @@ Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_createInterface(JNIEnv *en
         return -1;
     }
 
-    if(setBitrate(fd, 6) == -1) {
+    if(setBitrate(fd, bitrate) == -1) {
         return -1;
     }
 
@@ -286,15 +397,69 @@ Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_createInterface(JNIEnv *en
         return -1;
     }
 
-    if(setTermination(fd, 1) == -1) {
+
+    /*
+     * Test listening mode:
+     *  Open CAN in listening mode with termination true: 	./slcan_tty -l0 -f -s6 /dev/ttyACM2
+     *  Try to send message. Verify that message is not received: ./slcan_tty -t7003112233 /dev/ttyACM2
+     *  Close CAN: ./slcan_tty -c /dev/ttyACM2
+     *
+     *  Open CAN in termination mode true: ./slcan_tty -o1 -f –s6 /dev/ttyACM2
+     *  Try to send message. Verity that the message is received by other device: ./slcan_tty -t7003112233 /dev/ttyACM2
+     *  Close CAN: ./slcan_tty -c /dev/ttyACM2
+     *
+     *
+     *  L	O	Extended LO	Actual Command
+        1	0	L1O0	L0
+        1	1	L1O1	L1
+        0	0	L0O0	O0
+        0	1	L0O1	O1
+
+     */
+    if(listeningModeEnable && setListeningMode(fd, termination) == -1) { // enable listening mode and set the termination value
+        return -1;
+    } else if(setTermination(fd,termination ) == -1) { // set the termination value and (disable listening mode?) when opening CAN.
+        // TODO: check if running "setTermination" disables listening mode
         return -1;
     }
-
-    const char * mesg = "7003112233";
+/*    const char * mesg = "7003112233";
     if(sendMessage(fd, mesg) == -1) {
         return -1;
-    }
+    }*/
 
     return 0;
+}
+
+JNIEXPORT jint JNICALL
+Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_removeInterface(JNIEnv *env,
+                                                                      jobject instance) {
+
+    // TODO close canbus
+
+}
+
+JNIEXPORT jint JNICALL
+Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_setInterfaceBitrate(JNIEnv *env,
+                                                                          jobject instance,
+                                                                          jint bitrate) {
+
+    // TODO remove if interface can only be set when opening CAN
+
+}
+
+JNIEXPORT jint JNICALL
+Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_enableListeningMode(JNIEnv *env,
+                                                                          jobject instance,
+                                                                          jboolean enable) {
+
+    // TODO remove if interface can only be set when opening CAN
+
+}
+
+JNIEXPORT jint JNICALL
+Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_setTermination(JNIEnv *env, jobject instance,
+                                                                     jboolean enabled) {
+
+    // TODO remove if interface can only be set when opening CAN
 
 }

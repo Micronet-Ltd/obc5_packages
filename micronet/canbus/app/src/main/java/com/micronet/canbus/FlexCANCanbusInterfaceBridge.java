@@ -17,7 +17,7 @@ public class FlexCANCanbusInterfaceBridge {
      *
      */
     public void create() {
-        createInterface(true,250000,false);
+        createInterface(false,250000,true); //TODO: changed listening mode to false and termination to true because of a bug
     }
 
     /**
@@ -67,8 +67,6 @@ public class FlexCANCanbusInterfaceBridge {
     public void setCANTermination(boolean termination) {
         createInterface(this.listeningModeEnable, this.bitrate, termination);
     }
-
-
     /**
      * Sets filters in Canbus hardware controller.
      */

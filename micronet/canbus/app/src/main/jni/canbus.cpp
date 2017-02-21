@@ -1,6 +1,7 @@
 #define LOG_TAG "Canbus"
 
 #include "canbus.h"
+#include "can.h"
 #include <android/log.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -29,6 +30,8 @@
 #define J1708_TTY   "/dev/ttyACM4"
 static pthread_t thread;
 static int fd=-1; //File Descriptor (Handle)
+
+struct canbus_globals g_canbus;
 
 static void throwRuntimeException(JNIEnv *env, const char *message)
 {
@@ -98,6 +101,66 @@ jint JNI_OnLoad(JavaVM* vm, void* reserved)
 }
 
 
+void j1939rxd(BYTE *rxd) {
+    char chars[100];
+    J1939_ID mId;
+    int noerr = 1;
+    int type = STANDARD;
+    int start = 1;
+    uint8_t dLength = *(rxd + 4) - '0';
+    int frameCarriageReturn = 4 + 2 * dLength + 5;
+    // process complete packets
+        // TODO: Convert rxd (frame) into CanbusFrame object
+        // determine whether frame is standard or extended and save to type
+        // get the identifier and store into mId.dwVal
+        uint8_t *id;
+        if (*rxd == 't') {
+            memcpy(id, (const void *) (rxd + start), 3);
+            mId.dwVal = (uint32_t) id;
+        }
+        else if (*rxd == 'T') {
+            memcpy(id, (const void *) (rxd + start), 8);
+            mId.dwVal = (uint32_t) id;
+        }
+
+        int length = dLength; // save data length into an integer called 'length'
+
+
+
+        // Attach thread
+        JNIEnv *env;
+        jint rs = g_canbus.g_vm->AttachCurrentThread(&env, &g_canbus.args);
+        if (rs != JNI_OK) {
+            // error_message("j1939rxd failed to attach!");
+        }
+
+        // construct object
+        jclass canbusFrameClass = g_canbus.canbusFrameClass;
+        jmethodID canbusFrameConstructor = env->GetMethodID(canbusFrameClass, "<init>", "(I[B)V");
+
+        jfieldID typeField = env->GetFieldID(canbusFrameClass, "mType",
+                                             "Lcom/micronet/canbus/CanbusFrameType;");
+
+        // store the actual data of canbus frame into byte array
+        jbyteArray data_l = env->NewByteArray(length);
+        env->SetByteArrayRegion(data_l, 0, length,
+                                (jbyte *) /* determine where data position is in rxd */ &rxd[0]);
+
+        jobject frameObj = env->NewObject(canbusFrameClass, canbusFrameConstructor, mId.dwVal,
+                                          data_l);
+        env->SetObjectField(frameObj, typeField,
+                            type == STANDARD ? g_canbus.type_s : g_canbus.type_e);
+
+        // on rare occasion, frame is received before socket is initialized
+        if (g_canbus.g_listenerObject != NULL && g_canbus.g_onPacketReceive != NULL) {
+            env->CallVoidMethod(g_canbus.g_listenerObject, g_canbus.g_onPacketReceive, frameObj);
+        }
+
+        env->DeleteLocalRef(frameObj);
+        env->DeleteLocalRef(data_l);
+        g_canbus.g_vm->DetachCurrentThread();
+//    }
+}
 int initTerminalInterface(int fd) {
     if (isatty(fd)) {
         struct termios ios;
@@ -266,107 +329,105 @@ int sendMessage(int fd, const char * message) {
     }
     return 0;
 }
-static void *monitor_data_thread(void *param)
-{
-    uint8_t data[8*1024];
-    uint8_t * pdata = data;
+static void *monitor_data_thread(void *param) {
+    uint8_t data[8 * 1024];
+    uint8_t *pdata = data;
+
 
     prctl(PR_SET_NAME, "monitor_thread", 0, 0, 0);
     LOGD("monitor_thread started");
     LOGD("thread=%d", thread);
-    int quit=0;
-    while(!quit)
-    {
+    int quit = 0;
+    while (!quit) {
         // sanity check to kill stale read thread
-       /* if(thread != pthread_self()) {
-            LOGD("read thread stale, thread=%d, pthread_self=%d", thread, pthread_self());
-            break;
-        }*/
+        /* if(thread != pthread_self()) {
+             LOGD("read thread stale, thread=%d, pthread_self=%d", thread, pthread_self());
+             break;
+         }*/
 
-        if(!wait_for_data())
-        {
+        if (!wait_for_data()) {
             int readData;
-            uint8_t * pend = NULL;
+            uint8_t *pend = NULL;
             //Returns the number of bytes read
             readData = read(fd, pdata, sizeof(data) - (pdata - data));
-            if(0 == readData)
-            {
+            if (0 == readData) {
                 quit = true;
                 LOGD("quit1=%d", quit);
                 break;
             }
-            if(-1 == readData)
-            {
-                if(EAGAIN == errno)
+            if (-1 == readData) {
+                if (EAGAIN == errno)
                     continue;
                 LOGE("%s:%d read: %s\n", __func__, __LINE__, strerror(errno));
                 abort();
             }
-/*
-            if ((char *)data[0] == "t"){
-                print("1");
-            }
-
-
-            if (data[0] == 0x31){
-                print("1");
-            }
-
-            if (data[0] == 49){
-                print("1");
-            }
-*/
-
             //TODO: Check validity (Packet)
             /*To check validity of a packet we need to look for '/r
              * /r- Data is correct
-             * BEL - Data is incorect
-             */
-            int i;
-            int packetCount=0;
-            int j=0;
-            int start = 0;
-            for(i=j; i<=readData; i++){
-                uint8_t idata=data[i];
-                if(idata=='\r'){
+             * BEL - Data is incorect */
+
+            int i, packetCount = 0,j = 0, start = 0, packetLength=0;
+            //To identify the message type and store each valid message in the process buffer in data[]
+            for (i = j; i <= readData; i++) {
+                uint8_t idata = data[i]; //For debugging
+                //To identify if the carriage return
+                if (idata == '\r') {
                     continue;
                 }
-                if(data[i]=='T'){//T0x54
+                int carriageReturn = 0;
+                //For an extended message
+                if (data[i] == 'T'){//T0x54
                     start = i;
-                    uint8_t dataLength=(data[i+9] - '0'); // get the actual value
-                    // TODO validate dataLength is an actual number range (0-8)
-                    int carriageReturn=i+14+2*dataLength; //
-                    i = carriageReturn;
-                   // uint valueAtCR=data[carriageReturn];
-                    if(data[carriageReturn]==13){
-                        packetCount++;
-                        LOGD("One packet is complete, Data Length- %d", dataLength);
-                        j=carriageReturn;
+                    uint8_t dataLength = (data[i + 9] - '0'); // get the actual value
+                    // validate if the dataLength is in an actual number range (0-8)
+                    if (dataLength == 0 || dataLength <= 8) {
+                        carriageReturn = i + 14 + 2 * dataLength;
+                        i = carriageReturn;
+                        // uint valueAtCR=data[carriageReturn];
+                        if (data[carriageReturn] == 13) {
+                            packetCount++;
+                            packetLength=carriageReturn-start +1;
+                            LOGD("One packet is complete, Data Length- %d", dataLength);
+                            j = carriageReturn;
+                        }
+                        else {
+                            LOGD("Error:Incomplete packet");
+                        }
                     }
-                    else {
-                        LOGD("Incomplete packet");
-                    }
+                    else LOGD("Error:Invalid data length! ");
                 }
-                if(data[i]=='t'){//T=0x74
-                    uint8_t dataLength=(data[i+4] - '0');
-                    int carriageReturn=i+9+2*dataLength;
-                    // uint valueAtCR=data[carriageReturn];
-                    if(data[carriageReturn]==13){
-                        packetCount++;
-                        LOGD("One packet is complete, Data Length- %d", dataLength);
-                        j=carriageReturn;
+                //For standard message
+                if (data[i] == 't') {//T=0x74
+                    start = i;
+                    uint8_t dataLength = (data[i + 4] - '0');
+                    if (dataLength == 0 || dataLength <= 8) {
+                        carriageReturn = i + 9 + 2 * dataLength;
+                        i = carriageReturn;
+                        if (data[carriageReturn] == 13){
+                            packetCount++;
+                            packetLength=carriageReturn-start +1;
+                            LOGD("One packet is complete, Data Length- %d", dataLength);
+                            j = carriageReturn;
+                        }
+                        else
+                            LOGD("Incomplete packet");
                     }
-                    else
-                        LOGD("Incomplete packet");
+                    else LOGD("Error:Invalid data length! ");
                 }
+                // TODO: extract the packet and convert into byte array
+                uint8_t frame[31]; //31 is the maximum size of an extended packet
+                uint8_t * pFrame=frame;
+                memcpy(pFrame, (const void *) (pdata+start), packetLength);
+                if (*pFrame == 't' && *(pFrame+carriageReturn) == '\r' || *pFrame == 'T' && *(pFrame+carriageReturn) == '\r') {
+                j1939rxd(frame);
+                }
+                else LOGD("Incomplete packet received");
             }
-
-            // TODO: process message
-            // processbuffer(data, start, end)
-
-
+        }
+    }
     return 0;
 }
+
 JNIEXPORT jint JNICALL
 Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_createInterface(JNIEnv *env, jobject instance, jboolean listeningModeEnable, jint bitrate, jboolean termination) {
 //    int fd;
@@ -433,7 +494,6 @@ Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_createInterface(JNIEnv *en
 JNIEXPORT jint JNICALL
 Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_removeInterface(JNIEnv *env,
                                                                       jobject instance) {
-
     // TODO close canbus
 
 }

@@ -4,7 +4,7 @@
 #include <jni.h>
 
 
-#define CANBUS_JNI_VER "20170211.000"
+#define CANBUS_JNI_VER "20170220.000"
 
 #define MAX_SIZE 20
 #define RECEIVE_BUFFER_SIZE 8388608
@@ -12,6 +12,15 @@
 #define STANDARD 0
 #define EXTENDED 1
 
+#define DWORD uint32_t
+#define WORD uint16_t
+#define BYTE uint8_t
+#define BOOL int
+
+#define TRUE 1
+#define FALSE 0
+
+#define ACK_OK 0
 
 #define MAX_QB_CAN_FILTERS 25
 /*struct qb_filter_mask {
@@ -42,12 +51,8 @@ struct canbus_globals
 extern struct canbus_globals g_canbus;
 
 
-JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusSocket_registerCallback(JNIEnv *env, jobject instance, jobject listener);
-
-JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusSocket_closeSocket(JNIEnv *env, jobject instance);
-
 extern "C" {
-JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_createInterface(JNIEnv *env, jobject instance);
+JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_createInterface(JNIEnv *env, jobject instance, jboolean listeningModeEnable, jint bitrate, jboolean termination);
 JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_removeInterface(JNIEnv *env, jobject instance);
 //Socket JNI
 JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusSocket_send(JNIEnv *env, jobject instance, jint socket, jobject frame);

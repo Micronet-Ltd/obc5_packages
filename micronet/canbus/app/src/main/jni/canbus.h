@@ -3,7 +3,7 @@
 //
 #include <jni.h>
 
-
+#define error_message ERR
 #define CANBUS_JNI_VER "20170220.000"
 
 #define MAX_SIZE 20

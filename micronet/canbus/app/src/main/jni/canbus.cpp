@@ -100,56 +100,89 @@ jint JNI_OnLoad(JavaVM* vm, void* reserved)
     return JNI_VERSION_1_6;
 }
 
+int parseHex(uint8_t * asciiString, int len, uint8_t * hexValue) {
+    *hexValue = 0;
+    if (0 == len) {
+        return -1;
+    }
+
+    while (len--) {
+        if (*asciiString == 0) return -1;
+        *hexValue <<= 4;
+        if ((*asciiString >= '0') && (*asciiString <= '9')) {
+            *hexValue += *asciiString - '0';
+        } else if ((*asciiString >= 'A') && (*asciiString <= 'F')) {
+            *hexValue += *asciiString - 'A' + 10;
+        } else if ((*asciiString >= 'a') && (*asciiString <= 'f')) {
+            *hexValue += *asciiString - 'a' + 10;
+        } else return -1;
+        if(!(len%2))
+        {
+            hexValue++;
+        }
+        asciiString++;
+    }
+    return 0;
+}
+
 
 void j1939rxd(BYTE *rxd) {
     char chars[100];
     J1939_ID mId;
     int noerr = 1;
-    int type = STANDARD;
-    int start = 1;
-    uint8_t dLength = *(rxd + 4) - '0';
-    int frameCarriageReturn = 4 + 2 * dLength + 5;
-    // process complete packets
-        // TODO: Convert rxd (frame) into CanbusFrame object
-        // determine whether frame is standard or extended and save to type
-        // get the identifier and store into mId.dwVal
-        uint8_t *id;
-        if (*rxd == 't') {
-            memcpy(id, (const void *) (rxd + start), 3);
-            mId.dwVal = (uint32_t) id;
-        }
-        else if (*rxd == 'T') {
-            memcpy(id, (const void *) (rxd + start), 8);
-            mId.dwVal = (uint32_t) id;
-        }
+    int type;
+    int idStart = 1;
+    uint8_t dLength;
+    uint8_t id[8]; //maximum size of an Identifer is 8 bytes Longs
+    uint8_t *pId=id;
+    uint8_t hexId[4]={0};
+    int dataStartPos;
+    uint8_t canData[16];
+    BYTE hexData[4]={0};
 
+    // Convert rxd (frame) into CanbusFrame object
+    if (*rxd == 't') {
+            type=STANDARD;
+            dataStartPos=5;
+            memcpy(pId, (const void *) (rxd + idStart), 3);
+            parseHex(id,3, hexId);
+            mId.dwVal=(uint32_t)((hexId[0]<<8)| (hexId[1]<<0));
+            dLength = *(rxd + 4) - '0';
+            memcpy(canData, (const void *) (rxd + dataStartPos), dLength*2);
+            parseHex(canData,dLength*2,hexData);
+    }
+    else if (*rxd == 'T') {
+            type=EXTENDED;
+            dataStartPos=10;
+            memcpy(pId, (const void *) (rxd + idStart), 8);
+            parseHex(id,8, hexId);
+            mId.dwVal=(uint32_t)((hexId[0]<<24)| (hexId[1]<<16)|(hexId[2]<<8) | (hexId[3]<<0));
+            dLength = *(rxd + 9) - '0';
+            memcpy(canData, (const void *) (rxd + dataStartPos), dLength*2);
+            parseHex(canData,dLength*2,hexData);
+    }
         int length = dLength; // save data length into an integer called 'length'
-
-
 
         // Attach thread
         JNIEnv *env;
         jint rs = g_canbus.g_vm->AttachCurrentThread(&env, &g_canbus.args);
         if (rs != JNI_OK) {
-            // error_message("j1939rxd failed to attach!");
+            error_message("j1939rxd failed to attach!");
         }
 
         // construct object
         jclass canbusFrameClass = g_canbus.canbusFrameClass;
         jmethodID canbusFrameConstructor = env->GetMethodID(canbusFrameClass, "<init>", "(I[B)V");
 
-        jfieldID typeField = env->GetFieldID(canbusFrameClass, "mType",
-                                             "Lcom/micronet/canbus/CanbusFrameType;");
+        jfieldID typeField = env->GetFieldID(canbusFrameClass, "mType", "Lcom/micronet/canbus/CanbusFrameType;");
 
-        // store the actual data of canbus frame into byte array
+        // Storing the actual data of canbus frame into byte array
         jbyteArray data_l = env->NewByteArray(length);
-        env->SetByteArrayRegion(data_l, 0, length,
-                                (jbyte *) /* determine where data position is in rxd */ &rxd[0]);
+        //env->SetByteArrayRegion(data_l, 0, length, (jbyte *) hexData[0]);
+        env->SetByteArrayRegion(data_l, 0, length, (jbyte *) hexData);
 
-        jobject frameObj = env->NewObject(canbusFrameClass, canbusFrameConstructor, mId.dwVal,
-                                          data_l);
-        env->SetObjectField(frameObj, typeField,
-                            type == STANDARD ? g_canbus.type_s : g_canbus.type_e);
+        jobject frameObj = env->NewObject(canbusFrameClass, canbusFrameConstructor, mId.dwVal, data_l);
+        env->SetObjectField(frameObj, typeField, type == STANDARD ? g_canbus.type_s : g_canbus.type_e);
 
         // on rare occasion, frame is received before socket is initialized
         if (g_canbus.g_listenerObject != NULL && g_canbus.g_onPacketReceive != NULL) {
@@ -332,8 +365,6 @@ int sendMessage(int fd, const char * message) {
 static void *monitor_data_thread(void *param) {
     uint8_t data[8 * 1024];
     uint8_t *pdata = data;
-
-
     prctl(PR_SET_NAME, "monitor_thread", 0, 0, 0);
     LOGD("monitor_thread started");
     LOGD("thread=%d", thread);
@@ -344,12 +375,11 @@ static void *monitor_data_thread(void *param) {
              LOGD("read thread stale, thread=%d, pthread_self=%d", thread, pthread_self());
              break;
          }*/
-
         if (!wait_for_data()) {
             int readData;
             uint8_t *pend = NULL;
-            //Returns the number of bytes read
-            readData = read(fd, pdata, sizeof(data) - (pdata - data));
+            readData = read(fd, pdata, sizeof(data) - (pdata - data)); //Returns the number of bytes read
+
             if (0 == readData) {
                 quit = true;
                 LOGD("quit1=%d", quit);
@@ -361,16 +391,14 @@ static void *monitor_data_thread(void *param) {
                 LOGE("%s:%d read: %s\n", __func__, __LINE__, strerror(errno));
                 abort();
             }
-            //TODO: Check validity (Packet)
-            /*To check validity of a packet we need to look for '/r
+            /*To check validity of a packet:
              * /r- Data is correct
-             * BEL - Data is incorect */
+             * BEL - Data is incorrect */
 
             int i, packetCount = 0,j = 0, start = 0, packetLength=0;
             //To identify the message type and store each valid message in the process buffer in data[]
             for (i = j; i <= readData; i++) {
-                uint8_t idata = data[i]; //For debugging
-                //To identify if the carriage return
+                uint8_t idata = data[i];
                 if (idata == '\r') {
                     continue;
                 }
@@ -379,11 +407,9 @@ static void *monitor_data_thread(void *param) {
                 if (data[i] == 'T'){//T0x54
                     start = i;
                     uint8_t dataLength = (data[i + 9] - '0'); // get the actual value
-                    // validate if the dataLength is in an actual number range (0-8)
-                    if (dataLength == 0 || dataLength <= 8) {
+                    if (dataLength == 0 || dataLength <= 8) {      // validating if the dataLength is in an actual number range (0-8)
                         carriageReturn = i + 14 + 2 * dataLength;
                         i = carriageReturn;
-                        // uint valueAtCR=data[carriageReturn];
                         if (data[carriageReturn] == 13) {
                             packetCount++;
                             packetLength=carriageReturn-start +1;
@@ -414,12 +440,12 @@ static void *monitor_data_thread(void *param) {
                     }
                     else LOGD("Error:Invalid data length! ");
                 }
-                // TODO: extract the packet and convert into byte array
+                // extract one packet and convert into a byte array
                 uint8_t frame[31]; //31 is the maximum size of an extended packet
                 uint8_t * pFrame=frame;
                 memcpy(pFrame, (const void *) (pdata+start), packetLength);
-                if (*pFrame == 't' && *(pFrame+carriageReturn) == '\r' || *pFrame == 'T' && *(pFrame+carriageReturn) == '\r') {
-                j1939rxd(frame);
+                if ((*pFrame == 't' && *(pFrame+carriageReturn) == '\r') || (*pFrame == 'T' && *(pFrame+carriageReturn) == '\r')) {
+                    j1939rxd(frame);
                 }
                 else LOGD("Incomplete packet received");
             }
@@ -430,14 +456,14 @@ static void *monitor_data_thread(void *param) {
 
 JNIEXPORT jint JNICALL
 Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_createInterface(JNIEnv *env, jobject instance, jboolean listeningModeEnable, jint bitrate, jboolean termination) {
-//    int fd;
+    int fd;//commented out
     char *tty;
     DD("opening port: '%s'\n", CAN1_TTY);
 
     if ((fd = open(CAN1_TTY, O_RDWR | O_NOCTTY | O_NONBLOCK)) < 0) {
         perror(tty);
         exit(EXIT_FAILURE);
-    }
+   }
 
     int r = pthread_create(&thread, NULL, monitor_data_thread, 0);
     if (initTerminalInterface(fd) == -1) {
@@ -458,7 +484,6 @@ Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_createInterface(JNIEnv *en
         return -1;
     }
 
-
     /*
      * Test listening mode:
      *  Open CAN in listening mode with termination true: 	./slcan_tty -l0 -f -s6 /dev/ttyACM2
@@ -473,7 +498,7 @@ Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_createInterface(JNIEnv *en
      *  L	O	Extended LO	Actual Command
         1	0	L1O0	L0
         1	1	L1O1	L1
-        0	0	L0O0	O0
+        0	0	L0O0	0
         0	1	L0O1	O1
 
      */
@@ -494,7 +519,8 @@ Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_createInterface(JNIEnv *en
 JNIEXPORT jint JNICALL
 Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_removeInterface(JNIEnv *env,
                                                                       jobject instance) {
-    // TODO close canbus
+    // TODO close Canbus
+
 
 }
 

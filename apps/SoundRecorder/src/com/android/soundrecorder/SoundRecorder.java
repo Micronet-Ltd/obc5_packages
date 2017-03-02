@@ -71,6 +71,7 @@ import android.widget.Toast;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.telephony.SubscriptionManager;
+import android.os.UserHandle;
 
 /**
  * Calculates remaining recording time based on available disk space and
@@ -868,19 +869,14 @@ public class SoundRecorder extends Activity
                         
                     //added by ao
                     case R.string.recordinglist_setting_local_item:
-						Intent it = new Intent();
-                        it.setClassName("com.cyanogenmod.filemanager", "com.cyanogenmod.filemanager.activities.ShortcutActivity");
-                        it.putExtra("extra_shortcut_fso", "/storage/emulated/0/SoundRecorder");
-                        it.putExtra("extra_shortcut_type", "navigate");
-                        startActivity(it);
+						String mPath = Environment.getExternalStorageDirectory().getPath()+"/SoundRecorder";
+						
+						recorderPath(mPath);
                         break;
                     case R.string.recordinglist_setting_sdcard_item:
                         if (getSDState(SoundRecorder.this).equals(Environment.MEDIA_MOUNTED)) {
-							Intent mIt = new Intent();
-							mIt.setClassName("com.cyanogenmod.filemanager", "com.cyanogenmod.filemanager.activities.ShortcutActivity");
-							mIt.putExtra("extra_shortcut_fso", "/storage/sdcard1/SoundRecorder");
-							mIt.putExtra("extra_shortcut_type", "navigate");
-							startActivity(mIt);
+				        	String mPathsd = getSDPath(SoundRecorder.this) + "/SoundRecorder";
+							recorderPath(mPathsd);
                         } else {
                             Toast.makeText(SoundRecorder.this, R.string.no_sd_card, Toast.LENGTH_SHORT).show();
                         }
@@ -918,7 +914,16 @@ public class SoundRecorder extends Activity
         ad.setCanceledOnTouchOutside(true);
         ad.show();
     }
-
+	private void recorderPath(String mPath){
+		File f = new File(mPath);
+        if(!f.exists()) {
+			f.mkdir();
+        } 
+		Intent mIt = new Intent();
+		mIt.setClassName("com.mediatek.filemanager", "com.mediatek.filemanager.FileManagerOperationActivity");
+		mIt.putExtra("select_path",mPath);
+	    startActivityAsUser(mIt, UserHandle.CURRENT);
+	}
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // TODO Auto-generated method stub

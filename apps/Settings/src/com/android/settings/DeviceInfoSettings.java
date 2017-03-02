@@ -48,8 +48,6 @@ import com.android.settings.search.Indexable;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -414,39 +412,6 @@ public class DeviceInfoSettings extends SettingsPreferenceFragment implements In
         if(ver.startsWith("Unknown"))
         	return "Unavailable";
         return ver;
-/*		String command;
-		InputStream inStream = null;
-		InputStreamReader inReader = null;
-		BufferedReader inBuffer = null;
-		if(0 == type)
-			command = "mctl api 2000";
-		else
-			command = "mctl api 2001";
-
-        Log.e(LOG_TAG, "MCU " +  command);//temp!!!
-		try {
-            java.lang.Process process = Runtime.getRuntime().exec(command);
-			int w = process.waitFor();	
-			inStream = process.getInputStream();
-            inReader = new InputStreamReader(inStream);
-            inBuffer = new BufferedReader(inReader);
-            command = inBuffer.readLine();
-            
-        	inBuffer.close();
-        	inReader.close();
-        	inStream.close();
-
-		} catch (IOException ioe) {
-            Log.e(LOG_TAG, "IO Exception when getting MCU version for Device Info screen " +  ioe);
-            return "Unavailable";
-        } catch (Exception ioe) {
-            Log.e(LOG_TAG, "Exception when getting MCU version for Device Info screen " +  ioe);
-            return "Unavailable";
-        }
-        Log.e(LOG_TAG, "MCU: " +  command);//temp!!!
-		
-        return formatMcuVersion(command, type);
- */
     	}
 
     public static String formatKernelVersion(String rawKernelVersion) {
@@ -486,33 +451,7 @@ public class DeviceInfoSettings extends SettingsPreferenceFragment implements In
        */
 	 return m.group(1);
     }
-/*    
-    public static String formatMcuVersion(String rawVersion, int type) {
-    	//MCU firmware version %x.%x.%x.%x ret = %d
-    	//fpga ver %x, ret = %d \n        
 
-        final String PROC_VERSION_MCU =
-            "MCU firmware version (\\S+) " + // group 1
-            "(?:.*?)?";    // ignore
-        final String PROC_VERSION_FPGA =
-            "fpga ver (\\S+), " + // group 1
-            "(?:.*?)?";    // ignore
-        Matcher m;
-        if(0 == type)
-        	m = Pattern.compile(PROC_VERSION_MCU).matcher(rawVersion);
-        else
-        	m = Pattern.compile(PROC_VERSION_FPGA).matcher(rawVersion);
-        	
-        if (!m.matches()) {
-            Log.e(LOG_TAG, "Regex did not match mcu version: " + rawVersion);
-            return "Unavailable";
-        }
-
-        Log.e(LOG_TAG, "from " +  rawVersion + " to " + m.group(1));//temp!!!
-        
-        return m.group(1);
-    }
-*/
     /**
      * Returns " (ENGINEERING)" if the msv file has a zero value, else returns "".
      * @return a string to append to the model number description.

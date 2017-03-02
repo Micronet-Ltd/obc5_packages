@@ -512,7 +512,13 @@ public class SimSettings extends RestrictedSettingsFragment implements Indexable
         for (int index = 0; index < mNumSlots; index++) {
             int current = getPreferredNetwork(index);
             if (current == Phone.NT_MODE_TD_SCDMA_GSM_WCDMA_LTE
-                    || current == Phone.NT_MODE_TD_SCDMA_GSM_WCDMA) {
+                    || current == Phone.NT_MODE_TD_SCDMA_GSM_WCDMA
+            /*lihui @20160216 added for get current primary slot under all rat mode start*/
+                    || current == Phone.NT_MODE_LTE_GSM_WCDMA
+                    || current == Phone.NT_MODE_GSM_UMTS
+                    || current == Phone.NT_MODE_LTE_CDMA_EVDO_GSM_WCDMA
+                    || current == Phone.NT_MODE_GLOBAL) {
+            /*lihui @20160216 added for get current primary slot under all rat mode end*/        
                 return index;
             }
         }

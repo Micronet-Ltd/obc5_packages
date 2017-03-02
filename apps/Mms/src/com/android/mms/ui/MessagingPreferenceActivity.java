@@ -110,6 +110,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.InvocationTargetException;
+
+import java.io.File;
+import java.util.List;
+import android.provider.MediaStore;
+import android.provider.DocumentsContract.Document;
+
 
 /**
  * With this activity, users can set preferences for MMS and SMS and
@@ -178,6 +186,11 @@ public class MessagingPreferenceActivity extends PreferenceActivity
     private PreferenceCategory mMmsPrefCategory;
     private PreferenceCategory mNotificationPrefCategory;
     private PreferenceCategory mSmscPrefCate;
+
+	//added by shanbp more ringtone 20160106 --begin--
+	public static final String DOC_EXTERNAL = "com.android.externalstorage.documents";
+	public static final String DEFAULT_RINGTONE = "content://settings/system/notification_sound";
+	//added by shanbp more ringtone 20160106 --end--
 
     // Delay send
     public static final String SEND_DELAY_DURATION = "pref_key_send_delay";
@@ -566,11 +579,83 @@ public class MessagingPreferenceActivity extends PreferenceActivity
         setMmsExpiryPref();
 
         String soundValue = sharedPreferences.getString(NOTIFICATION_RINGTONE, null);
+		Log.d(TAG,"setMessagePreferences soundValue:" + soundValue);
+		
+		//added by shanbp more ringtone 20160106 --begin--
+		Uri sdcardUri = null;
+		if (soundValue != null) {
+			sdcardUri = Uri.parse(soundValue);
+		}
+
+		if (!isRingToneUriValid(this, sdcardUri)) {
+			// set default of DEFAULT_RINGTONE
+			soundValue = DEFAULT_RINGTONE;
+			//save value
+			if (sharedPreferences.contains(NOTIFICATION_RINGTONE)) {
+				SharedPreferences.Editor prefsEditor = sharedPreferences.edit();
+        		prefsEditor.putString(NOTIFICATION_RINGTONE, soundValue).apply();
+				Log.d(TAG,"setMessagePreferences set default DEFAULT_RINGTONE ringToneUri = " + soundValue);
+			}
+		}
+		//added by shanbp more ringtone 20160106 --end--
         setRingtoneSummary(soundValue);
 
         mMessageSendDelayPref.setOnPreferenceChangeListener(this);
         setSmsPreferFontSummary();
     }
+
+	//added by shanbp more ringtone 20160106 --begin--
+    public static String getTitleColumnNameForUri(Uri uri) { 
+		boolean flag = false;
+		try{
+			Class cls = uri.getClass();
+			Method setMethod = cls.getDeclaredMethod("isPathPrefixMatch",Uri.class);  
+			setMethod.invoke(cls.newInstance(), MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI);
+
+			flag = (boolean)setMethod.invoke(cls.newInstance(), MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI);
+		}catch(Exception e){
+			Log.e(TAG,"Get title column name for Uri Exception: e.toString=" + e.toString());
+		}
+		if (flag) {
+        //if (uri.isPathPrefixMatch(MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI)) {
+            return MediaStore.Audio.Playlists.NAME;
+        }
+        if (DOC_EXTERNAL.equals(uri.getAuthority())) {
+            return Document.COLUMN_DISPLAY_NAME;
+        }
+        return MediaStore.Audio.Media.TITLE;
+    }
+
+	public static boolean isRingToneUriValid(Context context, Uri uri) {
+		if (uri == null) {
+			return false;
+		}
+
+		if (uri.getScheme().contentEquals("file")) {
+			File f = new File(uri.getPath());
+			if (f.exists()) {
+				return true;
+			}
+		} else if (uri.getScheme().contentEquals("content")) {
+			Cursor cursor = null;
+			try {
+				cursor = context.getContentResolver().query(uri,
+						new String[] {getTitleColumnNameForUri(uri)}, null, null, null);
+				if (cursor != null && cursor.getCount() > 0) {
+					return true;
+				}
+			} catch (Exception e) {
+				Log.e(TAG,"Get ringtone uri Exception: e.toString=" + e.toString());
+			} finally {
+				if (cursor != null) {
+					cursor.close();
+				}
+			}
+		}
+
+		return false;
+	}
+	//added by shanbp more ringtone 20160106 --end--
 
     private void setMmsRelatedPref() {
         if (!MmsConfig.getMmsEnabled()) {

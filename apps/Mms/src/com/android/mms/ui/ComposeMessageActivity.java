@@ -3572,6 +3572,11 @@ public class ComposeMessageActivity extends Activity
         if (!mConversation.isGroupChat()) {
             buildAddAddressToContactMenuItem(menu);
         }
+		
+		/*lihui @20160409 added for a the menu for add the number to blacklist start*/
+		menu.add(0, MENU_ADD_TO_BLACKLIST, 0, R.string.menu_add_to_blacklist);
+		/*lihui @20160409 added for a the menu for add the number to blacklist end*/
+		
         // ADD firewall menu
         if (!mConversation.isGroupChat() && 1 == getRecipients().size()
                 && RcsUtils.isFireWallInstalled(ComposeMessageActivity.this)) {

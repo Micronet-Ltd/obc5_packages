@@ -592,4 +592,6 @@
     <string name="no_backups_found">没有发现备份的短信</string>
     <string name="forward_size_over">禁止转寄</string>
     <string name="export_sms_failed_toast">不能导出SMS</string>
+	<!--lihui @20160409 added for add a menu for add the number to blacklist-->
+	<string name="menu_add_to_blacklist">添加到黑名单</string>
 </resources>

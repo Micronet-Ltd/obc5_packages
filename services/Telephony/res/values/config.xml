@@ -379,4 +379,13 @@ as an enum (NONE, HFA, OTASP). -->
 
    <!-- Flag indicating if fdn setting is diabled -->
    <bool name="config_diable_fdn_setting">true</bool>
+    <!-- Wifi calling settings -->
+
+   <!-- Config to show/hide Wifi Preference UI option -->
+   <bool name="config_wifi_calling_preference_supported" translatable="false">true</bool>
+   <!-- Default value for wifi preference option as defined in
+       com.android.ims.ImsConfig#WifiCallingPreference.
+       By default CELLULAR_ONLY, this can be customized
+       depends on operator requirements -->
+   <integer name="config_default_wifi_calling_preference">4</integer>
 </resources>

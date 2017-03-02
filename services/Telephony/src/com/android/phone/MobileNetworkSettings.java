@@ -337,6 +337,11 @@ public class MobileNetworkSettings extends PreferenceActivity
                     prefSet.removePreference(mButtonPreferredNetworkMode);
                 }
                 break;
+			 /*yihang hanxiaoming 2017.2.10 add for MT5 begin*/	
+			 case Constants.NETWORK_MODE_DEFAULT:
+
+		      prefSet.removePreference(mButtonPreferredNetworkMode);
+			 /*yihang hanxiaoming 2017.2.10 add for MT5 end*/		
 			 case Constants.NETWORK_MODE_ALL_RAT:
                 /*lihui @20150928 added for all RAT network preferred setting according to the sim begin */
                 if(current_iccId != null){
@@ -371,11 +376,6 @@ public class MobileNetworkSettings extends PreferenceActivity
                 break;
         }
 
-        if (ImsManager.isVolteEnabledByPlatform(this)
-                && ImsManager.isVolteProvisionedOnDevice(this)) {
-            TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-            tm.listen(mPhoneStateListener, PhoneStateListener.LISTEN_CALL_STATE);
-        }
 
         boolean isLteOnCdma = mPhone.getLteOnCdmaMode() == PhoneConstants.LTE_ON_CDMA_TRUE;
         mIsGlobalCdma = isLteOnCdma && getResources().getBoolean(R.bool.config_show_cdma);
@@ -547,6 +547,12 @@ public class MobileNetworkSettings extends PreferenceActivity
         if (getPreferenceScreen().findPreference(BUTTON_ENABLED_NETWORKS_KEY) != null)  {
             mPhone.getPreferredNetworkType(mHandler.obtainMessage(
                     MyHandler.MESSAGE_GET_PREFERRED_NETWORK_TYPE));
+        }
+
+        if (ImsManager.isVolteEnabledByPlatform(this)
+                && ImsManager.isVolteProvisionedOnDevice(this)) {
+            TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+            tm.listen(mPhoneStateListener, PhoneStateListener.LISTEN_CALL_STATE);
         }
     }
 

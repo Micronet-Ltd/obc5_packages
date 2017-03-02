@@ -177,7 +177,7 @@ public class ContactSaveService extends IntentService {
 
     private final int MAX_NUM_LENGTH = 20;
     private final int MAX_EMAIL_LENGTH = 40;
-    private final int MAX_EN_LENGTH = 14;
+    public static final int MAX_EN_LENGTH = 14;//reason:for user's feeling,bug3606;limit edittext for display name when stored in sim,2016-01-19-16:04
     private final int MAX_CH_LENGTH = 6;
     private static final int BUFFER_LENGTH = 500;
 

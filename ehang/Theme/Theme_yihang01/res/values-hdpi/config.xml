@@ -1,0 +1,6 @@
+<resources>
+    <integer name="config_otherapp_bg_size">86</integer>
+    <integer name="config_otherapp_icon_size">86</integer>
+	<!-- <integer name="config_otherapp_icon_startx">7</integer> -->
+	<!-- <integer name="config_otherapp_icon_starty">5</integer> -->
+</resources>

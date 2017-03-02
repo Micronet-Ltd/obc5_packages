@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="theme_preview">
+        <item>preview_wallpaper</item>
+        <item>preview_theme1</item>
+        <item>preview_theme2</item>
+    </string-array>
+    <string-array name="theme_wallpaper_preview">
+        <item>preview_wallpaper</item>
+    </string-array>
+    <string-array name="theme_icon_preview">
+        <item>preview_theme1</item>
+        <item>preview_theme2</item>
+    </string-array>
+</resources>

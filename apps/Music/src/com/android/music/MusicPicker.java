@@ -76,6 +76,11 @@ public class MusicPicker extends ListActivity
         MusicUtils.Defs {
     static final boolean DBG = false;
     static final String TAG = "MusicPicker";
+	
+	//added by shanbp more ringtone 20160106 --begin-- 
+	private static final String RINGTONE_TYPE = "ringtone_type"; 
+	private int mRingtoneType; 
+	//added by shanbp more ringtone 20160106 --edn--
 
     /** Holds the previous state of the list, to restore after the async
      * query has completed. */
@@ -446,6 +451,11 @@ public class MusicPicker extends ListActivity
         mIsAsAlarm = getIntent().getBooleanExtra("mIsAsAlarm", false);
 
         int sortMode = TRACK_MENU;
+		
+		//added by shanbp more ringtone 20160106 --begin--
+		mRingtoneType = getIntent().getIntExtra(RINGTONE_TYPE, -1); 
+		//added by shanbp more ringtone 20160106 --end--
+
         if (icicle == null) {
             mSelectedUri = getIntent().getParcelableExtra(
                     RingtoneManager.EXTRA_RINGTONE_EXISTING_URI);
@@ -773,7 +783,12 @@ public class MusicPicker extends ListActivity
         switch (v.getId()) {
             case R.id.okayButton:
                 if (mSelectedId >= 0) {
-                    setResult(RESULT_OK, new Intent().setData(mSelectedUri));
+					//added by shanbp more ringtone 20160106 --begin-- 
+                    Intent intent = new Intent(); 
+                    intent.putExtra(RINGTONE_TYPE, mRingtoneType); 
+                    setResult(RESULT_OK, intent.setData(mSelectedUri)); 
+                    //setResult(RESULT_OK, new Intent().setData(mSelectedUri));
+					//added by shanbp more ringtone 20160106 --end--
                     finish();
                 }
                 break;

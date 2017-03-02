@@ -60,7 +60,6 @@ public class CellNum {
 		}else {
 		    if(mCellInfoValue == null){
 				Log.d("SOS","mCellInfoValue = null ");
-				Toast.makeText(context, context.getString(R.string.errsim),Toast.LENGTH_SHORT).show();
 				return;
 		    }
 	    	for(CellInfo c : mCellInfoValue){

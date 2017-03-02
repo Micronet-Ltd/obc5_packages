@@ -7,7 +7,7 @@ import android.app.Application;
 
 public class ExitApp extends Application{
 
-	ArrayList<Activity> activitylist = new ArrayList<Activity>();        //放置所有的Activity
+	ArrayList<Activity> activitylist = new ArrayList<Activity>();
 	private static ExitApp exitapp;
 	
 	public ExitApp(){

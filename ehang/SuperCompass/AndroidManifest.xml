@@ -9,29 +9,15 @@
 
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-
-    <permission android:name="android.permission.BAIDU_LOCATION_SERVICE"></permission>
-
-	<uses-permission android:name="android.permission.BAIDU_LOCATION_SERVICE"></uses-permission>
-
 	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"></uses-permission>
-
 	<uses-permission android:name="android.permission.ACCESS_WIFI_STATE"></uses-permission>
-
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"></uses-permission>
-
 	<uses-permission android:name="android.permission.CHANGE_WIFI_STATE"></uses-permission>
-
 	<uses-permission android:name="android.permission.READ_PHONE_STATE"></uses-permission>
-
 	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"></uses-permission>
-
 	<uses-permission android:name="android.permission.INTERNET" />
-
 	<uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"></uses-permission>
-
 	<uses-permission android:name="android.permission.READ_LOGS"></uses-permission>
-
     
     <application
         android:name="com.ehangcompass.LocationApplication"
@@ -39,7 +25,7 @@
         android:label="@string/app_label"
         android:taskAffinity="net.micode.compass1" >
         
-	<service
+		<service
 			android:name="com.baidu.location.f"
             android:enabled="true"
             android:process=":remote">
@@ -51,10 +37,7 @@
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
             android:value="M09Smmt2SZ0wbnNlOFZRpspG" />
-        <!--  
-        	android:value="M09Smmt2SZ0wbnNlOFZRpspG"  key
-		 -->
- 
+			
         <activity
             android:label="@string/app_label"
             android:name="com.ehangcompass.CompassActivity"

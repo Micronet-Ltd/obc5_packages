@@ -16,7 +16,7 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.widget.ImageView;
-
+import android.view.Window;
 import com.yihang.gesture.service.ExitApp;
 
 public class ShowGesture extends Activity {
@@ -37,6 +37,7 @@ public class ShowGesture extends Activity {
 		win.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED | WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
 		win.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
 		win.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.showgesture_bg);
 		gesture = (ImageView) findViewById(R.id.gesture_img);
 		ExitApp.getInstance().addActivity(this);

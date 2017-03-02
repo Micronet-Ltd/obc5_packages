@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">省电管理</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="name">电量管理</string>
+    <string name="install">锁屏后允许后台运行的应用有%1$d个</string>
+    <string name="trust">信任</string>
+    <string name="protectedname">已保护</string>
+	<string name="unprotectedname">未保护</string>
+    <string name="pdialog">正在加载数据，请稍后</string>
+	<string name="help">帮助</string>
+	<string name="description">1.打开开关，可以保证应用在锁屏后被杀死，从而达到省电的作用；\n2.此应用可能导致微信，QQ等第三方应用在锁屏后停止运行。</string>
+  
+
+</resources>

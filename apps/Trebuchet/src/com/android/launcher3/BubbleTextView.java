@@ -32,7 +32,12 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.ViewConfiguration;
 import android.widget.TextView;
-
+import android.content.pm.PackageManager;
+import android.graphics.drawable.BitmapDrawable;
+import android.content.pm.ApplicationInfo;
+import android.os.UserHandle;
+import com.android.launcher3.compat.UserHandleCompat;
+import android.graphics.BitmapFactory;
 /**
  * TextView that draws a bubble behind the text. We cannot use a LineBackgroundSpan
  * because we want to make the bubble taller than the text and TextView's clip is
@@ -67,7 +72,7 @@ public class BubbleTextView extends TextView {
     private boolean mStayPressed;
     private boolean mIgnorePressedStateChange;
     private CheckLongPressHelper mLongPressHelper;
-
+	Context mContext;
     public BubbleTextView(Context context) {
         this(context, null, 0);
     }
@@ -78,7 +83,7 @@ public class BubbleTextView extends TextView {
 
     public BubbleTextView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-
+		mContext=context;
         TypedArray a = context.obtainStyledAttributes(attrs,
                 R.styleable.BubbleTextView, defStyle, 0);
         mCustomShadowsEnabled = a.getBoolean(R.styleable.BubbleTextView_customShadows, true);
@@ -121,12 +126,54 @@ public class BubbleTextView extends TextView {
 
     public void applyFromShortcutInfo(ShortcutInfo info, IconCache iconCache,
             boolean setDefaultPadding, boolean promiseStateChanged) {
-        Bitmap b = info.getIcon(iconCache);
+        //Bitmap b = info.getIcon(iconCache);
+		Bitmap b = Bitmap.createScaledBitmap(info.getIcon(iconCache),Utilities.sIconTextureWidth,Utilities.sIconTextureHeight,true);
         LauncherAppState app = LauncherAppState.getInstance();
-
-        FastBitmapDrawable iconDrawable = Utilities.createIconDrawable(b);
+		PackageManager pm = mContext.getPackageManager();
+        String pkgName=null;
+		Context contexttheme=null;
+		Bitmap themeicon=null;
+		try {	
+			pkgName = Utilities.getThemePkgName(mContext);
+			contexttheme = mContext.createPackageContext(pkgName, Context.CONTEXT_IGNORE_SECURITY);
+			String name = info.getIntent().getComponent().getClassName();
+			String resName = name.replace('.', '_').toLowerCase();				
+				if (resName.contains("$")){
+					resName = resName.replace('$', '_');
+				}				
+                int resId = contexttheme.getResources().getIdentifier(resName, "drawable", pkgName);
+                Bitmap bitmap = null;
+                if (resId > 0) {
+    				BitmapFactory.Options option = new BitmapFactory.Options();
+    				option.inDither = false;
+    				option.inPreferredConfig = Bitmap.Config.ARGB_8888;
+    				try {
+    					bitmap = BitmapFactory.decodeResource(contexttheme.getResources(), resId, option);
+						bitmap = Bitmap.createScaledBitmap(bitmap,Utilities.sIconTextureWidth,Utilities.sIconTextureHeight,true);
+    				} catch (OutOfMemoryError e) {
+    					e.printStackTrace();
+    					bitmap = null;
+    				}   				
+    			}else{
+    				  bitmap = null;
+    			}			
+			if(bitmap!=null){
+				themeicon = Utilities.creatbitmapwithbackg(bitmap,contexttheme,pkgName);
+			}else{
+				themeicon = Utilities.creatbitmapwithbackg(b,contexttheme,pkgName);
+			}	
+		} catch (Exception e) {
+			e.printStackTrace();
+		} 
+		//Drawable drawable =new BitmapDrawable(themeicon);				
+		FastBitmapDrawable iconDrawable =null;
+		if(themeicon!=null){
+			 iconDrawable = Utilities.createIconDrawable(themeicon);
+		}else{
+			 iconDrawable =  Utilities.createIconDrawable(b);
+		}
+        //FastBitmapDrawable iconDrawable = Utilities.createIconDrawable(themeicon);
         iconDrawable.setGhostModeEnabled(info.isDisabled);
-
         setCompoundDrawables(null, iconDrawable, null, null);
         if (setDefaultPadding) {
             DeviceProfile grid = app.getDynamicGrid().getDeviceProfile();

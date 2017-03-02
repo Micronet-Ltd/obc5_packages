@@ -47,9 +47,13 @@ import android.util.Pair;
 import android.util.SparseArray;
 import android.view.View;
 import android.widget.Toast;
-
+import android.graphics.BitmapFactory;
 import java.util.ArrayList;
-
+import android.content.ContentResolver;
+import android.database.Cursor;
+import android.net.Uri;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.PorterDuff;
 /**
  * Various utilities shared amongst the Launcher's classes.
  */
@@ -583,4 +587,88 @@ public final class Utilities {
         float px = dp * (metrics.densityDpi / (float) DisplayMetrics.DENSITY_DEFAULT);
         return px;
     }
+	
+	public static String getThemePkgName(Context context){
+		String pkgName=null;
+		try {	
+			ContentResolver contentResolver = context.getContentResolver();
+			Cursor cursor =  contentResolver.query(Uri.parse("content://com.yihang.thememgr.Settings/theme/themes"), null, null, null, null);					
+			while(cursor.moveToNext()){  						
+				if(cursor.getString(cursor.getColumnIndex("category")).equals("theme")){						
+					pkgName = cursor.getString(cursor.getColumnIndex("package_name"));						 						
+					break;						
+				}
+			}
+			cursor.close();
+		} catch (Exception e) {
+			Log.d(TAG, e.toString());
+		}
+		if(pkgName==null){
+			pkgName="com.yihang.launcherEx.theme.golden_age";
+		}		
+		return pkgName;
+	}
+	
+	public static Bitmap creatbitmapwithbackg(Bitmap backg,Context context,String pkgName) {
+    	int resId = context.getResources().getIdentifier("theme_icon_bg_0", "drawable", pkgName);
+    	Bitmap	bitmapbk = null;
+		Bitmap	bitmaptheme = null;
+    	if (resId > 0) {
+			BitmapFactory.Options option = new BitmapFactory.Options();
+			option.inDither = false;
+			option.inPreferredConfig = Bitmap.Config.ARGB_8888;
+			try {
+				Bitmap b = BitmapFactory.decodeResource(context.getResources(), resId, option);
+			    bitmapbk = Bitmap.createScaledBitmap(b,backg.getWidth(), backg.getHeight(),true);
+				bitmaptheme = mergeBitmap(bitmapbk,backg);
+				bitmapbk = Bitmap.createScaledBitmap(bitmapbk,backg.getWidth()-6, bitmapbk.getHeight()-6,true);
+			} catch (OutOfMemoryError e) {
+				e.printStackTrace();
+				bitmapbk = null;
+				Log.w(TAG, "loadDrawable fail! OutOfMemoryError");
+			}			
+			Bitmap target2 = Bitmap.createBitmap(bitmaptheme.getWidth(), bitmaptheme.getWidth(), Bitmap.Config.ARGB_8888);
+			Canvas canvas2 = new Canvas(target2);
+			canvas2.drawBitmap(bitmapbk, 3,3, null);
+			canvas2.drawBitmap(bitmaptheme, 0,0, null);
+			return target2;
+			
+		}else{
+			return backg;
+		}
+
+	}	
+	
+    public static Bitmap mergeBitmap(Bitmap firstBitmap, Bitmap secondBitmap) {
+		
+		final Paint paint = new Paint();  
+        paint.setAntiAlias(true);  
+        Bitmap target = Bitmap.createBitmap(secondBitmap.getWidth(), secondBitmap.getWidth(), Bitmap.Config.ARGB_8888); 
+		Canvas canvas = new Canvas(target);		
+		canvas.drawBitmap(firstBitmap, 0, 0, paint); 
+		paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));   
+		canvas.drawBitmap(secondBitmap, (secondBitmap.getWidth()-firstBitmap.getWidth())/2, (secondBitmap.getHeight()-firstBitmap.getHeight())/2, paint); 				
+		return target;
+    }
+	
+	public static Drawable getThemeFolderBackground(Context context,String pkgName) {
+    	int resId = context.getResources().getIdentifier("folder_inner_back", "drawable", pkgName);
+    	Bitmap	b = null;
+    	if (resId > 0) {
+			BitmapFactory.Options option = new BitmapFactory.Options();
+			option.inDither = false;
+			option.inPreferredConfig = Bitmap.Config.ARGB_8888;
+			try {
+				 b = BitmapFactory.decodeResource(context.getResources(), resId, option);
+			} catch (OutOfMemoryError e) {
+				e.printStackTrace();
+				b = null;
+				Log.w(TAG, "loadDrawable fail! OutOfMemoryError");
+			}
+			return new BitmapDrawable(b);			
+		}else{
+			return null;
+		}
+
+	}
 }

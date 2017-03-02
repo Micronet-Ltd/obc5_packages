@@ -48,6 +48,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+//{{begin,mod by chenqi 2016-03-07 10:25
+//reason:the call-incoming,ougoing are slow,we bind receiver from a call to the phone starup
+import android.content.BroadcastReceiver;
+import android.content.IntentFilter;
+//}}end,mod by chenqi
+
 /**
  * Binds to {@link IInCallService} and provides the service to {@link CallsManager} through which it
  * can send updates to the in-call app. This class is created and owned by CallsManager and retains
@@ -155,8 +161,66 @@ public final class InCallController extends CallsManagerListenerBase {
         mInCallComponentName = new ComponentName(
                 resources.getString(R.string.ui_default_package),
                 resources.getString(R.string.incall_default_class));
+		
+//{{begin,mod by chenqi 2016-03-07 10:25
+//reason:the call-incoming,ougoing are slow,we bind receiver from a call to the phone starup
+        if (mInCallServices.isEmpty()) {
+			bind();
+		}
+		registerBroadcastReceiver_switch_space();
+//}}end,mod by chenqi
     }
 
+
+    //{{begin,mod by chenqi 2016-03-07 10:25
+    //reason:the call-incoming,ougoing are slow,we bind receiver from a call to the phone starup
+	//regist the broadcast for incoming ui
+	private final String ACTION_SWITCH_SPACE="com.securespaces.android.intent.ACTION_SPACE_SWITCHED";
+	private final String ACTION_SWITCH_SPACE_EXTRA_USER_HANDLE="com.securespaces.android.intent.EXTRA_USER_HANDLE";
+	void registerBroadcastReceiver_switch_space(){
+	
+		Log.i(this, "registerBroadcastReceiver_switch_space.");
+		IntentFilter intentFilter = new IntentFilter();
+		intentFilter.addAction(ACTION_SWITCH_SPACE);//msg_shown:true,false
+		mContext.registerReceiver(mbroadcast_switch_space,intentFilter);
+
+	}
+	
+    private final BroadcastReceiver mbroadcast_switch_space = new BroadcastReceiver() {
+        @Override
+
+        public void onReceive(Context context, Intent intent) {
+
+            Log.i(this, "mbroadcast_switch_space onReceive.");
+            String action = intent.getAction();
+            if(ACTION_SWITCH_SPACE.equals(action)){
+				int userId = intent.getIntExtra(ACTION_SWITCH_SPACE_EXTRA_USER_HANDLE, -1);
+				
+                Log.i(this, "mbroadcast_switch_space onReceive action ok,userId="+userId);
+				switch(userId){
+					case -1:
+						//err space,do nothing
+						break;
+					case 0:
+						//first space
+					default:
+						//other space
+						restart_bind();
+						break;
+
+				}
+            }
+        }
+    };
+	
+	private void restart_bind(){
+		unbind();
+        if (mInCallServices.isEmpty()) {
+			bind();
+		}
+	}
+//}}end,mod by chenqi
+	
     @Override
     public void onCallAdded(Call call) {
         if (mInCallServices.isEmpty()) {
@@ -177,6 +241,12 @@ public final class InCallController extends CallsManagerListenerBase {
                 } catch (RemoteException ignored) {
                 }
             }
+			
+            onAudioStateChanged(null, CallsManager.getInstance().getAudioState());//add by chenqi 2016-03-16-15:38
+                                                                                  //the call-incoming,ougoing are slow,
+                                                                                  //we bind receiver from a call to the phone starup
+                                                                                  //and,we must send the audio state to the incallui
+                                                                                  //for bug3780
         }
     }
 
@@ -185,7 +255,7 @@ public final class InCallController extends CallsManagerListenerBase {
         Log.i(this, "onCallRemoved: %s", call);
         if (CallsManager.getInstance().getCalls().isEmpty()) {
             // TODO: Wait for all messages to be delivered to the service before unbinding.
-            unbind();
+             //unbind();//mod by chenqi 2015-12-18 09:14,reason:for case 02272846. for get up  the activity dialer too slow
         }
         call.removeListener(mCallListener);
         mCallIdMapper.removeCall(call);
@@ -379,7 +449,7 @@ public final class InCallController extends CallsManagerListenerBase {
             }
             onAudioStateChanged(null, CallsManager.getInstance().getAudioState());
         } else {
-            unbind();
+             //unbind();//mod by chenqi 2015-12-18 09:14,reason:for case 02272846. for get up  the activity dialer too slow
         }
     }
 
@@ -403,7 +473,7 @@ public final class InCallController extends CallsManagerListenerBase {
             if (disconnectedComponent.equals(mInCallComponentName)) {
                 Log.i(this, "In-call UI %s disconnected.", disconnectedComponent);
                 CallsManager.getInstance().disconnectAllCalls();
-                unbind();
+                //unbind();//mod by chenqi 2015-12-18 09:14,reason:for case 02272846. for get up  the activity dialer too slow
             } else {
                 Log.i(this, "In-Call Service %s suddenly disconnected", disconnectedComponent);
                 // Else, if it wasn't the default in-call UI, then one of the other in-call services
@@ -428,6 +498,10 @@ public final class InCallController extends CallsManagerListenerBase {
      * @param call The {@link Call}.
      */
     private void updateCall(Call call) {
+        if (call.getState() == CallState.CONNECTING) {
+            Log.d(this, "updateCall skip update for CONNECTING");
+            return;
+        }
         if (!mInCallServices.isEmpty()) {
             for (Map.Entry<ComponentName, IInCallService> entry : mInCallServices.entrySet()) {
                 ComponentName componentName = entry.getKey();

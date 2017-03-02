@@ -54,12 +54,17 @@ public class RotateLayout extends ViewGroup implements Rotatable {
             boolean change, int left, int top, int right, int bottom) {
         int width = right - left;
         int height = bottom - top;
+		//zhoukai modified
         switch (mOrientation) {
             case 0:
+				mChild.layout(0, 0, width, height);
+                break;
             case 180:
-                mChild.layout(0, 0, width, height);
+                mChild.layout(0, 1600, width, height+1600);
                 break;
             case 90:
+				mChild.layout(1500, 0, height+1500, width);
+				break;
             case 270:
                 mChild.layout(0, 0, height, width);
                 break;
@@ -84,8 +89,8 @@ public class RotateLayout extends ViewGroup implements Rotatable {
                 break;
         }
         setMeasuredDimension(w, h);
-
-        switch (mOrientation) {
+		//zhoukai modified
+       /* switch (mOrientation) {
             case 0:
                 mChild.setTranslationX(0);
                 mChild.setTranslationY(0);
@@ -103,7 +108,7 @@ public class RotateLayout extends ViewGroup implements Rotatable {
                 mChild.setTranslationY(0);
                 break;
         }
-        mChild.setRotation(-mOrientation);
+        mChild.setRotation(-mOrientation);*/
     }
 
     @Override

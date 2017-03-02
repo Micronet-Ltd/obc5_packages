@@ -156,7 +156,8 @@ public class VideoUI implements PreviewStatusListener {
                 mLabelsLinearLayout.setOrientation(LinearLayout.HORIZONTAL);
             }
         }
-        mRecordingTimeRect.setOrientation(0, animation);
+		//zhoukai modified
+        mRecordingTimeRect.setOrientation(orientation, animation);
     }
 
     private void initializeMiscControls() {

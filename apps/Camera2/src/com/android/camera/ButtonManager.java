@@ -23,6 +23,10 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
+import android.util.Log;
+import android.content.Intent;
+import android.content.IntentFilter;
+
 import com.android.camera.app.AppController;
 import com.android.camera.app.CameraAppUI;
 import com.android.camera.settings.Keys;
@@ -32,11 +36,15 @@ import com.android.camera.util.PhotoSphereHelper;
 import com.android.camera.widget.ModeOptions;
 import com.android.camera2.R;
 
+import android.app.KeyguardManager;
+import android.content.Context;
 /**
  * A  class for generating pre-initialized
  * {@link #android.widget.ImageButton}s.
  */
 public class ButtonManager implements SettingsManager.OnSettingChangedListener {
+
+	private static final String TAG = "ButtonManager";
 
     public static final int BUTTON_FLASH = 0;
     public static final int BUTTON_TORCH = 1;
@@ -180,8 +188,10 @@ public class ButtonManager implements SettingsManager.OnSettingChangedListener {
 		//water
 		
         waterButton=(MultiToggleImageButton)root.findViewById(R.id.water_Button);
+		KeyguardManager mKeyguardManager = (KeyguardManager) mAppController.getAndroidContextActivity().getSystemService(Context.KEYGUARD_SERVICE);
+		boolean isLocked = mKeyguardManager.isKeyguardLocked();
 		
-		if(!watercamera_enable){
+		if(!watercamera_enable  || isLocked){
 		
 		   ((LinearLayout)waterButton.getParent()).removeView(waterButton);
 			
@@ -647,6 +657,14 @@ public class ButtonManager implements SettingsManager.OnSettingChangedListener {
         button.setOnStateChangeListener(new MultiToggleImageButton.OnStateChangeListener() {
             @Override
             public void stateChanged(View view, int state) {
+            	Log.d(TAG, "stateChanged state = " + state);
+				//added by shanbp, for close ledlight where systemui_tile and launcher_widget
+				Context context = mAppController.getAndroidContext();
+				String CLOSE_LAUNCHER_LEDWIDGET = "qualcomm.android.LEDWidget";
+				String CLOSE_SYSTEMUI_FLASHLIGHTTILE = "com.android.SystemUI.FlashlightTile";
+		        context.sendBroadcast(new Intent(CLOSE_LAUNCHER_LEDWIDGET));
+		        context.sendBroadcast(new Intent(CLOSE_SYSTEMUI_FLASHLIGHTTILE));
+				//end
                 mSettingsManager.setValueByIndex(mAppController.getCameraScope(),
                                                  Keys.KEY_FLASH_MODE, state);
                 if (cb != null) {

@@ -500,6 +500,13 @@ public class FocusOverlayManager implements PreviewStatusListener.PreviewAreaCha
         updateFocusUI();
         mHandler.removeMessages(RESET_TOUCH_FOCUS);
     }
+	
+	//wenjs add close auto focus mode when hdr on
+	public void cancelAutoFocusWhenHdrOn(){
+		if ((mState == STATE_FOCUSING || mState == STATE_SUCCESS || mState == STATE_FAIL)) {
+            cancelAutoFocus();
+        }		
+	}
 
     private void capture() {
         if (mListener.capture()) {

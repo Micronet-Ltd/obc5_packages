@@ -418,13 +418,12 @@ public class VideoCallFragment extends BaseFragment<VideoCallPresenter,
      */
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
         mIsLandscape = getResources().getConfiguration().orientation
                 == Configuration.ORIENTATION_LANDSCAPE;
-
         Log.d(this, "onActivityCreated: IsLandscape=" + mIsLandscape);
         getPresenter().init(getActivity());
+
+        super.onActivityCreated(savedInstanceState);
     }
 
     /**
@@ -519,15 +518,7 @@ public class VideoCallFragment extends BaseFragment<VideoCallPresenter,
         Log.d(this, "centerDisplayView: IsLandscape= " + mIsLandscape + " Layout width: " +
                 params.width + " height: " + params.height + " spaceBesideCallCard: "
                 + spaceBesideCallCard);
-        if (mIsLandscape) {
-            float videoViewTranslation = params.width / 2
-                    - spaceBesideCallCard / 2;
-            if (isLayoutRtl) {
-                displayVideo.setTranslationX(-videoViewTranslation);
-            } else {
-                displayVideo.setTranslationX(videoViewTranslation);
-            }
-        } else {
+        if (!mIsLandscape) {
             float videoViewTranslation = params.height / 2
                     - spaceBesideCallCard / 2;
             displayVideo.setTranslationY(videoViewTranslation);
@@ -556,9 +547,40 @@ public class VideoCallFragment extends BaseFragment<VideoCallPresenter,
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        Log.d(this, "onStart:");
+
+        if (getPresenter() != null) {
+            getPresenter().onFragmentUiShowing(true);
+        } else {
+            Log.e(this, "onStart: Presenter is null");
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d(this, "onResume:");
+
+        if (getPresenter() != null) {
+            getPresenter().validateAndOpenCamera();
+        } else {
+            Log.e(this, "onResume: Presenter is null");
+        }
+    }
+
+    @Override
     public void onStop() {
         super.onStop();
         Log.d(this, "onStop:");
+
+        if (getPresenter() != null) {
+            getPresenter().onFragmentUiShowing(false);
+        } else {
+            Log.e(this, "onStop: Presenter is null");
+        }
+
     }
 
     @Override
@@ -901,13 +923,33 @@ public class VideoCallFragment extends BaseFragment<VideoCallPresenter,
             params.width = width;
             params.height = height;
             preview.setLayoutParams(params);
+        }
+    }
 
-            int rotation = InCallPresenter.toRotationAngle(getCurrentRotation());
-            int rotationAngle = 360 - rotation;
-            preview.setRotation(rotationAngle);
-            Log.d(this, "setPreviewSize: rotation=" + rotation +
-                    " rotationAngle=" + rotationAngle);
+    /**
+     * Sets the rotation of the preview surface.  Called when the dimensions change due to a
+     * device orientation change.
+     *
+     * Please note that the screen orientation passed in is subtracted from 360 to get the actual
+     * preview rotation values.
+     *
+     * @param rotation The screen orientation. One of -
+     * {@link InCallOrientationEventListener#SCREEN_ORIENTATION_0},
+     * {@link InCallOrientationEventListener#SCREEN_ORIENTATION_90},
+     * {@link InCallOrientationEventListener#SCREEN_ORIENTATION_180},
+     * {@link InCallOrientationEventListener#SCREEN_ORIENTATION_270}).
+     */
+    @Override
+    public void setPreviewRotation(int orientation) {
+        Log.d(this, "setPreviewRotation: orientation=" + orientation);
+        if (sPreviewSurface != null) {
+            TextureView preview = sPreviewSurface.getTextureView();
 
+            if (preview == null ) {
+                return;
+            }
+
+            preview.setRotation(360 - orientation);
         }
     }
 
@@ -1032,7 +1074,11 @@ public class VideoCallFragment extends BaseFragment<VideoCallPresenter,
             Log.d(this, "inflateVideoCallViews: sVideoSurfacesInUse=" + sVideoSurfacesInUse);
 
             //If peer adjusted screen size is not available, set screen size to default display size
-            Point screenSize = sDisplaySize == null ? getScreenSize() : sDisplaySize;
+            Point screenSize = getScreenSize();
+            if (sDisplaySize != null) {
+                screenSize = VideoCallPresenter.resizeForAspectRatio(screenSize,
+                        sDisplaySize.x, sDisplaySize.y);
+            }
             setSurfaceSizeAndTranslation(displaySurface, screenSize);
 
             if (!sVideoSurfacesInUse) {

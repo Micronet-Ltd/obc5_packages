@@ -9,6 +9,7 @@ import android.os.UserHandle;
 import android.telecom.PhoneAccount;
 import android.telecom.PhoneAccountHandle;
 import android.telecom.TelecomManager;
+import android.telecom.VideoProfile;
 import android.telephony.DisconnectCause;
 import android.telephony.PhoneNumberUtils;
 
@@ -28,8 +29,30 @@ public class CallReceiver extends BroadcastReceiver {
     static final String KEY_IS_DEFAULT_DIALER =
             "is_default_dialer";
 
+//{{begin,mod by chenqi 2016-03-07 10:13
+//	reason:this broadcast received slowlly
+    static final String KEY_EHANG_PACK ="EHANG_PACK";
+	static final String ACTION_PACK_NAME="android.intent.action.CALLRECEIVER_EHANG";
+    static final String KEY_EHANG_FROM ="EHANG_FROM";
+    static final String VAL_EHANG_FROM_CALLACTIVITY ="CALLACTIVITY";
+//}}end,mod by chenqi
+
     @Override
     public void onReceive(Context context, Intent intent) {
+//{{begin,mod by chenqi 2016-03-07 10:13
+//	reason:this broadcast received slowlly
+		String get_action=intent.getAction();
+	
+		Log.i(this, "onReceive - get_action:"+get_action);
+		String str_from=intent.getStringExtra(KEY_EHANG_FROM);
+		
+		Log.i(this, "onReceive - str_from:"+str_from);
+		if(str_from==null || !str_from.equals(VAL_EHANG_FROM_CALLACTIVITY)){
+			return;
+		}
+		
+		Log.i(this, "onReceive - receive ok");
+//}}end,mod by chenqi
         final boolean isUnknownCall = intent.getBooleanExtra(KEY_IS_UNKNOWN_CALL, false);
         Log.i(this, "onReceive - isUnknownCall: %s", isUnknownCall);
 
@@ -89,6 +112,11 @@ public class CallReceiver extends BroadcastReceiver {
         if (clientExtras == null) {
             clientExtras = new Bundle();
         }
+
+        final int videoState = intent.getIntExtra(
+                TelecomManager.EXTRA_START_CALL_WITH_VIDEO_STATE,
+                VideoProfile.VideoState.AUDIO_ONLY);
+        clientExtras.putInt(TelecomManager.EXTRA_START_CALL_WITH_VIDEO_STATE, videoState);
 
         final boolean isDefaultDialer = intent.getBooleanExtra(KEY_IS_DEFAULT_DIALER, false);
 

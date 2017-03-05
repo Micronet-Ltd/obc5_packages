@@ -1241,6 +1241,24 @@ public class MessagingNotification {
 
             String ringtoneStr = sp.getString(MessagingPreferenceActivity.NOTIFICATION_RINGTONE,
                     null);
+			Log.d(TAG,"updateNotification ringtoneStr:" + ringtoneStr);
+			//added by shanbp more ringtone 20160106 --begin--
+			Uri sdcardUri = null;
+			if (ringtoneStr != null) {
+				sdcardUri = Uri.parse(ringtoneStr);
+			}
+
+			if (!MessagingPreferenceActivity.isRingToneUriValid(context, sdcardUri)) {
+				// set default of DEFAULT_RINGTONE
+				ringtoneStr = MessagingPreferenceActivity.DEFAULT_RINGTONE;
+				//save value
+				if (sp.contains(MessagingPreferenceActivity.NOTIFICATION_RINGTONE)) {
+					SharedPreferences.Editor prefsEditor = sp.edit();
+	        		prefsEditor.putString(MessagingPreferenceActivity.NOTIFICATION_RINGTONE, ringtoneStr).apply();
+					Log.d(TAG,"set default DEFAULT_RINGTONE ringtoneStr = " + ringtoneStr);
+				}
+			}
+			//added by shanbp more ringtone 20160106 --end--
             if (isInCall()) {
                 noti.setSound(TextUtils.isEmpty(ringtoneStr) ? null : Uri.parse(ringtoneStr),
                         AUDIO_ATTRIBUTES_ALARM);

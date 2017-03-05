@@ -82,6 +82,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicBoolean;
+import android.view.View;
+import android.view.ViewGroup;
 
 /**
  * Maintains in-memory state of the Launcher. It is expected that there should be only one
@@ -195,7 +197,7 @@ public class LauncherModel extends BroadcastReceiver
 
     private final LauncherAppsCompat mLauncherApps;
     private final UserManagerCompat mUserManager;
-
+	private Workspace mWorkspace=null;//addd
     public interface Callbacks {
         public boolean setLoadOnResume();
         public int getCurrentWorkspaceScreen();
@@ -1467,7 +1469,7 @@ public class LauncherModel extends BroadcastReceiver
         }
     }
 
-    void forceReload() {
+    public void forceReload() {
         resetLoadedState(true, true);
 
         // Do this here because if the launcher activity is running it will be restarted.
@@ -1630,7 +1632,9 @@ public class LauncherModel extends BroadcastReceiver
         }
         return false;
     }
-
+	public void setWorkspace(Workspace workspace){
+		mWorkspace=workspace;
+	}
     /**
      * Runnable for the thread that loads the contents of the launcher:
      *   - workspace icons
@@ -3049,7 +3053,7 @@ public class LauncherModel extends BroadcastReceiver
                 runOnMainThread(r, MAIN_THREAD_BINDING_RUNNABLE);
             }
         }
-
+		
         private void loadAndBindAllApps() {
             if (DEBUG_LOADERS) {
                 Log.d(TAG, "loadAndBindAllApps mAllAppsLoaded=" + mAllAppsLoaded);
@@ -3065,8 +3069,24 @@ public class LauncherModel extends BroadcastReceiver
             } else {
                 onlyBindAllApps();
             }
+			if(mWorkspace!=null){
+				mHandler.post(new Runnable() {
+					public void run() {
+					  dismissProgressBar();
+					}
+				});				
+			}
         }
+		public void dismissProgressBar() {
+			if(mWorkspace!=null){
+				View progressBar = ((ViewGroup) mWorkspace.getParent()).findViewById(R.id.body);
+				if(progressBar!=null)
+				((ViewGroup)progressBar.getParent()).removeView(progressBar);
+				mWorkspace=null;
+			}
+		}
 
+		
         private void onlyBindAllApps() {
             final Callbacks oldCallbacks = mCallbacks.get();
             if (oldCallbacks == null) {

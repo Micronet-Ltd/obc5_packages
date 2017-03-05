@@ -1,0 +1,86 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical" >
+	
+    <!-- title -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:background="@color/black" >
+
+        <TextView
+            android:id="@+id/tdetails"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+			android:layout_alignParentLeft="true"
+			android:layout_centerInParent="true"
+            android:layout_marginLeft="60dp"
+            android:text="@string/name"
+            android:textColor="@color/white"
+            android:textSize="18sp" />
+
+        <ImageView
+            android:id="@+id/back"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+			android:layout_centerInParent="true"
+			android:layout_alignParentLeft="true"
+            android:layout_marginLeft="15dp"
+            android:onClick="goback"
+            android:background="@drawable/back" />
+			
+		<!--<ImageView
+			android:id="@+id/more"
+			android:layout_marginRight="15dp"
+			android:layout_centerInParent="true"
+			android:layout_alignParentRight="true"
+			android:layout_width="wrap_content"
+			android:layout_height="25dp"
+			android:src="@drawable/more"
+			android:onClick="showDetails"/>-->
+    </RelativeLayout>
+
+    <!--<ImageView
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:background="@color/lines" />-->
+
+        <TextView
+            android:id="@+id/install"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+			android:gravity="center"
+            android:background="@color/protect"
+            
+            android:textColor="@color/install_color"
+            android:textSize="16sp" />
+
+       <!-- <ToggleButton
+            android:id="@+id/mswitch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+			android:layout_alignParentRight="true"
+			android:layout_marginRight="25dp"
+            android:background="@color/transparent"
+            android:button="@drawable/checkbox_iphone"
+            android:textOff=""
+            android:textOn="" />-->
+
+    <!--<ImageView
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_marginLeft="14dp"
+        android:layout_marginRight="20dp"
+        android:background="@color/lines" />-->
+
+    <ListView
+        android:id="@+id/listview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:divider="@null" >
+    </ListView>
+
+</LinearLayout>

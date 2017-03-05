@@ -169,7 +169,7 @@ public final class PhoneAccountRegistrar {
     }
 
     PhoneAccountHandle getUserSelectedOutgoingPhoneAccount() {
-        if (TelephonyManager.getDefault().getPhoneCount() > 1) {
+            if (TelephonyManager.getDefault().getPhoneCount() > 1) {
             return getUserSelectedVoicePhoneAccount();
         }
 

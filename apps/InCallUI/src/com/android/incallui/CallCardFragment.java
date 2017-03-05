@@ -370,9 +370,21 @@ public class CallCardFragment extends BaseFragment<CallCardPresenter, CallCardPr
         if (!mIsRcsServiceInstalled) {
             return;
         }
-        int unRead = getPresenter().getUnReadMessageCount(mInCallActivity);
-        Log.d(LOG_TAG, "CallCardFragment: updateUnReadMessageCount(" + unRead + ")");
-        setUnReadMessageCount(unRead);
+        final Handler handler = new Handler();
+        Thread t = new Thread() {
+            @Override
+            public void run() {
+                final int unRead = getPresenter().getUnReadMessageCount(mInCallActivity);
+                Log.d(LOG_TAG, "CallCardFragment: updateUnReadMessageCount(" + unRead + ")");
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        setUnReadMessageCount(unRead);
+                    }
+                });
+            }
+        };
+        t.start();
     }
 
     public void onDestroyView() {
@@ -433,17 +445,7 @@ public class CallCardFragment extends BaseFragment<CallCardPresenter, CallCardPr
                 float videoViewTranslation = 0f;
 
                 // Translate the call card to its pre-animation state.
-                if (mIsLandscape) {
-                    float translationX = mPrimaryCallCardContainer.getWidth();
-                    translationX *= isLayoutRtl ? 1 : -1;
-
-                    mPrimaryCallCardContainer.setTranslationX(visible ? translationX : 0);
-
-                    if (visible) {
-                        videoViewTranslation = videoView.getWidth() / 2 - spaceBesideCallCard / 2;
-                        videoViewTranslation *= isLayoutRtl ? -1 : 1;
-                    }
-                } else {
+                if (!mIsLandscape) {
                     mPrimaryCallCardContainer.setTranslationY(visible ?
                             -mPrimaryCallCardContainer.getHeight() : 0);
 
@@ -793,7 +795,7 @@ public class CallCardFragment extends BaseFragment<CallCardPresenter, CallCardPr
             view.setImageDrawable(photo);
             AnimUtils.fadeIn(mElapsedTime, AnimUtils.DEFAULT_DURATION);
         } else {
-            InCallAnimationUtils.startCrossFade(view, current, photo);
+            view.setImageDrawable(photo);
             view.setVisibility(View.VISIBLE);
         }
     }
@@ -823,9 +825,7 @@ public class CallCardFragment extends BaseFragment<CallCardPresenter, CallCardPr
             case Call.State.ACTIVE:
                 // We normally don't show a "call state label" at all in this state
                 // (but we can use the call state label to display the provider name).
-                if (isAccount) {
-                    callStateLabel = label;
-                } else if (sessionModificationState
+                if (sessionModificationState
                         == Call.SessionModificationState.REQUEST_FAILED) {
                     callStateLabel = context.getString(R.string.card_title_video_call_error);
                 } else if (sessionModificationState
@@ -834,10 +834,15 @@ public class CallCardFragment extends BaseFragment<CallCardPresenter, CallCardPr
                 } else if (VideoProfile.VideoState.isVideo(videoState) &&
                         VideoProfile.VideoState.isPaused(videoState)) {
                     callStateLabel = context.getString(R.string.card_title_video_call_paused);
-                } else if (VideoProfile.VideoState.isBidirectional(videoState)) {
-                    callStateLabel = context.getString(R.string.card_title_video_call);
                 } else if (isWaitingForRemoteSide) {
                     callStateLabel = context.getString(R.string.accessibility_call_put_on_hold);
+                } else if (VideoProfile.VideoState.isBidirectional(videoState)) {
+                    callStateLabel = context.getString(R.string.card_title_video_call);
+                }
+
+                if (isAccount) {
+                   label += (callStateLabel != null) ? (" " + callStateLabel) : "";
+                   callStateLabel = label;
                 }
                 break;
             case Call.State.ONHOLD:
@@ -1002,7 +1007,7 @@ public class CallCardFragment extends BaseFragment<CallCardPresenter, CallCardPr
 
         final ViewTreeObserver observer = getView().getViewTreeObserver();
 
-        mPrimaryCallInfo.getLayoutTransition().disableTransitionType(LayoutTransition.CHANGING);
+        //mPrimaryCallInfo.getLayoutTransition().disableTransitionType(LayoutTransition.CHANGING);//removed by chenqi ,for remove this anim;2016-03-08-16:34
 
         observer.addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
             @Override
@@ -1198,7 +1203,7 @@ public class CallCardFragment extends BaseFragment<CallCardPresenter, CallCardPr
         view.setAlpha(1);
     }
 
-    private void setViewStatePostAnimation(OnLayoutChangeListener layoutChangeListener) {
+    void setViewStatePostAnimation(OnLayoutChangeListener layoutChangeListener) {
         setViewStatePostAnimation(mCallButtonsContainer);
         setViewStatePostAnimation(mCallStateLabel);
         setViewStatePostAnimation(mPrimaryName);
@@ -1206,8 +1211,7 @@ public class CallCardFragment extends BaseFragment<CallCardPresenter, CallCardPr
         setViewStatePostAnimation(mCallNumberAndLabel);
         setViewStatePostAnimation(mCallStateIcon);
 
-        mPrimaryCallCardContainer.removeOnLayoutChangeListener(layoutChangeListener);
-        mPrimaryCallInfo.getLayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
+        //mPrimaryCallInfo.getLayoutTransition().enableTransitionType(LayoutTransition.CHANGING);//removed by chenqi ,for remove this anim;2016-03-08-16:34
         mFloatingActionButtonController.scaleIn(AnimUtils.NO_DELAY);
     }
 
@@ -1500,7 +1504,6 @@ public class CallCardFragment extends BaseFragment<CallCardPresenter, CallCardPr
 
     public void showDowngradeToast(){
         String str = getResources().getString(R.string.change_voice_message);
-        str = mPrimaryName.getText() + " " + str;
         Toast.makeText(getActivity(), str,
                 Toast.LENGTH_SHORT).show();
     }

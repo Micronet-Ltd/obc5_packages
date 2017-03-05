@@ -108,6 +108,11 @@ public final class RingtonePickerActivity extends AlertActivity implements
     // Whether we have tap the "OK" or "Cancel" button.
     private boolean mIsHasClick = false;
 
+	//added by shanbp more ringtone 20160106 --begin--
+	private static final String RINGTONE_TYPE = "ringtone_type"; 
+	private int mRingtoneType; 
+	//added by shanbp more ringtone 20160106 --end--
+
     private DialogInterface.OnClickListener mRingtoneClickListener =
             new DialogInterface.OnClickListener() {
 
@@ -138,6 +143,11 @@ public final class RingtonePickerActivity extends AlertActivity implements
          */
         mHasDefaultItem = intent.getBooleanExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT, true);
         mUriForDefaultItem = intent.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_DEFAULT_URI);
+
+		//added by shanbp more ringtone 20160106 --begin--
+        mRingtoneType = intent.getIntExtra(RINGTONE_TYPE, -1); 
+        //added by shanbp more ringtone 20160106 --end--
+         
         if (mUriForDefaultItem == null) {
             mUriForDefaultItem = Settings.System.DEFAULT_RINGTONE_URI;
         }
@@ -280,6 +290,9 @@ public final class RingtonePickerActivity extends AlertActivity implements
             }
 
             resultIntent.putExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI, uri);
+			//added by shanbp more ringtone 20160106 --begin--
+            resultIntent.putExtra(RINGTONE_TYPE, mRingtoneType); 
+            //added by shanbp more ringtone 20160106 --end--
             setResult(RESULT_OK, resultIntent);
         } else {
             setResult(RESULT_CANCELED);

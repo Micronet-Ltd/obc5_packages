@@ -424,8 +424,10 @@ public class Calculator extends Activity
                 mFormulaEditText.insert(buttonText);
                 break;
         }
+		//zhoukai add
+		mFormulaEditText.regetfocuse();
     }
-
+	
     @Override
     public boolean onLongClick(View view) {
         mCurrentButton = view;
@@ -569,6 +571,8 @@ public class Calculator extends Activity
             @Override
             public void onAnimationStart(Animator animation) {
                 mFormulaEditText.clear();
+				//zhoukai add
+				mFormulaEditText.regetfocuse();
             }
         });
     }

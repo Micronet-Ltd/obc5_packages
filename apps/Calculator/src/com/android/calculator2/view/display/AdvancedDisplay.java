@@ -85,6 +85,9 @@ public class AdvancedDisplay extends ScrollableDisplay implements EventListener 
     private KeyListener mKeyListener;
     private boolean mTextIsUpdating = false;
     private final List<TextWatcher> mTextWatchers = new ArrayList<TextWatcher>();
+	private Toast mtoast;
+	private  long oneTime=0;  
+    private  long twoTime=0; 
     private final TextWatcher mTextWatcher = new TextWatcher() {
 
         @Override
@@ -455,6 +458,12 @@ public class AdvancedDisplay extends ScrollableDisplay implements EventListener 
         if (aet != null)
             aet.dispatchKeyEvent(new KeyEvent(0, KeyEvent.KEYCODE_DEL));
     }
+	
+	//zhoukai add
+	public void regetfocuse(){
+		 EditText et = getActiveEditText();
+    	  et.requestFocus();
+	}
 
     /**
      * Inserts text at the cursor of the active EditText
@@ -484,10 +493,20 @@ public class AdvancedDisplay extends ScrollableDisplay implements EventListener 
                 delta = delta.substring(0, chars);
 
                 if (delta.length() == 0) {
-                    Toast.makeText(getContext(), R.string.text_max_chars, Toast.LENGTH_SHORT)
-                            .show();
-                }
-            }
+				    if(mtoast==null){   
+					mtoast =Toast.makeText(getContext(),R.string.text_max_chars, Toast.LENGTH_SHORT);  
+					mtoast.show(); 
+					oneTime=System.currentTimeMillis(); 
+                 
+                }else{
+					twoTime=System.currentTimeMillis();  
+					if(twoTime-oneTime>Toast.LENGTH_SHORT){  
+                    mtoast.show(); 
+					}					
+				}
+				  oneTime=twoTime;
+				}
+			}
 
             if(CalculatorEditText.class.isInstance(getActiveEditText())) {
                 // Logic to insert, split text if there's another view, etc

@@ -144,7 +144,7 @@ public class CompassActivity extends Activity {
 		mDirectionLayout = (LinearLayout) findViewById(R.id.layout_direction);
 		mAngleLayout = (LinearLayout) findViewById(R.id.layout_angle);
 
-		mPointer.setImageResource(R.drawable.compass);
+		mPointer.setImageResource(R.drawable.background_compass);//shanbp modify 20160314
 	}
 	private void initServices() {
 		// sensor manager

@@ -112,6 +112,10 @@
     <item msgid="5660739516542454527">"已停用"</item>
     <item msgid="1805837518286731242">"暂时关闭（网络状况不佳）"</item>
   </string-array>
+  <string-array name="wifi_wapi_key_type">
+    <item>WAPI ASCII</item>
+    <item>WAPI 16进制</item>
+  </string-array>
     <!-- no translation found for wifi_security:0 (8491993170197127709) -->
     <!-- no translation found for wifi_security:1 (6524315248437318854) -->
     <!-- no translation found for wifi_security:2 (1532568756571457140) -->

@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name ="lightgray">#E3E9E9</color>      <!--浅灰色-->
-    <color name ="black">#222323</color>          <!--黑色-->
-    <color name ="white">#F6F9F9</color>          <!--白色--> 
+    <color name ="black">#222323</color>
+     <color name ="titlebar">#263238</color>          <!--黑色-->
+    <color name ="white">#FFFFFF</color>          <!--白色--> 
     <color name ="darkgreen">#00925f</color>          <!--深绿色-->
     <color name ="lightblack">#363636</color>          <!--浅黑色-->
+    <color name ="hintblack">#818181</color>
+    <color name ="graycolor">#009381</color>
+    <color name ="viewline">#FFFFFF</color>
+    
 </resources>

@@ -22,12 +22,35 @@ import android.net.Uri;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
 
+import android.text.TextUtils;
 public final class MimeTypeUtil {
 
     private static final String TAG = "MimeTypeUtil";
 
     private MimeTypeUtil() {}
+    private static String getFileExtensionFromUrl(String url) {
+        if (!TextUtils.isEmpty(url)) {
+            int fragment = url.lastIndexOf('#');
+            if (fragment > 0) {
+                url = url.substring(0, fragment);
+            }
 
+            int query = url.lastIndexOf('?');
+            if (query > 0) {
+                url = url.substring(0, query);
+            }
+            int filenamePos = url.lastIndexOf('/');
+            String filename =
+                0 <= filenamePos ? url.substring(filenamePos + 1) : url;
+            if (!filename.isEmpty()) {
+                int dotPos = filename.lastIndexOf('.');
+                if (0 <= dotPos) {
+                    return filename.substring(dotPos + 1);
+                }
+            }
+        }
+        return "";
+    }
     public static String getMimeTypeForUri(Context context, Uri uri) {
         if (uri.getScheme() == null) return null;
 
@@ -35,7 +58,7 @@ public final class MimeTypeUtil {
             ContentResolver cr = context.getContentResolver();
             return cr.getType(uri);
         } else if (uri.getScheme().equals(ContentResolver.SCHEME_FILE)) {
-            String extension = MimeTypeMap.getFileExtensionFromUrl(uri.getPath()).toLowerCase();
+            String extension = getFileExtensionFromUrl(uri.getPath()).toLowerCase();
            if (extension != null) {
                 return MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
             } else {

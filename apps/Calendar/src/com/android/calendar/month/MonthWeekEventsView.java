@@ -416,7 +416,11 @@ public class MonthWeekEventsView extends SimpleWeekView {
         mMonthNumPaint.setTypeface(Typeface.DEFAULT);
 
         mMonthNumAscentHeight = (int) (-mMonthNumPaint.ascent() + 0.5f);
-        mMonthNumHeight = (int) (mMonthNumPaint.descent() - mMonthNumPaint.ascent() + 0.5f);
+		if(this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+			mMonthNumHeight = (int) (mMonthNumPaint.descent() - mMonthNumPaint.ascent() + 0.5f)/2;
+		}else{
+			mMonthNumHeight = (int) (mMonthNumPaint.descent() - mMonthNumPaint.ascent() + 0.5f);
+		}
 
         mEventPaint = new TextPaint();
         mEventPaint.setFakeBoldText(true);

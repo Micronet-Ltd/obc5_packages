@@ -303,6 +303,11 @@ public class WirelessSettings extends SettingsPreferenceFragment
         mAirplaneModeEnabler = new AirplaneModeEnabler(activity, mAirplaneModePreference);
         mNfcEnabler = new NfcEnabler(activity, nfc, androidBeam);
 
+		android.util.Log.e(TAG,"model=  "+android.os.Build.MODEL);
+		if(android.os.Build.MODEL.equals("Q10")){
+			this.removePreference(KEY_TOGGLE_NFC);
+			this.removePreference(KEY_ANDROID_BEAM_SETTINGS);
+		}				
         mSmsApplicationPreference = (AppListPreference) findPreference(KEY_SMS_APPLICATION);
         // Restricted users cannot currently read/write SMS.
         if (isRestrictedUser) {
@@ -402,7 +407,7 @@ public class WirelessSettings extends SettingsPreferenceFragment
         // Disable Tethering if it's not allowed or if it's a wifi-only device
         final ConnectivityManager cm =
                 (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (isSecondaryUser || !cm.isTetheringSupported()
+        if (/*isSecondaryUser || */!cm.isTetheringSupported()
                 || mUm.hasUserRestriction(UserManager.DISALLOW_CONFIG_TETHERING)) {
             getPreferenceScreen().removePreference(findPreference(KEY_TETHER_SETTINGS));
         } else {

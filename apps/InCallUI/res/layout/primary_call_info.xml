@@ -20,6 +20,10 @@
     of info about a single call, including the contact name, phone number, call time counter, and
     other status info.  This info is shown as a "banner" overlaid across the top of contact photo.
     -->
+<!-- mod by chenqi 2016-03-08 16:36
+reason:removed by chenqi ,for remove this anim;
+ways:animateLayoutChanges,true->false
+-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/primary_call_banner"
     android:layout_width="match_parent"
@@ -30,7 +34,7 @@
     android:paddingEnd="@dimen/call_banner_side_padding"
     android:clipChildren="false"
     android:clipToPadding="false"
-    android:animateLayoutChanges="true"
+    android:animateLayoutChanges="false"
     android:gravity="center">
 
     <LinearLayout android:id="@+id/callStateButton"
@@ -67,7 +71,6 @@
             android:textColor="@color/incall_accent_color"
             android:textSize="@dimen/call_status_text_size"
             android:alpha="0.7"
-            android:singleLine="true"
             android:gravity="start"
             android:ellipsize="end" />
     </LinearLayout>

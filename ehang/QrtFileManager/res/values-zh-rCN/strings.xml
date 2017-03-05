@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+
+    <string name="alert_delete_multiple">将会删除这些文件</string>
+    <string name="alert_delete_single">将会删除该文件</string>
+    <string name="delete_deny">没有权限删除。</string>
+    <string name="app_name">文件管理</string>
+    <string name="cancel">取消</string>
+    <string name="copy">复制</string>
+    <string name="copy_deny">没有权限复制。</string>
+    <string name="create_folder">新建文件夹</string>
+    <string name="cut">剪切</string>
+    <string name="encrypt">加密</string>
+    <string name="decrypt">解密</string>
+    <string name="cut_deny">没有权限剪切。</string>
+    <string name="delete">删除</string>
+    <string name="delete_fail">删除失败。</string>
+    <string name="deleting">正在删除</string>
+    <string name="deselect_all">取消全选</string>
+    <string name="select_all">全选</string>
+    <string name="details">详情</string>
+    <string name="done">完成</string>
+    <string name="executable">可执行</string>
+    <string name="insufficient_memory">空间不足。</string>
+    <string name="loading">正在载入\u2026</string>
+    <string name="modified_time">修改日期</string>
+    <string name="name">名称</string>
+    <string name="new_folder">新文件夹</string>
+    <string name="no">否</string>
+    <string name="ok">确定</string>
+    <string name="paste">粘贴</string>
+    <string name="pasting">正在复制</string>
+    <string name="paste_fail">粘贴失败。</string>
+    <string name="paste_same_folder">目标文件夹与原文件夹相同，不可以粘贴。</string>
+    <string name="readable">可读</string>
+    <string name="rename">重命名</string>
+    <string name="save">保存</string>
+    <string name="selected">选中</string>
+    <string name="send_file">发送文件</string>
+    <string name="share">分享</string>
+    <string name="size">大小</string>
+    <string name="sort_by">排序方式</string>
+    <string name="wait">"请稍候..."</string>
+    <string name="writable">可写</string>
+    <string name="yes">是</string>
+    <string name="confirm_rename">确认重命名</string>
+    <string name="invalid_char_prompt">您输入了无效字符。</string>
+    <string name="msg_rename_ext">您正在尝试修改文件扩展名，可能导致系统无法识别文件，确定要修改？</string>
+    <string name="msg_unable_open_file">文件格式不支持。</string>
+
+    <string-array name="sort_by">
+        <item>类型</item>
+        <item>名称 (A - Z)</item>
+        <item>大小 (大 - 小)</item>
+        <item>日期 (新 - 旧)</item>
+    </string-array>
+
+    <string name="more">更多</string>
+    <string name="search">搜索</string>
+    <string name="sort">排序</string>
+    <string name="show_file">显示隐藏文件</string>
+    <string name="hide_file">不显示隐藏文件</string>
+    <string name="default_search_text">搜索文件</string>
+    <string name="search_text_empty">搜索内容不能为空.</string>
+    <string name="free_space">可用空间</string>
+    <string name="total_space">总容量</string>
+    <string name="paste_sub_folder">不能粘贴文件到子文件夹。</string>
+    <string name="operation_fail">一些操作失败。</string>
+    <string name="search_files">搜索文件</string>
+    <string name="search_result">%2$d 个结果搜索自 \"%1$s\"</string>
+    <!-- modified -->
+    <string name="empty_msg">(文件夹是空的)</string>
+    <string name="unmounted">%1$s 被卸载。</string>
+    <string name="already_exists">%1$s 已存在。</string>
+    <string name="path_not_exists">%1$s 不存在。</string>
+    <string name="create_hidden_file">以\".\"开头的文件将被隐藏。</string>
+    <string name="modify_hidden_file">不以\'.\'开头的文件将不被隐藏。</string>
+    <string name="file_name_too_long">输入的文件名称过长。</string>
+    <string name="invalid_empty_name">文件名不能为空。</string>
+    <string name="some_paste_fail">一些粘贴操作失败。</string>
+    <string name="some_delete_fail">一些删除操作失败。</string>
+    <string name="search_empty">搜索的内容不能为空。</string>
+    <string name="search_setting_description">本地文件和文件夹</string>
+    <string name="change_mode">选择文件或文件夹</string>
+    
+    <string name="setas_ringtone">设为铃声</string>
+    <string name="type_phone">手机铃声</string>
+    <!--add by pangpingping to add card 1 and card 2 string for general SW00062455 20140705 begin -->
+    <string name="type_phone1">卡一铃声</string>
+    <string name="type_phone2">卡二铃声</string>
+    <!--add by pangpingping to add card 1 and card 2 string for general SW00062455 20140705 end -->
+    <string name="type_notification">通知铃声</string>
+    <string name="type_alarm">闹钟铃声</string>
+    <string name="error_hidden_file">隐藏文件不被允许。</string>
+    <string name="menu_set_as">设置为</string>
+    <string name="dialog_import_title">导入文件</string>
+	<string name="dialog_import_msg">您确定要导入吗?</string>
+    
+    <string name="alert">警告！</string>
+    <string name="msg_open_encrypted_file">已加密文件，请解密后使用，现在是否解密？</string>
+	
+    <string name="alert_encrypt_file">是否将选择文件加密？</string>
+    <string name="alert_decrypt_file">是否将选择文件解密？</string>
+    
+    <string name="encrypt_success">加密过程完成！</string>
+    <string name="encrypt_files_success">个文件加密成功</string>
+    <string name="encrypt_files_repeat">个文件重复</string>
+    <string name="encrypt_files_no_exist">个文件不存在</string>
+    <string name="encrypt_files_exception">个异常文件</string>
+    <string name="encrypt_already_encrypted">个已加密过的文件</string>
+    
+    <string name="decrypt_success">解密过程完成！</string>
+    <string name="decrypt_files_success">个文件解密成功</string>
+    <string name="decrypt_files_no_exist">个文件不存在</string>
+    <string name="decrypt_files_exception">个异常文件</string>
+    <string name="decrypt_unencrypted">个未加密文件</string>   
+    
+    <string name="outof_length">个文件过大</string>
+    <string name="quit_operating">个文件未完成</string>
+    <string name="iris_pwd_unmatch">个加解密信息不匹配</string>
+    
+    <string name="null_file_list">传入的文件列表为空!</string>
+    <string name="first_register_iris">请先注册虹膜信息!</string>
+    <string name="match_timeout">匹配超时</string>
+    
+    <string name="register_success">注册成功</string>
+    <string name="register_timeout">注册超时</string>
+    <string name="register_title">注册虹膜</string>
+
+</resources>

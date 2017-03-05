@@ -583,7 +583,13 @@ public final class CallsManager extends Call.ListenerBase {
         // Do not support any more live calls.  Our options are to move a call to hold, disconnect
         // a call, or cancel this call altogether.
         if (!isPotentialInCallMMICode && !makeRoomForOutgoingCall(call, isEmergencyCall)) {
-            // just cancel at this point.
+//{{begin,mod by chenqi 2016-03-16 16:47
+//reason:patch,case 02380370;for hide the dialog,but can't continue to the call
+// just cancel at this point. if the call is not idle, bring the screen to foreground
+            if (getCallState() != TelephonyManager.CALL_STATE_IDLE) {
+                getInCallController().bringToForeground(false);
+            }
+//}}end,mod by chenqi
             return null;
         }
 
@@ -596,6 +602,14 @@ public final class CallsManager extends Call.ListenerBase {
             extras.putParcelableList(android.telecom.Call.AVAILABLE_PHONE_ACCOUNTS, accounts);
         } else {
             call.setState(CallState.CONNECTING);
+        }
+
+        if (extras != null) {
+            final int videoState = extras.getInt(
+                    TelecomManager.EXTRA_START_CALL_WITH_VIDEO_STATE);
+            call.setVideoState(videoState);
+        } else {
+            call.setVideoState(VideoProfile.VideoState.AUDIO_ONLY);
         }
 
         call.setExtras(extras);
@@ -1631,6 +1645,14 @@ public final class CallsManager extends Call.ListenerBase {
     }
 
     private boolean makeRoomForOutgoingCall(Call call, boolean isEmergency) {
+//{{begin,mod by chenqi 2016-03-16 16:47
+//reason:patch,case 02380370;for hide the dialog,but can't continue to the call
+    if (call.getTargetPhoneAccount() == null
+    && getNumCallsWithState(CallState.PRE_DIAL_WAIT) > 0) {
+        Log.d(this, "already exits a call waiting for account!");
+        return false;
+    }
+//}}end,mod by chenqi
         if (TelephonyManager.getDefault().getMultiSimConfiguration()
                 == TelephonyManager.MultiSimVariants.DSDA) {
             return makeRoomForOutgoingCallForDsda(call, isEmergency);
@@ -1961,6 +1983,9 @@ public final class CallsManager extends Call.ListenerBase {
             }
 
             for (Call call : mCalls) {
+                if (call.getParentCall() != null) {
+                    continue;
+                }
                 if ((currentState == call.getState()) &&
                         (call.getTargetPhoneAccount() != null) &&
                         (isSameIdOrSipId(call.getTargetPhoneAccount().getId(), sub))) {

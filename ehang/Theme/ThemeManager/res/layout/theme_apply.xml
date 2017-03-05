@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent" android:layout_height="fill_parent"
+	android:orientation="vertical" android:background="@drawable/theme_bg">
+    
+   <LinearLayout android:layout_width="fill_parent"
+        android:layout_height="55dip" 
+        android:background="@drawable/title_bar" 
+        android:gravity="center">
+    <TextView android:layout_width="fill_parent" android:layout_height="wrap_content"
+        android:layout_marginRight="70dp"
+        android:layout_marginLeft="18dip"   android:gravity="left|center_vertical"
+        android:text="@string/theme_app_name"  android:id="@+id/theme_title"
+        android:textSize="20sp" android:textColor="@android:color/black" />
+ </LinearLayout>
+	<Gallery android:id="@+id/theme_gallery" android:layout_width="fill_parent"
+		android:layout_height="fill_parent" android:layout_weight="1.0"
+		android:paddingTop="5.0dip" android:fadingEdgeLength="0.0dip"
+		android:spacing="27.0dip" android:alwaysDrawnWithCache="true"
+		android:addStatesFromChildren="false" android:unselectedAlpha="255.0" />
+
+	<LinearLayout android:id="@+id/theme_preview_indicator"
+		android:layout_width="wrap_content" android:layout_height="wrap_content"
+		android:layout_gravity="center_horizontal" android:orientation="horizontal"
+		android:paddingTop="10.0dip" android:paddingBottom="10.0dip" />
+
+	<FrameLayout android:layout_width="fill_parent" android:paddingBottom="15dp"
+		android:layout_height="60dip" >
+
+		<TextView android:id="@+id/theme_apply"  android:layout_width="100dip"
+			android:layout_height="40dip" android:gravity="center"
+			android:layout_gravity="center" android:text="@string/theme_apply"
+			android:background="@drawable/theme_button" android:textSize="20.0sp"
+			android:textColor="@android:color/white" />
+	</FrameLayout>
+</LinearLayout>

@@ -21,6 +21,7 @@ import static android.os.UserManager.DISALLOW_CONFIG_WIFI;
 
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -911,6 +912,29 @@ public class WifiSettings extends RestrictedSettingsFragment
                     && mSelectedAccessPoint.networkId != INVALID_NETWORK_ID) {
                 connect(mSelectedAccessPoint.networkId);
             }
+			//WAPI +++
+		} else if (mSelectedAccessPoint.getSecurity(config) == mSelectedAccessPoint.SECURITY_WAPI_CERT) {
+			Log.e(TAG, "WAPI: WAPI_CERT Selected");
+            if (configController.mCert_Cnt == 0) {
+					 new AlertDialog.Builder(getActivity())
+						 .setTitle(R.string.error_title)
+						 .setIcon(android.R.drawable.ic_dialog_alert)
+						 .setMessage(R.string.wifi_wapi_cert_not_installed)
+						 .setPositiveButton(android.R.string.ok, null)
+						 .show();
+					 Log.e (TAG, "WAPI: Certificates are not installed");
+					 Log.e (TAG, "WAPI: configController.mCert_Cnt = " + configController.mCert_Cnt);
+					 return;
+			} else {
+		        if (configController.isEdit()) {
+			        Log.e (TAG, "WAPI CERT issue Save");
+			        mWifiManager.save(config, mSaveListener);
+		        } else {
+			        Log.e (TAG, "WAPI CERT issue Connect");
+			        mWifiManager.connect(config, mConnectListener);
+		        }
+			}
+//WAPI ---			
         } else if (config.networkId != INVALID_NETWORK_ID) {
             if (mSelectedAccessPoint != null) {
                 mWifiManager.save(config, mSaveListener);

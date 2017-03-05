@@ -736,6 +736,8 @@ public class PhotoModule
                             settingsManager.set(mAppController.getCameraScope(), Keys.KEY_SCENE_MODE,
                                     mCameraCapabilities.getStringifier().stringify(
                                             CameraCapabilities.SceneMode.HDR));
+							//wenjs add close auto focus mode when hdr on 
+							mFocusManager.cancelAutoFocusWhenHdrOn();
                         } else {
                             settingsManager.set(mAppController.getCameraScope(), Keys.KEY_SCENE_MODE,
                                     mCameraCapabilities.getStringifier().stringify(
@@ -1539,7 +1541,8 @@ public class PhotoModule
                 " mVolumeButtonClickedFlag=" + mVolumeButtonClickedFlag);
 
         mAppController.setShutterEnabled(false);
-
+		//zhoukai add
+		mAppController.getCameraAppUI().disableModeOptions();
         int countDownDuration = mActivity.getSettingsManager()
             .getInteger(SettingsManager.SCOPE_GLOBAL, Keys.KEY_COUNTDOWN_DURATION);
         mTimerDuration = countDownDuration;

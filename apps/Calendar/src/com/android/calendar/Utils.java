@@ -52,6 +52,15 @@ import android.text.util.Linkify;
 import android.util.Log;
 import android.widget.SearchView;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.InvocationTargetException;
+
+import java.io.File;
+import java.util.List;
+import android.provider.DocumentsContract.Document;
+import android.provider.MediaStore;
+
+
 import com.android.calendar.CalendarController.ViewType;
 import com.android.calendar.CalendarEventModel.ReminderEntry;
 import com.android.calendar.CalendarUtils.TimeZoneUtils;
@@ -96,6 +105,10 @@ public class Utils {
 
     public static final String OPEN_EMAIL_MARKER = " <";
     public static final String CLOSE_EMAIL_MARKER = ">";
+
+	//added by shanbp more ringtone 20160106 --begin--
+	public static final String DOC_EXTERNAL = "com.android.externalstorage.documents";
+	//added by shanbp more ringtone 20160106 --end--
 
     public static final String INTENT_KEY_DETAIL_VIEW = "DETAIL_VIEW";
     public static final String INTENT_KEY_VIEW_TYPE = "VIEW";
@@ -410,6 +423,59 @@ public class Utils {
                 GeneralPreferences.SHARED_PREFS_NAME, Context.MODE_PRIVATE);
         prefs.edit().remove(key).apply();
     }
+	
+	//added by shanbp more ringtone 20160106 --begin--
+    public static String getTitleColumnNameForUri(Uri uri) { 
+		boolean flag = false;
+		try{
+			Class cls = uri.getClass();
+			Method setMethod = cls.getDeclaredMethod("isPathPrefixMatch",Uri.class);  
+			setMethod.invoke(cls.newInstance(), MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI);
+
+			flag = (boolean)setMethod.invoke(cls.newInstance(), MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI);
+		}catch(Exception e){
+			Log.e("Calendar","e.toString=" + e.toString());
+		}
+		if (flag) {
+        //if (uri.isPathPrefixMatch(MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI)) {
+            return MediaStore.Audio.Playlists.NAME;
+        }
+        if (DOC_EXTERNAL.equals(uri.getAuthority())) {
+            return Document.COLUMN_DISPLAY_NAME;
+        }
+        return MediaStore.Audio.Media.TITLE;
+    }
+
+	public static boolean isRingToneUriValid(Context context, Uri uri) {
+		if (uri == null) {
+			return false;
+		}
+
+		if (uri.getScheme().contentEquals("file")) {
+			File f = new File(uri.getPath());
+			if (f.exists()) {
+				return true;
+			}
+		} else if (uri.getScheme().contentEquals("content")) {
+			Cursor cursor = null;
+			try {
+				cursor = context.getContentResolver().query(uri,
+						new String[] {getTitleColumnNameForUri(uri)}, null, null, null);
+				if (cursor != null && cursor.getCount() > 0) {
+					return true;
+				}
+			} catch (Exception e) {
+				Log.e("Calendar","Get ringtone uri Exception: e.toString=" + e.toString());
+			} finally {
+				if (cursor != null) {
+					cursor.close();
+				}
+			}
+		}
+
+		return false;
+	}
+	//added by shanbp more ringtone 20160106 --end--
 
     // The backed up ring tone preference should not used because it is a device
     // specific Uri. The preference now lives in a separate non-backed-up
@@ -436,6 +502,20 @@ public class Utils {
             // Write it to the new place
             setRingTonePreference(context, ringtone);
         }
+
+		//added by shanbp more ringtone 20160106 --begin--
+		Uri sdcardUri = null;
+		if (ringtone != null) {
+			sdcardUri = Uri.parse(ringtone);
+		}
+
+		if (!isRingToneUriValid(context, sdcardUri)) {
+			// set default of DEFAULT_RINGTONE
+			ringtone = GeneralPreferences.DEFAULT_RINGTONE;
+			Utils.setRingTonePreference(context, ringtone);
+			Log.d(TAG, "getRingTonePreference set default DEFAULT_RINGTONE ringtone:" + ringtone);
+		}
+		//added by shanbp more ringtone 20160106 --end--
 
         return ringtone;
     }

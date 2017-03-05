@@ -40,6 +40,7 @@ public class AccessibilityPreferencesFragment extends PreferenceFragment
         super.onCreate(savedInstanceState);
         mControlWebView = new WebView(getActivity());
         addPreferencesFromResource(R.xml.accessibility_preferences);
+		getPreferenceScreen().removePreference(findPreference("fanse"));
         BrowserSettings settings = BrowserSettings.getInstance();
         mFormat = NumberFormat.getPercentInstance();
 
@@ -52,9 +53,6 @@ public class AccessibilityPreferencesFragment extends PreferenceFragment
         e = findPreference(PreferenceKeys.PREF_DOUBLE_TAP_ZOOM);
         e.setOnPreferenceChangeListener(this);
         updateDoubleTapZoomSummary(e, settings.getDoubleTapZoom());
-        e = findPreference(PreferenceKeys.PREF_INVERTED_CONTRAST);
-        e.setOnPreferenceChangeListener(this);
-        updateInvertedContrastSummary(e, (int) (settings.getInvertedContrast() * 100));
     }
 
     @Override

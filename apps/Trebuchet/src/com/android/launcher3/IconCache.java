@@ -49,7 +49,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map.Entry;
-
+import java.util.List;
+import java.util.ArrayList;
+import android.graphics.Matrix;
 /**
  * Cache of application icons.  Icons can be made from any thread.
  */
@@ -367,10 +369,11 @@ public class IconCache {
         return cacheLocked(componentName, info, labelCache, user, usePackageIcon, unreadNum, false);
 
     }
-
+	String name=null;
     private CacheEntry cacheLocked(ComponentName componentName, LauncherActivityInfoCompat info,
             HashMap<Object, CharSequence> labelCache, UserHandleCompat user,
             boolean usePackageIcon, int unreadNum, boolean newDownload) {
+				
         CacheKey cacheKey = new CacheKey(componentName, user);
         CacheEntry entry = mCache.get(cacheKey);
         boolean condition = (mContext.getResources().
@@ -390,6 +393,7 @@ public class IconCache {
 
             if (info != null) {
                 ComponentName labelKey = info.getComponentName();
+				name = labelKey.getClassName();
                 if (labelCache != null && labelCache.containsKey(labelKey)) {
                     if (isCustomTitle) {
                         entry.title = ((LauncherApplication) mContext)
@@ -408,31 +412,29 @@ public class IconCache {
                         labelCache.put(labelKey, entry.title);
                     }
                 }
-
-                entry.contentDescription = mUserManager.getBadgedLabelForUser(entry.title, user);
-                entry.icon = Utilities.createIconBitmap(
+				entry.contentDescription = mUserManager.getBadgedLabelForUser(entry.title, user);				
+				CacheEntry packageEntry = getEntryForPackage(componentName.getPackageName(), user);
+                 if (packageEntry != null) {
+                            entry.icon = packageEntry.icon;
+                        }
+				if (entry.icon == null) {
+					entry.icon = Utilities.createIconBitmap(
                         info.getBadgedIcon(mIconDpi), mContext, unreadNum, newDownload);
+				}
             } else {
                 entry.title = "";
-                Bitmap preloaded = getPreloadedIcon(componentName, user);
-                if (preloaded != null) {
-                    if (DEBUG) Log.d(TAG, "using preloaded icon for " +
-                            componentName.toShortString());
-                    entry.icon = preloaded;
-                } else {
                     if (usePackageIcon) {
                         CacheEntry packageEntry = getEntryForPackage(
                                 componentName.getPackageName(), user);
                         if (packageEntry != null) {
-                            if (DEBUG) Log.d(TAG, "using package default icon for " +
-                                    componentName.toShortString());
                             entry.icon = packageEntry.icon;
                             entry.title = packageEntry.title;
                         }
                     }
+                if (entry.icon != null) {
+					Bitmap preloaded = getPreloadedIcon(componentName, user);
+                    entry.icon = preloaded;					
                     if (entry.icon == null) {
-                        if (DEBUG) Log.d(TAG, "using default icon for " +
-                                componentName.toShortString());
                         entry.icon = getDefaultIcon(user, mContext, newDownload);
                     }
                 }
@@ -462,30 +464,52 @@ public class IconCache {
     /**
      * Gets an entry for the package, which can be used as a fallback entry for various components.
      */
-    private CacheEntry getEntryForPackage(String packageName, UserHandleCompat user) {
-        ComponentName cn = getPackageComponent(packageName);
+    private CacheEntry getEntryForPackage(String packageName, UserHandleCompat user) {		
+		ComponentName cn = getPackageComponent(packageName);
         CacheKey cacheKey = new CacheKey(cn, user);
         CacheEntry entry = mCache.get(cacheKey);
+		entry = null;
         if (entry == null) {
             entry = new CacheEntry();
-            entry.title = "";
             mCache.put(cacheKey, entry);
-
-            try {
-                ApplicationInfo info = mPackageManager.getApplicationInfo(packageName, 0);
-                entry.title = info.loadLabel(mPackageManager);
-                entry.icon = Utilities.createIconBitmap(info.loadIcon(mPackageManager), mContext);
+            try {			
+				String pkgName=Utilities.getThemePkgName(mContext);
+                ApplicationInfo info = mPackageManager.getApplicationInfo(packageName, 0);				
+                final Context context = mContext.createPackageContext(pkgName,
+						Context.CONTEXT_IGNORE_SECURITY);			
+				String resName = name.replace('.', '_').toLowerCase();				
+				if (resName.contains("$")){
+					resName = resName.replace('$', '_');
+				}
+                int resId = context.getResources().getIdentifier(resName, "drawable", pkgName);
+                Bitmap bitmap = null;
+                if (resId > 0) {
+    				BitmapFactory.Options option = new BitmapFactory.Options();
+    				option.inDither = false;
+    				option.inPreferredConfig = Bitmap.Config.ARGB_8888;
+    				try {
+    					bitmap = BitmapFactory.decodeResource(context.getResources(), resId, option);
+    				} catch (OutOfMemoryError e) {
+    					e.printStackTrace();
+    					bitmap = null;
+    					Log.w(TAG, "loadDrawable fail! OutOfMemoryError");
+    				}   				
+    				entry.icon=bitmap;
+    			}else{
+    				  Bitmap backg = Utilities.createIconBitmap(info.loadIcon(mPackageManager), mContext);
+    				  entry.icon = Utilities.creatbitmapwithbackg(backg,context,pkgName);
+    			}
+    		//}					
+                entry.title = info.loadLabel(mPackageManager);               
             } catch (NameNotFoundException e) {
                 if (DEBUG) Log.d(TAG, "Application not installed " + packageName);
             }
-
             if (entry.icon == null) {
                 entry.icon = getPreloadedIcon(cn, user);
             }
         }
-        return entry;
+        return entry;		
     }
-
     public HashMap<ComponentName,Bitmap> getAllIcons() {
         synchronized (mCache) {
             HashMap<ComponentName,Bitmap> set = new HashMap<ComponentName,Bitmap>();
@@ -628,4 +652,5 @@ public class IconCache {
     static ComponentName getPackageComponent(String packageName) {
         return new ComponentName(packageName, EMPTY_CLASS_NAME);
     }
+
 }

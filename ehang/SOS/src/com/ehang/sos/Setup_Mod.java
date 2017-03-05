@@ -112,7 +112,7 @@ public class Setup_Mod {
 		});
 		LooperThread.start();
 		
-		new MainUI().closeGps(context);
+		Utils.getInstance(context).closeGps();
 	}
 
 	public void sendmsg(String num, String msg) {
@@ -145,7 +145,7 @@ public class Setup_Mod {
 				mLocationClient = ((LocationApplication) context.getApplicationContext()).mLocationClient;
 				mLocationClient.stop();
 				sendGpsAddr();
-				MainUI.closeGps(context);
+				Utils.getInstance(context).closeGps();
 				
 				MainUI.isPreLoc = false;
 				MainUI.haveSetup = false;

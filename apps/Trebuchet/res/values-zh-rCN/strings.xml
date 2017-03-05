@@ -125,4 +125,5 @@
     <string name="abandoned_promise_explanation" msgid="3990027586878167529">"未安装此图标对应的应用。您可以移除此图标，也可以尝试搜索相应的应用并手动安装。"</string>
 	
 	<string name="folder_isfull">文件夹已满</string>
+	<string name="theme_is_switching">主题切换中, 请稍等 ...</string>
 </resources>

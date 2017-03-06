@@ -71,7 +71,11 @@ public class AlwaysOnWiFiHotspotService extends Service {
 
     private void enableWiFi(){
         // re-enable Wifi AP
-        WiFiApManager.setWiFiApState(context, true);
+       Utils.isAirplaneMode(getContentResolver());
+
+        if(Utils.isAirplaneMode(getContentResolver())==false)
+        {
+            WiFiApManager.setWiFiApState(context, true);
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
@@ -84,6 +88,9 @@ public class AlwaysOnWiFiHotspotService extends Service {
             increaseHC();
             Log.d(TAG, "enableWififunc:" +handlerValue);
         }
+        }
+        else
+            Log.d(TAG,"Airplane mode is On, Cant disable");
     }
     //Function that increases th handler count
     private void increaseHC(){

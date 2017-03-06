@@ -1,19 +1,13 @@
-package com.micronet.mcontrol;
+package com.micronet.mcontrol.adapters;
 
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
-import android.os.Environment;
-import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,18 +16,25 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.micronet.mcontrol.ADCs;
+import com.micronet.mcontrol.Accelerometer;
+import com.micronet.mcontrol.ThermalZoneTemperature;
+import com.micronet.mcontrol.interfaces.LEDInterface;
+import com.micronet.mcontrol.LEDs;
+import com.micronet.mcontrol.MControl;
+import com.micronet.mcontrol.Pair;
+import com.micronet.mcontrol.R;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-
-import static android.content.ContentValues.TAG;
 
 
 /**
@@ -69,9 +70,7 @@ public class MControlTextAdapter extends BaseAdapter {
 
     public MControlTextAdapter(Context context) {
         this.context = context;
-        // initialize mctl
         mc = new MControl();
-        populateMctlTable();
     }
 
     public List<Pair<String, String>> getPairList() {
@@ -99,8 +98,7 @@ public class MControlTextAdapter extends BaseAdapter {
         scaling_cur_freq = "";
         getCoreFrequencies();
         String celsius = String.valueOf((ADCs.ADC_TEMPERATURE.getValue() - 500.0f) / 10);
-        getThermalZoneTemps();
-        String thermalZone = thermalZone0 + ", " + thermalZone1 + ", " + thermalZone2 + ", " + thermalZone3 + ", " + thermalZone4;
+        ThermalZoneTemperature thermalZone = new ThermalZoneTemperature();
         String mobileDataStatus=String.valueOf(isMobileConnected(context));
         String wifiAPStatus=String.valueOf(getWifiApState(context));
 
@@ -114,8 +112,7 @@ public class MControlTextAdapter extends BaseAdapter {
             Log.e(TAG, e.toString());
         }
 
-        String accelerometer = "X:" + (String.format ("%.4f", linear_acceleration[0])) + " Y:" + (String.format ("%.4f", linear_acceleration[1]))
-                + " Z:" + (String.format ("%.4f", linear_acceleration[2]));
+        String accelerometer = String.format ("X:%.4f Y:%.4f Z:%.4f", linear_acceleration[0], linear_acceleration[1], linear_acceleration[2]);
         String adc_cable_type = ADCs.ADC_CABLE_TYPE.getValue() + " mv";
         int[] rtc_cal = mc.get_rtc_cal_reg();
         String dig_rtc_cal_reg = String.valueOf(rtc_cal[0]);
@@ -148,7 +145,7 @@ public class MControlTextAdapter extends BaseAdapter {
         pairList.add(new Pair<>("POWER ON REASON", power_on_reason));
         pairList.add(new Pair<>("SCALING CPU FREQ", scaling_cur_freq));
         pairList.add(new Pair<>("MCU TEMP", celsius));
-        pairList.add(new Pair<>("THERMAL ZONES", thermalZone));
+        pairList.add(new Pair<>("THERMAL ZONES", thermalZone.toString()));
         pairList.add(new Pair<>("MOBILEDATA STATE",mobileDataStatus));
         pairList.add(new Pair<>("WIFI AP STATE", wifiAPStatus));
         pairList.add(new Pair<>("ACCELEROMETER", accelerometer));
@@ -287,24 +284,6 @@ public class MControlTextAdapter extends BaseAdapter {
         scaling_cur_freq = cpu0 + ", " + cpu1 + ", " + cpu2 + ", " + cpu3;
     }
 
-    private void getThermalZoneTemps() {
-        if(MControl.DBG) { return; }
-        try {
-            br = new BufferedReader(new FileReader("/sys/devices/virtual/thermal/thermal_zone0/temp"));
-            thermalZone0 = br.readLine();
-            br = new BufferedReader(new FileReader("/sys/devices/virtual/thermal/thermal_zone1/temp"));
-            thermalZone1 = br.readLine();
-            br = new BufferedReader(new FileReader("/sys/devices/virtual/thermal/thermal_zone2/temp"));
-            thermalZone2 = br.readLine();
-            br = new BufferedReader(new FileReader("/sys/devices/virtual/thermal/thermal_zone3/temp"));
-            thermalZone3 = br.readLine();
-            br = new BufferedReader(new FileReader("/sys/devices/virtual/thermal/thermal_zone4/temp"));
-            thermalZone4 = br.readLine();
-            br.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
     public static boolean isMobileConnected(Context context) {
         return isConnected(context, ConnectivityManager.TYPE_MOBILE);}
     private static boolean isConnected(Context context, int type) {

@@ -10,20 +10,18 @@
         android:layout_gravity="center"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="11sp"
         android:layout_marginTop="4dp"
-        android:layout_marginBottom="4dp"
         android:text="ItemText"
+        android:textSize="11sp"
         android:textStyle="bold" />
 
     <TextView
         android:id="@+id/textSubItem"
         android:layout_gravity="center"
         android:layout_width="wrap_content"
+        android:layout_marginBottom="8dp"
         android:layout_height="wrap_content"
         android:textSize="11sp"
-        android:layout_marginTop="4dp"
-        android:layout_marginBottom="4dp"
         android:text="SubItemText" />
 
 </LinearLayout>

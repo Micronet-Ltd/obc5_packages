@@ -2,12 +2,7 @@ package com.micronet.alwaysonwifihotspot;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.widget.Switch;
 
 /**
  * Created by brigham.diaz on 12/12/2016.

@@ -1190,7 +1190,9 @@ public final class Utils {
 	* auto enable IZat
 	*/
 	public static boolean IsAutoEnableIZat(){
+		String Model = "TREQ";
 		Log.v(TAG, "android.os.Build.MODEL =="+android.os.Build.MODEL);
-		return true;//android.os.Build.MODEL.equalsIgnoreCase("OBC");
+		
+		return android.os.Build.MODEL.substring(0, Model.length()).equalsIgnoreCase(Model);
     }
 }

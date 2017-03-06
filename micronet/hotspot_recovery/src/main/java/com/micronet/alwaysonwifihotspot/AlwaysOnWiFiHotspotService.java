@@ -143,7 +143,7 @@ public class AlwaysOnWiFiHotspotService extends Service {
         context = this;
         if (wifiApHandler == null) {
             wifiApHandler = new Handler(Looper.myLooper());
-            wifiApHandler.post(wifiApCheck);
+			wifiApHandler.postDelayed(wifiApCheck, TEN_SECONDS);
         }
         //Creating a Directory if it isn't available
         if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {

@@ -1191,6 +1191,6 @@ public final class Utils {
 	*/
 	public static boolean IsAutoEnableIZat(){
 		Log.v(TAG, "android.os.Build.MODEL =="+android.os.Build.MODEL);
-		return android.os.Build.MODEL.equalsIgnoreCase("OBC");
+		return true;//android.os.Build.MODEL.equalsIgnoreCase("OBC");
     }
 }

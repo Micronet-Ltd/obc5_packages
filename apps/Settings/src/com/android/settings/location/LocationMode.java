@@ -43,6 +43,11 @@ import android.text.Html;
 import android.content.Intent;
 import android.util.Log;
 import com.android.settings.Utils;
+import android.content.res.Resources;
+import android.location.GpsStatus;
+import android.location.LocationManager;
+import android.location.LocationListener;
+import android.location.Location;
 
 import com.android.settings.R;
 
@@ -80,6 +85,9 @@ public class LocationMode extends LocationSettingsBase
     private XTServiceConnection mServiceConn = null;
     //This variable is used to record the IZat service connection result
     private boolean izatConnResult = false;
+    private boolean IsDialogUp = false;
+    private LocationManager mLocationMgr;
+    private LocListener mListener;
 
     //This is the IZat handler
     private Handler mHandler = new Handler() {
@@ -102,6 +110,7 @@ public class LocationMode extends LocationSettingsBase
 
     private IXTSrvCb mCallback = new IXTSrvCb.Stub() {
         public void statusChanged(boolean status) {
+            IsDialogUp = false;
             if(false == status)
             {
                 mHandler.sendMessage(mHandler.obtainMessage(PRINT, 0, 0));
@@ -121,7 +130,28 @@ public class LocationMode extends LocationSettingsBase
         i.setPackage("com.qualcomm.location.XT");
         izatConnResult = getActivity().bindService(i, mServiceConn, Context.BIND_AUTO_CREATE);
     }
+///////////
+    private class LocListener implements LocationListener {
 
+        @Override
+        public void onLocationChanged(Location location) {
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+        }
+
+    }
+    
+////////////    
     /**
      * IZat service connection
      */
@@ -164,8 +194,23 @@ public class LocationMode extends LocationSettingsBase
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
 		if(Utils.IsAutoEnableIZat()){
+			mListener = new LocListener();	
+	        mLocationMgr = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+	        if(mLocationMgr != null) {
+		        //mLocationMgr.sendExtraCommand(LocationManager.GPS_PROVIDER, "force_xtra_injection", null);
+	            mLocationMgr.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 0, mListener);
+                Log.d(TAG, "TTFFstart");
+	        }
         	initUserPrefService();
 			createPreferenceHierarchy();
+			if(Utils.IsAutoEnableIZat()){
+				Log.d(TAG, "auto SET LOCATION_MODE_HIGH_ACCURACY");
+				setLocationMode(Settings.Secure.LOCATION_MODE_HIGH_ACCURACY);
+	            mHighAccuracy.setChecked(true);
+	            mBatterySaving.setChecked(false);
+	            mSensorsOnly.setChecked(false);
+			}
+			
 		}
 	}
 
@@ -242,6 +287,7 @@ public class LocationMode extends LocationSettingsBase
 									if(null != mXTService){
 										Log.d(TAG, "mXTService.showDialog()");
 										mXTService.showDialog();
+										IsDialogUp = true;
                                     }
                                 }catch(RemoteException e){
                                     e.printStackTrace();
@@ -260,22 +306,30 @@ public class LocationMode extends LocationSettingsBase
                 }
             );
         }
-        refreshLocationMode();
+		refreshLocationMode();
 		if(Utils.IsAutoEnableIZat()){
 			new Thread(new Runnable() {
 				public void run() {
 					try {
 						if(!mIZat.isChecked()){
 							Thread.sleep(100);
-							Log.d(TAG, "auto tap izat");
-							ShellUtils.execCommand("input tap 148 496", false);
-							Thread.sleep(1000);
-							Log.d(TAG, "auto tap izat dialog");
-							ShellUtils.execCommand("input tap 622 708", false);
+							int xcd = Resources.getSystem().getDisplayMetrics().widthPixels;
+					        int ycd = Resources.getSystem().getDisplayMetrics().heightPixels;
+							Log.d(TAG, "auto tap izat - display x " + xcd + " y " + ycd);
+							//ShellUtils.execCommand("input tap 148 496", false);
+							if(IsDialogUp == false) {
+								ShellUtils.execCommand("input tap " + (xcd * 7 / 8) + " " + (ycd * 2 / 3), false); 
+								Thread.sleep(1000);
+							}
+							Log.d(TAG, "auto tap izat dialog " + (xcd * 7 / 8) + " " + (ycd * 2 / 3));
+							ShellUtils.execCommand("input tap " + (xcd * 7 / 8) + " " + (ycd * 2 / 3), false); 
+							//Thread.sleep(1000);
+							//ShellUtils.execCommand("input tap 622 708", false);
+//							400 491
 						}
 						Thread.sleep(100);
-						Log.d(TAG, "auto SET LOCATION_MODE_HIGH_ACCURACY");
-						setLocationMode(Settings.Secure.LOCATION_MODE_HIGH_ACCURACY);
+//						Log.d(TAG, "auto SET LOCATION_MODE_HIGH_ACCURACY");
+//						setLocationMode(Settings.Secure.LOCATION_MODE_HIGH_ACCURACY);
 					
 					} catch (InterruptedException e) {
 						e.printStackTrace();

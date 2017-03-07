@@ -7,7 +7,6 @@ package com.micronet.canbus;
 
 public final class Info
 {
-
 	/**
 	  * VERSION
 	  * Version of the API for Canbus API.

@@ -88,7 +88,12 @@ public class CanbusSocket implements CanbusListener{
 	 */
 	public void close(){
 	}
-
+	/**
+	 * Discards packets from the queue's receive buffer. Due to the nature of the QBridge buffer,
+	 * packets will be discarded for 3 seconds following execution of this command.
+	 */
+	public void discardInBuffer(){
+	}
 	/**
 	 * Returns Canbus socket id.
 	 */

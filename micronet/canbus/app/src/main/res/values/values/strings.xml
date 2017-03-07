@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">canbus</string>
+    <string name="app_name">Native CANbus</string>
     <string name="close_interface">Close Interface</string>
     <string name="api_ver">API VER</string>
     <string name="app_ver">APP VER</string>

@@ -4,7 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-import com.micronet.mcontrol.MainActivity;
+import com.micronet.mcontrol.activites.MainActivity;
 
 /**
  * Created by brigham.diaz on 6/8/2016.

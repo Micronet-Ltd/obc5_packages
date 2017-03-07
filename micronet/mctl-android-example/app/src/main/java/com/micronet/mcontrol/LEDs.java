@@ -2,6 +2,8 @@ package com.micronet.mcontrol;
 
 import android.graphics.Color;
 
+import com.micronet.mcontrol.interfaces.LEDInterface;
+
 /**
  * Created by brigham.diaz on 5/25/2016.
  */

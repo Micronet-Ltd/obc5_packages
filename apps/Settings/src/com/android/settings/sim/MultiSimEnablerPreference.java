@@ -376,7 +376,10 @@ public class MultiSimEnablerPreference extends Preference implements OnCheckedCh
                 String msg = mCurrentState ? mContext.getString(R.string.sub_activate_success) :
                         mContext.getString(R.string.sub_deactivate_success);
                 builder.setMessage(msg);
-                builder.setNeutralButton(android.R.string.ok, null);
+				/*lihui @20160118 modified for the same style with confirm alert start*/
+                //builder.setNeutralButton(android.R.string.ok, null);
+                builder.setPositiveButton(android.R.string.ok, null);
+				/*lihui @20160118 modified for the same style with confirm alert end*/
                 break;
            default:
            break;

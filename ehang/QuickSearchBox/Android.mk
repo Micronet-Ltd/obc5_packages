@@ -13,6 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+ifeq ($(EH_PRODUCT_NAME),Q10)
+else
+ifeq ($(EH_PRODUCT_NAME),Q8)
+else
 LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
 
@@ -40,3 +44,5 @@ include $(BUILD_PACKAGE)
 
 # Also build our test apk
 #include $(call all-makefiles-under,$(LOCAL_PATH))
+endif
+endif

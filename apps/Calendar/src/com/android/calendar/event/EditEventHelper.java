@@ -626,8 +626,10 @@ public class EditEventHelper {
     // MODIFY_ALL bit.
     void checkTimeDependentFields(CalendarEventModel originalModel, CalendarEventModel model,
             ContentValues values, int modifyWhich) {
-        long oldBegin = model.mOriginalStart;
-        long oldEnd = model.mOriginalEnd;
+		//modifid by ao
+        long oldBegin = originalModel.mStart;
+        long oldEnd = originalModel.mEnd;
+		//end
         boolean oldAllDay = originalModel.mAllDay;
         String oldRrule = originalModel.mRrule;
         String oldTimezone = originalModel.mTimezone;

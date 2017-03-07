@@ -187,6 +187,8 @@ public class VideoModule extends CameraModule
     private int mOrientation = OrientationEventListener.ORIENTATION_UNKNOWN;
 
     private float mZoomValue;  // The current zoom ratio.
+	
+	private int newOrientation;
 
     private final MediaSaver.OnMediaSavedListener mOnVideoSavedListener =
             new MediaSaver.OnMediaSavedListener() {
@@ -365,8 +367,8 @@ public class VideoModule extends CameraModule
 
         mQuickCapture = mActivity.getIntent().getBooleanExtra(EXTRA_QUICK_CAPTURE, false);
         mLocationManager = mActivity.getLocationManager();
-
-        mUI.setOrientationIndicator(0, false);
+		//zhoukai modified
+        mUI.setOrientationIndicator(mOrientation, false);
         setDisplayOrientation();
 
         mPendingSwitchCameraId = -1;
@@ -500,7 +502,7 @@ public class VideoModule extends CameraModule
         if (orientation == OrientationEventListener.ORIENTATION_UNKNOWN) {
             return;
         }
-        int newOrientation = CameraUtil.roundOrientation(orientation, mOrientation);
+        newOrientation = CameraUtil.roundOrientation(orientation, mOrientation);
 
         if (mOrientation != newOrientation) {
             mOrientation = newOrientation;
@@ -1346,6 +1348,8 @@ public class VideoModule extends CameraModule
         mUI.setSwipingEnabled(false);
         mUI.showFocusUI(false);
         mUI.showVideoRecordingHints(false);
+		//zhoukai add
+		mUI.setOrientationIndicator(newOrientation, false);
 
         mActivity.updateStorageSpaceAndHint(new CameraActivity.OnStorageUpdateDoneListener() {
             @Override
@@ -1501,7 +1505,8 @@ public class VideoModule extends CameraModule
             mUI.showRecordingUI(false);
             // The orientation was fixed during video recording. Now make it
             // reflect the device orientation as video recording is stopped.
-            mUI.setOrientationIndicator(0, true);
+			//zhoukai modified
+            mUI.setOrientationIndicator(mOrientation, true);
             mActivity.enableKeepScreenOn(false);
             if (shouldAddToMediaStoreNow && !fail) {
                 if (mVideoFileDescriptor == null) {
@@ -1837,7 +1842,8 @@ public class VideoModule extends CameraModule
 
         // From onResume
         mZoomValue = 1.0f;
-        mUI.setOrientationIndicator(0, false);
+		//zhoukai modified
+        mUI.setOrientationIndicator(mOrientation, false);
 
         // Start switch camera animation. Post a message because
         // onFrameAvailable from the old camera may already exist.

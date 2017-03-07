@@ -251,11 +251,13 @@ public class SettingsActivity extends Activity
             R.id.date_time_settings,
             R.id.about_settings,
             R.id.accessibility_settings,
-            //qj R.id.print_settings,
+            R.id.print_settings,
             R.id.nfc_payment_settings,
             R.id.home_settings,
             //qj R.id.status_bar_settings,
-            R.id.dashboard
+            R.id.dashboard,
+			//R.id.gestures_settings1,
+			//R.id.power_settings
     };
 
     private static final String[] ENTRY_FRAGMENTS = {
@@ -1257,7 +1259,13 @@ public class SettingsActivity extends Activity
                             removeTile = true;
                         }
                     }
-                }  else if (id == R.id.development_settings) {
+                } else if (id == R.id.print_settings) {
+                    boolean hasPrintingSupport = getPackageManager().hasSystemFeature(
+                            PackageManager.FEATURE_PRINTING);
+                    if (!hasPrintingSupport) {
+                        removeTile = true;
+                    }
+                } else if (id == R.id.development_settings) {
                     if (!showDev || um.hasUserRestriction(
                             UserManager.DISALLOW_DEBUGGING_FEATURES)) {
                         removeTile = true;

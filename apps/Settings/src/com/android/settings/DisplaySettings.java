@@ -46,6 +46,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.os.SystemProperties;
+import android.os.UserHandle;
 import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
@@ -75,6 +76,7 @@ public class DisplaySettings extends SettingsPreferenceFragment implements
     private static final String KEY_AUTO_BRIGHTNESS = "auto_brightness";
     private static final String KEY_AUTO_ROTATE = "auto_rotate";
     private static final String KEY_CAST_SCREEN = "wifi_display";
+	private static final String KEY_BLUR_EFFECT = "blur_effect";
 
     private static final int DLG_GLOBAL_CHANGE_WARNING = 1;
 
@@ -209,7 +211,14 @@ public class DisplaySettings extends SettingsPreferenceFragment implements
         } else {
             removePreference(KEY_AUTO_ROTATE);
         }
-		
+
+		//add by shanbp disable blur_effect of secondary user 2016.2.23 --begin--
+		final int myUserId = UserHandle.myUserId();
+        final boolean isSecondaryUser = myUserId != UserHandle.USER_OWNER;
+        if (isSecondaryUser) {
+            removePreference(KEY_BLUR_EFFECT);
+        }
+		//add by shanbp disable blur_effect of secondary user 2016.2.23 --end--
 		initUI();
     }
 	

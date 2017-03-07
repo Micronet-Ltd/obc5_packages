@@ -1,3 +1,7 @@
+ifeq ($(EH_PRODUCT_NAME),Q10)
+else
+ifeq ($(EH_PRODUCT_NAME),Q8)
+else
 LOCAL_PATH:= $(call my-dir)
 include $(CLEAR_VARS)
 
@@ -10,3 +14,5 @@ LOCAL_SRC_FILES := $(call all-subdir-java-files)
 LOCAL_PACKAGE_NAME := ControlRecorder
 LOCAL_CERTIFICATE := platform
 include $(BUILD_PACKAGE)
+endif
+endif

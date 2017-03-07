@@ -519,4 +519,10 @@
         name="gpsbeidou_enable_first">Please enable GPS/BeiDou first</string>
     <string
         name="gpsbeidou_start">GPS/BeiDou Start</string>
+    
+    <string name="calibrate">Calibrate</string>
+    <string name="calibrateing">For calibration, please wait !</string>
+    <string name="calibrate_err">Calibration failure</string>
+    <string name="calibrate_ok">Calibration success</string>
+    <string name="keypad_scrshot">Scrshot</string>
 </resources>

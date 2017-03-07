@@ -1,3 +1,7 @@
+ifeq ($(EH_PRODUCT_NAME),Q10)
+else
+ifeq ($(EH_PRODUCT_NAME),Q8)
+else
 LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
 
@@ -13,3 +17,5 @@ LOCAL_CERTIFICATE := platform
 include $(BUILD_PACKAGE)
 
 include $(call all-makefiles-under,$(LOCAL_PATH))
+endif
+endif

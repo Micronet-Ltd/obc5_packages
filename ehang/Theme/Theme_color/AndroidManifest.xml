@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+      package="com.yihang.launcherEx.theme.color"
+      android:versionCode="1"
+      android:versionName="1.0">
+    <uses-sdk android:minSdkVersion="8" />
+
+    <application android:label="@string/app_name" android:icon="@drawable/icon" >
+        <activity android:name="com.yihang.launcherEx.theme.color.ThemeActivity"        	
+        	android:theme="@android:style/Theme.NoTitleBar"
+        	android:label="@string/app_name"
+        	android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="com.yihang.launcherEx.PICK_THEME" />
+                <category android:name="com.yihang.launcherEx.category.THEME" />
+                <category android:name="com.yihang.launcherEx.category.WALLPAPER" />
+                <category android:name="com.yihang.launcherEx.category.LAUNCHERICON" />
+            </intent-filter>
+        </activity>
+
+    </application>
+</manifest>

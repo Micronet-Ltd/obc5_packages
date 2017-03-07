@@ -23,5 +23,9 @@ public class ServerManager {
 	public native int Closetp();
 	
 	public native int Opentp();
+	
+	public native int CloseGloveMode();
+	
+	public native int OpenGloveMode();
 
 }

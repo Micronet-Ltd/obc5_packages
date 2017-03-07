@@ -711,7 +711,9 @@ public final class Utils {
         Intent intent = onBuildStartFragmentIntent(context, fragmentName, args,
                 null /* titleResPackageName */, titleResId, title, isShortcut);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+		/*yihang hanxiaoming 2016.4.19 delete for recentapps bug begin*/
+        //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        /*yihang hanxiaoming 2016.4.19 delete for recentapps bug end*/
         context.startActivityAsUser(intent, userHandle);
     }
 

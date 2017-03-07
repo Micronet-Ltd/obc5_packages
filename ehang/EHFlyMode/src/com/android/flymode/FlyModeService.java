@@ -56,6 +56,7 @@ public class FlyModeService extends Service
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case POWER_ON:
+					
 					String result = Utilities.getFileInfo("/proc/rfkillpin");
 					//if (DBG) log("read result:" + result);
 					if(result.equals("0")&&flymode == false)

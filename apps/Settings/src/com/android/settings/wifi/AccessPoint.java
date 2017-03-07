@@ -95,6 +95,11 @@ class AccessPoint extends Preference {
     static final int SECURITY_PSK = 2;
     static final int SECURITY_EAP = 3;
 
+	static final int SECURITY_WAPI_PSK = 4;
+	static final int SECURITY_WAPI_CERT = 5;
+	private String mWAPIASCertFile;
+	private String mWAPIUserCertFile;
+	private int wapiPskType;
     enum PskType {
         UNKNOWN,
         WPA,
@@ -133,6 +138,12 @@ class AccessPoint extends Preference {
                 config.allowedKeyManagement.get(KeyMgmt.IEEE8021X)) {
             return SECURITY_EAP;
         }
+		if (config.allowedKeyManagement.get(KeyMgmt.WAPI_PSK)) {
+				 return SECURITY_WAPI_PSK;
+		}
+		if (config.allowedKeyManagement.get(KeyMgmt.WAPI_CERT)) {
+				 return SECURITY_WAPI_CERT;
+		}
         return (config.wepKeys[0] != null) ? SECURITY_WEP : SECURITY_NONE;
     }
 
@@ -143,6 +154,10 @@ class AccessPoint extends Preference {
             return SECURITY_PSK;
         } else if (result.capabilities.contains("EAP")) {
             return SECURITY_EAP;
+        } else if (result.capabilities.contains("WAPI-KEY")) {
+            return SECURITY_WAPI_PSK;
+        } else if (result.capabilities.contains("WAPI-CERT")) {
+            return SECURITY_WAPI_CERT;
         }
         return SECURITY_NONE;
     }
@@ -172,6 +187,12 @@ class AccessPoint extends Preference {
             case SECURITY_WEP:
                 return concise ? context.getString(R.string.wifi_security_short_wep) :
                     context.getString(R.string.wifi_security_wep);
+            case SECURITY_WAPI_PSK:
+                return concise ? context.getString(R.string.wifi_security_short_WAPI_PSK) :
+                    context.getString(R.string.wifi_security_WAPI_PSK);
+            case SECURITY_WAPI_CERT:
+                return concise ? context.getString(R.string.wifi_security_short_WAPI_CERT) :
+                    context.getString(R.string.wifi_security_WAPI_CERT);
             case SECURITY_NONE:
             default:
                 return concise ? "" : context.getString(R.string.wifi_security_none);
@@ -237,6 +258,8 @@ class AccessPoint extends Preference {
         bssid = config.BSSID;
         security = getSecurity(config);
         networkId = config.networkId;
+		wapiPskType = config.wapiPskType;
+        Log.e(TAG, "loadConfig()" + "wapiPskType  WAPI PSK key type " + wapiPskType);
         mConfig = config;
     }
 

@@ -535,6 +535,7 @@ public class PhoneGlobals extends ContextWrapper {
             intentFilter.addAction(TelephonyIntents.ACTION_SERVICE_STATE_CHANGED);
             intentFilter.addAction(TelephonyIntents.ACTION_EMERGENCY_CALLBACK_MODE_CHANGED);
             intentFilter.addAction(TelephonyIntents.ACTION_MANAGED_ROAMING_IND);
+            intentFilter.addAction(TelephonyIntents.ACTION_DEFAULT_DATA_SUBSCRIPTION_CHANGED);
             registerReceiver(mReceiver, intentFilter);
 
             //set the default values for the preferences in the phone.
@@ -926,8 +927,9 @@ public class PhoneGlobals extends ContextWrapper {
                 for (Phone ph : mPhones) {
                     ph.setRadioPower(enabled);
                 }
-            } else if (action.equals(TelephonyIntents.ACTION_ANY_DATA_CONNECTION_STATE_CHANGED)) {
-                if (VDBG) Log.d(LOG_TAG, "mReceiver: ACTION_ANY_DATA_CONNECTION_STATE_CHANGED");
+            } else if (action.equals(TelephonyIntents.ACTION_ANY_DATA_CONNECTION_STATE_CHANGED) ||
+                    action.equals(TelephonyIntents.ACTION_DEFAULT_DATA_SUBSCRIPTION_CHANGED)) {
+                if (VDBG) Log.d(LOG_TAG, "mReceiver: " + action + ". sub = " + subId);
                 if (VDBG) Log.d(LOG_TAG, "- state: " + intent.getStringExtra(PhoneConstants.STATE_KEY));
                 if (VDBG) Log.d(LOG_TAG, "- reason: "
                                 + intent.getStringExtra(PhoneConstants.STATE_CHANGE_REASON_KEY));
@@ -935,11 +937,30 @@ public class PhoneGlobals extends ContextWrapper {
                 // The "data disconnected due to roaming" notification is shown
                 // if (a) you have the "data roaming" feature turned off, and
                 // (b) you just lost data connectivity because you're roaming.
-                boolean disconnectedDueToRoaming =
-                        !phone.getDataRoamingEnabled()
-                        && "DISCONNECTED".equals(intent.getStringExtra(PhoneConstants.STATE_KEY))
+
+                int ddsSubId = SubscriptionManager.getDefaultDataSubId();
+                Phone ddsPhone = getPhone(SubscriptionManager.getPhoneId(ddsSubId));
+                boolean isRoaming = ddsPhone.getServiceState().getRoaming();
+                boolean isRoamingDataEnabled = ddsPhone.getDataRoamingEnabled();
+                boolean disconnectReasonRoaming =
+                        "DISCONNECTED".equals(intent.getStringExtra(PhoneConstants.STATE_KEY))
                         && Phone.REASON_ROAMING_ON.equals(
                             intent.getStringExtra(PhoneConstants.STATE_CHANGE_REASON_KEY));
+                boolean isDdsSwitch = action.equals(
+                        TelephonyIntents.ACTION_DEFAULT_DATA_SUBSCRIPTION_CHANGED);
+                boolean disconnectedDueToRoaming = mDataDisconnectedDueToRoaming;
+                if ((disconnectReasonRoaming || isDdsSwitch)
+                        && !isRoamingDataEnabled && isRoaming) {
+                    disconnectedDueToRoaming = true;
+                } else if (!isRoaming || isRoamingDataEnabled) {
+                    // Dismiss pop up only if phone is not roaming or dataonroaming is enabled
+                    disconnectedDueToRoaming = false;
+                }
+
+                if (VDBG) Log.d(LOG_TAG, "isRoaming = " + isRoaming + " isRoamingDataEnabled = "
+                        + isRoamingDataEnabled + " mDataDisconnectedDueToRoaming = "
+                        + mDataDisconnectedDueToRoaming);
+
                 if (mDataDisconnectedDueToRoaming != disconnectedDueToRoaming) {
                     mDataDisconnectedDueToRoaming = disconnectedDueToRoaming;
                     mHandler.sendEmptyMessage(disconnectedDueToRoaming
@@ -991,6 +1012,7 @@ public class PhoneGlobals extends ContextWrapper {
                 createIntent.setClass(context, ManagedRoaming.class);
                 createIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 createIntent.putExtra(PhoneConstants.SUBSCRIPTION_KEY, subscription);
+                //mod by chenqi,revert this part to svn1880,2016-03-18-11:30
                 try {
                     context.startActivity(createIntent);
                 } catch (Exception e) {
@@ -1110,7 +1132,7 @@ public class PhoneGlobals extends ContextWrapper {
             return true;
         }
         Phone imsPhone = mPhone.getImsPhone();
-        if ((imsPhone != null)
+        if (SystemProperties.getBoolean("persist.radio.ims.cmcc", false) && (imsPhone != null)
                 && (imsPhone.getServiceState().getState()
                     == ServiceState.STATE_IN_SERVICE)) {
             return true;

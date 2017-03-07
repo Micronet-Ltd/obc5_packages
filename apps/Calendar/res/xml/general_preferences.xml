@@ -18,7 +18,7 @@
     <PreferenceCategory android:title="@string/preferences_general_title">
         <ListPreference
             android:key="preferences_default_start"
-            android:defaultValue="-2"
+            android:defaultValue="4"
             android:title="@string/default_start_title"
             android:entries="@array/default_start_entries"
             android:entryValues="@array/default_start_values" />

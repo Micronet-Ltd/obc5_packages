@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+	<!--
+		/* * Copyright (C) 2008 The Android Open Source Project * * Licensed
+		under the Apache License, Version 2.0 (the "License"); * you may not
+		use this file except in compliance with the License. * You may obtain
+		a copy of the License at * *
+		http://www.apache.org/licenses/LICENSE-2.0 * * Unless required by
+		applicable law or agreed to in writing, software * distributed under
+		the License is distributed on an "AS IS" BASIS, * WITHOUT WARRANTIES
+		OR CONDITIONS OF ANY KIND, either express or implied. * See the
+		License for the specific language governing permissions and *
+		limitations under the License. */
+	-->
+
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+	<string name="application_name">芒果主題</string>
+
+	<string name="permlab_read_settings">"讀取主屏幕的設置和快捷方式"</string>
+	<string name="permdesc_read_settings">"允許應用程序讀取主屏幕的設置和快捷方式。"</string>
+	<string name="permlab_write_settings">"寫入主屏幕的設置和快捷方式"</string>
+	<string name="permdesc_write_settings">"允許應用程序更改主屏幕的設置和快捷方式。"</string>
+
+    <string name="activity_not_found">"您的手機上未安裝應用程序。"</string>
+    <string name="chooser_wallpaper">"選擇壁紙來源"</string>
+    
+    <string name="theme_app_name">"我的主題"</string>
+    <string name="theme_choose_theme">"選擇主題"</string>
+    <string name="theme_change_local">"更改局部主題"</string>
+    <string name="theme_wallpaper">"桌面壁紙"</string>
+    <string name="theme_app_icon">"圖標"</string> 
+    <string name="theme_lock_wallpaper">鎖屏壁紙</string>
+    <string name="theme_lockscreen">鎖屏</string>
+    <string name="theme_wallpaper_more">"更多壁紙"</string>
+    <string name="theme_icon_more">"更多圖標"</string>
+    <string name="theme_apply">應用</string>
+    <string name="theme_applying">應用中，請稍候...</string>
+    <string name="apply_theme_failed">應用失敗，建議更新到最新版本</string>
+    <string name="theme_apply_time_out">應用超時</string>
+
+	<string name="theme_name_default">"默認"</string>
+	<string name="theme_author_default">"默認"</string>
+
+</resources>

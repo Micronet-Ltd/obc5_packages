@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+	package="com.yihang.thememgr" android:versionCode="1"
+	android:versionName="1.0">
+
+ 	<permission android:name="com.yihang.thememgr.permission.READ_SETTINGS"
+		android:permissionGroup="android.permission-group.SYSTEM_TOOLS"
+		android:protectionLevel="normal" android:label="@string/permlab_read_settings"
+		android:description="@string/permdesc_read_settings" />
+	<permission android:name="com.yihang.thememgr.permission.WRITE_SETTINGS"
+		android:permissionGroup="android.permission-group.SYSTEM_TOOLS"
+		android:protectionLevel="normal" android:label="@string/permlab_write_settings"
+		android:description="@string/permdesc_write_settings" />
+
+	<uses-permission android:name="android.permission.SET_WALLPAPER" />
+    <!-- Add By liyichong to add switch theme activity (QL1001) SW00061906 2014-07-01 begin -->
+	<uses-permission android:name="android.permission.CHANGE_CONFIGURATION" />
+	<uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <!-- Add By liyichong to add switch theme activity (QL1001) SW00061906 2014-07-01 end -->
+
+	<uses-sdk android:minSdkVersion="8" />
+
+	<application android:icon="@drawable/icon" android:label="@string/application_name">
+		<activity android:name="com.yihang.thememgr.ThemeSettingActivity"
+			android:label="@string/theme_app_name" android:icon="@drawable/icon"
+			android:screenOrientation="portrait"
+			android:excludeFromRecents="true"
+			android:launchMode="singleInstance"
+			android:theme="@android:style/Theme.Wallpaper.NoTitleBar">
+			<intent-filter>
+			    <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+				<action android:name="com.yihang.action.THEME" />
+				<category android:name="android.intent.category.DEFAULT" />
+			</intent-filter>
+		</activity>
+		<activity android:name="com.yihang.thememgr.ThemeCustomActivity"
+			android:theme="@android:style/Theme.Wallpaper.NoTitleBar"
+			android:screenOrientation="portrait" />
+
+		<activity android:name="com.yihang.thememgr.ThemeCustomOptActivity"
+			android:theme="@android:style/Theme.Wallpaper.NoTitleBar"
+			android:screenOrientation="portrait" />
+
+		<activity android:name="ThemeApplyActivity" android:theme="@android:style/Theme.NoTitleBar"
+			android:screenOrientation="portrait"/>
+
+		<!--
+			The settings provider contains Home's data, like the workspace
+			favorites
+		-->
+		<provider android:name="ThemeProvider" android:authorities="com.yihang.thememgr.Settings"
+			android:writePermission="com.yihang.thememgr.permission.WRITE_SETTINGS"
+			android:readPermission="com.yihang.thememgr.permission.READ_SETTINGS"
+			android:exported="true"
+			android:multiprocess="true" />
+        <!-- Add By liyichong to add switch theme activity (QL1001) SW00061906 2014-07-01 begin -->
+		<activity android:name="com.yihang.thememgr.ThemeSwtichActivity"
+			android:label="@string/theme_swtich" android:icon="@drawable/icon_swtich"
+			android:excludeFromRecents="true"
+			android:theme="@android:style/Theme.NoDisplay">
+			<intent-filter>
+				<action android:name="com.yihang.action.THEMESWITCH" />
+				<action android:name="android.intent.action.MAIN" />
+				<category android:name="android.intent.category.LAUNCHER" />
+				<category android:name="android.intent.category.DEFAULT" />
+			</intent-filter>
+		</activity>
+        <!-- Add By liyichong to add switch theme activity (QL1001) SW00061906 2014-07-01 end -->
+
+	</application>
+</manifest>

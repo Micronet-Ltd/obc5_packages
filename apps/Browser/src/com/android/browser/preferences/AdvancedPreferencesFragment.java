@@ -121,8 +121,9 @@ public class AdvancedPreferencesFragment extends PreferenceFragment
         } else if (pref.getKey().equals(PreferenceKeys.PREF_RESET_DEFAULT_PREFERENCES)) {
             Boolean value = (Boolean) objValue;
             if (value.booleanValue() == true) {
-                startActivity(new Intent(BrowserActivity.ACTION_RESTART, null,
-                        getActivity(), BrowserActivity.class));
+                //startActivity(new Intent(BrowserActivity.ACTION_RESTART, null,
+                //        getActivity(), BrowserActivity.class));
+				AdvancedPreferencesFragment.this.getActivity().recreate();
                 return true;
             }
         } else if (pref.getKey().equals(PreferenceKeys.PREF_PLUGIN_STATE)

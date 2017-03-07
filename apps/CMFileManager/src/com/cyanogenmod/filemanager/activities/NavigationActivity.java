@@ -679,6 +679,12 @@ public class NavigationActivity extends Activity
         onLayoutChanged();
         mDrawerToggle.onConfigurationChanged(newConfig);
     }
+	
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		super.onPrepareOptionsMenu(menu);
+        return true;
+    }
 
     /**
      * {@inheritDoc}
@@ -2081,6 +2087,23 @@ public class NavigationActivity extends Activity
         });
         dialog.show();
     }
+	//zhoukai modified
+	private static boolean isdir(Context context ,String str){
+			 StorageVolume[] volumes =
+                    StorageHelper.getStorageVolumes(context, false);
+					Log.e("volumes","volumes:" + volumes);
+			for (StorageVolume volume: volumes) {
+                     if (volume != null) {
+						 String path = volume.getPath();
+						 Log.e("volumespath","volumespath:" + path);
+						 if(path.equals(str)){
+							 return true;
+							 
+						  }
+						}
+		}
+		return false;
+	}
 
     /**
      * Method that checks the action that must be realized when the
@@ -2107,7 +2130,13 @@ public class NavigationActivity extends Activity
         boolean flag = this.mExitFlag;
 
         this.mExitFlag = !back();
-
+		//zhoukai modified
+          if(this.mExitFlag&&(mEasyModeListView.getVisibility() ==View.GONE)&&(isdir(this.getApplicationContext(),getCurrentNavigationView().getCurrentDir()))){
+			 mEasyModeListView.setVisibility(View.VISIBLE);
+        	      getCurrentNavigationView().setVisibility(View.GONE);
+				  return true;
+			
+		}
         // Retrieve if the exit status timeout has expired
         long now = System.currentTimeMillis();
         boolean timeout = (this.mExitBackTimeout == -1 ||
@@ -2228,7 +2257,7 @@ public class NavigationActivity extends Activity
      */
     public boolean back() {
         // Check that has valid history
-        while (this.mHistory.size() > 0) {
+        while (this.mHistory.size() > 0 && (mEasyModeListView.getVisibility() ==View.GONE)) {
             History h = this.mHistory.get(this.mHistory.size() - 1);
             if (h.getItem() instanceof NavigationViewInfoParcelable) {
                 // Verify that the path exists
@@ -2250,7 +2279,7 @@ public class NavigationActivity extends Activity
         }
 
         //Navigate to history
-        if (this.mHistory.size() > 0) {
+        if (this.mHistory.size() > 0 && (mEasyModeListView.getVisibility() ==View.GONE)) {
             return navigateToHistory(this.mHistory.get(this.mHistory.size() - 1));
         }
 

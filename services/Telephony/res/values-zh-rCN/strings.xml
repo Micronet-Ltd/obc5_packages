@@ -705,5 +705,8 @@
     <string name="sub_2">卡 2</string>
     <!-- Set Subscription screen: label sub 3 -->
     <string name="sub_3">卡 3</string>
+	<string name="sim_info">SIM卡信息</string>
+    <string name="close">关闭</string>
+    <string name="change">设置</string>
     
 </resources>

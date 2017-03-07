@@ -656,4 +656,10 @@
     </string>
     <string
             name="gpsbeidou_start">GPS/北斗 开始</string>
+    <string name="calibrate">校准</string>
+    <string name="calibrateing">正在进行校准，请等待！！</string>
+    <string name="calibrate_err">校准失败</string>
+    <string name="calibrate_ok">校准成功</string>
+    
+    <string name="keypad_scrshot">截屏按键</string>
 </resources>

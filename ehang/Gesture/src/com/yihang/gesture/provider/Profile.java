@@ -60,10 +60,8 @@ public class Profile {
 		if (c.moveToNext()) {
 			result=c.getInt(0);
 		} 
-			c.close();
-			return result;
-		
-	
+		c.close();
+		return result;
 	}
 	
 	public void updateSwitchstate(int switchstate) {
@@ -71,5 +69,22 @@ public class Profile {
 		values.put("switchstate", switchstate);
 		values.put("updateTime", util.getCurrentDate());
 		db.update("switchstate", values, null, null);
+	}
+	
+	public int getGloveSwitchstate() {
+		Cursor c = db.rawQuery("select switchstate from golveswitchstate", null);
+		int result=0;
+		if (c.moveToNext()) {
+			result=c.getInt(0);
+		} 
+		c.close();
+		return result;
+	}
+	
+	public void updateGloveSwitchstate(int switchstate) {
+		ContentValues values = new ContentValues();
+		values.put("switchstate", switchstate);
+		values.put("updateTime", util.getCurrentDate());
+		db.update("golveswitchstate", values, null, null);
 	}
 }

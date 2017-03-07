@@ -1,7 +1,7 @@
 #define LOG_TAG "Canbus"
-
 #include "canbus.h"
 #include "can.h"
+
 #include <android/log.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -18,18 +18,18 @@
 #include <android/log.h>
 #include <pthread.h>
 #include <sys/prctl.h>
-#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR,LOG_TAG,__VA_ARGS__)
-#define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
-
-#define ERR(...) LOGE(__VA_ARGS__)
-
-#define  DD(...)   LOGD(__VA_ARGS__)
 
 #define CAN1_TTY    "/dev/ttyACM2"
 #define CAN2_TTY    "/dev/ttyACM3"
 #define J1708_TTY   "/dev/ttyACM4"
+
 static pthread_t thread;
-static int fd=-1; //File Descriptor (Handle)
+int fd=-1; //File f (Handle)
+
+#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR,LOG_TAG,__VA_ARGS__)
+#define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
+#define ERR(...) LOGE(__VA_ARGS__)
+#define  DD(...)   LOGD(__VA_ARGS__)
 
 struct canbus_globals g_canbus;
 
@@ -81,7 +81,7 @@ jint JNI_OnLoad(JavaVM* vm, void* reserved)
     }
 
 
-    // Initialization for QBridge Implementation
+    // Initialization for FlexCAN Implementation
     jclass cls = env->FindClass("com/micronet/canbus/CanbusFrame");
     g_canbus.canbusFrameClass = (jclass)env->NewGlobalRef(cls);
 
@@ -91,11 +91,15 @@ jint JNI_OnLoad(JavaVM* vm, void* reserved)
     jclass clsCanbusFrameType = env->FindClass("com/micronet/canbus/CanbusFrameType");
     jfieldID typeStandardField = env->GetStaticFieldID(clsCanbusFrameType, "STANDARD", "Lcom/micronet/canbus/CanbusFrameType;");
     jfieldID typeExtendedField = env->GetStaticFieldID(clsCanbusFrameType, "EXTENDED", "Lcom/micronet/canbus/CanbusFrameType;");
+    jfieldID typeExtendedRemoteField = env->GetStaticFieldID(clsCanbusFrameType, "EXTENDED_REMOTE", "Lcom/micronet/canbus/CanbusFrameType;");
+    jfieldID typeStandardRemoteField = env->GetStaticFieldID(clsCanbusFrameType, "STANDARD_REMOTE", "Lcom/micronet/canbus/CanbusFrameType;");
+
 
     g_canbus.type_s = (jobject) env->NewGlobalRef(env->GetStaticObjectField(clsCanbusFrameType, typeStandardField));
     g_canbus.type_e = (jobject) env->NewGlobalRef(env->GetStaticObjectField(clsCanbusFrameType, typeExtendedField));
-    // end QBridge
-
+    g_canbus.type_s_r = (jobject) env->NewGlobalRef(env->GetStaticObjectField(clsCanbusFrameType, typeStandardRemoteField));
+    g_canbus.type_e_r= (jobject) env->NewGlobalRef(env->GetStaticObjectField(clsCanbusFrameType, typeExtendedRemoteField));
+    // end FlexCAN
 
     return JNI_VERSION_1_6;
 }
@@ -105,7 +109,6 @@ int parseHex(uint8_t * asciiString, int len, uint8_t * hexValue) {
     if (0 == len) {
         return -1;
     }
-
     while (len--) {
         if (*asciiString == 0) return -1;
         *hexValue <<= 4;
@@ -135,10 +138,10 @@ void j1939rxd(BYTE *rxd) {
     uint8_t dLength;
     uint8_t id[8]; //maximum size of an Identifer is 8 bytes Longs
     uint8_t *pId=id;
-    uint8_t hexId[4]={0};
+    uint8_t hexId[8]={0};
     int dataStartPos;
     uint8_t canData[16];
-    BYTE hexData[4]={0};
+    BYTE hexData[8]={0};
 
     // Convert rxd (frame) into CanbusFrame object
     if (*rxd == 't') {
@@ -403,7 +406,7 @@ static void *monitor_data_thread(void *param) {
                     continue;
                 }
                 int carriageReturn = 0;
-                //For an extended message
+                //For an extended CAN frame
                 if (data[i] == 'T'){//T0x54
                     start = i;
                     uint8_t dataLength = (data[i + 9] - '0'); // get the actual value
@@ -422,7 +425,7 @@ static void *monitor_data_thread(void *param) {
                     }
                     else LOGD("Error:Invalid data length! ");
                 }
-                //For standard message
+                //For standard can frame
                 if (data[i] == 't') {//T=0x74
                     start = i;
                     uint8_t dataLength = (data[i + 4] - '0');
@@ -440,6 +443,7 @@ static void *monitor_data_thread(void *param) {
                     }
                     else LOGD("Error:Invalid data length! ");
                 }
+
                 // extract one packet and convert into a byte array
                 uint8_t frame[31]; //31 is the maximum size of an extended packet
                 uint8_t * pFrame=frame;
@@ -456,7 +460,7 @@ static void *monitor_data_thread(void *param) {
 
 JNIEXPORT jint JNICALL
 Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_createInterface(JNIEnv *env, jobject instance, jboolean listeningModeEnable, jint bitrate, jboolean termination) {
-    int fd;//commented out
+    //int fd;//commented out
     char *tty;
     DD("opening port: '%s'\n", CAN1_TTY);
 
@@ -520,32 +524,67 @@ JNIEXPORT jint JNICALL
 Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_removeInterface(JNIEnv *env,
                                                                       jobject instance) {
     // TODO close Canbus
+    /*int fd;//commented out
+    char *tty;
+    DD("opening port: '%s'\n", CAN1_TTY);
 
+    if ((fd = open(CAN1_TTY, O_RDWR | O_NOCTTY | O_NONBLOCK)) < 0) {
+        perror(tty);
+        exit(EXIT_FAILURE);
+    }
 
+    if (closeCAN(fd) == -1) {
+        return -1;
+    }*/
+    return closeCAN(fd);
+}
+JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_setHardwareFilter(
+        JNIEnv *env, jobject obj, jobjectArray hardwareFilters)
+{
+   /* struct qb_filter_mask filter_array[25];
+    int numfilter = env->GetArrayLength (hardwareFilters);
+    int i,j;
+    int total_filters = 0;
+
+    for (i = 0; i < numfilter; i++) {
+        jobject element = env->GetObjectArrayElement(hardwareFilters, i);
+
+        //get filter ids array
+        jclass cls = env->GetObjectClass(element);
+        jmethodID methodId = env->GetMethodID(cls, "getIds", "()[I");
+        jintArray ids = (jintArray)env->CallObjectMethod(element, methodId);
+        jint* ints = env->GetIntArrayElements(ids, NULL);
+        jsize lengthOfArray = env->GetArrayLength(ids);
+
+        //get filter mask
+        g_canbus.typeField = env->GetFieldID(cls, "mMask", "I");
+        int mask = env->GetIntField(element, g_canbus.typeField);
+
+        //get frame type
+        methodId = env->GetMethodID(cls, "getType", "()Lcom/micronet/canbus/CanbusFrameType;");
+        jobject o = env->CallObjectMethod(element, methodId);
+        cls = env->FindClass("com/micronet/canbus/CanbusFrameType");
+        g_canbus.typeField = env->GetFieldID(cls, "mType", "I");
+        int type = env->GetIntField(o, g_canbus.typeField);
+
+        filter_array[i].mask = mask;
+        filter_array[i].is_extended = type;
+        filter_array[i].count = lengthOfArray;
+        for (j = 0; j < lengthOfArray; j++) {
+            filter_array[i].filter_id[j] = ints[j];
+            total_filters++;
+        }
+    }
+
+    if (total_filters > 25){
+        char str [20];
+        snprintf(str, sizeof(str), "%d", i);
+        throwException(env, "Hardware Filter: Too many filter ids (%s). Max allowed - 25", str);
+    }
+
+    qb_filter(TRUE);
+    qb_filter_list(TRUE, filter_array, numfilter);
+
+    return 0;*/
 }
 
-JNIEXPORT jint JNICALL
-Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_setInterfaceBitrate(JNIEnv *env,
-                                                                          jobject instance,
-                                                                          jint bitrate) {
-
-    // TODO remove if interface can only be set when opening CAN
-
-}
-
-JNIEXPORT jint JNICALL
-Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_enableListeningMode(JNIEnv *env,
-                                                                          jobject instance,
-                                                                          jboolean enable) {
-
-    // TODO remove if interface can only be set when opening CAN
-
-}
-
-JNIEXPORT jint JNICALL
-Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_setTermination(JNIEnv *env, jobject instance,
-                                                                     jboolean enabled) {
-
-    // TODO remove if interface can only be set when opening CAN
-
-}

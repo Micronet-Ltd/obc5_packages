@@ -1,7 +1,28 @@
-//
-// Created by eemaan.siddiqi on 2/11/2017.
-//
+/*
+ Created by eemaan.siddiqi on 2/11/2017.
+*/
+
+#ifndef CAN_H
+#define CAN_H
+
 #include <stdint.h>
+#include <errno.h>
+#include <termios.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
+#include <sys/poll.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <linux/types.h>
+#include <linux/netlink.h>
+#include <android/log.h>
+
+#define error_message ERR
 #define DWORD uint32_t
 #define WORD uint16_t
 #define BYTE uint8_t
@@ -22,3 +43,4 @@ typedef union _J1939_ID {
     } pgn_bits;
     DWORD dwVal;         //some times it is useful to access it all at once
 }J1939_ID;
+#endif //CAN_H

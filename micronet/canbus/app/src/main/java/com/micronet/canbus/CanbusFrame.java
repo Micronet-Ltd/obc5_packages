@@ -5,8 +5,7 @@ package com.micronet.canbus;
  * Includes byte array that representes the payload data within Canbus packet, 
  * id that holds both Standard &amp; Extended identifiers and packet type indicator (Standard/Extended).
  */
-public class CanbusFrame
-{
+public class CanbusFrame{
 	private int mId;
 	private byte[] mData;
 	private CanbusFrameType mType = CanbusFrameType.STANDARD;
@@ -69,7 +68,5 @@ public class CanbusFrame
 	/**
      * Sets the frame message type to be either Extended or Standard.
      */
-	public void setType(CanbusFrameType type) {
-		mType = type;
-	}
+	public void setType(CanbusFrameType type) {mType = type;}
 }

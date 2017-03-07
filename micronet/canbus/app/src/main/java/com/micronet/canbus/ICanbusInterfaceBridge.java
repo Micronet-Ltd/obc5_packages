@@ -6,4 +6,14 @@ package com.micronet.canbus;
 
 interface ICanbusInterfaceBridge {
         public void create();
+        //added after adding CanbusI/F
+        public void create(boolean listeningMode);
+        public void remove();
+        public void setBitrate(int bitrate);
+        public void setFilters(CanbusHardwareFilter[] hardwareFilters);
+        public CanbusSocket createSocket();
+/*        public boolean	checkJ1708Support();*/
+/*        public int getBitrate();*/
+        public void setListeningMode(boolean listeningModeEnable);
+/*        public void sendRecovery(int action);*/
 }

@@ -18,7 +18,7 @@ public class FlexCANCanbusSocket extends CanbusSocket implements CanbusListener{
     //TODO: how many elements ??
     // Needs enough to prevent blocking insertion.
     BlockingQueue<CanbusFrame> mQueue = new LinkedBlockingQueue<CanbusFrame>(2000);
-    BlockingQueue<J1708Frame> mQueueJ1708 = new LinkedBlockingQueue<J1708Frame>(2000);
+    /*BlockingQueue<J1708Frame> mQueueJ1708 = new LinkedBlockingQueue<J1708Frame>(2000);*/
 
     /**
      * Creates Canbus socket.
@@ -67,12 +67,11 @@ public class FlexCANCanbusSocket extends CanbusSocket implements CanbusListener{
     }
 
 
-
     /**
      * Reads J1708 frame. Will block the calling thread until data
      * is received from J1708 bus.
      */
-    public J1708Frame readJ1708()
+/*    public J1708Frame readJ1708()
     {
         J1708Frame frame = null;
         try {
@@ -84,7 +83,7 @@ public class FlexCANCanbusSocket extends CanbusSocket implements CanbusListener{
         }
 
         return frame;
-    }
+    }*/
 
 
     /**
@@ -95,7 +94,7 @@ public class FlexCANCanbusSocket extends CanbusSocket implements CanbusListener{
      *
      * @return the head J1708 frame, or null if th specified waiting time elapses before J1708 frame is available
      */
-    public J1708Frame readJ1708(long timeout)
+   /* public J1708Frame readJ1708(long timeout)
     {
         J1708Frame frame = null;
         try {
@@ -107,7 +106,7 @@ public class FlexCANCanbusSocket extends CanbusSocket implements CanbusListener{
         }
 
         return frame;
-    }
+    }*/
 
     @Override
     public void onPacketReceive(CanbusFrame frame) {
@@ -115,11 +114,11 @@ public class FlexCANCanbusSocket extends CanbusSocket implements CanbusListener{
             Log.e(TAG, "Unable to put frame, dropping.");
     }
 
-    @Override
-    public void onPacketReceiveJ1708(J1708Frame frame) {
+    /*@Override
+    public void onPacketReceiveJ1708(J1708Frame frame ) {
         if(!mQueueJ1708.offer(frame))
             Log.e(TAG, "Unable to put frame, dropping.");
-    }
+    }*/
 
     /**
      * Sends Canbus frame through socket.

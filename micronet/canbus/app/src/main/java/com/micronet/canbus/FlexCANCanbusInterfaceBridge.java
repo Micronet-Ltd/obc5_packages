@@ -4,7 +4,7 @@ package com.micronet.canbus;
  * Created by brigham.diaz on 1/27/2017.
  */
 
-public class FlexCANCanbusInterfaceBridge {
+public class FlexCANCanbusInterfaceBridge implements ICanbusInterfaceBridge {
     private boolean listeningModeEnable;
     private boolean termination;
     private int bitrate;
@@ -12,12 +12,12 @@ public class FlexCANCanbusInterfaceBridge {
      * Creates new Canbus interface (up).
      */
     private static final String TAG = "CanbusSocket";
-
+    private int fd;
     /**
      *
      */
     public void create() {
-        createInterface(false,250000,true); //TODO: changed listening mode to false and termination to true because of a bug
+        createInterface(false,250000,true); //TO-DO: changed listening mode to false and termination to true because of a bug
     }
 
     /**
@@ -70,16 +70,16 @@ public class FlexCANCanbusInterfaceBridge {
     /**
      * Sets filters in Canbus hardware controller.
      */
-  /*  public void setFilters(CanbusHardwareFilter[] hardwareFilters) {
+    public void setFilters(CanbusHardwareFilter[] hardwareFilters) {
         setHardwareFilter(hardwareFilters);
-    }*/
+    }
 
     /**
      *	Creates new socket on Canbus interface.
      */
     public CanbusSocket createSocket(){
-        // TODO: pass fd to socket
-        return null;//new QBridgeCanbusSocket(fd);
+        // TODO: pass fd to socket - DONE
+        return new FlexCANCanbusSocket(fd);//new QBridgeCanbusSocket(fd);
     }
 
     /**
@@ -89,16 +89,13 @@ public class FlexCANCanbusInterfaceBridge {
         createInterface(listeningModeEnable, this.bitrate, this.termination);
     }
 
-    public boolean checkJ1708Support()
-    {
-        return true;
-    }
-   // private native int setHardwareFilter(CanbusHardwareFilter[] hardwareFilters);
+/*    public boolean checkJ1708Support() {return true;}*/
+    private native int setHardwareFilter(CanbusHardwareFilter[] hardwareFilters);
     private native int createInterface(boolean listeningModeEnable, int bitrate, boolean termination);
     private native int removeInterface();
-    private native int setInterfaceBitrate(int bitrate);
+   /* private native int setInterfaceBitrate(int bitrate);
     private native int enableListeningMode(boolean enable);
-    private native int setTermination(boolean enabled);
+    private native int setTermination(boolean enabled);*/
 
     static
     {

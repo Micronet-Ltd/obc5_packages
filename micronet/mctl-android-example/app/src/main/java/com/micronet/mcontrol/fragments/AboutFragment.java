@@ -5,7 +5,9 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
+import com.micronet.mcontrol.BuildConfig;
 import com.micronet.mcontrol.R;
 
 /**
@@ -18,6 +20,8 @@ public class AboutFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.fragment_section_about, container, false);
+        TextView txtAbout = (TextView)rootView.findViewById(R.id.txtAbout);
+        txtAbout.setText(String.format("MCTL Demo App v %s\nCopyright © 2017 Micronet Inc.\n", BuildConfig.VERSION_NAME));
         return rootView;
     }
 }

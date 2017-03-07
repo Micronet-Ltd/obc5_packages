@@ -1,5 +1,7 @@
 package com.micronet.mcontrol;
 
+import com.micronet.mcontrol.interfaces.ADCInterface;
+
 /**
  * Created by brigham.diaz on 5/25/2016.
  */

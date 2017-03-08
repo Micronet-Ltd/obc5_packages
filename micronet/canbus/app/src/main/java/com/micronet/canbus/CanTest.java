@@ -35,6 +35,8 @@ public class CanTest {
     private static final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
     private static final String STD = "STD";
     private static final String EXT = "EXT";
+    private static final String STD_R = "STD_R";
+    private static final String EXT_R = "EXT_R";
 
     private CanbusInterface canbusInterface;
     private CanbusSocket canbusSocket;
@@ -279,7 +281,9 @@ public class CanTest {
             // 8 bit - PDU specific
             // 8 bit - source address
             // We need to keep only PDU format + PDU specific, and mask out everything else
-            final int mask = 0b000_0_0_11111111_11111111_00000000;
+            /*final int mask = 0b000_0_0_11111111_11111111_00000000;*/
+            final int mask = 0b000_1_1_11111111_11111111_00000000; //Included Reserved an DP
+            //final int mask =0x03FFFF00;
 
             while (true) {
                 CanbusFrame canbusFrame = null;
@@ -289,11 +293,23 @@ public class CanTest {
                     } else {
                         canbusFrame = canbusSocket.read(READ_TIMEOUT);
                     }
-
                     if (canbusFrame != null) {
                         long time = SystemClock.elapsedRealtime();
-                        int pgn = (canbusFrame.getId() & mask) >> 8;
+                        int pgn = ((canbusFrame.getId() & mask)  >> 8);
 
+                        String canFrameType="";
+                        if(canbusFrame.getType() == CanbusFrameType.STANDARD){
+                            canFrameType=STD;
+                        }
+                        else if(canbusFrame.getType() == CanbusFrameType.EXTENDED){
+                            canFrameType=EXT;
+                        }
+                        else if (canbusFrame.getType() == CanbusFrameType.STANDARD_REMOTE){
+                            canFrameType=STD_R;
+                        }
+                        else if(canbusFrame.getType() == CanbusFrameType.EXTENDED_REMOTE){
+                            canFrameType=EXT_R;
+                        }
                         // done to prevent adding too much text to UI at once
                         if (canData.length() < 500) {
                             // avoiding string.format for performance
@@ -301,7 +317,7 @@ public class CanTest {
                             canData.append(",");
                             canData.append(Integer.toHexString(canbusFrame.getId()));
                             canData.append(",");
-                            canData.append((canbusFrame.getType() == CanbusFrameType.STANDARD ? STD : EXT));
+                            canData.append(canFrameType);
                             canData.append(",");
                             canData.append(Integer.toHexString(pgn));
                             canData.append(",[");
@@ -426,6 +442,10 @@ public class CanTest {
         public void run() {
             int data = 0;
             do {
+                //To send a different type of frame change this to CanbusFrameType.EXTENDED
+                CanbusFrameType mType= CanbusFrameType.STANDARD;
+                //A different ID Can be sent by changing the value here
+                int canId=0x123;
                 ByteBuffer dbuf = ByteBuffer.allocate(8);
                 dbuf.order(ByteOrder.LITTLE_ENDIAN);
                 dbuf.putInt(data++);
@@ -434,10 +454,13 @@ public class CanTest {
                 a[1] = 0x34;
                 a[2] = 0x45;
                 a[3] = 0x67;
-                //a[4] = 0x89;
-                //0xab,0xcd,0xef};
+                a[4] = 0x1F;
+                a[5] = 0x2F;
+                a[6] = 0x3F;
+                a[7] = 0x4F;
+
                 if(canbusSocket != null) {
-                    canbusSocket.write(new CanbusFrame(0x123, a));
+                    canbusSocket.write(new CanbusFrame(canId, a,mType));
                 }
                 try {
                     Thread.sleep(j1939IntervalDelay);

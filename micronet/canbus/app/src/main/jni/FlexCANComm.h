@@ -7,10 +7,11 @@
 
 
 #include "can.h"
-class FlexCANcomm {
-    int serial_send_data(unsigned char*, uint32_t);
 
-};
+
+int serial_send_data(unsigned char*, uint32_t);
+
+
 
 
 #endif //CANBUS_FLEXCANCOMM_H

@@ -113,7 +113,7 @@ public class CanOverviewFragment extends Fragment {
         super.onStart();
 
         // Set title bar
-        ((MainActivity) getActivity()).setActionBarTitle(String.format("Native CANbus %s   (CANbus API %s)", getAppVersion(), Info.VERSION));
+        ((MainActivity) getActivity()).setActionBarTitle(String.format("Canbus Test %s (CANbus API %s)", getAppVersion(), Info.VERSION));
 
         View rootView = getView();
 

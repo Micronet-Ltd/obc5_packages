@@ -3,10 +3,14 @@
 //
 
 #include <unistd.h>
-/*#include "FlexCANcomm.h"*/
 #include "can.h"
-//#include "canbus.cpp"
-extern int fd;
+#include "FlexCANcomm.h"
+
+
+
+
+extern int fd; //serial port file descriptor (handle)
+
 int serial_send_data(BYTE *mydata, DWORD bytes_to_write)
 {
     DWORD numwr = 0;

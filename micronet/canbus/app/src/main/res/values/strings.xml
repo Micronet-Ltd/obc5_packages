@@ -2,7 +2,6 @@
     <string name="app_name">canbus</string>
     <string name="close_interface">Close Interface</string>
     <string name="api_ver">API VER</string>
-    <string name="app_ver">APP VER</string>
     <string name="interface_status">Interface:</string>
     <string name="socket_status">Socket:</string>
     <string name="baud_rate">Baudrate:</string>

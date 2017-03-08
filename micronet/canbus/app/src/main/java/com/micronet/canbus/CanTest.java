@@ -430,8 +430,14 @@ public class CanTest {
                 dbuf.order(ByteOrder.LITTLE_ENDIAN);
                 dbuf.putInt(data++);
                 byte[] a = dbuf.array();
+                a[0] = 0x12;
+                a[1] = 0x34;
+                a[2] = 0x45;
+                a[3] = 0x67;
+                //a[4] = 0x89;
+                //0xab,0xcd,0xef};
                 if(canbusSocket != null) {
-                    canbusSocket.write(new CanbusFrame(0x111, a));
+                    canbusSocket.write(new CanbusFrame(0x123, a));
                 }
                 try {
                     Thread.sleep(j1939IntervalDelay);

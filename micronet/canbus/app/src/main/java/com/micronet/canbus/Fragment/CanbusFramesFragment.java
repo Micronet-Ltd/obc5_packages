@@ -84,7 +84,7 @@ public class CanbusFramesFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_canframes, container, false);
         lvJ1939Frames = (TextView)  view.findViewById(R.id.lvJ1939Frames);
         lvJ1939Frames.setMovementMethod(new ScrollingMovementMethod());
-/*        lvJ1708Frames = (TextView)  view.findViewById(R.id.lvJ1708Frames);
+/*      lvJ1708Frames = (TextView)  view.findViewById(R.id.lvJ1708Frames);
         lvJ1708Frames.setMovementMethod(new ScrollingMovementMethod());*/
         return view;
     }

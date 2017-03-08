@@ -66,10 +66,10 @@ static const char* qb_str_command(char command)
 }*/
 
 int32_t ParseCanMessToString(int msg_type, int id, int data_len, BYTE * data, uint8_t * pDestBuff){
-//t ParseCanMessToString(pFLEXCAN_queue_element_t pCanMess, const uint8_t *pDestBuff) {
-    uint8_t   tmp, tmp1, ind, *pmsg_str, curr_msg_len = 0;
+    uint8_t tmp1, ind, *pmsg_str, curr_msg_len = 0;
 
     //TODO: deal with remote frames
+
     if (NULL == data || NULL == pDestBuff) {
         LOGD("%s: Error wrong params\n", __func__);
         return -1;
@@ -111,25 +111,27 @@ int32_t ParseCanMessToString(int msg_type, int id, int data_len, BYTE * data, ui
     pmsg_str++;
     curr_msg_len ++;
 
-    for (ind = 0; ind < data_len; ind++) {
-        tmp1 = (data[ind]>>4) & 0xF;
-        if (tmp1 > 9 )
-            *pmsg_str = tmp1 - 10 + 'A';
-        else
-            *pmsg_str = tmp1 + '0';
+    if ((msg_type==EXTENDED) || (msg_type==STANDARD)) {
+        for (ind = 0; ind < data_len; ind++) {
+            tmp1 = (data[ind] >> 4) & 0xF;
+            if (tmp1 > 9)
+                *pmsg_str = tmp1 - 10 + 'A';
+            else
+                *pmsg_str = tmp1 + '0';
 
-        pmsg_str++;
-        curr_msg_len++;
-        tmp1 = data[ind] & 0xF;
-        if (tmp1 > 9 )
-            *pmsg_str = tmp1 - 10 + 'A';
-        else
-            *pmsg_str = tmp1 + '0';
+            pmsg_str++;
+            curr_msg_len++;
 
-        pmsg_str++;
-        curr_msg_len++;
+            tmp1 = data[ind] & 0xF;
+            if (tmp1 > 9)
+                *pmsg_str = tmp1 - 10 + 'A';
+            else
+                *pmsg_str = tmp1 + '0';
+
+            pmsg_str++;
+            curr_msg_len++;
+        }
     }
-
     //Message time stamp
  /*   pmsg_str += 3;
     for (ind = 0; ind < 4; ind++) {

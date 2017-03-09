@@ -2,9 +2,11 @@ package micronet.com.cellular_data_temperature_controlled;
 
 import android.app.Service;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.os.Environment;
 import android.os.Handler;
@@ -69,6 +71,9 @@ public class Cellular_Data_Service extends Service {
             disabledCountValue = Read_Write_File.readDisabledCountFromFile(context);
             disabledCount = Integer.parseInt( disabledCountValue);
         }
+		PackageManager p = getPackageManager();
+        ComponentName componentName = new ComponentName(this, micronet.com.cellular_data_temperature_controlled.MainActivity.class); // activity which is first time open in manifiest file which is declare as <category android:name="android.intent.category.LAUNCHER" />
+        p.setComponentEnabledSetting(componentName,PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
     }
     //Function that increases the handler count for enabling
     private void increaseEnabledCount()

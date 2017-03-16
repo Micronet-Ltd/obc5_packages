@@ -81,7 +81,8 @@
     <uses-permission android:name="android.permission.READ_PHONE_BLACKLIST" />
     <uses-permission android:name="android.permission.CHANGE_PHONE_BLACKLIST" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
-	
+    <uses-permission android:name="android.permission.INJECT_EVENTS"/>
+    	
     <permission
         android:name="cyanogenmod.permission.PROTECTED_APP"
         android:protectionLevel="signatureOrSystem" />
@@ -923,7 +924,9 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-
+        
+        <service android:name=".location.iZatEnableService" />
+        
        <activity android:name="DeviceXinxi"
                 android:label="@string/device_xinxi"
                 android:configChanges="orientation|screenSize">

@@ -11,8 +11,10 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
+import com.micronet.canbus.Fragment.CanbusMessageTypeFragment;
 import com.micronet.canbus.R;
 import com.micronet.canbus.Fragment.CanOverviewFragment;
+import com.micronet.canbus.Fragment.CanbusFramesFragment;
 import com.micronet.canbus.Fragment.CanbusFramesFragment;
 
 import java.util.ArrayList;
@@ -46,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         adapter.addFrag(new CanOverviewFragment(), "Main");
         adapter.addFrag(new CanbusFramesFragment(), "Frames");
+/*        adapter.addFrag(new CanbusMessageTypeFragment(), "Transmit Message");*/
         viewPager.setAdapter(adapter);
     }
 

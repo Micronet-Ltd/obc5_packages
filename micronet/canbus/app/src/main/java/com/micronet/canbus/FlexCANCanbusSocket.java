@@ -165,10 +165,15 @@ public class FlexCANCanbusSocket extends CanbusSocket implements CanbusListener{
         throw new IllegalArgumentException("Software filter not supported");
     }
 */
+/*    public String getMCUVersion(){
+        return jniGetMCUVersion();
+    }*/
+
 
     private native int send(int socket, CanbusFrame frame);
     private native int sendJ1708(int socket, J1708Frame frame);
     private native int registerCallback(CanbusListener listener);
+/*    private native static String jniGetMCUVersion();*/
     private native int closeSocket();
 
     static

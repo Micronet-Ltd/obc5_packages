@@ -3,12 +3,11 @@
 //
 #define LOG_TAG "Canbus"
 #include <jni.h>
-#include <pthread.h>
-#include <semaphore.h>
-#include <android/log.h>
-#include <string>
+
 #include "canbus.h"
 #include "FlexCANcomm.h"
+#include "FlexCANCommand.h"
+#include <string>
 
 #define CAN_OK_RESPONCE 	0x0D
 #define CAN_ERROR_RESPONCE	0x07
@@ -18,11 +17,9 @@
 #define CAN_MSG_ID_SIZE_STD 3
 #define CAN_MSG_ID_SIZE_EXT 8
 
-
 #define COMMAND_J1708_PACKET 'D'
 #define COMMAND_CAN_PACKET 'J'
 #define MAX_PACKET_SIZE 256
-
 
 
 static const char* qb_str_command(char command)
@@ -36,34 +33,72 @@ static const char* qb_str_command(char command)
     }
 
 }
-/*char parseASCII(uint8_t *hexData, int length, char *stringValue){
-    int index=0;
-    *stringValue=0;
-    uint8_t tmp1;
-    if (length & 1){
-        LOGE("Received Invalid frame for Parsing: odd length");
+
+int FlexCAN_startup(bool listeningModeEnable, int bitrate, int termination)
+{
+    int i, ret;
+    char *port = NULL;
+    int fd;
+
+    fd = ret = serial_init(port);
+
+    if(serial_start_monitor_thread())
+    {
+        LOGE("unable to start serial monitor thread\n");
         return -1;
     }
-    if (length==0){
-        LOGE("Received Invalid frame for Parsing: Null ");
+    if (initTerminalInterface(fd) == -1) {
+        return -1;
+    }
+    /* first always close the CAN module (bug #250)
+     http://192.168.1.234/redmine/issues/250
+     */
+    if (closeCAN(fd) == -1) {
         return -1;
     }
 
-    for (index = 0; index < length; index++) {
-        tmp1=(hexData[index]>>4) &0xF;
-        if(tmp1>9)
-            *stringValue=tmp1-10+'A';
-        else
-            *stringValue=tmp1+'0';
-        stringValue++;
-        tmp1=(hexData[index]) & (0xF);
-        if (tmp1>9)
-            *stringValue==tmp1-10+'A';
-        else
-            *stringValue=tmp1+'0';
-        }
-    return 0;
-}*/
+    //TODO: Add masks
+
+    if(setBitrate(fd, bitrate) == -1) {
+        return -1;
+    }
+
+    if(sendReadStatusCommand(fd) == -1) {
+        return -1;
+    }
+
+
+    /*
+     * Test listening mode:
+     *  Open CAN in listening mode with termination true: 	./slcan_tty -l0 -f -s6 /dev/ttyACM2
+     *  Try to send message. Verify that message is not received: ./slcan_tty -t7003112233 /dev/ttyACM2
+     *  Close CAN: ./slcan_tty -c /dev/ttyACM2
+     *
+     *  Open CAN in termination mode true: ./slcan_tty -o1 -f –s6 /dev/ttyACM2
+     *  Try to send message. Verity that the message is received by other device: ./slcan_tty -t7003112233 /dev/ttyACM2
+     *  Close CAN: ./slcan_tty -c /dev/ttyACM2
+     *
+     *
+     *  L	O	Extended LO	Actual Command
+        1	0	L1O0	L0
+        1	1	L1O1	L1
+        0	0	L0O0	0
+        0	1	L0O1	O1
+
+     */
+    if(listeningModeEnable && setListeningMode(fd, termination) == -1) { // enable listening mode and set the termination value
+        return -1;
+    } else if(openCANandSetTermination(fd, termination) == -1) { // set the termination value and (disable listening mode?) when opening CAN.
+        // TODO: check if running "openCANandSetTermination" disables listening mode
+        return -1;
+    }
+/*    const char * mesg = "7003112233";
+    if(sendMessage(fd, mesg) == -1) {
+        return -1;
+    }*/
+
+    return ret;
+}
 
 int32_t ParseCanMessToString(int msg_type, int id, int data_len, BYTE * data, uint8_t * pDestBuff){
     uint8_t tmp1, ind, *pmsg_str, curr_msg_len = 0;
@@ -132,63 +167,16 @@ int32_t ParseCanMessToString(int msg_type, int id, int data_len, BYTE * data, ui
             curr_msg_len++;
         }
     }
-    //Message time stamp
- /*   pmsg_str += 3;
-    for (ind = 0; ind < 4; ind++) {
-        tmp1 = (uint8_t)((pCanMess->msg_buff.cs >> (ind<<2)) & 0xF);
-        if (tmp1 > 9 )
-            *pmsg_str = tmp1 - 10 + 'A';
-        else
-            *pmsg_str = tmp1 + '0';
-
-        pmsg_str--;
-    }
-    pmsg_str += 5;
-    curr_msg_len += 5;
-*/
     //Add CAN_OK_RESPONCE character
     *pmsg_str = CAN_OK_RESPONCE;
+
+    curr_msg_len++;
 
     return (int32_t)curr_msg_len;
 }
 
-/*static void FlexCAN_send_message(BYTE type, uint8_t *data,*//* unsigned char command,*//* int len)
-{
-
-    BYTE CanMessagetoASCIIString[MAX_PACKET_SIZE];
-    int index=0,i=0;
-    int packetLength=strlen((const char *) data);
-    BYTE *packetInAscii;
-
-    parseASCII(data, packetLength, (char *) packetInAscii);
-
-    if(type==EXTENDED){
-        CanMessagetoASCIIString[index++]='T';
-    }
-    else if(type==STANDARD){
-        CanMessagetoASCIIString[index++]='t';
-    }
-    else if (type==EXTENDED_REMOTE){
-        CanMessagetoASCIIString[index++]='R';
-    }
-    else if (type==STANDARD_REMOTE){
-        CanMessagetoASCIIString[index++]='r';
-    }
-    for(int i=0; i < packetLength; i++) {
-            CanMessagetoASCIIString[index + i] = packetInAscii[i];
-    }
-    int total_len=index+1;
-    //  TODO: Send  CanMessagetoASCIIString to the port
-    if( serial_send_data(CanMessagetoASCIIString, total_len)){
-        error_message("!!!!!!!!!!!!!!! Couldn't send FLEXCAN CAN message !!!!!!!!!!!!!!!!!");
-        return;
-    }
-}*/
-
 void FlexCAN_send_can_packet(BYTE type, DWORD id, int data_len, BYTE *data) {
     int index = 0, i = 0;
-/*    int dataSize = sizeof(data);
-    int idSize = sizeof(id);*/
     uint8_t canPacketToTx[MAX_PACKET_SIZE] = {0};
     int msgLength = 0;
 
@@ -198,32 +186,6 @@ void FlexCAN_send_can_packet(BYTE type, DWORD id, int data_len, BYTE *data) {
         error_message("!!!!!!!!!!!!!!! Couldn't send FLEXCAN CAN message !!!!!!!!!!!!!!!!!");
         return;
     }
-
-/*    if (((type == EXTENDED)) || ((type == STANDARD)) || ((type == EXTENDED_REMOTE)) || ((type == STANDARD_REMOTE)) || ((0 >= data_len <= 8)) || (((idSize == CAN_MSG_ID_SIZE_STD)) || ((idSize == CAN_MSG_ID_SIZE_EXT))) || ((dataSize = 2 * data_len))){
-        //canPacketToTx[index++] = type; //CAN packet type (1=extended, 0=standard)
-      *//*  canPacketToTx[index++] = (BYTE) ((id >> 0) & 0xff);*//*
-        canPacketToTx[index++] = (BYTE) ((id >> 8) & 0xff);
-        canPacketToTx[index++] = (BYTE) ((id >> 0) & 0xff);
-
-        if ((type == EXTENDED)||(type == EXTENDED_REMOTE) ) {
-            canPacketToTx[index++] = (BYTE) ((id >> 16) & 0xff);
-            canPacketToTx[index++] = (BYTE) ((id >> 24) & 0xff);
-        }
-        canPacketToTx[index++] =data_len;
-
-        if((type=EXTENDED)||(type=STANDARD)) {
-            for (i = 0; i < data_len; i++) {
-                canPacketToTx[index + i] = data[i];
-            }
-        }
-        canPacketToTx[index+1]=0xD;
-        index += i+1;
-
-        FlexCAN_send_message(type, canPacketToTx, index);
-    }
-
-        else LOGD("Invalid Argument (Type,id,data_len,data):  \n" + type, id, data_len, data);
-*/
 }
 
 /*void qb_send_j1708_packet(DWORD id, BYTE* data, BYTE priority, int data_len)

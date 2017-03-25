@@ -20,6 +20,7 @@ public class CanbusSettingsFragment extends Fragment {
 
     }
 
+
     @Override
     public void onStart() {
         super.onStart();

@@ -1,16 +1,11 @@
 // Created by eemaan.siddiqi on 2/24/2017.
 #define LOG_TAG "Canbus"
 #include <jni.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <net/if.h>
-#include <sys/socket.h>
-#include <linux/capability.h>
-#include <android/log.h>
-#include <errno.h>
 #include "canbus.h"
 #include "FlexCANCommand.h"
+
+#include <stdio.h>
+#include <android/log.h>
 
 
 static void throwException(JNIEnv *env, const char *message, const char* add)
@@ -81,11 +76,11 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusSocket_send(JNIEnv 
 }
 
 JNIEXPORT jint Java_com_micronet_canbus_FlexCANCanbusSocket_sendJ1708(JNIEnv *env, jobject obj, jint socket, jobject j1708FrameObj){
+
    /* int data_sent;
     char id_str[64];
     int id, type;
     int priority;
-
 
     jclass cls = env->GetObjectClass(j1708FrameObj);
     jmethodID methodId = env->GetMethodID(cls, "getData", "()[B");

@@ -11,7 +11,7 @@ model {
             minSdkVersion.apiLevel = 21
             targetSdkVersion.apiLevel = 25
             versionCode 1
-            versionName "1.0"
+            versionName "1.1"
         }
         buildTypes {
             release {
@@ -50,4 +50,5 @@ dependencies {
     compile 'com.android.support:appcompat-v7:25.1.0'
     compile 'com.android.support:support-v4:25.2.0'
     compile 'com.android.support:design:25.2.0'
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
 }

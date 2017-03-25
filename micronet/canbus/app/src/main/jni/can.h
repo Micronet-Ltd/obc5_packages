@@ -21,8 +21,6 @@
 #include <linux/types.h>
 #include <linux/netlink.h>
 #include <android/log.h>
-
-#define error_message ERR
 #define DWORD uint32_t
 #define WORD uint16_t
 #define BYTE uint8_t

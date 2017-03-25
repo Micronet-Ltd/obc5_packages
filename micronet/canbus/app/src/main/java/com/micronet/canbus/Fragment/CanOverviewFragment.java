@@ -20,8 +20,8 @@ import com.micronet.canbus.R;
 import com.micronet.canbus.MainActivity;
 
 public class CanOverviewFragment extends Fragment {
-    private int BITRATE_250K = 250000;
-    private int BITRATE_500K = 500000;
+    private int BITRATE_250K = 6;
+    private int BITRATE_500K = 7;
 
     private Thread updateUIThread;
 
@@ -35,12 +35,12 @@ public class CanOverviewFragment extends Fragment {
         Socket dependent UI
      */
     private Button btnTransmitCAN;
-  /*  private Button btnTransmitJ1708;
-    private Switch swCycleTransmitJ1708;*/
+    /*  private Button btnTransmitJ1708;
+      private Switch swCycleTransmitJ1708;*/
     private Switch swCycleTransmitJ1939;
     private Switch swDiscardInBuffer;
     private SeekBar seekBarJ1939Send;
-  /*  private SeekBar seekBarJ1708Send;*/
+    /*  private SeekBar seekBarJ1708Send;*/
     /*
         Interface dependent UI
      */
@@ -75,7 +75,7 @@ public class CanOverviewFragment extends Fragment {
     private void setStateInterfaceDependentUI() {
         boolean open = canTest.isInterfaceOpen();
         btnGetBaudrate.setEnabled(open);
-        swFilters.setEnabled(open);
+   /*     swFilters.setEnabled(open);*/
     }
 
     private void updateInterfaceStatusUI(String status) {
@@ -154,7 +154,7 @@ public class CanOverviewFragment extends Fragment {
             }
         });*/
 
-        swFilters.setOnClickListener(new View.OnClickListener() {
+      /*  swFilters.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (swFilters.isChecked()) {
@@ -163,7 +163,7 @@ public class CanOverviewFragment extends Fragment {
                     canTest.clearFilters();
                 }
             }
-        });
+        });*/
 
         swSilentMode.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -205,7 +205,7 @@ public class CanOverviewFragment extends Fragment {
             }
         });
 
-
+/*
         btnCloseInterface.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -213,7 +213,7 @@ public class CanOverviewFragment extends Fragment {
                 executeChangeBaudrate();
 
             }
-        });
+        });*/
 
         swCycleTransmitJ1939.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -284,7 +284,7 @@ public class CanOverviewFragment extends Fragment {
         /*txtJ1708Speed.setText(canTest.getJ1708IntervalDelay() + "ms");*/
         updateBaudRateUI();
         updateInterfaceStatusUI();
-        setStateInterfaceDependentUI();
+       /* setStateInterfaceDependentUI();*/
         setStateSocketDependentUI();
     }
 

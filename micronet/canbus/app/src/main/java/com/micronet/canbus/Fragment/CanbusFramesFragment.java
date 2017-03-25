@@ -15,9 +15,6 @@ import android.widget.TextView;
 import com.micronet.canbus.CanTest;
 import com.micronet.canbus.R;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 /**
  * Created by eemaan.siddiqi on 3/3/2017.
  */

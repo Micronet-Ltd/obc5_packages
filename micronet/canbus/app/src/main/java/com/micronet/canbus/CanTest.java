@@ -2,13 +2,11 @@ package com.micronet.canbus;
 
 import android.os.SystemClock;
 import android.util.Log;
-
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 
-/*
-* Created by eemaan.siddiqi on 2/23/2017.
+/** Created by eemaan.siddiqi on 2/23/2017.
 */
 
 public class CanTest {
@@ -37,6 +35,7 @@ public class CanTest {
     private static final String EXT = "EXT";
     private static final String STD_R = "STD_R";
     private static final String EXT_R = "EXT_R";
+    private String txCanMessage="";
 
     private CanbusInterface canbusInterface;
     private CanbusSocket canbusSocket;
@@ -119,6 +118,10 @@ public class CanTest {
     public void silentMode(boolean silentMode) {
         this.silentMode = silentMode;
     }
+
+ /*   public String gettheMCUversion(){
+        return flexCANCanbusSocket.getMCUVersion();
+    }*/
 
     public void setFilters() {
         enableFilters = true;
@@ -412,12 +415,9 @@ public class CanTest {
 
     public void setJ1708IntervalDelay(int j1708IntervalDelay) {
         this.j1708IntervalDelay = j1708IntervalDelay;
-    }
-*/
+    } */
 
-    /*
-     Convert a byte array to a hex friendly string
-    */
+    /* Convert a byte array to a hex friendly string */
     public static String bytesToHex(byte[] bytes) {
         char[] hexChars = new char[bytes.length * 3];
         for (int j = 0; j < bytes.length; j++) {
@@ -428,7 +428,6 @@ public class CanTest {
         }
         return new String(hexChars);
     }
-
 
     public void sendJ1939() {
         if (j1939SendThread == null || !j1939SendThread.isAlive()) {
@@ -442,25 +441,24 @@ public class CanTest {
         public void run() {
             int data = 0;
             do {
-                //To send a different type of frame change this to CanbusFrameType.EXTENDED
-                CanbusFrameType mType= CanbusFrameType.STANDARD;
-                //A different ID Can be sent by changing the value here
-                int canId=0x123;
-                ByteBuffer dbuf = ByteBuffer.allocate(8);
-                dbuf.order(ByteOrder.LITTLE_ENDIAN);
-                dbuf.putInt(data++);
-                byte[] a = dbuf.array();
-                a[0] = 0x12;
-                a[1] = 0x34;
-                a[2] = 0x45;
-                a[3] = 0x67;
-                a[4] = 0x1F;
-                a[5] = 0x2F;
-                a[6] = 0x3F;
-                a[7] = 0x4F;
-
-                if(canbusSocket != null) {
-                    canbusSocket.write(new CanbusFrame(canId, a,mType));
+                        //To send a different type of frame change this to CanbusFrameType.EXTENDED
+                        CanbusFrameType mType= CanbusFrameType.EXTENDED;
+                        //A different ID Can be sent by changing the value here
+                        int canId=0xFEF2;
+                        ByteBuffer dbuf = ByteBuffer.allocate(8);
+                        dbuf.order(ByteOrder.LITTLE_ENDIAN);
+                        dbuf.putInt(data++);
+                        byte[] a = dbuf.array();
+                        a[0] = 0x12;
+                        a[1] = 0x34;
+                        a[2] = 0x45;
+                        a[3] = 0x67;
+                        a[4] = 0x1F;
+                        a[5] = 0x2F;
+                        a[6] = 0x3F;
+                        a[7] = 0x4F;
+                        if(canbusSocket != null) {
+                            canbusSocket.write(new CanbusFrame(canId, a,mType));
                 }
                 try {
                     Thread.sleep(j1939IntervalDelay);
@@ -471,6 +469,8 @@ public class CanTest {
     };
     /// End J1939 methods
 
+
+    
   /*  /// J1708 Reader Thread
     public int getJ1708FrameCount() {
         return j1708Reader.getJ1708FrameCount();

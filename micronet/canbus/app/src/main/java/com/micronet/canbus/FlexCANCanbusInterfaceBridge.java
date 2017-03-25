@@ -95,7 +95,7 @@ public class FlexCANCanbusInterfaceBridge implements ICanbusInterfaceBridge {
     private native int removeInterface();
    /* private native int setInterfaceBitrate(int bitrate);
     private native int enableListeningMode(boolean enable);
-    private native int setTermination(boolean enabled);*/
+    private native int openCANandSetTermination(boolean enabled);*/
 
     static
     {

@@ -59,6 +59,7 @@
 
 //#define IO_CONTROL_RECOVERY_DEBUG 1
 #define TIME_BETWEEN_MCU_PINGS 2 /* 2 sec */
+#define ONE_WIRE_PKT_SIZE 		8
 
 #if defined (IO_CONTROL_RECOVERY_DEBUG)
 #define IO_CONTROL_LOG "/cache/io_control.log"
@@ -236,24 +237,59 @@ static int control_gpio_input(struct control_thread_context * context, uint8_t m
 		data[3] = value;
 		// The driver should never block, or return -EAGAIN, if the driver changes
 		// this will need to be updated. NOTE: this can not block, so take care
-        DTRACE("%s [%x, %x]", __func__, mask, value);
+		DTRACE("%s [%x, %x]", __func__, mask, value);
 		r = write(context->gpio_fd, data, sizeof(data));
 		if(r != sizeof(data))
 		{
-			DTRACE("write error");
+			DTRACE("%s: write error", __func__);
 			if(-1 == r && -EAGAIN == errno)
-				DTRACE("EAGAIN should not happen");
+				DTRACE("%s:EAGAIN should not happen", __func__);
 			else if(-1 == r && -EACCES == errno)
-				DTRACE("EACCES memory is likely corrupted");
+				DTRACE("%s: EACCES memory is likely corrupted", __func__);
 			else if(-1 == r && -EINVAL == errno)
-				DTRACE("EINVAL data is invalid");
+				DTRACE("%s: EINVAL data is invalid", __func__);
 			else if(-1 == r)
 			{
-				DERR("write: %s", strerror(errno));
+				DERR("%s: write: %s", __func__, strerror(errno));
 				return r;
 			}
-			DTRACE("r = %d", r);
+			DTRACE("%s: r = %d", __func__, r);
 		}
+	}
+	return 0;
+}
+
+static int control_one_wire_data(struct control_thread_context * context, uint8_t * data, uint8_t data_size)
+{
+	if(context->one_wire_fd >= 0)
+	{
+		int r;
+		// The driver should never block, or return -EAGAIN, if the driver changes
+		// this will need to be updated. NOTE: this can not block, so take care
+		DTRACE("%s: [%x, %x, %x, %x, %x, %x, %x, %x]", __func__,
+				data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7]);
+		r = write(context->one_wire_fd, data, data_size);
+		if(r != data_size)
+		{
+			DTRACE("%s: write error", __func__);
+			if(-1 == r && -EAGAIN == errno)
+				DTRACE("%s:EAGAIN should not happen", __func__);
+			else if(-1 == r && -EACCES == errno)
+				DTRACE("%s: EACCES memory is likely corrupted", __func__);
+			else if(-1 == r && -EINVAL == errno)
+				DTRACE("%s: EINVAL data is invalid", __func__);
+			else if(-1 == r)
+			{
+				DERR("%s: write: %s", __func__, strerror(errno));
+				return r;
+			}
+			DTRACE("%s: r = %d", __func__, r);
+		}
+	}
+	else
+	{
+		DERR("%s : invalid one_wire_fd %d", __func__, context->one_wire_fd);
+		return -1;
 	}
 	return 0;
 }
@@ -327,6 +363,17 @@ static int control_frame_process(struct control_thread_context * context, uint8_
 		case GPIO_INT_STATUS: // GPIO Interrupt
 			DTRACE("%s: GPIO_INT_STATUS data2 %d data3 %d", __func__, data[2], data[3]);
 			control_gpio_input(context, data[2], data[3]);
+			break;
+
+		case ONE_WIRE_DATA: // one-wire data has been received
+			DTRACE("%s: ONE_WIRE_DATA %02x,%02x,%02x,%02x,%02x,%02x,%02x,%02x \n",__func__,\
+					data[2], data[3], data[4], data[5], \
+					data[6], data[7], data[8], data[9]);
+			control_one_wire_data(context, &data[2], ONE_WIRE_PKT_SIZE);
+			break;
+
+		default:
+			DTRACE("%s: invalid case %d\n", __func__, packet_type);
 			break;
 	}
 	return 0;
@@ -1145,6 +1192,8 @@ void * control_proc(void * cntx)
 	context->mcu_fd = -1;
 	context->sock_fd = -1;
     context->vled_fd = -1;
+    context->one_wire_fd = -1;
+
     clock_gettime(CLOCK_MONOTONIC_RAW, &(context->last_app_ping_time));
     context->dont_send = false;
 
@@ -1156,6 +1205,13 @@ void * control_proc(void * cntx)
 
     if(file_exists("/dev/vleds"))
         context->vled_fd = open("/dev/vleds", O_RDONLY, O_NDELAY);
+    else
+    	DINFO("%s /dev/vleds does not exist", __func__);
+
+    if(file_exists("/dev/one_wire"))
+    	context->one_wire_fd = open("/dev/one_wire", O_WRONLY, O_NDELAY);
+    else
+    	DINFO("%s /dev/one_wire does not exist", __func__);
 
     // TODO: maby move to check_devies()
 	context->sock_fd = control_open_socket(context);
@@ -1228,7 +1284,7 @@ void * control_proc(void * cntx)
 				context->running = false;
 				break;
 			}
-			DTRACE("After recv");
+			DTRACE("After mcu recv");
 		}
 
 		if((context->gpio_fd > -1) && FD_ISSET(context->gpio_fd, &context->fds))
@@ -1238,7 +1294,7 @@ void * control_proc(void * cntx)
 			{
 				DERR("control_receive_gpio returned %d\n", status);
 			}
-			DTRACE("After sock receive");
+			DTRACE("After gpio receive");
 		}
 
         if ((context->vled_fd > -1) && FD_ISSET(context->vled_fd, &context->fds))
@@ -1247,7 +1303,7 @@ void * control_proc(void * cntx)
             if(status < 0) {
                 DERR("failure to set led %d\n", status);
             }
-            DTRACE("After sock receive");
+            DTRACE("After vled receive");
         }
 
 		if((context->sock_fd > -1) && FD_ISSET(context->sock_fd, &context->fds))
@@ -1269,6 +1325,7 @@ void * control_proc(void * cntx)
     close(context->sock_fd);
 	close(context->gpio_fd);
 	close(context->vled_fd);
+	close(context->one_wire_fd);
 	DERR("control thread exiting");
 	return NULL;
 }

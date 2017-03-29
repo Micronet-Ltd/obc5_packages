@@ -266,7 +266,7 @@ static int control_one_wire_data(struct control_thread_context * context, uint8_
 		int r;
 		// The driver should never block, or return -EAGAIN, if the driver changes
 		// this will need to be updated. NOTE: this can not block, so take care
-		DTRACE("%s: [%x, %x, %x, %x, %x, %x, %x, %x]", __func__,
+		DINFO("%s: [%x, %x, %x, %x, %x, %x, %x, %x]", __func__,
 				data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7]);
 		r = write(context->one_wire_fd, data, data_size);
 		if(r != data_size)

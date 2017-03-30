@@ -8,14 +8,21 @@
 package com.qrt.factory.activity;
 
 import com.qrt.factory.R;
+import com.qrt.factory.calibrate.CalibrateServerManager;
 import com.qrt.factory.util.Utilities;
 
+//import android.content.ContentResolver;
 import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+//import android.provider.Settings.Global;
+//import android.provider.Settings.System;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -31,10 +38,12 @@ public class ProximitySensor extends AbstractActivity {
     private PSensorListener mPSensorListener;
 
     private TextView mTextView;
+    
+    private TextView mTextViewCalibrate;
 
     private final static int MIN_COUNT = 3;
 
-    private final static int INIT_VALUE = 10;
+    private final static int INIT_VALUE = 0;
 
     private float value = INIT_VALUE;
 
@@ -50,6 +59,8 @@ public class ProximitySensor extends AbstractActivity {
     private boolean pass = false;
 
     private TextView mVersionView;
+    
+    private CalibrateServerManager serverManager= null;
 
     @Override
     public void finish() {
@@ -66,13 +77,24 @@ public class ProximitySensor extends AbstractActivity {
 
         mTextView = (TextView) findViewById(R.id.psensor_result);
         mVersionView = (TextView) findViewById(R.id.psensor_version);
-
+        mTextViewCalibrate = (TextView) findViewById(R.id.psensor_calibrate_tile);
+        
         Button cancel = (Button) findViewById(R.id.psensor_cancel);
         cancel.setOnClickListener(new View.OnClickListener() {
 
             public void onClick(View v) {
                 mResultBuffer.append(getString(R.string.user_canceled));
                 fail();
+            }
+        });
+        
+        Button calibrate = (Button) findViewById(R.id.psensor_calibrate);
+        calibrate.setOnClickListener(new View.OnClickListener() {
+
+            public void onClick(View v) {             
+                myHandler.sendEmptyMessage(2);           	
+                myHandler.sendEmptyMessageDelayed(3, 1000);
+            	
             }
         });
     }
@@ -110,6 +132,10 @@ public class ProximitySensor extends AbstractActivity {
     void updateView(Object s) {
         mTextView.setText(TAG + " : " + s);
     }
+    
+    void updateViewCalibrate(int calibrateInfo) {
+    	mTextViewCalibrate.setText(calibrateInfo);
+    }
 
     @Override
     protected String getTag() {
@@ -121,7 +147,7 @@ public class ProximitySensor extends AbstractActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.psensor);
-
+        serverManager = CalibrateServerManager.getInstance();
         bindView();
         getService();
 
@@ -179,4 +205,65 @@ public class ProximitySensor extends AbstractActivity {
 
         }
     }
+    
+    MyHandler myHandler = new MyHandler();
+    class MyHandler extends Handler {    
+        @Override  
+        public void handleMessage(Message msg) {  
+            if (msg.what == 0) {  
+            	mTextViewCalibrate.setText(R.string.calibrate_ok);
+            } else if (msg.what == 1) {  
+            	mTextViewCalibrate.setText(R.string.calibrate_err);
+            } else if(msg.what == 2){
+            	 mTextViewCalibrate.setText(R.string.calibrateing);
+            }else if (msg.what == 3) {  
+            	
+            	int ret = serverManager.SensorCalibrate(8);
+            	if(ret == 0){
+            		mTextViewCalibrate.setText(R.string.calibrate_ok);
+            	}else{
+            		mTextViewCalibrate.setText(R.string.calibrate_err);
+            	}
+            	if (mSensorManager == null || mPSensorListener == null
+                        || mPSensor == null) {
+                    return;
+                }
+                mSensorManager.unregisterListener(mPSensorListener, mPSensor);
+                getService();
+//                setSettingOtherSound(0);
+//                setSettingOtherSound(1);
+//                setSettingOtherSound(2);
+            } else{
+            	mTextViewCalibrate.setText(R.string.calibrate_ok);
+            }
+        }  
+    }
+    
+    
+//    private void setSettingOtherSound(int i){
+//    	switch(i){
+//    	case 0:
+//    		putInt(TYPE_SYSTEM,this.getContentResolver(), System.DTMF_TONE_WHEN_DIALING,1);
+//    		break;
+//    	case 1:
+//    		putInt(TYPE_SYSTEM,this.getContentResolver(), System.SOUND_EFFECTS_ENABLED,1);
+//    		break;
+//    	case 2:
+//    		putInt(TYPE_SYSTEM,this.getContentResolver(), System.HAPTIC_FEEDBACK_ENABLED,1);
+//    		break;
+//    	}    	
+//    }
+//    
+//    public static final int TYPE_GLOBAL = 1;
+//    public static final int TYPE_SYSTEM = 2;
+//    
+//    protected static boolean putInt(int type, ContentResolver cr, String setting, int value) {
+//        switch(type) {
+//            case TYPE_GLOBAL:
+//                return Global.putInt(cr, setting, value);
+//            case TYPE_SYSTEM:
+//                return System.putInt(cr, setting, value);
+//        }
+//        throw new IllegalArgumentException();
+//    }
 }

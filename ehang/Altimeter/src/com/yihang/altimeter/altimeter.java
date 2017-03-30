@@ -58,7 +58,7 @@ public class altimeter extends Activity implements SensorEventListener {
 	private int sensor_value = 0;
 	
 	private static final int SENSOR_COUNT_MAX = 5;
-	private int sensor_count = SENSOR_COUNT_MAX;
+	private int sensor_count = SENSOR_COUNT_MAX-2;
 	
 
 	@Override

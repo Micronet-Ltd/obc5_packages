@@ -189,6 +189,7 @@
 
     <!-- Menu item to indicate you want to stop editing a contact and NOT save the changes you've made [CHAR LIMIT=30] -->
     <string name="menu_discard">Discard changes</string>
+	<string name="button_discard">Discard</string>
 
     <!-- Message displayed in a toast when you try to view the details of a contact that
          for some reason doesn't exist anymore. [CHAR LIMIT=NONE]-->
@@ -658,7 +659,7 @@
     <!-- Title of the ContactEditorActivity when creating a new contact. The char
          limit is short and cannot be increased, since this needs to be displayed in a single line
          at a pre-determined text size. [CHAR LIMIT=20] -->
-    <string name="contact_editor_title_new_contact">Add new contact</string>
+    <string name="contact_editor_title_new_contact">New contact</string>
 
     <!-- Title of the ContactEditorActivity when editing a contact that already exists. The char
          limit is short and cannot be increased, since this needs to be displayed in a single line

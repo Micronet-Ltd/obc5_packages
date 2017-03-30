@@ -1127,4 +1127,6 @@
     <string name="font_medium">Medium</string>
     <string name="font_large">Large</string>
     <string name="font_extra_large">Extra large</string>
+	<!--lihui @20160409 added for add a menu for add the number to blacklist-->
+	<string name="menu_add_to_blacklist">Add To Blacklist</string>
 </resources>

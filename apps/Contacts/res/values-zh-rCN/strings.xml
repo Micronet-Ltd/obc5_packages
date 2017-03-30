@@ -71,6 +71,7 @@
     <string name="multipleContactDeleteConfirmation" msgid="938900978442960800">"删除该联系人将会删除多个帐户中的信息。"</string>
     <string name="deleteConfirmation" msgid="811706994761610640">"将会删除此联系人。"</string>
     <string name="menu_discard" msgid="6854657936970228164">"舍弃更改"</string>
+	<string name="button_discard">舍弃</string>
     <string name="invalidContactMessage" msgid="8215051456181842274">"该联系人不存在。"</string>
     <string name="createContactShortcutSuccessful" msgid="7874133287558150877">"联系人小部件已添加到主屏幕。"</string>
     <string name="pickerNewContactHeader" msgid="7750705279843568147">"新建联系人"</string>

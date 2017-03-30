@@ -62,6 +62,8 @@ public class DownloadHandler {
     public static void onDownloadStart(final Activity activity, final String url,
             final String userAgent, final String contentDisposition, final String mimetype,
             final String referer, final boolean privateBrowsing) {
+		
+		String mimeType = mimetype;
         // if we're dealing wih A/V content that's not explicitly marked
         //     for download, check if it's streamable.
         Log.i(LOGTAG, "onDownloadStart,url:" + url + "; mimetype:" + mimetype);
@@ -132,11 +134,16 @@ public class DownloadHandler {
                 return;
             }
             /*added by wenjs to download apk apllication file etc. 20150416 end*/
+			else{
+				mimeType = MimeTypeMap.getSingleton().remapGenericMimeTypeO(
+                    mimetype, url, contentDisposition);
+            	Log.d(LOGTAG,"after remap, mimeType is: "+mimeType);
+			}
 
             // query the package manager to see if there's a registered handler
             //     that matches.
             Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.setDataAndType(Uri.parse(url), mimetype);
+            intent.setDataAndType(Uri.parse(url), mimeType);
             ResolveInfo info = activity.getPackageManager().resolveActivity(intent,
                     PackageManager.MATCH_DEFAULT_ONLY);
             if (info != null) {
@@ -165,7 +172,7 @@ public class DownloadHandler {
             }
         }
         onDownloadStartNoStream(activity, url, userAgent, contentDisposition,
-                mimetype, referer, privateBrowsing);
+                mimeType, referer, privateBrowsing);
     }
 
     // This is to work around the fact that java.net.URI throws Exceptions

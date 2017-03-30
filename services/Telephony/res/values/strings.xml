@@ -221,6 +221,9 @@
     <string name="mobile_network_settings_not_available">Cellular network settings are not available for this user</string>
     <!-- GSM Call settings screen, setting option name -->
     <string name="labelGSMMore">GSM call settings</string>
+    <string name="labelCFType">Call Forward Setting</string>
+    <string name="labelCFVoice">Voice</string>
+    <string name="labelCFVideo">Video</string>
     <!-- CDM Call settings screen, setting option name -->
     <string name="labelCDMAMore">CDMA call settings</string>
     <!-- Mobile network settings screen, setting option name -->
@@ -736,6 +739,12 @@
     <string name="enhanced_4g_lte_mode_title">Enhanced 4G LTE Mode</string>
     <!-- Cellular network 4G summary [CHAR LIMIT=80] -->
     <string name="enhanced_4g_lte_mode_summary">Use LTE services to improve voice and other communications (recommended)</string>
+    <!-- Enable 4G title.   -->
+    <string name="lte_4g_settings_title">Enable/Disable 4G</string>
+    <!-- Enable 4G summary.    -->
+    <string name="lte_4g_settings_summaryOn">The phone will change to 3G/2G and 4G will be disabled.</string>
+    <!-- Enable 4G dialog prompt text.   -->
+    <string name="lte_4g_settings_summaryOff">The phone will change from 3G/2G to 4G, some active task may be stopped.</string>
     <!-- Mobile network settings screen, data enabling checkbox name -->
     <string name="data_enabled">Data enabled</string>
     <!-- Mobile network settings screen, setting summary text when check box is not selected (explains what selecting it would do) [CHAR LIMITS=40] -->
@@ -757,6 +766,7 @@
     <string name="ussd_dialog_sep" translatable="false">----------</string>
 
     <string name="gsm_umts_options">GSM/UMTS Options</string>
+    <string name="call_forward_option">CallForward Options</string>
     <string name="cdma_options">CDMA Options</string>
     <string name="network_settings_sel_sub">SUBS Settings</string>
     <string name="summary_manage_subscriptions">Manage Network settings of each subscriptions</string>
@@ -1258,6 +1268,47 @@
     <string name="card_title_dialing">Dialing</string>
     <!-- In-call screen: status label for a re-dialing call -->
     <string name="card_title_redialing">Retrying</string>
+    <!-- In-call screen: status label for Unconditional Call Forwarding enabled  -->
+    <string name="card_title_unconditionalCF">Call Forward Unconditional is enabled</string>
+    <!-- In-call screen: status label for Conditional Call Forwarding enabled  -->
+    <string name="card_title_conditionalCF">Call Forward Conditional is enabled</string>
+    <!-- In-call screen: status label for a forwarded MO call  -->
+    <string name="card_title_MOcall_forwarding">Outgoing Forwarded Call</string>
+    <!-- In-call screen: status label when Call waiting is enabled on remote party  -->
+    <string name="card_title_calliswaiting">Call Waiting</string>
+    <!-- In-call screen: status label for MO call, when the caller & callee both
+            belng to a CUG group -->
+    <string name="card_title_cugcall">CUG Call</string>
+    <!-- In-call screen: status label when MO calls are barred -->
+    <string name="card_title_outgoing_barred">Outgoing Calls Barred</string>
+    <!-- In-call screen: status label for MO calls, when incoming calls are barred
+            at remote party -->
+    <string name="card_title_incoming_barred">Incoming Calls Barred</string>
+    <!-- In-call screen: status label for MO calls when CLIR Suppression is rejected -->
+    <string name="card_title_clir_suppression_rejected">CLIR Suppression Rejected</string>
+    <!-- In-call screen: status label when MO call gets deflected to another party -->
+    <string name="card_title_call_deflected">Call Deflected</string>
+    <!-- In-call screen: status label for incoming call being forwarded to other remote party  -->
+    <string name="card_title_MTcall_forwarding">Incoming Call is Forwarded</string>
+    <!-- In-call screen: status label for incoming call forwarded from other remote party -->
+    <string name="card_title_forwarded_MTcall">Forwarded Incoming Call</string>
+    <!-- In-call screen: status label for incoming call which is answered & then put on hold  -->
+    <string name="card_title_callonhold">Put on Hold</string>
+    <!-- In-call screen: status label for incoming call put on hold & then retreived back -->
+    <string name="card_title_callretrieved">Call Retreived</string>
+    <!-- In-call screen: status label for incoming call which is part of MultiParty Call -->
+    <string name="card_title_multipartycall">MultiParty Call</string>
+    <!-- In-call screen: status label for incoming call which is answered,
+            put on hold & then released -->
+    <string name="card_title_callonhold_released">Call Released</string>
+    <!-- In-call screen: status label for incoming call forward check received -->
+    <string name="card_title_forwardcheckreceived">Forward Check Received</string>
+    <!-- In-call screen: status label for incoming call connecting through ECT -->
+    <string name="card_title_callconnectingect">Call Connecting ECT</string>
+    <!-- In-call screen: status label for incoming call connected through ECT -->
+    <string name="card_title_callconnectedect">Call Connected ECT</string>
+    <!-- In-call screen: status label for incoming call is a deflected call -->
+    <string name="card_title_deflectedcall">Deflected Call</string>
     <!-- In-call screen: status label for a conference call -->
     <string name="card_title_conf_call">Conference call</string>
     <!-- In-call screen: status label for an incoming call -->
@@ -1273,6 +1324,8 @@
     <!-- In-call screen: special status label that shows your own phone
          number during emergency callback mode (ECM) [CHAR LIMIT=30] -->
     <string name="card_title_my_phone_number">My number is <xliff:g id="my_phone_number">%s</xliff:g></string>
+    <!-- call forward history -->
+    <string name="card_title_history"> History: </string>
 
     <!-- Notification strings -->
     <!-- The "label" of the in-call Notification for a dialing call, used
@@ -1700,6 +1753,8 @@
     <string name="lte_switch_unavailable">4G/3G SIM cards switcher is unavailable</string>
     <string name="lte_recognize_summary">Two 4G/3G SIM cards are detected,you need to set the default 4G/3G SIM card:</string>
     <string name="lte_select_summary">The selected subscription will be recognized as a 4G/3G card and the other one as a 2G card.</string>
+    <string name="lte_recognize_summary_generic">Two sim cards are detected, please select the preferred SIM card:</string>
+    <string name="lte_select_summary_generic">The selected sim card will have 3G/4G services with Data subscription.</string>
     <string name="lte_checkbox_text">Set mobile data to the selected SIM card once default 4G/3G SIM card is changed</string>
     <string name="select_ok">OK</string>
     <string name="lte_select_title">Default 4G/3G SIM card</string>
@@ -1767,6 +1822,35 @@
     <string name="ims_get_packet_error_count_failed">Failed to get packet error count</string>
     <string name="ims_get_packet_count_label">click here to get packet count</string>
     <string name="ims_get_packet_error_count_label">click here to get packet error count</string>
+    <!-- Wifi Call Settings -->
+    <string name="wifi_call_setting">Wifi Call Settings</string>
+    <string name="wifi_calling_title">Wifi Calling</string>
+    <string name="wifi_calling_summary">Enable Wifi Calling and Select Wifi Preference for Wifi Calling</string>
+
+    <string name="wifi_calling_preference_title">Wifi Calling Preference</string>
+    <string name="wifi_calling_preference_dialog_title">Wifi Calling Preference</string>
+    <string name="wifi_calling_preference_summary">Change the wifi calling preference</string>
+    <string name="ims_set_wifi_calling_preference_failed">Failed to set wifi calling preference</string>
+
+    <string name="wifi_pref_none">No Preference Selected</string>
+    <string name="wifi_preferred">Wifi Preferred</string>
+    <string name="wifi_only">Wifi Only</string>
+    <string name="cellular_preferred">Cellular Preferred</string>
+    <string name="cellular_only">Cellular Only</string>
+
+    <string-array name="wifi_calling_preference_choices">
+        <item>@string/wifi_preferred</item>
+        <item>@string/wifi_only</item>
+        <item>@string/cellular_preferred</item>
+        <item>@string/cellular_only</item>
+    </string-array>
+
+    <string-array name="wifi_calling_preference_values" translatable="false">
+        <item>"1"</item>
+        <item>"2"</item>
+        <item>"3"</item>
+        <item>"4"</item>
+    </string-array>
     <!-- Set Subscription screen: label sub 1 -->
     <string name="sub_1">SUB 1</string>
     <!-- Set Subscription screen: label sub 2 -->

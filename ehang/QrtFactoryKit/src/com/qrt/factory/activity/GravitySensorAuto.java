@@ -9,6 +9,8 @@ package com.qrt.factory.activity;
 
 import com.android.internal.util.ArrayUtils;
 import com.qrt.factory.R;
+import com.qrt.factory.activity.ProximitySensor.MyHandler;
+import com.qrt.factory.calibrate.CalibrateServerManager;
 import com.qrt.factory.util.Utilities;
 
 import android.content.Context;
@@ -37,8 +39,11 @@ public class GravitySensorAuto extends AbstractActivity {
     private GSensorListener mGSensorListener;
 
     private TextView mTextView;
+    private TextView mTextViewCalibrate;
 
     private Button cancelButton;
+    private Button passButton;
+    private Button calibrateButton;
 
     private final static String INIT_VALUE = "";
 
@@ -55,6 +60,8 @@ public class GravitySensorAuto extends AbstractActivity {
     private final static int SENSOR_DELAY = SensorManager.SENSOR_DELAY_FASTEST;
 
     private boolean pass = false;
+    
+    private CalibrateServerManager serverManager= null;
 
     @Override
     public void finish() {
@@ -70,12 +77,31 @@ public class GravitySensorAuto extends AbstractActivity {
     void bindView() {
 
         mTextView = (TextView) findViewById(R.id.gsensor_auto_result);
+        mTextViewCalibrate = (TextView) findViewById(R.id.gsensor_auto_calibrate_result);
         cancelButton = (Button) findViewById(R.id.gsensor_auto_cancel);
         cancelButton.setOnClickListener(new View.OnClickListener() {
 
             public void onClick(View v) {
                 mResultBuffer.append(getString(R.string.user_canceled));
                 fail();
+            }
+        });
+        
+        passButton = (Button) findViewById(R.id.gsensor_auto_ok);
+        passButton.setOnClickListener(new View.OnClickListener() {
+
+            public void onClick(View v) {
+	              pass = true;
+	              pass();    // baiwuqiang 
+            }
+        });
+        
+        calibrateButton = (Button) findViewById(R.id.gsensor_auto_calibrate);
+        calibrateButton.setOnClickListener(new View.OnClickListener() {
+
+            public void onClick(View v) {
+            	myHandler.sendEmptyMessage(2);           	
+                myHandler.sendEmptyMessageDelayed(3, 1000);
             }
         });
     }
@@ -120,7 +146,7 @@ public class GravitySensorAuto extends AbstractActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.gsensor_auto);
-
+        serverManager = CalibrateServerManager.getInstance();
         bindView();
         getService();
 		
@@ -165,9 +191,9 @@ public class GravitySensorAuto extends AbstractActivity {
                     float value0 = event.values[0];
                     float value1 = event.values[1];
                     float value2 = event.values[2];
-                    logd(event.values.length + ":" + value0 + " "
-                            + value1 + " "
-                            + value2 + " ");
+//                    logd(event.values.length + ":" + value0 + " "
+//                            + value1 + " "
+//                            + value2 + " ");
                     String value = "\n X = " + value0 + ", \n Y = "
                             + value1 + ", \n Z = "
                             + value2;
@@ -175,10 +201,10 @@ public class GravitySensorAuto extends AbstractActivity {
                     if (value != pre_value) {
                         count++;
                     }
-                    if (count >= MIN_COUNT && !pass) {
-                        pass = true;
-                        pass();    // baiwuqiang 
-                    }
+//                    if (count >= MIN_COUNT && !pass) {
+//                        pass = true;
+//                        pass();    // baiwuqiang 
+//                    }
                     pre_value = value;
                 }
             }
@@ -188,4 +214,34 @@ public class GravitySensorAuto extends AbstractActivity {
 
         }
     }
+    
+    MyHandler myHandler = new MyHandler();
+    class MyHandler extends Handler {    
+        @Override  
+        public void handleMessage(Message msg) {  
+            if (msg.what == 0) {  
+            	mTextViewCalibrate.setText(R.string.calibrate_ok);
+            } else if (msg.what == 1) {  
+            	mTextViewCalibrate.setText(R.string.calibrate_err);
+            } else if(msg.what == 2){
+            	 mTextViewCalibrate.setText(R.string.calibrateing);
+            }else if (msg.what == 3) {  
+            	
+            	int ret = serverManager.SensorCalibrate(1);
+            	if(ret == 0){
+            		mTextViewCalibrate.setText(R.string.calibrate_ok);
+            	}else{
+            		mTextViewCalibrate.setText(R.string.calibrate_err);
+            	}
+            	if (mSensorManager == null || mGSensorListener == null
+                        || mGSensor == null) {
+                    return;
+                }
+                mSensorManager.unregisterListener(mGSensorListener, mGSensor);
+                getService();
+            } else{
+            	mTextViewCalibrate.setText(R.string.calibrate_ok);
+            }
+        }  
+    }  
 }

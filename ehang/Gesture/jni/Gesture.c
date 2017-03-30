@@ -67,4 +67,22 @@ Java_com_yihang_gesture_service_ServerManager_Opentp( JNIEnv* env,jobject thiz)
 	return 0;
 }
 
+jint
+
+Java_com_yihang_gesture_service_ServerManager_CloseGloveMode( JNIEnv* env,jobject thiz)
+
+{
+	system("echo 0 > /sys/ft5x46_tp_glove/glove_mode");
+	return 0;
+}
+
+jint
+
+Java_com_yihang_gesture_service_ServerManager_OpenGloveMode( JNIEnv* env,jobject thiz)
+
+{
+	system("echo 1 > /sys/ft5x46_tp_glove/glove_mode");
+	return 0;
+}
+
 

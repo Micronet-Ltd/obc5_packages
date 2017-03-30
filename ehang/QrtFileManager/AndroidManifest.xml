@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.mediatek.filemanager"
+	android:versionCode="1"
+    android:versionName="1.0" 
+	>
+
+    <application
+        android:hardwareAccelerated="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name" 
+        android:name=".FileManagerApplication">
+
+        <!-- Points to searchable activity so the whole app can invoke search. -->
+        <meta-data
+            android:name="android.app.default_searchable"
+            android:value="com.mediatek.filemanager.FileManagerSearchActivity" />
+
+        <activity
+            android:alwaysRetainTaskState="true"
+            android:configChanges="orientation|keyboardHidden|screenSize|mcc|mnc"
+            android:label="@string/app_name"
+            android:launchMode="singleTask"
+            android:name="FileManagerOperationActivity"
+            android:theme="@style/FileManagerOperTheme"
+            android:uiOptions="splitActionBarWhenNarrow" >
+            <intent-filter >
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+        </activity>
+        <activity
+            android:configChanges="orientation|keyboardHidden|screenSize|mcc|mnc"
+            android:label="@string/app_name"
+            android:launchMode="singleTask"
+            android:name=".FileManagerSearchActivity"
+            android:theme="@style/transparent">
+            <!-- FileManagerOperTheme -->
+            <intent-filter >
+                <action android:name="android.intent.action.SEARCH" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
+        </activity>
+        <activity
+            android:configChanges="orientation|keyboardHidden|screenSize|mcc|mnc"
+            android:label="@string/app_name"
+            android:name=".FileManagerSelectPathActivity"
+            android:theme="@android:style/Theme.Holo.Light.NoActionBar" >
+            <intent-filter >
+                <action android:name="com.mediatek.filemanager.DOWNLOAD_LOCATION" />
+
+                <!--added by zhangjiaquan for SW00064765 add dir selection feature for swe browser 14-7-14 begin-->
+                <action android:name="com.android.fileexplorer.action.DIR_SEL" />
+                <!--added by zhangjiaquan for SW00064765 add dir selection feature for swe browser 14-7-14 end-->
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:configChanges="orientation|keyboardHidden|screenSize|mcc|mnc"
+            android:label="@string/app_name"
+            android:name=".FileManagerSelectFileActivity"
+            android:theme="@android:style/Theme.Holo.Light.NoActionBar" >
+            <intent-filter >
+                <action android:name="com.mediatek.filemanager.ADD_FILE" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.OPENABLE" />
+            </intent-filter>
+             <intent-filter>
+				<!-- <action android:name="android.intent.action.fileManagerNotification" /> -->
+				<action android:name="com.android.fileexplorer.action.FILE_SINGLE_SEL"/>
+                <category android:name="android.intent.category.DEFAULT" />
+			</intent-filter>           
+            <intent-filter>
+				<action android:name="android.intent.action.PICK" />
+				<category android:name="android.intent.category.DEFAULT" />
+				<data android:scheme="file" android:mimeType="*/*" />
+			</intent-filter>
+			<intent-filter>
+				<action android:name="android.intent.action.GET_CONTENT" />
+				<category android:name="android.intent.category.DEFAULT" />
+				<category android:name="android.intent.category.OPENABLE" />
+				<data android:scheme="file" android:mimeType="*/*" />
+			</intent-filter>
+			<intent-filter>
+				<action android:name="android.intent.action.GET_CONTENT" />
+				<category android:name="android.intent.category.DEFAULT" />
+				<category android:name="android.intent.category.OPENABLE" />
+				<data android:mimeType="video/*" />
+				<data android:mimeType="text/x-vCard" />
+				<data android:mimeType="text/x-vcard" />
+			</intent-filter>
+        </activity>
+
+        <service android:name=".service.FileManagerService" >
+            <intent-filter >
+                <action android:name="com.mediatek.filemanager.service.FileManagerService" />
+            </intent-filter>
+        </service>
+        
+        <activity android:name=".SetAsRingtone" android:label="@string/setas_ringtone"
+			android:theme="@android:style/Theme.Translucent.NoTitleBar"
+			android:excludeFromRecents="true">
+			<intent-filter>
+				<action android:name="android.intent.action.ATTACH_DATA" />
+				<data android:scheme="file" android:mimeType="audio/*" />
+				<category android:name="android.intent.category.DEFAULT" />
+			</intent-filter>
+		</activity>
+		
+		<!-- modefy by qrt laiwugang (X212) 2013-05-25 -->
+		<activity android:name=".RingtonePicker" android:label="@string/app_name"
+			android:excludeFromRecents="true" android:taskAffinity=""
+			android:configChanges="orientation|keyboardHidden|screenSize|mcc|mnc">
+            <!-- Add By wangxiaofei to down RINGTONE_PICKER intent priority make media picker as first SW00066300 2014-07-22 begin-->
+            <intent-filter android:priority="-1">
+                <action android:name="android.intent.action.RINGTONE_PICKER" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <!-- Add By wangxiaofei to down RINGTONE_PICKER intent priority make media picker as first SW00066300 2014-07-22 end-->
+		</activity>
+    </application>
+
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_MEDIA_STORAGE" />
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+	
+    <uses-sdk
+        android:minSdkVersion="14"
+        android:targetSdkVersion="14" />
+	
+</manifest>

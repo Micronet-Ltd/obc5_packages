@@ -78,7 +78,7 @@
         <item>com.android.music.MusicBrowserActivity</item>
         <item>com.android.music.VideoBrowserActivity</item>
 	<item>com.android.browser.BrowserActivity</item>
-        <item>com.cyanogenmod.filemanager.activities.NavigationActivity</item>
+        <item>com.mediatek.filemanager.FileManagerOperationActivity</item>
 	<item>com.android.camera.CameraLauncher</item>
 	<item>com.android.gallery3d.app.GalleryActivity</item>
 	<item>com.android.contacts.activities.PeopleActivity</item>

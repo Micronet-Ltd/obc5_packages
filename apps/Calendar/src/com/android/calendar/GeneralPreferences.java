@@ -45,6 +45,7 @@ import android.provider.SearchRecentSuggestions;
 import android.text.TextUtils;
 import android.text.format.Time;
 import android.widget.Toast;
+import android.util.Log; 
 
 import com.android.calendar.alerts.AlertReceiver;
 import com.android.calendar.event.EventViewUtils;
@@ -55,6 +56,7 @@ import com.android.timezonepicker.TimeZonePickerUtils;
 
 public class GeneralPreferences extends PreferenceFragment implements
         OnSharedPreferenceChangeListener, OnPreferenceChangeListener, OnTimeZoneSetListener {
+    private static final String TAG = "GeneralPreferences";
     // The name of the shared preferences file. This name must be maintained for historical
     // reasons, as it's what PreferenceManager assigned the first time the file was created.
     static final String SHARED_PREFS_NAME = "com.android.calendar_preferences";
@@ -176,7 +178,22 @@ public class GeneralPreferences extends PreferenceFragment implements
 
         mRingtone = (RingtonePreference) preferenceScreen.findPreference(KEY_ALERTS_RINGTONE);
         String ringToneUri = Utils.getRingTonePreference(activity);
+		Log.d(TAG, "onCreate get ringtone preference ringToneUri:" + ringToneUri);
+		
+		//added by shanbp more ringtone 20160106 --begin--
+		/*Uri sdcardUri = null;
+		if (ringToneUri != null) {
+			sdcardUri = Uri.parse(ringToneUri);
+		}
 
+		if (!Utils.isRingToneUriValid(activity, sdcardUri)) {
+			// set default of DEFAULT_RINGTONE
+			ringToneUri = DEFAULT_RINGTONE;
+			Utils.setRingTonePreference(activity, ringToneUri);
+			Log.d(TAG, "onCreate set default DEFAULT_RINGTONE ringToneUri:" + ringToneUri);
+		}*/
+		//added by shanbp more ringtone 20160106 --end--
+		
         // Set the ringToneUri to the backup-able shared pref only so that
         // the Ringtone dialog will open up with the correct value.
         final Editor editor = preferenceScreen.getEditor();
@@ -184,6 +201,7 @@ public class GeneralPreferences extends PreferenceFragment implements
 
         String ringtoneDisplayString = getRingtoneTitleFromUri(activity, ringToneUri);
         mRingtone.setSummary(ringtoneDisplayString == null ? "" : ringtoneDisplayString);
+		Log.d(TAG, "onCreate the value of summary ringtoneDisplayString:" + ringtoneDisplayString);
 
         mPopup = (CheckBoxPreference) preferenceScreen.findPreference(KEY_ALERTS_POPUP);
         mUseHomeTZ = (CheckBoxPreference) preferenceScreen.findPreference(KEY_HOME_TZ_ENABLED);
@@ -286,15 +304,29 @@ public class GeneralPreferences extends PreferenceFragment implements
         mHideDeclined.setOnPreferenceChangeListener(listener);
         mVibrate.setOnPreferenceChangeListener(listener);
     }
-
+	//added by shanbp more ringtone 20160106 --begin--
     @Override
     public void onStop() {
         getPreferenceScreen().getSharedPreferences()
                 .unregisterOnSharedPreferenceChangeListener(this);
-        setPreferenceListeners(null);
+		/** removed 
+          * Calendar ringtonepreference summary don't update after change notification to local file.
+         setPreferenceListeners(null);
+        */
         super.onStop();
     }
-
+	
+    /**
+      * added 
+      * Calendar ringtonepreference summary don't update after change notification to local file.
+      */
+    @Override
+    public void onDestroy() {
+        // TODO Auto-generated method stub
+        super.onDestroy();
+        setPreferenceListeners(null);
+    }
+	//added by shanbp more ringtone 20160106 --end--
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         Activity a = getActivity();
@@ -351,6 +383,7 @@ public class GeneralPreferences extends PreferenceFragment implements
                 Utils.setRingTonePreference(activity, (String) newValue);
                 String ringtone = getRingtoneTitleFromUri(activity, (String) newValue);
                 mRingtone.setSummary(ringtone == null ? "" : ringtone);
+				Log.d(TAG, "onPreferenceChange the value of summary ringtone:" + ringtone);
             }
             return true;
         } else if (preference == mVibrate) {

@@ -58,7 +58,7 @@ public class FolderIcon extends FrameLayout implements FolderListener {
     private CheckLongPressHelper mLongPressHelper;
 
     // The number of icons to display in the
-    private static final int NUM_ITEMS_IN_PREVIEW = 3;
+    private static final int NUM_ITEMS_IN_PREVIEW = 4;
     private static final int CONSUMPTION_ANIMATION_DURATION = 100;
     private static final int DROP_IN_ANIMATION_DURATION = 400;
     private static final int INITIAL_ITEM_ANIMATION_DURATION = 350;
@@ -71,7 +71,7 @@ public class FolderIcon extends FrameLayout implements FolderListener {
     private static final float OUTER_RING_GROWTH_FACTOR = 0.3f;
 
     // The amount of vertical spread between items in the stack [0...1]
-    private static final float PERSPECTIVE_SHIFT_FACTOR = 0.18f;
+    private static final float PERSPECTIVE_SHIFT_FACTOR =0.9f; //0.18f;
 
     // Flag as to whether or not to draw an outer ring. Currently none is designed.
     public static final boolean HAS_OUTER_RING = true;
@@ -146,6 +146,7 @@ public class FolderIcon extends FrameLayout implements FolderListener {
                     "is dependent on this");
         }
         LauncherAppState app = LauncherAppState.getInstance();
+		Context mContext = app.getContext();
         DeviceProfile grid = app.getDynamicGrid().getDeviceProfile();
 
         FolderIcon icon = (FolderIcon) LayoutInflater.from(launcher).inflate(resId, group, false);
@@ -158,10 +159,23 @@ public class FolderIcon extends FrameLayout implements FolderListener {
 
         // Offset the preview background to center this view accordingly
         icon.mPreviewBackground = (ImageView) icon.findViewById(R.id.preview_background);
+        String pkgName=null;
+		Context contexttheme=null;
+		Drawable d=null;
+        try {
+			pkgName = Utilities.getThemePkgName(mContext);
+			contexttheme = mContext.createPackageContext(pkgName, Context.CONTEXT_IGNORE_SECURITY);
+			d = Utilities.getThemeFolderBackground(contexttheme,pkgName);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+        if(d!=null){
+        	icon.mPreviewBackground.setBackground(d);
+        }
         lp = (FrameLayout.LayoutParams) icon.mPreviewBackground.getLayoutParams();
         lp.topMargin = grid.folderBackgroundOffset;
-        lp.width = grid.folderIconSizePx;
-        lp.height = grid.folderIconSizePx;
+        lp.width = (int)(grid.folderIconSizePx*0.85);
+        lp.height = (int)(grid.folderIconSizePx*0.85);
 
         icon.setTag(folderInfo);
         icon.setOnClickListener(launcher);
@@ -573,7 +587,9 @@ public class FolderIcon extends FrameLayout implements FolderListener {
     }
 
     private PreviewItemDrawingParams computePreviewItemDrawingParams(int index,
-            PreviewItemDrawingParams params) {
+            PreviewItemDrawingParams params) {		
+    	int index_order = index;
+    	final int previewPadding = FolderRingAnimator.sPreviewPadding;
         index = NUM_ITEMS_IN_PREVIEW - index - 1;
         float r = (index * 1.0f) / (NUM_ITEMS_IN_PREVIEW - 1);
         float scale = (1 - PERSPECTIVE_SCALE_FACTOR * (1 - r));
@@ -588,7 +604,19 @@ public class FolderIcon extends FrameLayout implements FolderListener {
         float transX = (mAvailableSpaceInPreview - scaledSize) / 2;
         float totalScale = mBaselineIconScale * scale;
         final int overlayAlpha = (int) (80 * (1 - r));
-
+        if(0 <= index_order&&index_order < 2){ // 0 1  
+        transX=index_order*mBaselineIconSize*0.85f + previewPadding/2;
+        transY=mAvailableSpaceInPreview - (2*mBaselineIconSize + scaledSize + scaleOffsetCorrection) + getPaddingTop()+1.30f*mBaselineIconSize;
+        }else if(2 <= index_order&&index_order < 4){ // 2 3   
+        transX=(index_order-2)*mBaselineIconSize*0.85f + previewPadding/2;
+        //transY=1*mBaselineIconSize+9*previewPadding;
+        transY=mAvailableSpaceInPreview - (1*mBaselineIconSize + scaledSize + scaleOffsetCorrection) + getPaddingTop()+1.15f*mBaselineIconSize;
+        }else if(4 <= index_order&&index_order < 6){ // 4 5  
+        transX=(index_order-4)*mBaselineIconSize*0.85f + previewPadding/2;
+        //transY=2*mBaselineIconSize+9*previewPadding;
+        transY=mAvailableSpaceInPreview - (0*mBaselineIconSize + scaledSize + scaleOffsetCorrection) + getPaddingTop()+1.15f*mBaselineIconSize;
+        }
+        totalScale = mBaselineIconScale * 1 - 0.1f;
         if (params == null) {
             params = new PreviewItemDrawingParams(transX, transY, totalScale, overlayAlpha);
         } else {
@@ -602,7 +630,7 @@ public class FolderIcon extends FrameLayout implements FolderListener {
 
     private void drawPreviewItem(Canvas canvas, PreviewItemDrawingParams params) {
         canvas.save();
-        canvas.translate(params.transX + mPreviewOffsetX, params.transY + mPreviewOffsetY);
+        canvas.translate(params.transX + mPreviewOffsetX+15, params.transY + mPreviewOffsetY);
         canvas.scale(params.scale, params.scale);
         Drawable d = params.drawable;
 

@@ -516,14 +516,7 @@ class AccountTypeManagerImpl extends AccountTypeManager
                 }
             }
         }
-	//start,remove by chenqi@ehang BUG #2938 ,for sim, local account 2015-12-02
-		/*ehang lihui@20150916 added for add local account to list start
-        allAccounts.add(AccountWithDataSet.LOCAL);
-		contactWritableAccounts.add(AccountWithDataSet.LOCAL);
-		groupWritableAccounts.add(AccountWithDataSet.LOCAL);
-		Log.d(TAG,"allAccounts="+allAccounts + "contactWritableAccounts="+contactWritableAccounts+",groupWritableAccounts="+groupWritableAccounts);
-	    ehang lihui@20150916 added for add local account to list end*/
-        //end,remove by chenqi@ehang BUG #2938 ,for sim, local account 2015-12-02
+
         Collections.sort(allAccounts, ACCOUNT_COMPARATOR);
         Collections.sort(contactWritableAccounts, ACCOUNT_COMPARATOR);
         Collections.sort(groupWritableAccounts, ACCOUNT_COMPARATOR);

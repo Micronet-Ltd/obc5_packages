@@ -24,13 +24,13 @@
             android:defaultValue="baidu"
             android:summary="@string/pref_content_search_engine_summary"
             android:dialogTitle="@string/pref_content_search_engine" />
-
+	<!--
     <CheckBoxPreference
             android:key="open_in_background"
             android:defaultValue="false"
             android:title="@string/pref_content_open_in_background"
             android:summary="@string/pref_content_open_in_background_summary" />
-
+	-->
     <CheckBoxPreference
             android:key="enable_javascript"
             android:defaultValue="true"

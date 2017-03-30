@@ -1438,7 +1438,7 @@ public class Workspace extends SmoothPagedView
                 // Sometimes the left parameter of the pages is animated during a layout transition;
                 // this parameter offsets it to keep the wallpaper from animating as well
                 int adjustedScroll =
-                        getScrollX() - firstPageScrollX - getLayoutTransitionOffsetForPage(0);
+                        getScrollX() - firstPageScrollX;
                 float offset = Math.min(1, adjustedScroll / (float) scrollRange);
                 offset = Math.max(0, offset);
                 // Don't use up all the wallpaper parallax until you have at least
@@ -1816,8 +1816,9 @@ public class Workspace extends SmoothPagedView
                 R.bool.preferences_interface_homescreen_scrolling_wallpaper_scroll_default);
 
         if (!mScrollWallpaper) {
-            if (mWindowToken != null) mWallpaperManager.setWallpaperOffsets(mWindowToken, 0f, 0.5f);
+            if (mWindowToken != null) mWallpaperManager.setWallpaperOffsets(mWindowToken, 0.5f, 0.5f);
         } else {
+			if (mWindowToken != null) mWallpaperManager.setWallpaperOffsets(mWindowToken, 0f, 0.5f);
             mWallpaperOffset.syncWithScroll();
         }
 
@@ -5358,7 +5359,7 @@ public class Workspace extends SmoothPagedView
                 R.bool.preferences_interface_homescreen_scrolling_wallpaper_scroll_default);
 
         if (!mScrollWallpaper) {
-            if (mWindowToken != null) mWallpaperManager.setWallpaperOffsets(mWindowToken, 0f, 0.5f);
+            if (mWindowToken != null) mWallpaperManager.setWallpaperOffsets(mWindowToken, 0.5f, 0.5f);
         } else {
             mWallpaperOffset.syncWithScroll();
         }

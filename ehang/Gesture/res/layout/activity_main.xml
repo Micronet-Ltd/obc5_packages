@@ -3,43 +3,158 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white">
-    <RelativeLayout
-        android:id="@+id/rl"
-        android:layout_width="fill_parent"
+    <LinearLayout 
+         android:layout_width="fill_parent"
         android:layout_height="50dp"
-        android:orientation="horizontal"
-        android:background="@color/lightgray">
+        android:id="@+id/ll_title"
+        android:background="@color/titlebar">
+      <ImageButton 
+           android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginLeft="15dp"
+            android:onClick="MainActivityBack"
+            android:background="@drawable/back"
+            android:layout_gravity="center"
+            /> 
         <TextView
+            android:layout_width="100dp"
+            android:layout_height="fill_parent"
+            android:text="@string/gesture_name"
+            android:textSize="18sp"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:layout_marginLeft="15dp"
+            />
+    </LinearLayout>
+    <TextView
+         android:id="@+id/tv_title"
+        android:layout_width="fill_parent"
+        android:layout_height="30dp"
+        android:text="@string/glove_mode"
+        android:textColor="@color/graycolor"
+        android:layout_below="@+id/ll_title"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="5dp"
+        android:textSize="14sp"
+        />
+    <RelativeLayout
+        android:id="@+id/rl_glove"
+        android:layout_width="fill_parent"
+        android:layout_height="60dp"
+        android:orientation="horizontal"
+        android:layout_below="@+id/tv_title"
+        android:layout_marginTop="8dp"
+		android:clickable="true"
+		android:onClick="gloveclick"
+		android:background="@drawable/item_bg"
+        >
+        <TextView
+            android:id="@+id/tv_titleglove"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/title" 
-            android:textSize="20sp"
+            android:text="@string/close" 
+            android:textSize="16sp"
             android:textColor="@color/lightblack"
-            android:layout_marginLeft="35dp"
-			android:layout_centerVertical="true"/>
+            android:layout_marginLeft="15dp"
+			/>
+        <TextView
+             android:id="@+id/tv_subtitleglove"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/subtitleglove" 
+            android:textSize="14sp"
+            android:textColor="@color/hintblack"
+            android:layout_marginLeft="15dp"
+			android:layout_centerVertical="true"
+			android:layout_below="@+id/tv_titleglove"
+			android:layout_marginTop="5dp"/>
         <ToggleButton  
-	        android:id="@+id/mToggleBtn"  
+	        android:id="@+id/mToggleBtn_glove"  
 	        android:layout_width="wrap_content"  
-	        android:layout_height="wrap_content"
+	        android:layout_height="30dp"
 	        android:background="@android:color/transparent"  
 	        android:button="@drawable/togglebtn_bg"  
 	        android:checked="false" 
 	        android:layout_alignParentRight="true"
-	        android:layout_centerVertical="true"
 	        android:layout_marginRight="35dp"
 	        android:textOff=""  
-	        android:textOn="" /> 
+	        android:textOn=""
+	        android:clickable="false" /> 
     </RelativeLayout>
-
- 	<ListView
+     <View 
+        android:id="@+id/viewline" 
+        android:layout_below="@+id/rl_glove"
+         android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:background="@color/lightgray"
+        android:layout_marginTop="5dp"
+        />
+     
+     <TextView
+         android:id="@+id/tv_titleGesture"
+        android:layout_width="fill_parent"
+        android:layout_height="30dp"
+        android:text="@string/title"
+        android:textColor="@color/graycolor"
+        android:layout_below="@+id/viewline"
+        android:layout_marginLeft="15dp"
+        android:textSize="14sp"
+        android:layout_marginTop="15dp"
+        />
+     <RelativeLayout
+        android:id="@+id/rl"
+        android:layout_below="@+id/tv_titleGesture"
+        android:layout_width="fill_parent"
+        android:layout_height="60dp"
+        android:orientation="horizontal"
+        android:clickable="true"
+		android:onClick="gestureclick"
+		android:background="@drawable/item_bg"
+		android:layout_marginTop="8dp"
+        >
+        <TextView
+            android:id="@+id/tv_titleblackGesture"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:text="@string/close"
+            android:textSize="16sp"
+            android:textColor="@color/lightblack"
+            android:layout_marginLeft="15dp"
+			/>
+         <TextView
+            android:id="@+id/tv_subtitle"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/subtitle" 
+            android:textSize="14sp"
+            android:textColor="@color/hintblack"
+            android:layout_marginLeft="15dp"
+			android:layout_centerVertical="true"
+			android:layout_below="@+id/tv_titleblackGesture"
+			android:layout_marginTop="5dp"/>
+        <ToggleButton  
+	        android:id="@+id/mToggleBtn"  
+	        android:layout_width="wrap_content"  
+	        android:layout_height="30dp"
+	        android:background="@android:color/transparent"  
+	        android:button="@drawable/togglebtn_bg"  
+	        android:checked="false" 
+	        android:layout_alignParentRight="true"
+	        android:layout_marginRight="35dp"
+	        android:textOff=""  
+	        android:textOn=""
+	        android:clickable="false"
+	         /> 
+    </RelativeLayout>
+    
+    
+     <ListView
  	    android:id="@+id/mListView"
  	    android:layout_width="fill_parent"
  	    android:layout_height="wrap_content"
+ 	    android:listSelector="@color/lightgray"
  	    android:layout_below="@+id/rl"
- 	    android:layout_marginLeft="20dp"
- 	    android:listSelector="@color/lightgray" >
-
+ 	    android:layout_marginTop="15dp" >
  	</ListView>
-
 </RelativeLayout>
 

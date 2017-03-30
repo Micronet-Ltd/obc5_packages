@@ -18,8 +18,8 @@
     <style name="Theme.Calculator.Display.Main.Formula">
         <item name="android:paddingTop">16dip</item>
         <item name="android:paddingBottom">1dip</item>
-        <item name="android:paddingLeft">16dip</item>
-        <item name="android:paddingRight">16dip</item>
+        <!--<item name="android:paddingLeft">16dip</item>
+        <item name="android:paddingRight">16dip</item>-->
         <item name="android:textSize">30sp</item>
         <item name="minTextSize">30sp</item>
         <item name="maxTextSize">30sp</item>

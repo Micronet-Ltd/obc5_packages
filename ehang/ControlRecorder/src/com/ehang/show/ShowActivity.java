@@ -95,7 +95,7 @@ public class ShowActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_show);
 		ts = (TextView) super.findViewById(R.id.ToggleButtonTitle);
-		ts.setText(R.string.switch_open);
+		ts.setText(R.string.switch_close);
 		dd = new Main(this);
 		File file = getApplicationContext().getDatabasePath("xinren.db");
 		ToggleButton bt = (ToggleButton) super.findViewById(R.id.bt);

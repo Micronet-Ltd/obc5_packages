@@ -118,11 +118,19 @@ public class appUpdate extends BroadcastReceiver {
 					Object param1[] = { state1, ppname };
 					shezhi sz1 = new shezhi();
 					boolean flag1 = sz1.addUser(param1, context);
+					Integer permissions = mm.yigepermission(ppname);
+					int pps = permissions.intValue();
+					UserDaoImpl userdao = new UserDaoImpl();
+					Object param[] = { pps, ppname };
+					boolean flag = userdao.addUser(param, context);
 				}
 
-				SystemProperties.set("persist.sys.switch_thief", "false");
-				mm.start();
-				SystemProperties.set("persist.sys.switch_thief", "true");
+				//SystemProperties.set("persist.sys.switch_thief", "false");
+				//mm.start();
+				//SystemProperties.set("persist.sys.switch_thief", "true");
+				
+				// System.out.println("这里得到的是" + name);
+			
 			}
 			// Log.e("瀹夎浜嗘柊搴旂敤", ""+packageName);
 

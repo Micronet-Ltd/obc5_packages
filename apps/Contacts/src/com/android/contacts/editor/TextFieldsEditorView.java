@@ -47,6 +47,15 @@ import com.android.contacts.common.model.account.AccountType.EditField;
 import com.android.contacts.common.model.dataitem.DataKind;
 import com.android.contacts.common.util.PhoneNumberFormatter;
 
+//{{begin,mod by chenqi 2016-01-19 15:23
+//reason:for user's feeling,bug3606;limit edittext for display name when stored in sim
+import com.android.contacts.ContactSaveService;
+import android.provider.ContactsContract.CommonDataKinds.StructuredName;
+import android.text.InputFilter;
+import com.android.contacts.common.model.account.SimAccountType;
+//}}end,mod by chenqi
+
+
 /**
  * Simple editor that handles labels and any {@link EditField} defined for the
  * entry. Uses {@link ValuesDelta} to read any existing {@link RawContact} values,
@@ -202,11 +211,17 @@ public class TextFieldsEditorView extends LabeledEditorView {
 
         int fieldCount = kind.fieldList.size();
         mFieldEditTexts = new EditText[fieldCount];
+
+        //{{begin,mod by chenqi 2016-01-19 15:25
+        //reason:for user's feeling,bug3606;limit edittext for display name when stored in sim
+		boolean is_simAccount = SimAccountType.ACCOUNT_TYPE.equals(state.getAccountType());
+		boolean is_DisplayNameKind=kind.mimeType.equals(kind.PSEUDO_MIME_TYPE_DISPLAY_NAME);
+        //}}end,mod by chenqi
         for (int index = 0; index < fieldCount; index++) {
             final EditField field = kind.fieldList.get(index);
             final EditText fieldView = new EditText(mContext);
             fieldView.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,
-                    LayoutParams.WRAP_CONTENT));
+                        LayoutParams.WRAP_CONTENT));
             // Set either a minimum line requirement or a minimum height (because {@link TextView}
             // only takes one or the other at a single time).
             if (field.minLines != 0) {
@@ -239,14 +254,58 @@ public class TextFieldsEditorView extends LabeledEditorView {
             // Read current value from state
             final String column = field.column;
             final String value = entry.getAsString(column);
-            fieldView.setText(value);
+
+            //{{begin,mod by chenqi 2016-01-19 15:27
+            //reason:for user's feeling,bug3606;limit edittext for display name when stored in sim
+            boolean eq_displayname = column.equals(StructuredName.DISPLAY_NAME);
+            final boolean is_sim_displayName_eq=(is_DisplayNameKind&&is_simAccount&&eq_displayname);
+            //}}end,mod by chenqi
+
             // Prepare listener for writing changes
-            fieldView.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void afterTextChanged(Editable s) {
-                    // Trigger event for newly changed value
-                    onFieldChanged(column, s.toString());
-                }
+
+            //{{begin,mod by chenqi 2016-01-19 15:28
+            //reason:for user's feeling,bug3606;limit edittext for display name when stored in sim
+            if(is_sim_displayName_eq){
+                fieldView.setFilters(new InputFilter[]{new InputFilter.LengthFilter(ContactSaveService.MAX_EN_LENGTH)});
+                fieldView.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        // Trigger event for newly changed value
+                        String t=s.toString();
+                        int str_len=t.length();
+                        int len=t.getBytes().length;
+
+                        //if(eq_displayname && len>ContactSaveService.MAX_EN_LENGTH){
+                        if(len>ContactSaveService.MAX_EN_LENGTH)
+                        {
+                            for(int i=str_len;i>2;i--){
+                                s.delete(i-1,i);
+                                len=s.toString().getBytes().length;
+                                if(len<=ContactSaveService.MAX_EN_LENGTH) {
+                                    break;
+                                }
+                            }
+                        }
+                        onFieldChanged(column, t);
+
+                    }
+
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    }
+                });
+            } else{
+            //}}end,mod by chenqi
+                fieldView.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        // Trigger event for newly changed value
+                        onFieldChanged(column, s.toString());
+                    }
 
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -255,14 +314,19 @@ public class TextFieldsEditorView extends LabeledEditorView {
                 @Override
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
                 }
-            });
+                });
+            //{{begin,mod by chenqi 2016-01-19 15:28
+            //reason:for user's feeling,bug3606;limit edittext for display name when stored in sim
+            }
+            fieldView.setText(value); 
+            //}}end,mod by chenqi
 
             if (RCSUtil.getRcsSupport()
                     && null != entry.getAsInteger(ContactsContract.Data.DATA13)
                     && 1 == entry.getAsInteger(ContactsContract.Data.DATA13)) {
                 String myPhoneNumber = RCSUtil.getMyPhoneNumber(mContext);
                 SharedPreferences prefs = PreferenceManager
-                        .getDefaultSharedPreferences(mContext);
+                    .getDefaultSharedPreferences(mContext);
                 String latestTerminal = prefs.getString(RCSUtil.PREF_MY_TEMINAL, "");
                 if (!TextUtils.isEmpty(myPhoneNumber)
                         && !TextUtils.equals(latestTerminal, myPhoneNumber)) {

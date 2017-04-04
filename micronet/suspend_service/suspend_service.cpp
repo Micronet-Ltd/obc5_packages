@@ -17,7 +17,6 @@
 #include <sys/inotify.h>
 
 #include "log.h"
-#include "AWakeLock.h"
 
 //#define EVENT_SIZE      (sizeof(struct inotify_event))
 //#define EVENT_BUF_LEN   (4 * (EVENT_SIZE + 16))
@@ -31,7 +30,6 @@
 
 const char* fname =         "/dev/suspend_timeout";
 const char* ign_tm_fname =  "/dev/ignition_timeout";
-const char* ign_fname =     "/dev/ignition_level";
 const char* db_fname =      "/data/data/com.android.providers.settings/databases/settings.db";
 //const char* tmp_fname = "/sys/devices/suspend_timeout/suspend_timeout_tmp";
 const char* tmp_fname =     "/data/local/tmp/suspend_timeout_tmp";
@@ -50,10 +48,6 @@ const char* db_get_st = "settings get system sleep_timeout";
 struct suspend_tm_thcontext {
     int     fd_sp_tm;
     int     fd_ign_tm;
-    int     fd_ign_lvl;
-    int     last_ign_lvl;
-    int     wl_flags;
-    sp<AWakeLock>   mWakeLock;
 };
 
 int get_settings(char* buf, const char* cmd, const char* tmp_file)
@@ -179,29 +173,6 @@ void * db_proc(void * cntx)
     return NULL;
 }
 
-static int  WakeLockSet(suspend_tm_thcontext* ptc, int val)
-{
-    if(val != ptc->last_ign_lvl) 
-    {
-        ptc->last_ign_lvl = val;
-        if(ptc->last_ign_lvl) 
-        {
-            DINFO("acquire %d", ptc->last_ign_lvl);//temp!!!
-            if(ptc->mWakeLock->acquire(ptc->wl_flags, "suspend_service") == 0)
-            {
-                DERR("CANNOT acquire wakelock!");
-                return -1;
-            }
-        }
-        else
-        {
-            ptc->mWakeLock->release(1);//force
-            DINFO("release %d", ptc->last_ign_lvl);//temp!!!!
-        }
-    }
-    DINFO("ignition %d", ptc->last_ign_lvl);
-    return 0;
-}
 int main(int argc __attribute__((unused)), char * argv[] __attribute__((unused)))
 {
     int             ret, len, tmp_val;
@@ -216,8 +187,6 @@ int main(int argc __attribute__((unused)), char * argv[] __attribute__((unused))
     //struct igni_thcontext ign_tc;
 
     DINFO("started.");
-    tc.last_ign_lvl = -1;
-    tc.wl_flags     = PM_FULL_WAKE_LOCK | PM_ON_AFTER_RELEASE;
 
     tc.fd_sp_tm = open(fname, O_RDWR, O_NDELAY);
     if(0 > tc.fd_sp_tm)
@@ -226,43 +195,20 @@ int main(int argc __attribute__((unused)), char * argv[] __attribute__((unused))
 	return -1;
     }
 
-    tc.fd_ign_lvl = open(ign_fname, O_RDWR, O_NDELAY);
-    if(0 > tc.fd_ign_lvl)
-    {
-        DERR ("error open device %s", ign_fname);
-        return -1;
-    }
 
     tc.fd_ign_tm = open(ign_tm_fname, O_RDWR, O_NDELAY);
     if(0 > tc.fd_ign_tm)
     {
-        DERR ("error open device %s", ign_fname);
+        DERR ("error open device %s", ign_tm_fname);
         return -1;
-    }
-    tc.mWakeLock = new AWakeLock();
-    if(tc.mWakeLock == NULL) 
-    {
-        DERR("CANNOT create wakelock!");
-        return -1;
-    }
-    //1st wakelock
-    len = read(tc.fd_ign_lvl, readbuffer, sizeof(readbuffer)/sizeof(readbuffer[0]));//1st time don't wait
-    if(0 < len) 
-    {
-        tmp_val = strtol(readbuffer, 0, 10);
-        WakeLockSet(&tc, tmp_val);
     }
 
     pthread_create(&db_thread, NULL, db_proc, &tc);
-
-//    pthread_create(&ignition_thread, NULL, ignition_proc, &ign_tc);
 
     if(max_fd < tc.fd_sp_tm)
         max_fd = tc.fd_sp_tm;
     if(max_fd < tc.fd_ign_tm)
         max_fd = tc.fd_ign_tm;
-    if(max_fd < tc.fd_ign_lvl)
-        max_fd = tc.fd_ign_lvl;
 
     while(1)
     {
@@ -271,7 +217,6 @@ int main(int argc __attribute__((unused)), char * argv[] __attribute__((unused))
         FD_ZERO (&set);
         FD_SET (tc.fd_sp_tm, &set);
         FD_SET (tc.fd_ign_tm, &set);
-        FD_SET (tc.fd_ign_lvl, &set);
 
         ret = select(max_fd + 1, &set, NULL, NULL, &timeout);
     	if (ret != 1)
@@ -303,16 +248,6 @@ int main(int argc __attribute__((unused)), char * argv[] __attribute__((unused))
                 //}
 
                 DINFO("%s", readbuffer);
-            }
-        }
-        if(FD_ISSET(tc.fd_ign_lvl, &set)) 
-        {
-            len = read(tc.fd_ign_lvl, readbuffer, sizeof(readbuffer)/sizeof(readbuffer[0]));//1st time don't wait
-
-            if(0 < len) 
-            {
-                tmp_val = strtol(readbuffer, 0, 10);
-                WakeLockSet(&tc, tmp_val);
             }
         }
     }

@@ -8,8 +8,8 @@ public class CanbusHardwareFilter {
 	int i;
 	private int[] mIds;
 	private int[] mMask;
-	private CanbusFrameType[] maskType={CanbusFrameType.STANDARD};
-	private CanbusFrameType[] filtType={CanbusFrameType.STANDARD};
+	private CanbusFrameType maskType=CanbusFrameType.STANDARD;
+	private CanbusFrameType filtType=CanbusFrameType.STANDARD;
 
 	/**
 	 * Creates filter with frame ids and mask.
@@ -20,9 +20,8 @@ public class CanbusHardwareFilter {
 	 * @param mask filter mask to be used in conjunction with frame ids.
 	 * @param type Standard / Extended frame.
 	 */
-	public CanbusHardwareFilter(int[] ids,CanbusFrameType[] filterType, int[] mask, CanbusFrameType[] type){
+	public CanbusHardwareFilter(int[] ids, int[] mask, CanbusFrameType type){
 		mIds = ids;
-		filtType=filterType;
 		mMask = mask;
 		maskType = type;
 	}
@@ -32,7 +31,7 @@ public class CanbusHardwareFilter {
 	 * @param ids register frame ids to pass.
 	 * @param type Standard / Extended frame.
 	 */
-	public CanbusHardwareFilter(int[] ids, CanbusFrameType[] filterType){
+	public CanbusHardwareFilter(int[] ids, CanbusFrameType filterType){
 		mIds = ids;
 		filtType = filterType;
 	}
@@ -80,16 +79,9 @@ public class CanbusHardwareFilter {
 	}
 
 	/**
-	* Returns mask type
-	*/
-	public CanbusFrameType[] getMaskType() {
-		return maskType;
-	}
-
-	/**
 	 * Returns filter type
 	 */
-	public CanbusFrameType[] getFilterType() {
+	public CanbusFrameType getFilterType() {
 		return filtType;
 	}
 }

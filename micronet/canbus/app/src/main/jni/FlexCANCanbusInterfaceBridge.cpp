@@ -73,18 +73,17 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_set
          jint* maskInts = env->GetIntArrayElements(masks, NULL);
          jsize lengthOfMaskArray = env->GetArrayLength(masks);
 
-/*         //get frame type
-         methodId = env->GetMethodID(cls, "getType", "()Lcom/micronet/canbus/CanbusFrameType;");
+         //get filter frame type
+         methodId = env->GetMethodID(cls, "getFilterType", "()Lcom/micronet/canbus/CanbusFrameType;");
          jobject o = env->CallObjectMethod(element, methodId);
          cls = env->FindClass("com/micronet/canbus/CanbusFrameType");
          g_canbus.typeField = env->GetFieldID(cls, "mType", "I");
-         int type = env->GetIntField(o, g_canbus.typeField);*/
+         int type = env->GetIntField(o, g_canbus.typeField);
 
+/*
          //get Mask types
          jmethodID methodMaskType = env->GetMethodID(cls, "getMaskType", "()[Lcom/micronet/canbus/CanbusFrameType;");
          jobject o = env->CallObjectMethod(element, methodId);
-         cls = env->FindClass("com/micronet/canbus/CanbusFrameType");
-
          jintArray masksType = (jintArray)env->CallObjectMethod(element, methodMaskType);
          jint* maskTypeInts = env->GetIntArrayElements(masksType, NULL);
          jsize lengthOfMaskTypeArray = env->GetArrayLength(masksType);
@@ -94,6 +93,7 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_set
          jintArray FilterType = (jintArray)env->CallObjectMethod(element, methodFilterType);
          jint* filterTypeInts = env->GetIntArrayElements(masksType, NULL);
          jsize lengthOfFilterTypeArray = env->GetArrayLength(masksType);
+*/
 
 
          filter_array[i].count = lengthOfArray;
@@ -102,11 +102,11 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_set
              total_filters++;
          }
 
-         filter_array[i].filter_type_count = lengthOfFilterTypeArray;
+      /*   filter_array[i].filter_type_count = lengthOfFilterTypeArray;
          for (ft= 0; ft < lengthOfFilterTypeArray; ft++) {
              filter_array[i].filter_type[ft] = filterTypeInts[ft];
              total_filter_types++;
-         }
+         }*/
 
          filter_array[i].mask_count = lengthOfMaskArray;
          for (m = 0; m < lengthOfMaskArray; m++) {
@@ -114,11 +114,6 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_set
              total_masks++;
          }
 
-         filter_array[i].mask_type_count = lengthOfMaskTypeArray;
-         for (mt= 0; mt < lengthOfMaskTypeArray; mt++) {
-             filter_array[i].mask_type[mt] = maskTypeInts[mt];
-             total_mask_types++;
-         }
 
      }
 

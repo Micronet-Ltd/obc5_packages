@@ -29,7 +29,7 @@
 
 #define CAN1_TTY    "/dev/ttyACM2"
 #define CAN2_TTY    "/dev/ttyACM3"
-#define J1708_TTY   "/dev/ttyACM4"
+/*#define J1708_TTY   "/dev/ttyACM4"*/
 
 #define DWORD uint32_t
 #define WORD uint16_t
@@ -41,13 +41,27 @@
 
 #define ACK_OK 0
 
-#define MAX_QB_CAN_FILTERS 25
-/*struct qb_filter_mask {
-    __u32 mask;
-    __u8 count;
-    __u8 is_extended;
+
+#define CAN_OK_RESPONSE 	0x0D
+#define CAN_ERROR_RESPONSE	0x07
+#define FLOW_CONTROL_ARR_SIZE 0x8
+#define FLOW_CONTROL_INVALID_POS 0xFF
+#define FLOW_CONTROL_INVALID_ID 0x0
+#define CAN_MSG_ID_SIZE_STD 3
+#define CAN_MSG_ID_SIZE_EXT 8
+
+#define MAX_QB_CAN_FILTERS 24
+
+struct FLEXCAN_filter_mask {
+    __u32 mask_id[MAX_QB_CAN_FILTERS];
+    __u32 mask_type[MAX_QB_CAN_FILTERS];
+    __u8 mask_count;
+    __u8 mask_type_count;
     __u32 filter_id[MAX_QB_CAN_FILTERS];
-};*/
+    __u32 filter_type[MAX_QB_CAN_FILTERS];
+    __u8 count;
+    __u8 filter_type_count;
+};
 
 struct canbus_globals
 {
@@ -69,6 +83,7 @@ struct canbus_globals
     jclass canbusFrameClass;
     jclass j1708FrameClass;
 };
+
 extern struct canbus_globals g_canbus;
 
 extern "C" {
@@ -82,8 +97,6 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusSocket_send(JNIEnv 
 JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusSocket_sendJ1708(JNIEnv *env, jobject instance, jint socket, jobject frame);
 JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusSocket_registerCallback(JNIEnv *env, jobject instance, jobject listener);
 JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusSocket_closeSocket(JNIEnv *env, jobject instance);
-JNIEXPORT jstring JNICALL Java_com_micronet_canbus_FlexCANCanbusSocket_jniGetMCUVersion(JNIEnv *env, jclass type);
-
 
 /*// TODO remove if interface can only be set when opening CAN
 JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_setInterfaceBitrate(JNIEnv *env,jobject instance, jint bitrate);

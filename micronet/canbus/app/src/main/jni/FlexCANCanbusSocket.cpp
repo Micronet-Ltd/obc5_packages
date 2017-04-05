@@ -3,10 +3,11 @@
 #include <jni.h>
 #include "canbus.h"
 #include "FlexCANCommand.h"
+#include "FlexCANComm.h"
 
 #include <stdio.h>
 #include <android/log.h>
-
+int  false_fd2;
 
 static void throwException(JNIEnv *env, const char *message, const char* add)
 {
@@ -77,7 +78,7 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusSocket_send(JNIEnv 
 
 JNIEXPORT jint Java_com_micronet_canbus_FlexCANCanbusSocket_sendJ1708(JNIEnv *env, jobject obj, jint socket, jobject j1708FrameObj){
 
-   /* int data_sent;
+    int data_sent;
     char id_str[64];
     int id, type;
     int priority;
@@ -99,10 +100,13 @@ JNIEXPORT jint Java_com_micronet_canbus_FlexCANCanbusSocket_sendJ1708(JNIEnv *en
 
     env->ReleaseByteArrayElements(data, bufferPtr, JNI_ABORT);
 
-    return 0;*/
+    return 0;
 }
-
 JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusSocket_closeSocket(JNIEnv *env, jobject instance) {
+
+    if (closeCAN(false_fd2) == -1) {
+        return -1;
+    }
     env->DeleteGlobalRef(g_canbus.g_listenerObject);
     g_canbus.g_listenerObject = NULL;
     g_canbus.g_onPacketReceive = NULL;

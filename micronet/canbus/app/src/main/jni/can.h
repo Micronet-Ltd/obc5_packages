@@ -40,5 +40,5 @@ typedef union _J1939_ID {
                 : 3;  //extended can ID is only 29 bits, so there are 3 unused bits in a 4 byte value
     } pgn_bits;
     DWORD dwVal;         //some times it is useful to access it all at once
-}J1939_ID;
+} J1939_ID;
 #endif //CAN_H

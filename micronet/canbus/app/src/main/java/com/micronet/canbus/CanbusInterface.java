@@ -49,8 +49,8 @@ public class CanbusInterface {
 	public void setBitrate(int bitrate) {
 		impl.setBitrate(bitrate);
 	}
-/*
-	*//**
+
+	/**
 	 * Returns the CAN baud rate.
 	 * @return possible CAN bad rate values of 125K, 250K, 500K, 1Meg. A value of 0 indicates that
 	 * QBridge didn't respond with current baud rate. Try calling setBitrate if this occurs.
@@ -72,17 +72,6 @@ public class CanbusInterface {
 	public CanbusSocket createSocket(){
 		return impl.createSocket();
 	}
-	
-/*
-	*/
-/**
-	  * Check if J1708 is supported
-	  *//*
-
-	public boolean isJ1708Supported(){
-		return impl.checkJ1708Support();
-	}
-*/
 
 	/**
 	 * Set the CAN module mode between Normal and Silent (QBridge support only).
@@ -94,11 +83,13 @@ public class CanbusInterface {
 	public void setListeningMode(boolean listeningModeEnable) {
 		impl.setListeningMode(listeningModeEnable);
 	}
+
 /*
-	public void sendRecoveryCommand(int action) {
-		impl.sendRecovery(action);
-	}
-*/
+	* Closes the Can Socket
+
+	public FlexCANCanbusSocket close(){
+		return impl.close();
+	}*/
 
 	private native static int getImplId();
 	static

@@ -1,20 +1,16 @@
 package com.micronet.canbus;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
 import com.micronet.canbus.Fragment.CanbusMessageTypeFragment;
-import com.micronet.canbus.R;
 import com.micronet.canbus.Fragment.CanOverviewFragment;
-import com.micronet.canbus.Fragment.CanbusFramesFragment;
 import com.micronet.canbus.Fragment.CanbusFramesFragment;
 
 import java.util.ArrayList;
@@ -48,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         adapter.addFrag(new CanOverviewFragment(), "Main");
         adapter.addFrag(new CanbusFramesFragment(), "Frames");
-/*        adapter.addFrag(new CanbusMessageTypeFragment(), "Transmit Message");*/
+        adapter.addFrag(new CanbusMessageTypeFragment(), "Transmit Message");
         viewPager.setAdapter(adapter);
     }
 
@@ -88,6 +84,23 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         FlexCANCanbusInterfaceBridge canbus = new FlexCANCanbusInterfaceBridge();
+        CanbusSocket canbusSocket=new CanbusSocket();
+        CanbusInterface setFilters=new CanbusInterface();
+        ArrayList<CanbusHardwareFilter> filterList = new ArrayList<CanbusHardwareFilter>();
+        CanbusHardwareFilter[] filters;
+
+        // Up to 24 filters.
+        int[] ids = new int[]{65265 << 8, 61444 << 8};
+        int[] mask = {0xf0000000,0xff000000};
+        CanbusFrameType[] maskType={CanbusFrameType.EXTENDED,CanbusFrameType.EXTENDED};
+        CanbusFrameType[] filterType={CanbusFrameType.EXTENDED,CanbusFrameType.EXTENDED};
+
+        filterList.add(new CanbusHardwareFilter(ids,filterType, mask, maskType));
+
+        filters = filterList.toArray(new CanbusHardwareFilter[0]);
+
+        setFilters.setFilters(filters);
         canbus.create();
+        canbusSocket.open();
     }
 }

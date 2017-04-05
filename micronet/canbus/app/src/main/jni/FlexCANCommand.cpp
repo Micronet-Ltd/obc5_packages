@@ -9,14 +9,6 @@
 #include "FlexCANCommand.h"
 #include <string>
 
-#define CAN_OK_RESPONCE 	0x0D
-#define CAN_ERROR_RESPONCE	0x07
-#define FLOW_CONTROL_ARR_SIZE 0x8
-#define FLOW_CONTROL_INVALID_POS 0xFF
-#define FLOW_CONTROL_INVALID_ID 0x0
-#define CAN_MSG_ID_SIZE_STD 3
-#define CAN_MSG_ID_SIZE_EXT 8
-
 #define COMMAND_J1708_PACKET 'D'
 #define COMMAND_CAN_PACKET 'J'
 #define MAX_PACKET_SIZE 256
@@ -42,14 +34,10 @@ int FlexCAN_startup(bool listeningModeEnable, int bitrate, int termination)
 
     fd = ret = serial_init(port);
 
-    if(serial_start_monitor_thread())
-    {
-        LOGE("unable to start serial monitor thread\n");
-        return -1;
-    }
     if (initTerminalInterface(fd) == -1) {
         return -1;
     }
+
     /* first always close the CAN module (bug #250)
      http://192.168.1.234/redmine/issues/250
      */
@@ -58,6 +46,17 @@ int FlexCAN_startup(bool listeningModeEnable, int bitrate, int termination)
     }
 
     //TODO: Add masks
+ /*   uint64_t mask[8]={0x1,F,0xF,0x0,0x0,0x0,0x0,0x0};*/
+    char mask[8]={'1','F','F','0','0','0','0','0'};
+    char Filter[8]={'1','F','0','0','0','0','0','0'};
+    setMasks( mask,'T');
+    setFilters(Filter,'T');
+
+    if(serial_start_monitor_thread())
+    {
+        LOGE("unable to start serial monitor thread\n");
+        return -1;
+    }
 
     if(setBitrate(fd, bitrate) == -1) {
         return -1;
@@ -66,7 +65,6 @@ int FlexCAN_startup(bool listeningModeEnable, int bitrate, int termination)
     if(sendReadStatusCommand(fd) == -1) {
         return -1;
     }
-
 
     /*
      * Test listening mode:
@@ -92,11 +90,6 @@ int FlexCAN_startup(bool listeningModeEnable, int bitrate, int termination)
         // TODO: check if running "openCANandSetTermination" disables listening mode
         return -1;
     }
-/*    const char * mesg = "7003112233";
-    if(sendMessage(fd, mesg) == -1) {
-        return -1;
-    }*/
-
     return ret;
 }
 
@@ -167,8 +160,8 @@ int32_t ParseCanMessToString(int msg_type, int id, int data_len, BYTE * data, ui
             curr_msg_len++;
         }
     }
-    //Add CAN_OK_RESPONCE character
-    *pmsg_str = CAN_OK_RESPONCE;
+    //Add CAN_OK_RESPONSE character
+    *pmsg_str = CAN_OK_RESPONSE;
 
     curr_msg_len++;
 

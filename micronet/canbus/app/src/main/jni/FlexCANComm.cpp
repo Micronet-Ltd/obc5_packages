@@ -15,8 +15,7 @@ static bool quit = false;
 
 //TODO: Verify if this function is needed
 
-int serial_set_nonblocking(int fd)
-{
+int serial_set_nonblocking(int fd) {
     int flags;
     if(-1 == (flags = fcntl(fd, F_GETFL)) )
     {
@@ -34,6 +33,7 @@ int serial_set_nonblocking(int fd)
 
 int serial_init(char *name){
     char *tty;
+
     DD("opening port: '%s'\n", CAN1_TTY);
 
     if ((fd = open(CAN1_TTY, O_RDWR | O_NOCTTY | O_NONBLOCK)) < 0) {
@@ -45,7 +45,6 @@ int serial_init(char *name){
 
     DD("opened port: '%s', fd=%d",CAN1_TTY, fd);
 
-    //TODO: check this function (A mess )
     initTerminalInterface(fd);
 
     return fd;
@@ -79,7 +78,6 @@ int initTerminalInterface(int fd) {
     return 0;
 }
 
-
 int closeCAN(int false_fd) { //was fd
     // first always close the CAN module (bug #250)
     // http://192.168.1.234/redmine/issues/250
@@ -89,7 +87,90 @@ int closeCAN(int false_fd) { //was fd
         ERR("Error write %s command\n", buf);
         return -1;
     }
+    LOGD("Closing can channel ");
     return 0;
+}
+
+//Can send the entire message including the CAN OK RESPONSE
+int sendMessage(int fd, const char * message) {
+    char buf[256];
+    sprintf(buf, "%s", message);
+    printf("Send %s\n", buf);
+    int check=strlen(buf);
+    if (-1 == write(fd, buf, strlen(buf))) {
+        ERR("Error write %s command\n", buf );
+        return -1;
+    }
+    return 0;
+}
+
+int setMasks(char *mask, char type) {
+    char maskString[MAX_MASK_FILTER_SIZE];
+    int i = 0, j = 0;
+
+    maskString[i] = 'm';
+    i++;
+    maskString[i++] = type;
+
+    if ((type == 'T') || (type == 'R')) {
+        for (i = 2; i < 10; i++) {
+            maskString[i] = mask[j];
+            j++;
+        }
+    } else if ((type == 't') || (type == 'r')) {
+        for (i = 2; i < 7; i++) {
+            maskString[i] = 0;
+        }
+        for (i = 7; i <10; i++) {
+            maskString[i] = mask[j];
+            j++;
+        }
+    }
+    maskString[i] = '\r';
+    i++;
+    int mask_length = i;
+
+    //check if maskString is of correct size
+    if(mask_length==MAX_MASK_FILTER_SIZE ) {
+        sendMessage(fd, maskString);
+        LOGD("Mask SET");
+    }
+    else LOGE("!!!!Invalid Mask size: %d for mask: !!!!", mask_length, mask);
+}
+
+
+int setFilters(char *filter, char type) {
+    char filterString[MAX_MASK_FILTER_SIZE];
+    int i = 0, j = 0;
+
+    filterString[i] = 'M';
+    i++;
+    filterString[i++] = type;
+
+    if ((type == 'T') || (type == 'R')) {
+        for (i = 2; i < 10; i++) {
+            filterString[i] = filter[j];
+            j++;
+        }
+    } else if ((type == 't') || (type == 'r')) {
+        for (i = 2; i < 7; i++) {
+            filterString[i] = 0;
+        }
+        for (i = 7; i <10; i++) {
+            filterString[i] = filter[j];
+            j++;
+        }
+    }
+    filterString[i] = '\r';
+    i++;
+    int filters_length = i;
+
+    //check if mask is of correct size
+    if(filters_length==MAX_MASK_FILTER_SIZE ) {
+        sendMessage(fd, filterString);
+        LOGD("Filter set SET");
+    }
+    else LOGE("!!!!Invalid Filter size: %d for Filter: !!!!", filters_length, filter);
 }
 
 int setBitrate(int fd, int speed) {
@@ -131,7 +212,8 @@ int setBitrate(int fd, int speed) {
             break;
     }
     char buf[256];
-    sprintf(buf, "C\rS%d\r", baud);
+/*    sprintf(buf, "C\rS%d\r", baud);*/
+    sprintf(buf, "S%d\r", baud);
     if (-1 == write(fd, buf, strlen(buf))) {
         ERR("Error write %s command\n", buf);
         return -1;
@@ -148,6 +230,7 @@ int openCANandSetTermination(int fd, bool term) {
         ERR("Error write %s command\n", buf);
         return -1;
     }
+    LOGD("Opened can channel");
     return 0;
 }
 
@@ -168,17 +251,6 @@ int sendReadStatusCommand(int fd) {
     sprintf(buf, "F\r");
     if (-1 == write(fd, buf, strlen(buf))) {
         ERR("Error write %s command\n", buf);
-        return -1;
-    }
-    return 0;
-}
-
-int sendMessage(int fd, const char * message) {
-    char buf[256];
-    sprintf(buf, "t%s\r", message);
-    printf("Send %s\n", buf);
-    if (-1 == write(fd, buf, strlen(buf))) {
-        ERR("Error write %s command\n", buf );
         return -1;
     }
     return 0;
@@ -329,6 +401,7 @@ void j1939rxd(BYTE *rxd) {
 
 static void *monitor_data_thread(void *param) {
     uint8_t data[8 * 1024];
+
     uint8_t *pdata = data;
 
     prctl(PR_SET_NAME, "monitor_thread", 0, 0, 0);
@@ -413,7 +486,7 @@ static void *monitor_data_thread(void *param) {
                 uint8_t frame[31]; //31 is the maximum size of an extended packet
                 uint8_t * pFrame=frame;
                 memcpy(frame, (const void *) (pdata+start), packetLength);
-                if ((frame[0] == 't' && frame[carriageReturn] == '\r') || (frame[0] == 'T' && frame[carriageReturn] == '\r')){
+                if ((frame[0] == 't' && frame[carriageReturn] == '\r') || (frame[0] == 'T' && frame[carriageReturn] == '\r')  /*(frame[0] == 'r' && frame[5] == '\r')*/) {
                     j1939rxd(frame);
                 }
                 else LOGD("Incomplete packet received: Frame not sent to j1939rxd()");
@@ -440,16 +513,14 @@ int serial_deinit() {
     return 0;
 }
 
-void qb_close()
-{
+void qb_close() {
     LOGD("Entered the close()! ");
     serial_deinit();
     /*return serial_deinit();*/
 }
 
 
-int serial_send_data(BYTE *mydata, DWORD bytes_to_write)
-{
+int serial_send_data(BYTE *mydata, DWORD bytes_to_write) {
     DWORD numwr = 0;
 
     numwr = write(fd, mydata, bytes_to_write);

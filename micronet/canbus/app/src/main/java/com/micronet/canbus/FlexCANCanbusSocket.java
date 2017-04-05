@@ -18,7 +18,7 @@ public class FlexCANCanbusSocket extends CanbusSocket implements CanbusListener{
     //TODO: how many elements ??
     // Needs enough to prevent blocking insertion.
     BlockingQueue<CanbusFrame> mQueue = new LinkedBlockingQueue<CanbusFrame>(2000);
-    /*BlockingQueue<J1708Frame> mQueueJ1708 = new LinkedBlockingQueue<J1708Frame>(2000);*/
+    BlockingQueue<J1708Frame> mQueueJ1708 = new LinkedBlockingQueue<J1708Frame>(2000);
 
     /**
      * Creates Canbus socket.
@@ -66,59 +66,12 @@ public class FlexCANCanbusSocket extends CanbusSocket implements CanbusListener{
         return frame;
     }
 
-
-    /**
-     * Reads J1708 frame. Will block the calling thread until data
-     * is received from J1708 bus.
-     */
-/*    public J1708Frame readJ1708()
-    {
-        J1708Frame frame = null;
-        try {
-            frame = mQueueJ1708.take();
-        } catch (InterruptedException e)
-        {
-            Log.e(TAG, "read j1708 queue error");
-            e.printStackTrace();
-        }
-
-        return frame;
-    }*/
-
-
-    /**
-     * Reads J1708 frame. Will block the calling thread until data
-     * is written to Canbus socket or timeout has elapsed.
-     *
-     * @param timeout how long to wait before giving up, in units of milliseconds
-     *
-     * @return the head J1708 frame, or null if th specified waiting time elapses before J1708 frame is available
-     */
-   /* public J1708Frame readJ1708(long timeout)
-    {
-        J1708Frame frame = null;
-        try {
-            frame = mQueueJ1708.poll(timeout, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException e)
-        {
-            Log.e(TAG, "read j1708 queue error");
-            e.printStackTrace();
-        }
-
-        return frame;
-    }*/
-
     @Override
     public void onPacketReceive(CanbusFrame frame) {
         if(!mQueue.offer(frame))
             Log.e(TAG, "Unable to put frame, dropping.");
-    }
 
-    /*@Override
-    public void onPacketReceiveJ1708(J1708Frame frame ) {
-        if(!mQueueJ1708.offer(frame))
-            Log.e(TAG, "Unable to put frame, dropping.");
-    }*/
+    }
 
     /**
      * Sends Canbus frame through socket.
@@ -144,8 +97,9 @@ public class FlexCANCanbusSocket extends CanbusSocket implements CanbusListener{
     /**
      * Closes Canbus socket.
      */
-    public void close(){
-    }
+ /*   public void close(){
+        closeSocket();
+    }*/
 
     /**
      * Returns Canbus socket id.
@@ -161,19 +115,13 @@ public class FlexCANCanbusSocket extends CanbusSocket implements CanbusListener{
     /**
      * Adds software filters to be apply only to the this socket.
     */
-    /*public void setFilters(CanbusSoftwareFilter[] filters){
+    public void setMasks(CanbusSoftwareFilter[] filters) {
         throw new IllegalArgumentException("Software filter not supported");
     }
-*/
-/*    public String getMCUVersion(){
-        return jniGetMCUVersion();
-    }*/
-
 
     private native int send(int socket, CanbusFrame frame);
     private native int sendJ1708(int socket, J1708Frame frame);
     private native int registerCallback(CanbusListener listener);
-/*    private native static String jniGetMCUVersion();*/
     private native int closeSocket();
 
     static

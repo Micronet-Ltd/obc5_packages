@@ -30,6 +30,10 @@ public class CanTest {
 
     private final static String TAG = "CanTest";
 
+    CanbusFrameType canMessageType;
+    int canMessageId;
+    byte[] canMessageData;
+    boolean usersData =false;
     private static final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
     private static final String STD = "STD";
     private static final String EXT = "EXT";
@@ -39,6 +43,7 @@ public class CanTest {
 
     private CanbusInterface canbusInterface;
     private CanbusSocket canbusSocket;
+  /*  private FlexCANCanbusSocket flexCANCanbusSocket;*/
 
     private J1939Reader j1939Reader = null;
     private volatile boolean blockOnRead = false;
@@ -97,11 +102,11 @@ public class CanTest {
         this.baudrate = baudrate;
         if (canbusInterface == null) {
             canbusInterface = new CanbusInterface();
-            canbusInterface.create(silentMode);
-            canbusInterface.setBitrate(baudrate);
             if(enableFilters) {
                 setFilters();
             }
+            /*canbusInterface.create(silentMode);*/ //Not Required
+            canbusInterface.setBitrate(baudrate);
         }
 
         if (canbusSocket == null) {
@@ -110,7 +115,7 @@ public class CanTest {
         }
         if (discardInBuffer) {
             canbusSocket.discardInBuffer();
-        }
+    }
         isCanInterfaceOpen = true;
         startThreads();
     }
@@ -119,19 +124,18 @@ public class CanTest {
         this.silentMode = silentMode;
     }
 
- /*   public String gettheMCUversion(){
-        return flexCANCanbusSocket.getMCUVersion();
-    }*/
-
     public void setFilters() {
         enableFilters = true;
         ArrayList<CanbusHardwareFilter> filterList = new ArrayList<CanbusHardwareFilter>();
         CanbusHardwareFilter[] filters;
 
-        // Up to 25 filters.
-        int[] ids = new int[]{65265 << 8, 61444 << 8, 61443 << 8, 65248 << 8, 65276 << 8, 61445 << 8, 65262 << 8, 65266 << 8, 60416 << 8, 60160 << 8, 61444 << 8};
-        int mask = 0xffff00;
-        filterList.add(new CanbusHardwareFilter(ids, mask, CanbusFrameType.EXTENDED));
+        // Up to 24 filters.
+        int[] ids = new int[]{65265 << 8, 61444 << 8};
+        int[] mask = {0xf0000000,0xff000000};
+        CanbusFrameType[] maskType={CanbusFrameType.EXTENDED,CanbusFrameType.EXTENDED};
+        CanbusFrameType[] filterType={CanbusFrameType.EXTENDED,CanbusFrameType.EXTENDED};
+
+        filterList.add(new CanbusHardwareFilter(ids,filterType, mask, maskType));
 
         filters = filterList.toArray(new CanbusHardwareFilter[0]);
 
@@ -195,15 +199,6 @@ public class CanTest {
                     e.printStackTrace();
                 }
             }
-
-           /* if (j1708ReaderThread != null && j1708ReaderThread.isAlive()) {
-                j1708ReaderThread.interrupt();
-                try {
-                    j1708ReaderThread.join();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }*/
         }
     }
 
@@ -428,7 +423,6 @@ public class CanTest {
         }
         return new String(hexChars);
     }
-
     public void sendJ1939() {
         if (j1939SendThread == null || !j1939SendThread.isAlive()) {
             j1939SendThread = new Thread(sendJ1939Runnable);
@@ -436,29 +430,72 @@ public class CanTest {
         }
     }
 
+    public void sendJ1939(boolean userData,String messageType, String messageId,String messageData) {
+        usersData=userData;
+        canMessageData = messageData.getBytes();
+        canMessageId = Integer.parseInt(messageId);
+
+        if (messageType.toString() == "T") {
+            canMessageType = CanbusFrameType.EXTENDED;
+        }
+        else if (messageType.toString() == "t") {
+            canMessageType = CanbusFrameType.STANDARD;
+        }
+        else if (messageType == "R") {
+            canMessageType = CanbusFrameType.EXTENDED_REMOTE;
+        }
+        else if (messageType == "r") {
+            canMessageType = CanbusFrameType.STANDARD_REMOTE;
+        }
+
+        if (j1939SendThread == null || !j1939SendThread.isAlive()) {
+            j1939SendThread = new Thread(sendJ1939Runnablle);
+            j1939SendThread.start();
+        }
+    }
+
     private Runnable sendJ1939Runnable = new Runnable() {
         @Override
         public void run() {
-            int data = 0;
+            CanbusFrameType MessageType;
+            int MessageId;
+            byte[] MessageData;
             do {
-                        //To send a different type of frame change this to CanbusFrameType.EXTENDED
-                        CanbusFrameType mType= CanbusFrameType.EXTENDED;
-                        //A different ID Can be sent by changing the value here
-                        int canId=0xFEF2;
-                        ByteBuffer dbuf = ByteBuffer.allocate(8);
-                        dbuf.order(ByteOrder.LITTLE_ENDIAN);
-                        dbuf.putInt(data++);
-                        byte[] a = dbuf.array();
-                        a[0] = 0x12;
-                        a[1] = 0x34;
-                        a[2] = 0x45;
-                        a[3] = 0x67;
-                        a[4] = 0x1F;
-                        a[5] = 0x2F;
-                        a[6] = 0x3F;
-                        a[7] = 0x4F;
+                //To send a different type of frame change this to CanbusFrameType.EXTENDED
+                MessageType=CanbusFrameType.EXTENDED;
+                //A different ID Can be sent by changing the value here
+                MessageId=0xFEF2;
+                int data = 0;
+                ByteBuffer dbuf = ByteBuffer.allocate(8);
+                dbuf.order(ByteOrder.LITTLE_ENDIAN);
+                dbuf.putInt(data++);
+                byte[] a = dbuf.array();
+                a[0] = 0x12;
+                a[1] = 0x34;
+                a[2] = 0x45;
+                a[3] = 0x67;
+                a[4] = 0x1F;
+                a[5] = 0x2F;
+                a[6] = 0x3F;
+                a[7] = 0x4F;
+                MessageData=a;
                         if(canbusSocket != null) {
-                            canbusSocket.write(new CanbusFrame(canId, a,mType));
+                            canbusSocket.write(new CanbusFrame(MessageId, MessageData,MessageType));
+                }
+                try {
+                    Thread.sleep(j1939IntervalDelay);
+                } catch (InterruptedException e) {
+                }
+            } while (autoSendJ1939);
+        }
+    };
+
+    private Runnable sendJ1939Runnablle = new Runnable() {
+        @Override
+        public void run() {
+            do {
+                if(canbusSocket != null) {
+                    canbusSocket.write(new CanbusFrame(canMessageId, canMessageData,canMessageType));
                 }
                 try {
                     Thread.sleep(j1939IntervalDelay);

@@ -12,8 +12,6 @@ interface ICanbusInterfaceBridge {
         public void setBitrate(int bitrate);
         public void setFilters(CanbusHardwareFilter[] hardwareFilters);
         public CanbusSocket createSocket();
-/*        public boolean	checkJ1708Support();*/
-/*        public int getBitrate();*/
         public void setListeningMode(boolean listeningModeEnable);
-/*        public void sendRecovery(int action);*/
+        /*public void sendRecovery(int action);*/
 }

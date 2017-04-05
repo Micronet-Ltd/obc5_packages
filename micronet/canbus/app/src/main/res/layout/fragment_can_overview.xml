@@ -188,7 +188,6 @@
             android:layout_toEndOf="@+id/lblInterfaceStatus"
             android:layout_alignStart="@+id/swSilentMode" />-->
 
-    <!--
         <Switch
             android:id="@+id/swFilters"
             android:layout_width="wrap_content"
@@ -196,7 +195,6 @@
             android:text="@string/filters"
             android:layout_above="@+id/xAxis"
             android:layout_alignParentEnd="true" />
-    -->
 
     <Switch
         android:id="@+id/swDiscardInBuffer"

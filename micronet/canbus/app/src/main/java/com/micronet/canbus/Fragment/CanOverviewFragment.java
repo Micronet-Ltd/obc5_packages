@@ -75,7 +75,7 @@ public class CanOverviewFragment extends Fragment {
     private void setStateInterfaceDependentUI() {
         boolean open = canTest.isInterfaceOpen();
         btnGetBaudrate.setEnabled(open);
-   /*     swFilters.setEnabled(open);*/
+        swFilters.setEnabled(open);
     }
 
     private void updateInterfaceStatusUI(String status) {
@@ -154,16 +154,21 @@ public class CanOverviewFragment extends Fragment {
             }
         });*/
 
-      /*  swFilters.setOnClickListener(new View.OnClickListener() {
+        swFilters.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                /*if (swFilters.isChecked()) {
+                    canTest.setMasks();
+                } else {
+                    canTest.clearFilters();
+                }*/
                 if (swFilters.isChecked()) {
                     canTest.setFilters();
                 } else {
                     canTest.clearFilters();
                 }
             }
-        });*/
+        });
 
         swSilentMode.setOnClickListener(new View.OnClickListener() {
             @Override

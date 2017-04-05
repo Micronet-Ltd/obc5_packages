@@ -105,7 +105,7 @@ public class CanbusSocket implements CanbusListener{
 	/**
 	 * Adds software filters to be apply only to the this socket.
 	 */
-	/*public void setFilters(CanbusSoftwareFilter[] filters){
+	/*public void setMasks(CanbusSoftwareFilter[] filters){
 		throw new IllegalArgumentException("Software filter not supported");
 	}*/
 	

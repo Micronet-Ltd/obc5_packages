@@ -5,6 +5,7 @@
 
 #ifndef CANBUS_FLEXCANCOMM_H
 #define CANBUS_FLEXCANCOMM_H
+#define MAX_MASK_FILTER_SIZE 11
 
 int serial_init(char *name);
 
@@ -14,6 +15,9 @@ int setBitrate(int fd, int speed);
 int openCANandSetTermination(int fd, bool term);
 int setListeningMode(int fd, bool term);
 int sendReadStatusCommand(int fd);
+
+int setMasks(char *mask, char type);
+int setFilters(char *mask, char type);
 
 int serial_start_monitor_thread();
 int serial_send_data(unsigned char*, uint32_t);

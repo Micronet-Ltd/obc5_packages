@@ -1,5 +1,7 @@
 package com.micronet.canbus;
 
+import java.util.Arrays;
+
 /**
  * Sets Canbus hardware module to pass certain packet ids.
  * Filtering is done using both Mask and Frame Id to achieve maximum flexability.    
@@ -8,8 +10,10 @@ public class CanbusHardwareFilter {
 	int i;
 	private int[] mIds;
 	private int[] mMask;
-	private CanbusFrameType maskType=CanbusFrameType.STANDARD;
-	private CanbusFrameType filtType=CanbusFrameType.STANDARD;
+	private int[] filterType={EXTENDED};
+
+	static public int STANDARD=0;
+	static public int EXTENDED=1;
 
 	/**
 	 * Creates filter with frame ids and mask.
@@ -20,10 +24,10 @@ public class CanbusHardwareFilter {
 	 * @param mask filter mask to be used in conjunction with frame ids.
 	 * @param type Standard / Extended frame.
 	 */
-	public CanbusHardwareFilter(int[] ids, int[] mask, CanbusFrameType type){
+	public CanbusHardwareFilter(int[] ids, int[] mask, int[] type){
 		mIds = ids;
 		mMask = mask;
-		maskType = type;
+		filterType = type;
 	}
 
 	/**
@@ -31,9 +35,9 @@ public class CanbusHardwareFilter {
 	 * @param ids register frame ids to pass.
 	 * @param type Standard / Extended frame.
 	 */
-	public CanbusHardwareFilter(int[] ids, CanbusFrameType filterType){
+	public CanbusHardwareFilter(int[] ids, int[] filtType){
 		mIds = ids;
-		filtType = filterType;
+		filterType = filtType;
 	}
 	
 	/**
@@ -81,7 +85,14 @@ public class CanbusHardwareFilter {
 	/**
 	 * Returns filter type
 	 */
-	public CanbusFrameType getFilterType() {
-		return filtType;
+	public int[] getFilterType() {
+		//int[] integerArray = Arrays.copyOf(filterType, filterType.length, int[].class);
+//		Integer[] intArray = new Integer[filterType.length];
+//
+//		for(int i=0; i<filterType.length; i++){
+//			intArray[i] = (Integer) filterType[i];
+//		}
+
+		return filterType;
 	}
 }

@@ -8,6 +8,7 @@ public class FlexCANCanbusInterfaceBridge implements ICanbusInterfaceBridge {
     private boolean listeningModeEnable;
     private boolean termination;
     private int bitrate;
+    private CanbusHardwareFilter[] canbusHardwareFilters;
     /**
      * Creates new Canbus interface (up).
      */
@@ -16,8 +17,8 @@ public class FlexCANCanbusInterfaceBridge implements ICanbusInterfaceBridge {
     /**
      *
      */
-    public void create() {
-        createInterface(false,250000,true); //TO-DO: changed listening mode to false and termination to true because of a bug
+    public void create(CanbusHardwareFilter[] hardwareFilters) {
+        createInterface(false,250000,true,hardwareFilters); //TO-DO: changed listening mode to false and termination to true because of a bug
     }
 
     /**
@@ -27,8 +28,8 @@ public class FlexCANCanbusInterfaceBridge implements ICanbusInterfaceBridge {
      *                            false, turns on the CAN module's transmitter and receiver.
      *                            This mode doesn't affect the J1708 transmission line.
      */
-    public void create(boolean listeningModeEnable) {
-        createInterface(listeningModeEnable, 250000, false);
+    public void create(boolean listeningModeEnable,CanbusHardwareFilter[] hardwareFilters) {
+        createInterface(listeningModeEnable, 250000, false,hardwareFilters);
     }
 
     /**
@@ -37,11 +38,12 @@ public class FlexCANCanbusInterfaceBridge implements ICanbusInterfaceBridge {
      * @param bitrate
      * @param termination
      */
-    public void create(boolean listeningModeEnable, int bitrate, boolean termination) {
+    public void create(boolean listeningModeEnable, int bitrate, boolean termination, CanbusHardwareFilter[] hardwareFilters) {
         this.listeningModeEnable = listeningModeEnable;
         this.termination = termination;
         this.bitrate = bitrate;
-        createInterface(listeningModeEnable, bitrate, termination);
+        this.
+        createInterface(listeningModeEnable, bitrate, termination, hardwareFilters);
     }
 
 
@@ -56,16 +58,16 @@ public class FlexCANCanbusInterfaceBridge implements ICanbusInterfaceBridge {
      * Sets interface bitrate.
      * Interface must be removed first!
      */
-    public void setBitrate(int bitrate) {
-        createInterface(this.listeningModeEnable, bitrate, this.termination);
+    public void setBitrate(int bitrate,CanbusHardwareFilter[] hardwareFilters) {
+        createInterface(this.listeningModeEnable, bitrate, this.termination, hardwareFilters);
     }
 
     /**
      * Changing termination will result in the CAN module being re-opened.
      * @param termination
      */
-    public void setCANTermination(boolean termination) {
-        createInterface(this.listeningModeEnable, this.bitrate, termination);
+    public void setCANTermination(boolean termination, CanbusHardwareFilter[] hardwareFilters) {
+        createInterface(this.listeningModeEnable, this.bitrate, termination,hardwareFilters );
     }
     /**
      * Sets filters in Canbus hardware controller.
@@ -85,13 +87,13 @@ public class FlexCANCanbusInterfaceBridge implements ICanbusInterfaceBridge {
     /**
      * {@inheritDoc}
      */
-    public void setListeningMode(boolean listeningModeEnable) {
-        createInterface(listeningModeEnable, this.bitrate, this.termination);
+    public void setListeningMode(boolean listeningModeEnable,CanbusHardwareFilter[] hardwareFilters){
+        createInterface(listeningModeEnable, this.bitrate, this.termination,hardwareFilters );
     }
 
 /*    public boolean checkJ1708Support() {return true;}*/
     private native int setHardwareFilter(CanbusHardwareFilter[] hardwareFilters);
-    private native int createInterface(boolean listeningModeEnable, int bitrate, boolean termination);
+    private native int createInterface(boolean listeningModeEnable, int bitrate, boolean termination,CanbusHardwareFilter[] hardwareFilters );
     private native int removeInterface();
    /* private native int setInterfaceBitrate(int bitrate);
     private native int enableListeningMode(boolean enable);

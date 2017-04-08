@@ -31,6 +31,7 @@ public class CanTest {
     private final static String TAG = "CanTest";
 
     CanbusFrameType canMessageType;
+    CanbusHardwareFilter[] canbusFilter;
     int canMessageId;
     byte[] canMessageData;
     boolean usersData =false;
@@ -102,11 +103,9 @@ public class CanTest {
         this.baudrate = baudrate;
         if (canbusInterface == null) {
             canbusInterface = new CanbusInterface();
-            if(enableFilters) {
-                setFilters();
-            }
+            canbusFilter=setFilters();
             /*canbusInterface.create(silentMode);*/ //Not Required
-            canbusInterface.setBitrate(baudrate);
+            canbusInterface.setBitrate(baudrate,canbusFilter);
         }
 
         if (canbusSocket == null) {
@@ -124,7 +123,7 @@ public class CanTest {
         this.silentMode = silentMode;
     }
 
-    public void setFilters() {
+    public CanbusHardwareFilter[] setFilters() {
         enableFilters = true;
         ArrayList<CanbusHardwareFilter> filterList = new ArrayList<CanbusHardwareFilter>();
         CanbusHardwareFilter[] filters;
@@ -132,15 +131,13 @@ public class CanTest {
         // Up to 24 filters.
         int[] ids = new int[]{65265 << 8, 61444 << 8};
         int[] mask = {0xf0000000,0xff000000};
-        /*CanbusFrameType[] maskType={CanbusFrameType.EXTENDED,CanbusFrameType.EXTENDED};
-        CanbusFrameType[] filterType={CanbusFrameType.EXTENDED,CanbusFrameType.EXTENDED};*/
 
-        CanbusFrameType type=CanbusFrameType.EXTENDED;
+        int[] type={CanbusHardwareFilter.EXTENDED,CanbusHardwareFilter.EXTENDED};
         filterList.add(new CanbusHardwareFilter(ids,mask, type));
 
         filters = filterList.toArray(new CanbusHardwareFilter[0]);
 
-        canbusInterface.setFilters(filters);
+        return filters;
     }
 
     public void clearFilters() {

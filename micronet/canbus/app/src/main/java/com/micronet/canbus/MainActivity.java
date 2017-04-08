@@ -92,16 +92,12 @@ public class MainActivity extends AppCompatActivity {
         // Up to 24 filters.
         int[] ids = new int[]{65265 << 8, 61444 << 8};
         int[] mask = {0xf0000000,0xff000000};
- /*       CanbusFrameType[] maskType={CanbusFrameType.EXTENDED,CanbusFrameType.EXTENDED};
-        CanbusFrameType[] filterType={CanbusFrameType.EXTENDED,CanbusFrameType.EXTENDED};*/
-       /* CanbusFrameType maskType=CanbusFrameType.EXTENDED;*/
+        int[] type={CanbusHardwareFilter.EXTENDED, CanbusHardwareFilter.EXTENDED};
 
-        CanbusFrameType type=CanbusFrameType.EXTENDED;
         filterList.add(new CanbusHardwareFilter(ids,mask, type));
         filters = filterList.toArray(new CanbusHardwareFilter[0]);
 
-        setFilters.setFilters(filters);
-        canbus.create();
+        canbus.create(filters);
         canbusSocket.open();
     }
 }

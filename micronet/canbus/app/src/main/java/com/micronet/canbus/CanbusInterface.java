@@ -22,8 +22,8 @@ public class CanbusInterface {
 	/**
 	 * Creates new Canbus interface (up).
 	 */
-	public void create() {
-		impl.create();
+	public void create(CanbusHardwareFilter[] hardwareFilters) {
+		impl.create(hardwareFilters);
 	}
 
 	/**
@@ -32,8 +32,8 @@ public class CanbusInterface {
 	 *                            This mode may be used to analyze a CANbus without disturbing the bus.
 	 *                            false, turns on the CAN module's transmitter and receiver.
 	 */
-	public void create(boolean listeningModeEnable) {
-		impl.create(listeningModeEnable);
+	public void create(boolean listeningModeEnable,CanbusHardwareFilter[] hardwareFilters) {
+		impl.create(listeningModeEnable,hardwareFilters);
 	}
 	
 	/**
@@ -46,8 +46,8 @@ public class CanbusInterface {
 	 * Sets interface bitrate.
 	 * Interface must be removed first!  
 	 */
-	public void setBitrate(int bitrate) {
-		impl.setBitrate(bitrate);
+	public void setBitrate(int bitrate,CanbusHardwareFilter[] hardwareFilters) {
+		impl.setBitrate(bitrate,hardwareFilters);
 	}
 
 	/**
@@ -80,8 +80,8 @@ public class CanbusInterface {
 	 *                            false, turns on the CAN module's transmitter and receiver.
 	 *                            This mode doesn't affect the J1708 transmission line.
 	 */
-	public void setListeningMode(boolean listeningModeEnable) {
-		impl.setListeningMode(listeningModeEnable);
+	public void setListeningMode(boolean listeningModeEnable,CanbusHardwareFilter[] hardwareFilters) {
+		impl.setListeningMode(listeningModeEnable,hardwareFilters);
 	}
 
 /*

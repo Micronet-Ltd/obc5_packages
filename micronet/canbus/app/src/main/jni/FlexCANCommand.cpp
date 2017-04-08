@@ -14,19 +14,49 @@
 #define MAX_PACKET_SIZE 256
 
 
-static const char* qb_str_command(char command)
-{
-    switch (command)
-    {
-        case COMMAND_CAN_PACKET:
-            return "COMMAND_CAN_PACKET";
-        default:
-            return "UNKNOWN COMMAND !!";
-    }
+int numberOfFilters;
+int count;
+struct FLEXCAN_filter_mask tmp_filter;
 
+void Flex_CAN_filter_list(struct FLEXCAN_filter_mask* filter_array, int numfilter){
+
+    numberOfFilters=numfilter;
+    tmp_filter=filter_array[count];
 }
 
-int FlexCAN_startup(bool listeningModeEnable, int bitrate, int termination)
+char getFilterMaskType(uint32_t type ){
+    char typeChar;
+    if(type==0){typeChar='t';}
+    else if(type==1){typeChar='T';}
+    return typeChar;
+}
+
+void parsefilters(){
+    for(int count=0; count<=numberOfFilters; count++){
+        for(int index=0; index< tmp_filter.filter_count;index++){
+            uint32_t filterId;
+            uint32_t filtertype;
+            uint64_t filterIdString;
+            char fliterTypeChar;
+
+            uint8_t maskId;
+            uint8_t maskIdString;
+
+            filterId=tmp_filter.filter_id[index];
+            filtertype=tmp_filter.filter_type[index];
+
+            maskId=tmp_filter.mask_id[index];
+
+
+            //TODO: convert uints to ASCII characters
+            filterIdString;
+            fliterTypeChar=getFilterMaskType(filtertype);
+            setFilters((char *) filterIdString, fliterTypeChar);
+        }
+    }
+}
+
+int FlexCAN_startup(bool listeningModeEnable, int bitrate, int termination, jobjectArray hardwareFilters)
 {
     int i, ret;
     char *port = NULL;
@@ -51,6 +81,10 @@ int FlexCAN_startup(bool listeningModeEnable, int bitrate, int termination)
     char Filter[8]={'1','F','0','0','0','0','0','0'};
     setMasks( mask,'T');
     setFilters(Filter,'T');
+    parsefilters();
+
+
+
 
     if(serial_start_monitor_thread())
     {

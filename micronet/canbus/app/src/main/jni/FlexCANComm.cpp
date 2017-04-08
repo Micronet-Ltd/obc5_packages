@@ -13,12 +13,9 @@ static int fd=-1; //serial port file descriptor (handle)
 static pthread_t thread;
 static bool quit = false;
 
-//TODO: Verify if this function is needed
-
 int serial_set_nonblocking(int fd) {
     int flags;
-    if(-1 == (flags = fcntl(fd, F_GETFL)) )
-    {
+    if(-1 == (flags = fcntl(fd, F_GETFL))) {
         LOGE("%s:%d fnctl: %s\n", __FILE__, __LINE__, strerror(errno));
         return -1;
     }

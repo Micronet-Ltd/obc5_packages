@@ -1192,7 +1192,7 @@ public final class Utils {
 	* auto enable IZat
 	*/
 	public static boolean IsAutoEnableIZat(){
-		String Model = "TREQ";
+		String Model = "TREQr";
 		Log.v(TAG, "android.os.Build.MODEL =="+android.os.Build.MODEL);
 		if(android.os.Build.MODEL.length() < Model.length())
 			return false;

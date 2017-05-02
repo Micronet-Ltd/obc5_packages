@@ -83,15 +83,16 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        FlexCANCanbusInterfaceBridge canbus = new FlexCANCanbusInterfaceBridge();
+        CanbusInterface canbus = new CanbusInterface();
         CanbusSocket canbusSocket=new CanbusSocket();
         CanbusInterface setFilters=new CanbusInterface();
         ArrayList<CanbusHardwareFilter> filterList = new ArrayList<CanbusHardwareFilter>();
         CanbusHardwareFilter[] filters;
 
         // Up to 24 filters.
-        int[] ids = new int[]{65265 << 8, 61444 << 8};
+        int[] ids = new int[]{65265, 61444, 61443, 65248, 65276, 61445, 65262, 65266, 60416 , 60160, 61444};
         int[] mask = {0xf0000000,0xff000000};
+/*        int[] mask = {0xf0000000,0xff000000};*/
         int[] type={CanbusHardwareFilter.EXTENDED, CanbusHardwareFilter.EXTENDED};
 
         filterList.add(new CanbusHardwareFilter(ids,mask, type));

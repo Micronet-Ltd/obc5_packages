@@ -29,8 +29,8 @@ int serial_set_nonblocking(int fd) {
 }
 
 int serial_init(char *name){
-    char *tty;
 
+    char *tty;
     DD("opening port: '%s'\n", CAN1_TTY);
 
     if ((fd = open(CAN1_TTY, O_RDWR | O_NOCTTY | O_NONBLOCK)) < 0) {
@@ -94,6 +94,7 @@ int sendMessage(int fd, const char * message) {
     sprintf(buf, "%s", message);
     printf("Send %s\n", buf);
     int check=strlen(buf);
+    LOGD("ChecK value of the string - %d",check);
     if (-1 == write(fd, buf, strlen(buf))) {
         ERR("Error write %s command\n", buf );
         return -1;
@@ -105,69 +106,72 @@ int setMasks(char *mask, char type) {
     char maskString[MAX_MASK_FILTER_SIZE];
     int i = 0, j = 0;
 
-    maskString[i] = 'm';
-    i++;
-    maskString[i++] = type;
+    if(mask!=NULL || mask!="") {
+        maskString[i] = 'm';
+        i++;
+        maskString[i++] = type;
 
-    if ((type == 'T') || (type == 'R')) {
-        for (i = 2; i < 10; i++) {
-            maskString[i] = mask[j];
-            j++;
+        if ((type == 'T') || (type == 'R')) {
+            for (i = 2; i < 10; i++) {
+                maskString[i] = mask[j];
+                j++;
+            }
+        } else if ((type == 't') || (type == 'r')) {
+            for (i = 2; i < 7; i++) {
+                maskString[i] = 0;
+            }
+            for (i = 7; i < 10; i++) {
+                maskString[i] = mask[j];
+                j++;
+            }
         }
-    } else if ((type == 't') || (type == 'r')) {
-        for (i = 2; i < 7; i++) {
-            maskString[i] = 0;
-        }
-        for (i = 7; i <10; i++) {
-            maskString[i] = mask[j];
-            j++;
-        }
-    }
-    maskString[i] = '\r';
-    i++;
-    int mask_length = i;
+        maskString[i] = '\r';
+        i++;
+        int mask_length = i;
 
-    //check if maskString is of correct size
-    if(mask_length==MAX_MASK_FILTER_SIZE ) {
-        sendMessage(fd, maskString);
-        LOGD("Mask SET");
+        //check if maskString is of correct size
+        if (mask_length == MAX_MASK_FILTER_SIZE) {
+            sendMessage(fd, maskString);
+            LOGD("Mask SET");
+        } else
+            LOGE("!!!!Invalid Mask size: %d for mask: !!!!", mask_length, mask);
     }
-    else LOGE("!!!!Invalid Mask size: %d for mask: !!!!", mask_length, mask);
+    else LOGE("!!!MASK NOT SET - NULL/Empty MASK PASSED!!!");
 }
 
-
 int setFilters(char *filter, char type) {
-    char filterString[MAX_MASK_FILTER_SIZE];
+    char filterString[11]={0};
+    char filterString1[11]={'M','T','0','0','0','0','F','E','F','1','\r'};
     int i = 0, j = 0;
+    if(filter!=NULL){
+        filterString[i++] = 'M';
+        filterString[i++] = type;
 
-    filterString[i] = 'M';
-    i++;
-    filterString[i++] = type;
+        if ((type == 'T') || (type == 'R')) {
+            for (i = 2; i < 10; i++) {
+                filterString[i] = filter[j];
+                j++;
+            }
+        } else if ((type == 't') || (type == 'r')) {
+            for (i = 2; i < 7; i++) {
+                filterString[i] = 0;
+            }
+            for (i = 7; i <10; i++) {
+                filterString[i] = filter[j];
+                j++;
+            }
+        }
+        filterString[i++] = '\r';
+        int filters_length = i;
 
-    if ((type == 'T') || (type == 'R')) {
-        for (i = 2; i < 10; i++) {
-            filterString[i] = filter[j];
-            j++;
+        //check if mask is of correct size
+        if(filters_length==MAX_MASK_FILTER_SIZE ) {
+            sendMessage(fd, filterString);
+            LOGD("Filter set SET");
         }
-    } else if ((type == 't') || (type == 'r')) {
-        for (i = 2; i < 7; i++) {
-            filterString[i] = 0;
-        }
-        for (i = 7; i <10; i++) {
-            filterString[i] = filter[j];
-            j++;
-        }
+        else LOGE("!!!!Invalid Filter size: %d for Filter: !!!!", filters_length, filter);
     }
-    filterString[i] = '\r';
-    i++;
-    int filters_length = i;
-
-    //check if mask is of correct size
-    if(filters_length==MAX_MASK_FILTER_SIZE ) {
-        sendMessage(fd, filterString);
-        LOGD("Filter set SET");
-    }
-    else LOGE("!!!!Invalid Filter size: %d for Filter: !!!!", filters_length, filter);
+    else LOGE("!!!! NULL FILTER PASSED !!!");
 }
 
 int setBitrate(int fd, int speed) {

@@ -62,9 +62,9 @@ public class CanbusInterface {
 	/**
 	 * Sets filters in Canbus hardware controller.
 	 */
-	public void setFilters(CanbusHardwareFilter[] hardwareFilters) {
+	/*public void setFilters(CanbusHardwareFilter[] hardwareFilters) {
 		impl.setFilters(hardwareFilters);
-	}
+	}*/
 
 	/**
 	 *	Creates new socket on Canbus interface. 

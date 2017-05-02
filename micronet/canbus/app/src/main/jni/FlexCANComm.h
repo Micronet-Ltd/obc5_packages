@@ -17,7 +17,7 @@ int setListeningMode(int fd, bool term);
 int sendReadStatusCommand(int fd);
 
 int setMasks(char *mask, char type);
-int setFilters(char *mask, char type);
+int setFilters( char *filter, char type);
 
 int serial_start_monitor_thread();
 int serial_send_data(unsigned char*, uint32_t);

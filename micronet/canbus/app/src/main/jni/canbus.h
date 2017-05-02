@@ -53,13 +53,15 @@
 #define MAX_QB_CAN_FILTERS 24
 
 struct FLEXCAN_filter_mask {
-    __u8 mask_id[MAX_QB_CAN_FILTERS];
-    __u8 mask_type[MAX_QB_CAN_FILTERS];
+    __u32 mask_id[MAX_QB_CAN_FILTERS];
     __u8 mask_count;
-    __u8 filter_id[MAX_QB_CAN_FILTERS];
-    __u8 filter_type[MAX_QB_CAN_FILTERS];
+
+    __u8 filter_mask_type[MAX_QB_CAN_FILTERS];
+    __u8 filter_mask_type_count;
+
+    __u32 filter_id[MAX_QB_CAN_FILTERS];
     __u8 filter_count;
-    __u8 filter_type_count;
+
 };
 
 struct canbus_globals
@@ -89,9 +91,10 @@ extern struct canbus_globals g_canbus;
 extern "C" {
 JNIEXPORT jint JNICALL Java_com_micronet_canbus_CanbusInterface_getImplId(JNIEnv * env, jclass cls);//added
 
-JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_createInterface(JNIEnv *env, jobject instance, jboolean listeningModeEnable, jint bitrate, jboolean termination);
+JNIEXPORT jint JNICALL
+Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_createInterface(JNIEnv *env, jobject instance, jboolean listeningModeEnable, jint bitrate, jboolean termination, jobjectArray  hardwarefilter);
 JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_removeInterface(JNIEnv *env, jobject instance);
-JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_setHardwareFilter(JNIEnv *env, jobject obj, jobjectArray hardwareFilters);
+
 //Socket JNI
 JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusSocket_send(JNIEnv *env, jobject instance, jint socket, jobject frame);
 JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusSocket_sendJ1708(JNIEnv *env, jobject instance, jint socket, jobject frame);

@@ -85,7 +85,7 @@ public class CanbusHardwareFilter {
 	/**
 	 * Returns filter type
 	 */
-	public int[] getFilterType() {
+	public int[] getFilterMaskType() {
 		//int[] integerArray = Arrays.copyOf(filterType, filterType.length, int[].class);
 //		Integer[] intArray = new Integer[filterType.length];
 //

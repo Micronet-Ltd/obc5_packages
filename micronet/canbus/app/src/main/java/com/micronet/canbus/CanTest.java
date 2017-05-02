@@ -282,28 +282,28 @@ public class CanTest {
             //final int mask =0x03FFFF00;
 
             while (true) {
-                CanbusFrame canbusFrame = null;
+                CanbusFrame canbusFrame1 = null;
                 try {
                     if (blockOnRead) {
-                        canbusFrame = canbusSocket.read();
+                        canbusFrame1 = canbusSocket.read();
                     } else {
-                        canbusFrame = canbusSocket.read(READ_TIMEOUT);
+                        canbusFrame1 = canbusSocket.read(READ_TIMEOUT);
                     }
-                    if (canbusFrame != null) {
+                    if (canbusFrame1 != null) {
                         long time = SystemClock.elapsedRealtime();
-                        int pgn = ((canbusFrame.getId() & mask)  >> 8);
+                        int pgn = ((canbusFrame1.getId() & mask)  >> 8);
 
                         String canFrameType="";
-                        if(canbusFrame.getType() == CanbusFrameType.STANDARD){
+                        if(canbusFrame1.getType() == CanbusFrameType.STANDARD){
                             canFrameType=STD;
                         }
-                        else if(canbusFrame.getType() == CanbusFrameType.EXTENDED){
+                        else if(canbusFrame1.getType() == CanbusFrameType.EXTENDED){
                             canFrameType=EXT;
                         }
-                        else if (canbusFrame.getType() == CanbusFrameType.STANDARD_REMOTE){
+                        else if (canbusFrame1.getType() == CanbusFrameType.STANDARD_REMOTE){
                             canFrameType=STD_R;
                         }
-                        else if(canbusFrame.getType() == CanbusFrameType.EXTENDED_REMOTE){
+                        else if(canbusFrame1.getType() == CanbusFrameType.EXTENDED_REMOTE){
                             canFrameType=EXT_R;
                         }
                         // done to prevent adding too much text to UI at once
@@ -311,67 +311,67 @@ public class CanTest {
                             // avoiding string.format for performance
                             canData.append(time);
                             canData.append(",");
-                            canData.append(Integer.toHexString(canbusFrame.getId()));
+                            canData.append(Integer.toHexString(canbusFrame1.getId()));
                             canData.append(",");
                             canData.append(canFrameType);
                             canData.append(",");
                             canData.append(Integer.toHexString(pgn));
                             canData.append(",[");
-                            canData.append(bytesToHex(canbusFrame.getData()));
+                            canData.append(bytesToHex(canbusFrame1.getData()));
                             canData.append("] (");
-                            canData.append(new String(canbusFrame.getData()));
+                            canData.append(new String(canbusFrame1.getData()));
                             canData.append("),");
-                            canData.append(canbusFrame.getData().length);
+                            canData.append(canbusFrame1.getData().length);
                             canData.append("\n");
                         }
                         switch (pgn) {
                             case 65265: // Vehicle Speed (2nd and 3rd byte -> SPN=84)
-                                ByteBuffer vehicleSpeed = ByteBuffer.wrap(canbusFrame.getData(), 1, 2);
+                                ByteBuffer vehicleSpeed = ByteBuffer.wrap(canbusFrame1.getData(), 1, 2);
                                 vehicleSpeed.order(ByteOrder.LITTLE_ENDIAN);
                                 int vehicle = vehicleSpeed.getShort() & 0xffff;
                                 Log.d(TAG, "Vehicle Speed:" + vehicle);
                                 break;
 
                             case 61444: // Engine Speed (4th and 5th byte -> SPN=190)
-                                ByteBuffer engineSpeed = ByteBuffer.wrap(canbusFrame.getData(), 3, 2);
+                                ByteBuffer engineSpeed = ByteBuffer.wrap(canbusFrame1.getData(), 3, 2);
                                 engineSpeed.order(ByteOrder.LITTLE_ENDIAN);
                                 int engine = engineSpeed.getShort() & 0xffff;
                                 Log.d(TAG, "Engine Speed:" + engine);
                                 break;
 
                             case 61443: // Throttle Position (2nd byte -> SPN=91)
-                                ByteBuffer throttlePos = ByteBuffer.wrap(canbusFrame.getData(), 1, 1);
+                                ByteBuffer throttlePos = ByteBuffer.wrap(canbusFrame1.getData(), 1, 1);
                                 int throttle = throttlePos.get() & 0xff;
                                 Log.d(TAG, "Throttle Position:" + throttle);
                                 break;
 
                             case 65248: // Odometer (5th, 6th, 7th and 8th bytes -> SPN=245)
-                                ByteBuffer odometerValue = ByteBuffer.wrap(canbusFrame.getData(), 4, 4);
+                                ByteBuffer odometerValue = ByteBuffer.wrap(canbusFrame1.getData(), 4, 4);
                                 odometerValue.order(ByteOrder.LITTLE_ENDIAN);
                                 int odometer = odometerValue.getInt() & 0xffffffff;
                                 Log.d(TAG, "Odometer:" + odometer);
                                 break;
 
                             case 65276: // Fuel Level ( 2nd byte -> SPN=96)
-                                ByteBuffer fuelLevel = ByteBuffer.wrap(canbusFrame.getData(), 1, 1);
+                                ByteBuffer fuelLevel = ByteBuffer.wrap(canbusFrame1.getData(), 1, 1);
                                 int level = fuelLevel.get() & 0xff;
                                 Log.d(TAG, "Fuel Level:" + level);
                                 break;
 
                             case 61445: // Transmission Gear ( 4th byte -> SPN=523)
-                                ByteBuffer transmissionGear = ByteBuffer.wrap(canbusFrame.getData(), 3, 1);
+                                ByteBuffer transmissionGear = ByteBuffer.wrap(canbusFrame1.getData(), 3, 1);
                                 int gear = transmissionGear.get() & 0xff;
                                 Log.d(TAG, "Transmission Gear:" + gear);
                                 break;
 
                             case 65262: // Engine Coolant Temp ( 1sh byte -> SPN=110)
-                                ByteBuffer engineCoolantTemp = ByteBuffer.wrap(canbusFrame.getData(), 0, 1);
+                                ByteBuffer engineCoolantTemp = ByteBuffer.wrap(canbusFrame1.getData(), 0, 1);
                                 int coolantTemp = engineCoolantTemp.get() & 0xff;
                                 Log.d(TAG, "Engine Coolant Temp:" + coolantTemp);
                                 break;
 
                             case 65266: // Inst. Fuel Rate (1st and 2nd byte -> SPN=183)
-                                ByteBuffer fuelRate = ByteBuffer.wrap(canbusFrame.getData(), 0, 2);
+                                ByteBuffer fuelRate = ByteBuffer.wrap(canbusFrame1.getData(), 0, 2);
                                 fuelRate.order(ByteOrder.LITTLE_ENDIAN);
                                 int rate = fuelRate.getShort() & 0xffff;
                                 Log.d(TAG, "Fuel Economy:" + rate);
@@ -379,7 +379,7 @@ public class CanTest {
 
                         }
                         ++canbusFrameCount;
-                        canbusByteCount += canbusFrame.getData().length;
+                        canbusByteCount += canbusFrame1.getData().length;
                     } else {
                         Log.d(TAG, "Read timeout");
                     }

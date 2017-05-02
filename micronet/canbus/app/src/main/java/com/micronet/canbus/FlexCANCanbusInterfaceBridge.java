@@ -13,7 +13,7 @@ public class FlexCANCanbusInterfaceBridge implements ICanbusInterfaceBridge {
      * Creates new Canbus interface (up).
      */
     private static final String TAG = "CanbusSocket";
-    private int fd;
+    private int fd=0;
     /**
      *
      */
@@ -72,9 +72,9 @@ public class FlexCANCanbusInterfaceBridge implements ICanbusInterfaceBridge {
     /**
      * Sets filters in Canbus hardware controller.
      */
-    public void setFilters(CanbusHardwareFilter[] hardwareFilters) {
+   /* public void setFilters(CanbusHardwareFilter[] hardwareFilters) {
         setHardwareFilter(hardwareFilters);
-    }
+    }*/
 
     /**
      *	Creates new socket on Canbus interface.
@@ -91,13 +91,10 @@ public class FlexCANCanbusInterfaceBridge implements ICanbusInterfaceBridge {
         createInterface(listeningModeEnable, this.bitrate, this.termination,hardwareFilters );
     }
 
-/*    public boolean checkJ1708Support() {return true;}*/
-    private native int setHardwareFilter(CanbusHardwareFilter[] hardwareFilters);
+    /* public boolean checkJ1708Support() {return true;} */
     private native int createInterface(boolean listeningModeEnable, int bitrate, boolean termination,CanbusHardwareFilter[] hardwareFilters );
     private native int removeInterface();
-   /* private native int setInterfaceBitrate(int bitrate);
-    private native int enableListeningMode(boolean enable);
-    private native int openCANandSetTermination(boolean enabled);*/
+
 
     static
     {

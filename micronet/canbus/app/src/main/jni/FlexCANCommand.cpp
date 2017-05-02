@@ -29,24 +29,26 @@ char getFilterMaskType(uint32_t type ){
     return typeChar;
 }
 
-void parsefilters(FLEXCAN_filter_mask* filter_array, int numfilter){
+void setFilterAndMasks(FLEXCAN_filter_mask *filter_array, int numfilter){
     int i=0;
     uint32_t filterId=NULL;
     char filterIdString[MAX_MASK_FILTER_SIZE]={0};
+    int filterSetCount=0;
+    int maskSetCount=0;
 
     uint8_t filterMaskType=NULL;
     char filterMaskTypeChar=NULL;
 
     uint32_t maskId=NULL;
-    uint32_t maskIdString=NULL;
-    struct FLEXCAN_filter_mask tmp_filter;
+    char maskIdString[MAX_MASK_FILTER_SIZE]={0};
+    struct FLEXCAN_filter_mask tmp_filter={0};
 
-    int count;
+    LOGD("Start setting filters and masks (loop begins!) Numfilter: %d", numfilter);
 
-    for(count=0; count<=numfilter; count++){
-        tmp_filter = filter_array[count];
+        tmp_filter = *filter_array;
 
-        for(int index=0; index< tmp_filter.filter_count;index++){
+        for(int index=0; index<tmp_filter.filter_count;index++){
+            LOGD("Entered Loop");
 
             filterMaskType=tmp_filter.filter_mask_type[index];
             filterMaskTypeChar=getFilterMaskType(filterMaskType);
@@ -57,22 +59,26 @@ void parsefilters(FLEXCAN_filter_mask* filter_array, int numfilter){
             } else if(filterMaskTypeChar='t'){
                 sprintf ((char*)filterIdString, "%03x", filterId);
             }
-            setFilters(filterIdString, filterMaskTypeChar);
+            if(filterSetCount<tmp_filter.filter_count || filterSetCount<=24) {
+                setFilters(filterIdString, filterMaskTypeChar);
+               usleep(5000);
+                filterSetCount++;
+                LOGD("Filter Set, No of filters set = %d", filterSetCount);
+            }
 
             maskId=tmp_filter.mask_id[index];
             if(filterMaskTypeChar='T'){
-                sprintf ( (char*)filterIdString, "%08x", filterId);
+                sprintf ( (char*)maskIdString, "%08x", maskId);
             } else if(filterMaskTypeChar='t'){
-                sprintf ((char*)filterIdString, "%03x", filterId);
+                sprintf ((char*)maskIdString, "%03x", maskId);
             }
-
-            //TODO: convert uints to ASCII characters
-
-            filterMaskTypeChar=getFilterMaskType(filterMaskType);
-            /*setFilters((char *) filterId, filterMaskTypeChar);*/
-            setMasks((char *) maskIdString, filterMaskTypeChar);
-        }
-    }
+            if(maskSetCount<tmp_filter.mask_count && maskSetCount<=16){
+                setMasks(maskIdString, filterMaskTypeChar);
+                maskSetCount++;
+                usleep(5000);
+                LOGD("Mask Set, No of masks set = %d", maskSetCount);
+            }
+        }filterMaskTypeChar=NULL;
 }
 
 int FlexCAN_startup(bool listeningModeEnable, int bitrate, int termination, FLEXCAN_filter_mask* filter_array,int numfilter)
@@ -93,13 +99,13 @@ int FlexCAN_startup(bool listeningModeEnable, int bitrate, int termination, FLEX
     if (closeCAN(fd) == -1) {
         return -1;
     }
+   /*
+    *The firmware has a 20ms delay after closing the port.
+    * */
+    usleep(100000);
 
-    //TODO: Add masks
-    char mask[8]={'1','F','F','0','0','0','0','0'};
-    char Filter[8]={'1','F','0','0','0','0','0','0'};
-    setMasks( mask,'T');
-/*    setFilters(Filter,'T');*/
-    parsefilters(filter_array, numfilter);
+
+    setFilterAndMasks(filter_array, numfilter);
 
     if(serial_start_monitor_thread())
     {
@@ -114,6 +120,10 @@ int FlexCAN_startup(bool listeningModeEnable, int bitrate, int termination, FLEX
     if(sendReadStatusCommand(fd) == -1) {
         return -1;
     }
+    /*
+     * The firmware has a 20ms delay after opening the port.
+     * */
+    usleep(100000);
 
     if(listeningModeEnable && setListeningMode(fd, termination) == -1) { // enable listening mode and set the termination value
         return -1;

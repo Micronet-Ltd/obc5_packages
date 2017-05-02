@@ -80,7 +80,6 @@ public class FlexCANCanbusInterfaceBridge implements ICanbusInterfaceBridge {
      *	Creates new socket on Canbus interface.
      */
     public CanbusSocket createSocket(){
-        // TODO: pass fd to socket - DONE
         return new FlexCANCanbusSocket(fd);//new QBridgeCanbusSocket(fd);
     }
 

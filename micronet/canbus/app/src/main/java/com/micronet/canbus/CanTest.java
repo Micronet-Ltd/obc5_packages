@@ -104,7 +104,6 @@ public class CanTest {
         if (canbusInterface == null) {
             canbusInterface = new CanbusInterface();
             canbusFilter=setFilters();
-            /*canbusInterface.create(silentMode);*/ //Not Required
             canbusInterface.setBitrate(baudrate,canbusFilter);
         }
 
@@ -129,12 +128,11 @@ public class CanTest {
         CanbusHardwareFilter[] filters;
 
         // Up to 24 filters.
-        int[] ids = new int[]{65265 << 8, 61444 << 8};
-        int[] mask = {0xf0000000,0xff000000};
+        int[] ids = new int[]{123, 61444, 61443, 65248, 65276, 61445, 65262, 65266, 60416 , 60160, 61444};
+        int[] mask = {0x100,0x1F000000,0x1FF00000};
+        int[] type={CanbusHardwareFilter.STANDARD, CanbusHardwareFilter.EXTENDED, CanbusHardwareFilter.EXTENDED, CanbusHardwareFilter.EXTENDED, CanbusHardwareFilter.EXTENDED, CanbusHardwareFilter.EXTENDED, CanbusHardwareFilter.EXTENDED, CanbusHardwareFilter.EXTENDED, CanbusHardwareFilter.EXTENDED, CanbusHardwareFilter.EXTENDED, CanbusHardwareFilter.EXTENDED, CanbusHardwareFilter.EXTENDED};
 
-        int[] type={CanbusHardwareFilter.EXTENDED,CanbusHardwareFilter.EXTENDED};
         filterList.add(new CanbusHardwareFilter(ids,mask, type));
-
         filters = filterList.toArray(new CanbusHardwareFilter[0]);
 
         return filters;

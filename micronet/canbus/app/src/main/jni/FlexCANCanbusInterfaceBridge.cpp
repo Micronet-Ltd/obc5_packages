@@ -80,10 +80,10 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_cre
         throwException(env, "Hardware Filter: Too many filter ids (%s). Max allowed - 24", str_filters);
     }
 
-    if (total_masks > 14){
+    if (total_masks > 16){
         char str_masks [20];
         snprintf(str_masks, sizeof(str_masks), "%d", total_masks);
-        throwException(env, "Hardware Filter: Too many mask ids (%s). Max allowed - 14", str_masks);
+        throwException(env, "Hardware Filter: Too many mask ids (%s). Max allowed - 16", str_masks);
     }
 
     jint fd = FlexCAN_startup(listeningModeEnable, bitrate, termination, filter_array, numfilter);

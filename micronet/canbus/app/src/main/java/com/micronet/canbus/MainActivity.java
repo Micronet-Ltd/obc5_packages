@@ -91,14 +91,13 @@ public class MainActivity extends AppCompatActivity {
 
         // Up to 24 filters.
         int[] ids = new int[]{65265, 61444, 61443, 65248, 65276, 61445, 65262, 65266, 60416 , 60160, 61444};
-        int[] mask = {0xf0000000,0xff000000};
-/*        int[] mask = {0xf0000000,0xff000000};*/
+        int[] mask = {0x1F000000,0x1FF00000};
         int[] type={CanbusHardwareFilter.EXTENDED, CanbusHardwareFilter.EXTENDED};
 
         filterList.add(new CanbusHardwareFilter(ids,mask, type));
         filters = filterList.toArray(new CanbusHardwareFilter[0]);
 
-        canbus.create(filters);
-        canbusSocket.open();
+    /*    canbus.create(filters);
+        canbusSocket.open();*/
     }
 }

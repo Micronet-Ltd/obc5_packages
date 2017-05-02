@@ -90,7 +90,7 @@ int closeCAN(int false_fd) { //was fd
 
 //Can send the entire message including the CAN OK RESPONSE
 int sendMessage(int fd, const char * message) {
-    char buf[256];
+    char buf[256]={0};
     sprintf(buf, "%s", message);
     printf("Send %s\n", buf);
     int check=strlen(buf);
@@ -103,7 +103,10 @@ int sendMessage(int fd, const char * message) {
 }
 
 int setMasks(char *mask, char type) {
-    char maskString[MAX_MASK_FILTER_SIZE];
+    char maskString[16];
+    char maskCommand[16];
+    char maskString1[16]={'m','T','0','0','0','0','F','E','F','1','\r'}; //Compliler issue
+    int maskLength;
     int i = 0, j = 0;
 
     if(mask!=NULL || mask!="") {
@@ -125,28 +128,28 @@ int setMasks(char *mask, char type) {
                 j++;
             }
         }
-        maskString[i] = '\r';
-        i++;
-        int mask_length = i;
+        maskString[i++] = '\r';
+        maskLength = i;
 
-        //check if maskString is of correct size
-        if (mask_length == MAX_MASK_FILTER_SIZE) {
-            sendMessage(fd, maskString);
-            LOGD("Mask SET");
-        } else
-            LOGE("!!!!Invalid Mask size: %d for mask: !!!!", mask_length, mask);
+        //send Mask string
+        memcpy(maskCommand, maskString,maskLength);
+        if (-1 == sendMessage(fd, maskString)) {
+            LOGE("!!!!Error sending Mask message: %d for Filter: !!!!", maskString);
+        }
+        LOGD("Mask set SET %s", mask);
     }
     else LOGE("!!!MASK NOT SET - NULL/Empty MASK PASSED!!!");
 }
 
-int setFilters(char *filter, char type) {
-    char filterString[11]={0};
-    char filterString1[11]={'M','T','0','0','0','0','F','E','F','1','\r'};
+int setFilters(char *filter, char type) { char maskString1[16]={'m','T','0','0','0','0','F','E','F','1','\r'}; //Compliler issue
+    char filterCommand[16]={0};
+    char filterString[16]={0};
+    int filters_length;
     int i = 0, j = 0;
-    if(filter!=NULL){
+
+    if(filter!=NULL) {
         filterString[i++] = 'M';
         filterString[i++] = type;
-
         if ((type == 'T') || (type == 'R')) {
             for (i = 2; i < 10; i++) {
                 filterString[i] = filter[j];
@@ -155,21 +158,18 @@ int setFilters(char *filter, char type) {
         } else if ((type == 't') || (type == 'r')) {
             for (i = 2; i < 7; i++) {
                 filterString[i] = 0;
-            }
-            for (i = 7; i <10; i++) {
+            }for (i = 7; i < 10; i++) {
                 filterString[i] = filter[j];
                 j++;
             }
         }
         filterString[i++] = '\r';
-        int filters_length = i;
-
-        //check if mask is of correct size
-        if(filters_length==MAX_MASK_FILTER_SIZE ) {
-            sendMessage(fd, filterString);
-            LOGD("Filter set SET");
+        filters_length = i;
+        memcpy(filterCommand, filterString,filters_length);
+        if (-1 == sendMessage(fd, filterCommand)) {
+            LOGE("!!!!Error sending Filter message: %d for Filter: !!!!", filterString);
         }
-        else LOGE("!!!!Invalid Filter size: %d for Filter: !!!!", filters_length, filter);
+        LOGD("Filter SET: Filter- %s", filter);
     }
     else LOGE("!!!! NULL FILTER PASSED !!!");
 }

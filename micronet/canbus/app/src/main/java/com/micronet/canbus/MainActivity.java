@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        CanbusInterface canbus = new CanbusInterface();
+      /*    CanbusInterface canbus = new CanbusInterface();
         CanbusSocket canbusSocket=new CanbusSocket();
         CanbusInterface setFilters=new CanbusInterface();
         ArrayList<CanbusHardwareFilter> filterList = new ArrayList<CanbusHardwareFilter>();
@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
         filterList.add(new CanbusHardwareFilter(ids,mask, type));
         filters = filterList.toArray(new CanbusHardwareFilter[0]);
 
-    /*    canbus.create(filters);
+      canbus.create(filters);
         canbusSocket.open();*/
     }
 }

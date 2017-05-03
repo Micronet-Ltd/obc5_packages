@@ -100,13 +100,6 @@ public class CanbusSocket implements CanbusListener{
 	public int getId(){
 		return -1;
 	}
-	
-	
-	/**
-	 * Adds software filters to be apply only to the this socket.
-	 */
-	/*public void setMasks(CanbusSoftwareFilter[] filters){
-		throw new IllegalArgumentException("Software filter not supported");
-	}*/
+
 	
 }

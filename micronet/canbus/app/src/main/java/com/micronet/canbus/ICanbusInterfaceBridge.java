@@ -6,12 +6,11 @@ package com.micronet.canbus;
 
 interface ICanbusInterfaceBridge {
         public void create(CanbusHardwareFilter[] hardwareFilters);
-        //added after adding CanbusI/F
         public void create(boolean listeningMode,CanbusHardwareFilter[] hardwareFilters);
+        public void create(boolean listeningModeEnable, int bitrate, boolean termination, CanbusHardwareFilter[] hardwareFilters);
         public void remove();
         public void setBitrate(int bitrate,CanbusHardwareFilter[] hardwareFilters);
-     /*   public void setFilters(CanbusHardwareFilter[] hardwareFilters);*/
+        public void setCANTermination(boolean termination, CanbusHardwareFilter[] hardwareFilters);
         public CanbusSocket createSocket();
-        public void setListeningMode(boolean listeningModeEnable, CanbusHardwareFilter[] hardwareFilters);
-        /*public void sendRecovery(int action);*/
+
 }

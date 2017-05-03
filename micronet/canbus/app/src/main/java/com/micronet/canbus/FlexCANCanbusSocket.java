@@ -1,6 +1,5 @@
 package com.micronet.canbus;
 
-import android.os.SystemClock;
 import android.util.Log;
 
 import java.util.concurrent.BlockingQueue;
@@ -97,9 +96,9 @@ public class FlexCANCanbusSocket extends CanbusSocket implements CanbusListener{
     /**
      * Closes Canbus socket.
      */
- /*   public void close(){
+    public void close(){
         closeSocket();
-    }*/
+    }
 
     /**
      * Returns Canbus socket id.
@@ -110,13 +109,6 @@ public class FlexCANCanbusSocket extends CanbusSocket implements CanbusListener{
 
     private void setPacketListener(CanbusListener listener) {
         registerCallback(listener);
-    }
-
-    /**
-     * Adds software filters to be apply only to the this socket.
-    */
-    public void setMasks(CanbusSoftwareFilter[] filters) {
-        throw new IllegalArgumentException("Software filter not supported");
     }
 
     private native int send(int socket, CanbusFrame frame);

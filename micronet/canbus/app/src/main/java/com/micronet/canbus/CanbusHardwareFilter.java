@@ -1,27 +1,30 @@
 package com.micronet.canbus;
 
-import java.util.Arrays;
-
 /**
  * Sets Canbus hardware module to pass certain packet ids.
- * Filtering is done using both Mask and Frame Id to achieve maximum flexability.    
+ * Filtering is done using both Mask and Frame Id to achieve maximum flexibility.
  */
 public class CanbusHardwareFilter {
-	int i;
 	private int[] mIds;
 	private int[] mMask;
 	private int[] filterType={EXTENDED};
 
+	/**
+	 * Defines standard filter type.
+	 */
 	static public int STANDARD=0;
+	/**
+	 * Defines extended filter type.
+	 */
 	static public int EXTENDED=1;
 
 	/**
-	 * Creates filter with frame ids and mask.
+	 * Creates filter with frame ids, mask and types.
 	 *
 	 *
 	 *
-	 * @param ids register frame ids. 
-	 * @param mask filter mask to be used in conjunction with frame ids.
+	 * @param ids Register frame ids.
+	 * @param mask Filter mask to be used in conjunction with frame ids.
 	 * @param type Standard / Extended frame.
 	 */
 	public CanbusHardwareFilter(int[] ids, int[] mask, int[] type){
@@ -33,7 +36,7 @@ public class CanbusHardwareFilter {
 	/**
 	 * Creates filter with frame ids only.
 	 * @param ids register frame ids to pass.
-	 * @param type Standard / Extended frame.
+	 * @param filtType Standard / Extended frame.
 	 */
 	public CanbusHardwareFilter(int[] ids, int[] filtType){
 		mIds = ids;
@@ -41,33 +44,19 @@ public class CanbusHardwareFilter {
 	}
 	
 	/**
-	 * Sets the filter mask.
+	 * Sets the mask for filtering.
 	 */
 	public void setMask(int[] mask) {
 		mMask = mask;
 	}
 	
 	/**
-	 * Sets the filter type.
-	 */
-	/*public void setType(CanbusFrameType type) {
-		mType = type;
-	}*/
-	
-	/**
-	 * Returns the filter mask being used.
+	 * Returns the masks being used for filtering.
 	 */
 	public int[] getMask() {
 		return mMask;
 	}
-	
-	/**
-	 * Returns the filter type being used.
-	 */
-	/*public CanbusFrameType[] getType() {
-		return mType;
-	}*/
-	
+
 	/**
 	 *  Sets the filters ids.
 	 */
@@ -85,14 +74,5 @@ public class CanbusHardwareFilter {
 	/**
 	 * Returns filter type
 	 */
-	public int[] getFilterMaskType() {
-		//int[] integerArray = Arrays.copyOf(filterType, filterType.length, int[].class);
-//		Integer[] intArray = new Integer[filterType.length];
-//
-//		for(int i=0; i<filterType.length; i++){
-//			intArray[i] = (Integer) filterType[i];
-//		}
-
-		return filterType;
-	}
+	public int[] getFilterMaskType() {return filterType;}
 }

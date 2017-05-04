@@ -104,7 +104,7 @@ public class CanTest {
         if (canbusInterface == null) {
             canbusInterface = new CanbusInterface();
             canbusFilter=setFilters();
-            canbusInterface.setBitrate(baudrate,canbusFilter);
+            canbusInterface.setBitrate(baudrate,canbusFilter,2);
         }
 
         if (canbusSocket == null) {

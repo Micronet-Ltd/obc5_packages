@@ -28,13 +28,13 @@ int serial_set_nonblocking(int fd) {
     return 0;
 }
 
-int serial_init(char *name){
+int serial_init(char *portName){
 
-    char *tty;
-    DD("opening port: '%s'\n", CAN1_TTY);
+    char *tty=portName;
+    DD("opening port: '%s'\n", portName);
 
-    if ((fd = open(CAN1_TTY, O_RDWR | O_NOCTTY | O_NONBLOCK)) < 0) {
-        perror(tty);
+    if ((fd = open(portName, O_RDWR | O_NOCTTY | O_NONBLOCK)) < 0) {
+        perror(portName);
         exit(EXIT_FAILURE);
     }
 

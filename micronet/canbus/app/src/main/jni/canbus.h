@@ -27,9 +27,10 @@
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR,LOG_TAG,__VA_ARGS__)
 #define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
 
+#define SINGLE_WIRE_TTY "/dev/ttyACM1"
 #define CAN1_TTY    "/dev/ttyACM2"
 #define CAN2_TTY    "/dev/ttyACM3"
-/*#define J1708_TTY   "/dev/ttyACM4"*/
+#define J1708_TTY   "/dev/ttyACM4"
 
 #define DWORD uint32_t
 #define WORD uint16_t
@@ -92,7 +93,7 @@ extern "C" {
 JNIEXPORT jint JNICALL Java_com_micronet_canbus_CanbusInterface_getImplId(JNIEnv * env, jclass cls);//added
 
 JNIEXPORT jint JNICALL
-Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_createInterface(JNIEnv *env, jobject instance, jboolean listeningModeEnable, jint bitrate, jboolean termination, jobjectArray  hardwarefilter);
+Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_createInterface(JNIEnv *env, jobject instance, jboolean listeningModeEnable, jint bitrate, jboolean termination, jobjectArray  hardwarefilter, int port_number);
 JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_removeInterface(JNIEnv *env, jobject instance);
 
 //Socket JNI

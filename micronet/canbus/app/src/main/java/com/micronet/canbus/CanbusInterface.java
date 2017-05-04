@@ -19,9 +19,13 @@ public class CanbusInterface {
 
 	/**
 	 * Creates new Canbus interface with hardware filters and default values [ListeningMode=false, Baud rate=250000,Termination=true] (up).
+     * @param hardwareFilters Filters, masks and filter types used for filtering CAN packets.
+     * @param portNumber 2, CAN1.
+     *                   3, CAN2 (Can also be used as single wired CAN if the baud rate is set to 33.33 Kbits per seconds).
+     *                   4, J1708
 	 */
-	public void create(CanbusHardwareFilter[] hardwareFilters) {
-		impl.create(hardwareFilters);
+	public void create(CanbusHardwareFilter[] hardwareFilters,int portNumber) {
+		impl.create(hardwareFilters,portNumber);
 	}
 
 	/**
@@ -29,9 +33,13 @@ public class CanbusInterface {
 	 * @param listeningModeEnable true, disables the CAN module's transmit signal. The CAN module is still able to receive messages from the CANbus.
 	 *                            This mode may be used to analyze a CANbus without disturbing the bus.
 	 *                            false, turns on the CAN module's transmitter and receiver.
+     * @param hardwareFilters Filters, masks and filter types used for filtering CAN packets.
+     * @param portNumber 2, CAN1.
+     *                   3, CAN2 (Can also be used as single wired CAN if the baud rate is set to 33.33 Kbits per seconds).
+     *                   4, J1708
 	 */
-	public void create(boolean listeningModeEnable,CanbusHardwareFilter[] hardwareFilters) {
-		impl.create(listeningModeEnable,hardwareFilters);
+	public void create(boolean listeningModeEnable,CanbusHardwareFilter[] hardwareFilters, int portNumber) {
+		impl.create(listeningModeEnable,hardwareFilters,portNumber);
 	}
 
 	/**
@@ -43,9 +51,13 @@ public class CanbusInterface {
 	 * @param termination Changing termination will result in the CAN module being re-opened.
 	 *                    true, enables the termination resistor in the device.
 	 *                    false, disables the termination resistor in the device.
+     * @param hardwareFilters Filters, masks and filter types used for filtering CAN packets.
+     * @param portNumber 2, CAN1.
+     *                   3, CAN2 (Can also be used as single wired CAN if the baud rate is set to 33.33 Kbits per seconds).
+     *                   4, J1708
 	 */
-	public void create(boolean listeningModeEnable, int bitrate, boolean termination, CanbusHardwareFilter[] hardwareFilters){
-		impl.create(listeningModeEnable, bitrate,termination,hardwareFilters);
+	public void create(boolean listeningModeEnable, int bitrate, boolean termination, CanbusHardwareFilter[] hardwareFilters,int portNumber){
+		impl.create(listeningModeEnable, bitrate,termination,hardwareFilters, portNumber);
 	}
 
 	/**
@@ -55,20 +67,29 @@ public class CanbusInterface {
 		impl.remove();
 	}
 
-	/**
-	 * Sets interface bitrate.
-	 * Interface must be removed first!  
-	 */
-	public void setBitrate(int bitrate,CanbusHardwareFilter[] hardwareFilters) {
-		impl.setBitrate(bitrate,hardwareFilters);
+    /**
+     * Sets interface bitrate by creating an interface.
+     * Interface must be removed first!
+     * @param bitrate
+     * @param hardwareFilters Filters, masks and filter types used for filtering CAN packets.
+     * @param portNumber 2, CAN1.
+     *                   3, CAN2 (Can also be used as single wired CAN if the baud rate is set to 33.33 Kbits per seconds).
+     *                   4, J1708
+     */
+	public void setBitrate(int bitrate,CanbusHardwareFilter[] hardwareFilters,int portNumber) {
+		impl.setBitrate(bitrate,hardwareFilters, portNumber);
 	}
 
-	/**
-	 * Changing termination will result in the CAN module being re-opened.
-	 * @param termination
-	 */
-	public void setCANTermination(boolean termination, CanbusHardwareFilter[] hardwareFilters) {
-		impl.create(termination, hardwareFilters);
+    /**
+     * Changing termination will result in the CAN module being re-opened.
+     * @param termination
+     * @param hardwareFilters Filters, masks and filter types used for filtering CAN packets.
+     * @param portNumber 2, CAN1.
+     *                   3, CAN2 (Can also be used as single wired CAN if the baud rate is set to 33.33 Kbits per seconds).
+     *                   4, J1708
+     */
+	public void setCANTermination(boolean termination, CanbusHardwareFilter[] hardwareFilters,int portNumber) {
+		impl.create(termination, hardwareFilters,portNumber);
 	}
 
 	/**

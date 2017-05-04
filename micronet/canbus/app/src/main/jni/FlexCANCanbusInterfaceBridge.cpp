@@ -21,8 +21,9 @@ static void throwException(JNIEnv *env, const char *message, const char* add) {
     env->ThrowNew(cls, msg);
 }
 
-JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_createInterface(JNIEnv *env, jobject instance, jboolean listeningModeEnable, jint bitrate, jboolean termination, jobjectArray  hardwarefilter) {
+JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_createInterface(JNIEnv *env, jobject instance, jboolean listeningModeEnable, jint bitrate, jboolean termination, jobjectArray  hardwarefilter, int port_number) {
 
+    char *port;
     struct FLEXCAN_filter_mask filter_array[24];
     int numfilter = env->GetArrayLength (hardwarefilter);
     int i=0,f=0,m=0,fmt=0;
@@ -85,8 +86,11 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_cre
         snprintf(str_masks, sizeof(str_masks), "%d", total_masks);
         throwException(env, "Hardware Filter: Too many mask ids (%s). Max allowed - 16", str_masks);
     }
+    int ttyport_number= port_number;
+    if (ttyport_number=2){port= CAN1_TTY;}
+    else if (ttyport_number=3){port= CAN2_TTY;}
 
-    jint fd = FlexCAN_startup(listeningModeEnable, bitrate, termination, filter_array, numfilter);
+    jint fd = FlexCAN_startup(listeningModeEnable, bitrate, termination, filter_array, numfilter,port);
     jfieldID fd_id;
 
     jclass clazz = env->FindClass("com/micronet/canbus/FlexCANCanbusInterfaceBridge");

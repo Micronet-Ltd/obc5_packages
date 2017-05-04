@@ -81,10 +81,10 @@ void setFilterAndMasks(FLEXCAN_filter_mask *filter_array, int numfilter){
         }filterMaskTypeChar=NULL;
 }
 
-int FlexCAN_startup(bool listeningModeEnable, int bitrate, int termination, FLEXCAN_filter_mask* filter_array,int numfilter)
+int FlexCAN_startup(bool listeningModeEnable, int bitrate, int termination, FLEXCAN_filter_mask* filter_array,int numfilter, char *portName)
 {
     int i, ret;
-    char *port = NULL;
+    char *port = portName;
     int fd;
 
     fd = ret = serial_init(port);

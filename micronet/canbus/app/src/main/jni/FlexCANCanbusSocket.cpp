@@ -54,6 +54,7 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusSocket_registerCall
 }
 
 JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusSocket_send(JNIEnv *env, jobject obj, jint socket, jobject canbusFrameObj) {
+
     int data_sent;
     char id_str[64];
     int id, type;

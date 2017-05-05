@@ -112,5 +112,6 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusSocket_closeSocket(
     g_canbus.g_listenerObject = NULL;
     g_canbus.g_onPacketReceive = NULL;
     g_canbus.g_onPacketReceiveJ1708 = NULL;
+	return 0;
 }
 

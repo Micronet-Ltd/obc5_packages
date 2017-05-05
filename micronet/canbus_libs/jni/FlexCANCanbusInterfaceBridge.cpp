@@ -70,8 +70,15 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_cre
         //Saving Filter and Mask types
         filter_array[i].filter_mask_type_count = lengthOfFilterMaskTypeArray;
         for (fmt= 0; fmt < lengthOfFilterMaskTypeArray; fmt++) {
-            filter_array[i].filter_mask_type[fmt] = filterMaskTypeInts[fmt];
-            total_filter_mask_types++;
+			if (fmt < MAX_QB_CAN_FILTERS)
+			{
+            	filter_array[i].filter_mask_type[fmt] = filterMaskTypeInts[fmt];
+            	total_filter_mask_types++;
+			}
+			else
+			{
+        		throwException(env, "Hardware Filter: %s tried to pass array index of filter_mask_type", "err");
+			}
         }
     }
 
@@ -87,8 +94,8 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_cre
         throwException(env, "Hardware Filter: Too many mask ids (%s). Max allowed - 16", str_masks);
     }
     int ttyport_number= port_number;
-    if (ttyport_number=2){port= CAN1_TTY;}
-    else if (ttyport_number=3){port= CAN2_TTY;}
+    if (ttyport_number==2){port= CAN1_TTY;}
+    else if (ttyport_number==3){port= CAN2_TTY;}
 
     jint fd = FlexCAN_startup(listeningModeEnable, bitrate, termination, filter_array, numfilter,port);
     jfieldID fd_id;

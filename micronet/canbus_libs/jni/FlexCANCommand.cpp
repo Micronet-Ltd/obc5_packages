@@ -5,9 +5,9 @@
 #include <jni.h>
 
 #include "canbus.h"
-#include "FlexCANcomm.h"
+#include "FlexCANComm.h"
 #include "FlexCANCommand.h"
-#include <string>
+//#include <string>
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -23,7 +23,7 @@ void Flex_CAN_filter_list(struct FLEXCAN_filter_mask* filter_array, int numfilte
 }*/
 
 char getFilterMaskType(uint32_t type ){
-    char typeChar=NULL;
+    char typeChar=0;
     if(type==0){typeChar='t';}
     else if(type==1){typeChar='T';}
     return typeChar;
@@ -31,17 +31,23 @@ char getFilterMaskType(uint32_t type ){
 
 void setFilterAndMasks(FLEXCAN_filter_mask *filter_array, int numfilter){
     int i=0;
-    uint32_t filterId=NULL;
+    uint32_t filterId=0;
     char filterIdString[MAX_MASK_FILTER_SIZE]={0};
     int filterSetCount=0;
     int maskSetCount=0;
 
-    uint8_t filterMaskType=NULL;
-    char filterMaskTypeChar=NULL;
+    uint8_t filterMaskType=0;
+    char filterMaskTypeChar=0;
 
-    uint32_t maskId=NULL;
+    uint32_t maskId=0;
     char maskIdString[MAX_MASK_FILTER_SIZE]={0};
-    struct FLEXCAN_filter_mask tmp_filter={0};
+    struct FLEXCAN_filter_mask tmp_filter={	.mask_id = {0},
+											.mask_count = 0,
+											.filter_mask_type = {0},
+											.filter_mask_type_count = 0,
+											.filter_id = {0},
+											.filter_count = 0
+   										   };
 
     LOGD("Start setting filters and masks (loop begins!) Numfilter: %d", numfilter);
 
@@ -54,9 +60,9 @@ void setFilterAndMasks(FLEXCAN_filter_mask *filter_array, int numfilter){
             filterMaskTypeChar=getFilterMaskType(filterMaskType);
 
             filterId=tmp_filter.filter_id[index];
-            if(filterMaskTypeChar='T'){
+            if(filterMaskTypeChar=='T'){
                 sprintf ( (char*)filterIdString, "%08x", filterId);
-            } else if(filterMaskTypeChar='t'){
+            } else if(filterMaskTypeChar=='t'){
                 sprintf ((char*)filterIdString, "%03x", filterId);
             }
             if(filterSetCount<tmp_filter.filter_count || filterSetCount<=24) {
@@ -67,9 +73,9 @@ void setFilterAndMasks(FLEXCAN_filter_mask *filter_array, int numfilter){
             }
 
             maskId=tmp_filter.mask_id[index];
-            if(filterMaskTypeChar='T'){
+            if(filterMaskTypeChar=='T'){
                 sprintf ( (char*)maskIdString, "%08x", maskId);
-            } else if(filterMaskTypeChar='t'){
+            } else if(filterMaskTypeChar=='t'){
                 sprintf ((char*)maskIdString, "%03x", maskId);
             }
             if(maskSetCount<tmp_filter.mask_count && maskSetCount<=16){
@@ -78,7 +84,7 @@ void setFilterAndMasks(FLEXCAN_filter_mask *filter_array, int numfilter){
                 usleep(5000);
                 LOGD("Mask Set, No of masks set = %d", maskSetCount);
             }
-        }filterMaskTypeChar=NULL;
+        }filterMaskTypeChar=0;
 }
 
 int FlexCAN_startup(bool listeningModeEnable, int bitrate, int termination, FLEXCAN_filter_mask* filter_array,int numfilter, char *portName)

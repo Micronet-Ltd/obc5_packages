@@ -7,7 +7,7 @@
 #include <pthread.h>
 
 #include "canbus.h"
-#include "FlexCANcomm.h"
+#include "FlexCANComm.h"
 
 static int fd=-1; //serial port file descriptor (handle)
 static pthread_t thread;
@@ -109,7 +109,7 @@ int setMasks(char *mask, char type) {
     int maskLength;
     int i = 0, j = 0;
 
-    if(mask!=NULL || mask!="") {
+    if(mask!=NULL) {
         maskString[i] = 'm';
         i++;
         maskString[i++] = type;
@@ -134,11 +134,12 @@ int setMasks(char *mask, char type) {
         //send Mask string
         memcpy(maskCommand, maskString,maskLength);
         if (-1 == sendMessage(fd, maskString)) {
-            LOGE("!!!!Error sending Mask message: %d for Filter: !!!!", maskString);
+            LOGE("!!!!Error sending Mask message: %s for Filter: !!!!", maskString);
         }
         LOGD("Mask set SET %s", mask);
     }
     else LOGE("!!!MASK NOT SET - NULL/Empty MASK PASSED!!!");
+	return 0;
 }
 
 int setFilters(char *filter, char type) { char maskString1[16]={'m','T','0','0','0','0','F','E','F','1','\r'}; //Compliler issue
@@ -167,11 +168,12 @@ int setFilters(char *filter, char type) { char maskString1[16]={'m','T','0','0',
         filters_length = i;
         memcpy(filterCommand, filterString,filters_length);
         if (-1 == sendMessage(fd, filterCommand)) {
-            LOGE("!!!!Error sending Filter message: %d for Filter: !!!!", filterString);
+            LOGE("!!!!Error sending Filter message: %s for Filter: !!!!", filterString);
         }
         LOGD("Filter SET: Filter- %s", filter);
     }
     else LOGE("!!!! NULL FILTER PASSED !!!");
+	return 0;
 }
 
 int setBitrate(int fd, int speed) {
@@ -404,15 +406,16 @@ static void *monitor_data_thread(void *param) {
     uint8_t data[8 * 1024];
 
     uint8_t *pdata = data;
+	unsigned char * thread_char = (unsigned char *)(void *)(&thread);
 
     prctl(PR_SET_NAME, "monitor_thread", 0, 0, 0);
     LOGD("monitor_thread started");
-    LOGD("thread=%d", thread);
+    LOGD("thread=%02x",(unsigned char)*thread_char);
     int quit = 0;
     while (!quit) {
         // sanity check to kill stale read thread
          if(thread != pthread_self()) {
-             LOGD("read thread stale, thread=%d, pthread_self=%d", thread, pthread_self());
+             LOGD("read thread stale, thread=%02x", (unsigned char)*thread_char);
              break;
          } //if statement was commented out
         if(fd<0){break;}

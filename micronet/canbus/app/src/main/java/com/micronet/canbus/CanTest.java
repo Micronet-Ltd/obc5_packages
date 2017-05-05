@@ -6,9 +6,6 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 
-/** Created by eemaan.siddiqi on 2/23/2017.
-*/
-
 public class CanTest {
     private static CanTest instance = null;
 
@@ -60,10 +57,13 @@ public class CanTest {
     private final int READ_TIMEOUT = 500; // read timeout (in milliseconds)
     private int baudrate;
     private boolean silentMode;
+    private int portNumber;
+    private boolean termination;
     private volatile boolean autoSendJ1939;
 
     private boolean enableFilters = false;
     private boolean isCanInterfaceOpen = false;
+    private boolean discardInBuffer;
 
     public boolean isDiscardInBuffer() {
         return discardInBuffer;
@@ -84,10 +84,16 @@ public class CanTest {
         return isCanInterfaceOpen;
     }
 
-    private boolean discardInBuffer;
-
     public int getBaudrate() {
         return baudrate;
+    }
+
+    public boolean getTermination() {
+        return termination;
+    }
+
+    public int getPortNumber() {
+        return portNumber;
     }
 
     public void setBaudrate(int baudrate) {
@@ -98,13 +104,16 @@ public class CanTest {
         return Info.VERSION;
     }
 
-    public void CreateInterface(int baudrate, boolean silentMode) {
+    public void CreateInterface( boolean silentMode, int baudrate,boolean termination, int port) {
         this.silentMode = silentMode;
         this.baudrate = baudrate;
+        this.termination=termination;
+        this.portNumber=port;
+
         if (canbusInterface == null) {
             canbusInterface = new CanbusInterface();
             canbusFilter=setFilters();
-            canbusInterface.setBitrate(baudrate,canbusFilter,2);
+            canbusInterface.create(silentMode,baudrate,termination,canbusFilter,port);
         }
 
         if (canbusSocket == null) {
@@ -141,7 +150,7 @@ public class CanTest {
     public void clearFilters() {
         // re-init the interface to clear filters
         enableFilters = false;
-        CreateInterface(baudrate, silentMode);
+        CreateInterface(silentMode, baudrate, termination, portNumber);
     }
 
     public void discardInBuffer() {

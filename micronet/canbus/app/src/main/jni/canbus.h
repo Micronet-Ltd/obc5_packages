@@ -10,7 +10,7 @@
 
 
 #define invalid_arg "Invalid_Argument"
-#define CANBUS_JNI_VER "20170503.000"
+#define CANBUS_JNI_VER "20170505.000"
 
 #define MAX_SIZE 20
 #define RECEIVE_BUFFER_SIZE 8388608
@@ -102,9 +102,5 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusSocket_sendJ1708(JN
 JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusSocket_registerCallback(JNIEnv *env, jobject instance, jobject listener);
 JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusSocket_closeSocket(JNIEnv *env, jobject instance);
 
-/*// TODO remove if interface can only be set when opening CAN
-JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_setInterfaceBitrate(JNIEnv *env,jobject instance, jint bitrate);
-JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_enableListeningMode(JNIEnv *env, jobject instance, jboolean enable);
-JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_setTermination(JNIEnv *env, jobject instance, jboolean enabled);*/
 };
 #endif /* CAN_BUS_H */

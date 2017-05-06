@@ -4,7 +4,6 @@
 #define LOG_TAG "Canbus"
 #include <jni.h>
 #include <pthread.h>
-//#include <android/log.h>
 
 #ifndef CAN_BUS_H
 #define CAN_BUS_H

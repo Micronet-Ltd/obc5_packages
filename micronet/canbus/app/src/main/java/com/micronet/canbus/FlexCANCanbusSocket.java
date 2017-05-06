@@ -6,10 +6,6 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Created by eemaan.siddiqi on 2/11/2017.
- */
-
 public class FlexCANCanbusSocket extends CanbusSocket implements CanbusListener{
     private static final String TAG = "CanbusSocket";
 

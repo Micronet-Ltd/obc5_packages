@@ -517,10 +517,9 @@ int serial_deinit() {
     return 0;
 }
 
-void qb_close() {
+int qb_close() {
     LOGD("Entered the close()! ");
-    serial_deinit();
-    /*return serial_deinit();*/
+    return serial_deinit();
 }
 
 

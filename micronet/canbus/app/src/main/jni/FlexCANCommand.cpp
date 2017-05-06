@@ -7,7 +7,6 @@
 #include "canbus.h"
 #include "FlexCANComm.h"
 #include "FlexCANCommand.h"
-//#include <string>
 #include <stdlib.h>
 #include <stdio.h>
 

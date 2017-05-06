@@ -1,9 +1,5 @@
 package com.micronet.canbus;
 
-/**
- * Created by brigham.diaz on 1/27/2017.
- */
-
 public class FlexCANCanbusInterfaceBridge implements ICanbusInterfaceBridge {
     private boolean listeningModeEnable;
     private boolean termination;
@@ -23,7 +19,7 @@ public class FlexCANCanbusInterfaceBridge implements ICanbusInterfaceBridge {
     }
 
     /**
-     * Creates new CAN interface in the specified mode (QBridge support only).
+     * Creates new CAN interface in the specified mode
      * @param listeningModeEnable true, disables the CAN module's transmit signal. The CAN module is still able to receive messages from the CANbus.
      *                            This mode may be used to analyze a CANbus without disturbing the bus.
      *                            false, turns on the CAN module's transmitter and receiver.

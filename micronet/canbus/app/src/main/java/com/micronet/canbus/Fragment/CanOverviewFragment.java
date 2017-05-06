@@ -295,7 +295,7 @@ public class CanOverviewFragment extends Fragment {
 
     private void executeChangeBaudrate() {
         if (changeBaudRateTask == null || changeBaudRateTask.getStatus() != AsyncTask.Status.RUNNING) {
-            changeBaudRateTask = new ChangeBaudRateTask(canTest.getBaudrate(), swSilentMode.isChecked());
+            changeBaudRateTask = new ChangeBaudRateTask( swSilentMode.isChecked(),canTest.getBaudrate(),canTest.getTermination(),canTest.getPortNumber());
             changeBaudRateTask.execute();
         }
     }
@@ -373,10 +373,14 @@ public class CanOverviewFragment extends Fragment {
 
         int baudrate;
         boolean silent;
+        boolean termination;
+        int port;
 
-        public ChangeBaudRateTask(int baudrate, boolean silent) {
+        public ChangeBaudRateTask(boolean silent,int baudrate,boolean termination, int port ) {
             this.baudrate = baudrate;
             this.silent = silent;
+            this.termination=termination;
+            this.port=port;
         }
 
         @Override
@@ -391,7 +395,7 @@ public class CanOverviewFragment extends Fragment {
                 return null;
             }
             publishProgress("Opening, please wait...");
-            canTest.CreateInterface(baudrate, silent);
+            canTest.CreateInterface(silent,baudrate,termination,port);
             return null;
         }
 

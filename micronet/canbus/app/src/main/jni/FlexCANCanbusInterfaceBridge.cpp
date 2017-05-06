@@ -79,6 +79,8 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_cre
 			{
         		throwException(env, "Hardware Filter: %s tried to pass array index of filter_mask_type", "err");
 			}
+            filter_array[i].filter_mask_type[fmt] = filterMaskTypeInts[fmt];
+            total_filter_mask_types++;
         }
     }
 

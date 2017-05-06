@@ -17,7 +17,7 @@ static void throwRuntimeException(JNIEnv *env, const char *message)
 
 jint JNI_OnLoad(JavaVM* vm, void* reserved)
 {
-	JNIEnv* env;
+    JNIEnv* env;
     g_canbus.g_vm = vm;
     g_canbus.args.version = JNI_VERSION_1_6;
     g_canbus.args.name = "canbus_monitor_data_thread";

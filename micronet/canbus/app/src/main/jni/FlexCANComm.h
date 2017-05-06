@@ -27,7 +27,7 @@ int wait_for_data();
 int parseHex(uint8_t * asciiString, int len, uint8_t * hexValue);
 
 
-void qb_close();
+int qb_close();
 int serial_deinit();
 int serial_set_nonblocking(int fd);
 

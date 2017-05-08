@@ -33,13 +33,15 @@ const char* ign_tm_fname =  "/dev/ignition_timeout";
 const char* db_fname =      "/data/data/com.android.providers.settings/databases/settings.db";
 //const char* tmp_fname = "/sys/devices/suspend_timeout/suspend_timeout_tmp";
 const char* tmp_fname =     "/data/local/tmp/suspend_timeout_tmp";
-const char* i_tm_tmp_fname = "/data/local/tmp/ignition_timeout_tmp";
+const char* shd_tmp_fname = "/data/local/tmp/shutdown_timeout_tmp";
 //const char* val_fname = "/sys/devices/suspend_timeout/suspend_timeout";
 
 const char* db_put =    "settings put system screen_off_timeout";
 const char* db_get =    "settings get system screen_off_timeout";
 const char* db_put_st = "settings put system sleep_timeout";
 const char* db_get_st = "settings get system sleep_timeout";
+const char* db_put_shd = "settings put system shutdown_timeout";
+const char* db_get_shd = "settings get system shutdown_timeout";
 //ignition
 //echo 692 > sys/class/gpio/export
 //cat sys/class/gpio/gpio692/value
@@ -47,7 +49,7 @@ const char* db_get_st = "settings get system sleep_timeout";
 
 struct suspend_tm_thcontext {
     int     fd_sp_tm;
-    int     fd_ign_tm;
+    int     fd_shd_tm;
 };
 
 int get_settings(char* buf, const char* cmd, const char* tmp_file)
@@ -97,7 +99,7 @@ void * db_proc(void * cntx)
 {
     struct suspend_tm_thcontext* ptc = (struct suspend_tm_thcontext*)cntx;
     int fd_db, wd, length, i, found = 0;
-    uint32_t last_val = 0, tmp_val = 0;
+    uint32_t last_val_sp = 0, last_val_shd = 0, tmp_val = 0;
     char cmd_buf[256];
 
     DINFO("db_proc starts");
@@ -120,17 +122,32 @@ void * db_proc(void * cntx)
         if(found) 
         {
             memset(cmd_buf, sizeof(cmd_buf), 0);
+            length = get_settings(cmd_buf, db_get_shd, shd_tmp_fname);
+            if(0 < length) 
+            {
+                tmp_val = strtol(cmd_buf, 0, 10);
+                DINFO("tmp_val %d; last_val_shd %d", tmp_val, last_val_shd);
+                if(0 != tmp_val && tmp_val != last_val_shd) 
+                {
+                    length = write(ptc->fd_shd_tm, cmd_buf, length); 
+                    if (0 < length) 
+                    {
+                        last_val_shd = tmp_val; 
+                    }
+                }
+            }
+            memset(cmd_buf, sizeof(cmd_buf), 0);
             length = get_settings(cmd_buf, db_get, tmp_fname);
             if(0 < length) 
             {
                 tmp_val = strtol(cmd_buf, 0, 10);
-                DINFO("tmp_val %d; last_val %d", tmp_val, last_val);
-                if(0 != tmp_val && tmp_val != last_val) 
+                DINFO("tmp_val %d; last_val_sp %d", tmp_val, last_val_sp);
+                if(0 != tmp_val && tmp_val != last_val_sp) 
                 {
                     length = write(ptc->fd_sp_tm, cmd_buf, length); 
                     if (0 < length) 
                     {
-                        last_val = tmp_val; 
+                        last_val_sp = tmp_val; 
                     }
                 }
             }
@@ -196,8 +213,8 @@ int main(int argc __attribute__((unused)), char * argv[] __attribute__((unused))
     }
 
 
-    tc.fd_ign_tm = open(ign_tm_fname, O_RDWR, O_NDELAY);
-    if(0 > tc.fd_ign_tm)
+    tc.fd_shd_tm = open(ign_tm_fname, O_RDWR, O_NDELAY);
+    if(0 > tc.fd_shd_tm)
     {
         DERR ("error open device %s", ign_tm_fname);
         return -1;
@@ -207,8 +224,8 @@ int main(int argc __attribute__((unused)), char * argv[] __attribute__((unused))
 
     if(max_fd < tc.fd_sp_tm)
         max_fd = tc.fd_sp_tm;
-    if(max_fd < tc.fd_ign_tm)
-        max_fd = tc.fd_ign_tm;
+    if(max_fd < tc.fd_shd_tm)
+        max_fd = tc.fd_shd_tm;
 
     while(1)
     {
@@ -216,7 +233,7 @@ int main(int argc __attribute__((unused)), char * argv[] __attribute__((unused))
         timeout.tv_usec = 0;
         FD_ZERO (&set);
         FD_SET (tc.fd_sp_tm, &set);
-        FD_SET (tc.fd_ign_tm, &set);
+        FD_SET (tc.fd_shd_tm, &set);
 
         ret = select(max_fd + 1, &set, NULL, NULL, &timeout);
     	if (ret != 1)
@@ -233,21 +250,21 @@ int main(int argc __attribute__((unused)), char * argv[] __attribute__((unused))
                 {
                     sprintf(outbuffer, "%s %s\n", db_put, readbuffer); 
                     system(outbuffer);
+                    DINFO("%s", outbuffer);
                 }
-
-                DINFO("%s", outbuffer);
             }
         }
-        if(FD_ISSET(tc.fd_ign_tm, &set)) 
+        if(FD_ISSET(tc.fd_shd_tm, &set)) 
         {
-            len = read(tc.fd_ign_tm, readbuffer, sizeof(readbuffer)/sizeof(readbuffer[0]));
+            len = read(tc.fd_shd_tm, readbuffer, sizeof(readbuffer)/sizeof(readbuffer[0]));
             if(len > 0) 
             {
-                //if(0 != test_timeout(readbuffer)) 
-                //{
-                //}
-
-                DINFO("%s", readbuffer);
+                if(0 != test_timeout(readbuffer)) 
+                {
+                    sprintf(outbuffer, "%s %s\n", db_put_shd, readbuffer); 
+                    system(outbuffer);
+                    DINFO("%s", outbuffer);
+                }
             }
         }
     }

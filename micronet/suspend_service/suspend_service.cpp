@@ -17,7 +17,6 @@
 #include <sys/inotify.h>
 
 #include "log.h"
-#include "AWakeLock.h"
 
 //#define EVENT_SIZE      (sizeof(struct inotify_event))
 //#define EVENT_BUF_LEN   (4 * (EVENT_SIZE + 16))
@@ -31,17 +30,18 @@
 
 const char* fname =         "/dev/suspend_timeout";
 const char* ign_tm_fname =  "/dev/ignition_timeout";
-const char* ign_fname =     "/dev/ignition_level";
 const char* db_fname =      "/data/data/com.android.providers.settings/databases/settings.db";
 //const char* tmp_fname = "/sys/devices/suspend_timeout/suspend_timeout_tmp";
 const char* tmp_fname =     "/data/local/tmp/suspend_timeout_tmp";
-const char* i_tm_tmp_fname = "/data/local/tmp/ignition_timeout_tmp";
+const char* shd_tmp_fname = "/data/local/tmp/shutdown_timeout_tmp";
 //const char* val_fname = "/sys/devices/suspend_timeout/suspend_timeout";
 
 const char* db_put =    "settings put system screen_off_timeout";
 const char* db_get =    "settings get system screen_off_timeout";
 const char* db_put_st = "settings put system sleep_timeout";
 const char* db_get_st = "settings get system sleep_timeout";
+const char* db_put_shd = "settings put system shutdown_timeout";
+const char* db_get_shd = "settings get system shutdown_timeout";
 //ignition
 //echo 692 > sys/class/gpio/export
 //cat sys/class/gpio/gpio692/value
@@ -49,11 +49,7 @@ const char* db_get_st = "settings get system sleep_timeout";
 
 struct suspend_tm_thcontext {
     int     fd_sp_tm;
-    int     fd_ign_tm;
-    int     fd_ign_lvl;
-    int     last_ign_lvl;
-    int     wl_flags;
-    sp<AWakeLock>   mWakeLock;
+    int     fd_shd_tm;
 };
 
 int get_settings(char* buf, const char* cmd, const char* tmp_file)
@@ -103,7 +99,7 @@ void * db_proc(void * cntx)
 {
     struct suspend_tm_thcontext* ptc = (struct suspend_tm_thcontext*)cntx;
     int fd_db, wd, length, i, found = 0;
-    uint32_t last_val = 0, tmp_val = 0;
+    uint32_t last_val_sp = 0, last_val_shd = 0, tmp_val = 0;
     char cmd_buf[256];
 
     DINFO("db_proc starts");
@@ -126,17 +122,32 @@ void * db_proc(void * cntx)
         if(found) 
         {
             memset(cmd_buf, sizeof(cmd_buf), 0);
+            length = get_settings(cmd_buf, db_get_shd, shd_tmp_fname);
+            if(0 < length) 
+            {
+                tmp_val = strtol(cmd_buf, 0, 10);
+                DINFO("tmp_val %d; last_val_shd %d", tmp_val, last_val_shd);
+                if(0 != tmp_val && tmp_val != last_val_shd) 
+                {
+                    length = write(ptc->fd_shd_tm, cmd_buf, length); 
+                    if (0 < length) 
+                    {
+                        last_val_shd = tmp_val; 
+                    }
+                }
+            }
+            memset(cmd_buf, sizeof(cmd_buf), 0);
             length = get_settings(cmd_buf, db_get, tmp_fname);
             if(0 < length) 
             {
                 tmp_val = strtol(cmd_buf, 0, 10);
-                DINFO("tmp_val %d; last_val %d", tmp_val, last_val);
-                if(0 != tmp_val && tmp_val != last_val) 
+                DINFO("tmp_val %d; last_val_sp %d", tmp_val, last_val_sp);
+                if(0 != tmp_val && tmp_val != last_val_sp) 
                 {
                     length = write(ptc->fd_sp_tm, cmd_buf, length); 
                     if (0 < length) 
                     {
-                        last_val = tmp_val; 
+                        last_val_sp = tmp_val; 
                     }
                 }
             }
@@ -179,29 +190,6 @@ void * db_proc(void * cntx)
     return NULL;
 }
 
-static int  WakeLockSet(suspend_tm_thcontext* ptc, int val)
-{
-    if(val != ptc->last_ign_lvl) 
-    {
-        ptc->last_ign_lvl = val;
-        if(ptc->last_ign_lvl) 
-        {
-            DINFO("acquire %d", ptc->last_ign_lvl);//temp!!!
-            if(ptc->mWakeLock->acquire(ptc->wl_flags, "suspend_service") == 0)
-            {
-                DERR("CANNOT acquire wakelock!");
-                return -1;
-            }
-        }
-        else
-        {
-            ptc->mWakeLock->release(1);//force
-            DINFO("release %d", ptc->last_ign_lvl);//temp!!!!
-        }
-    }
-    DINFO("ignition %d", ptc->last_ign_lvl);
-    return 0;
-}
 int main(int argc __attribute__((unused)), char * argv[] __attribute__((unused)))
 {
     int             ret, len, tmp_val;
@@ -216,8 +204,6 @@ int main(int argc __attribute__((unused)), char * argv[] __attribute__((unused))
     //struct igni_thcontext ign_tc;
 
     DINFO("started.");
-    tc.last_ign_lvl = -1;
-    tc.wl_flags     = PM_FULL_WAKE_LOCK | PM_ON_AFTER_RELEASE;
 
     tc.fd_sp_tm = open(fname, O_RDWR, O_NDELAY);
     if(0 > tc.fd_sp_tm)
@@ -226,43 +212,20 @@ int main(int argc __attribute__((unused)), char * argv[] __attribute__((unused))
 	return -1;
     }
 
-    tc.fd_ign_lvl = open(ign_fname, O_RDWR, O_NDELAY);
-    if(0 > tc.fd_ign_lvl)
-    {
-        DERR ("error open device %s", ign_fname);
-        return -1;
-    }
 
-    tc.fd_ign_tm = open(ign_tm_fname, O_RDWR, O_NDELAY);
-    if(0 > tc.fd_ign_tm)
+    tc.fd_shd_tm = open(ign_tm_fname, O_RDWR, O_NDELAY);
+    if(0 > tc.fd_shd_tm)
     {
-        DERR ("error open device %s", ign_fname);
+        DERR ("error open device %s", ign_tm_fname);
         return -1;
-    }
-    tc.mWakeLock = new AWakeLock();
-    if(tc.mWakeLock == NULL) 
-    {
-        DERR("CANNOT create wakelock!");
-        return -1;
-    }
-    //1st wakelock
-    len = read(tc.fd_ign_lvl, readbuffer, sizeof(readbuffer)/sizeof(readbuffer[0]));//1st time don't wait
-    if(0 < len) 
-    {
-        tmp_val = strtol(readbuffer, 0, 10);
-        WakeLockSet(&tc, tmp_val);
     }
 
     pthread_create(&db_thread, NULL, db_proc, &tc);
 
-//    pthread_create(&ignition_thread, NULL, ignition_proc, &ign_tc);
-
     if(max_fd < tc.fd_sp_tm)
         max_fd = tc.fd_sp_tm;
-    if(max_fd < tc.fd_ign_tm)
-        max_fd = tc.fd_ign_tm;
-    if(max_fd < tc.fd_ign_lvl)
-        max_fd = tc.fd_ign_lvl;
+    if(max_fd < tc.fd_shd_tm)
+        max_fd = tc.fd_shd_tm;
 
     while(1)
     {
@@ -270,8 +233,7 @@ int main(int argc __attribute__((unused)), char * argv[] __attribute__((unused))
         timeout.tv_usec = 0;
         FD_ZERO (&set);
         FD_SET (tc.fd_sp_tm, &set);
-        FD_SET (tc.fd_ign_tm, &set);
-        FD_SET (tc.fd_ign_lvl, &set);
+        FD_SET (tc.fd_shd_tm, &set);
 
         ret = select(max_fd + 1, &set, NULL, NULL, &timeout);
     	if (ret != 1)
@@ -288,31 +250,21 @@ int main(int argc __attribute__((unused)), char * argv[] __attribute__((unused))
                 {
                     sprintf(outbuffer, "%s %s\n", db_put, readbuffer); 
                     system(outbuffer);
+                    DINFO("%s", outbuffer);
                 }
-
-                DINFO("%s", outbuffer);
             }
         }
-        if(FD_ISSET(tc.fd_ign_tm, &set)) 
+        if(FD_ISSET(tc.fd_shd_tm, &set)) 
         {
-            len = read(tc.fd_ign_tm, readbuffer, sizeof(readbuffer)/sizeof(readbuffer[0]));
+            len = read(tc.fd_shd_tm, readbuffer, sizeof(readbuffer)/sizeof(readbuffer[0]));
             if(len > 0) 
             {
-                //if(0 != test_timeout(readbuffer)) 
-                //{
-                //}
-
-                DINFO("%s", readbuffer);
-            }
-        }
-        if(FD_ISSET(tc.fd_ign_lvl, &set)) 
-        {
-            len = read(tc.fd_ign_lvl, readbuffer, sizeof(readbuffer)/sizeof(readbuffer[0]));//1st time don't wait
-
-            if(0 < len) 
-            {
-                tmp_val = strtol(readbuffer, 0, 10);
-                WakeLockSet(&tc, tmp_val);
+                if(0 != test_timeout(readbuffer)) 
+                {
+                    sprintf(outbuffer, "%s %s\n", db_put_shd, readbuffer); 
+                    system(outbuffer);
+                    DINFO("%s", outbuffer);
+                }
             }
         }
     }

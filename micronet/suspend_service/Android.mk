@@ -10,7 +10,7 @@ LOCAL_CFLAGS += -std=c++1y
 
 LOCAL_PROPRIETARY_MODULE := true
 
-LOCAL_SRC_FILES := AWakeLock.cpp suspend_service.cpp
+LOCAL_SRC_FILES := suspend_service.cpp
 LOCAL_SHARED_LIBRARIES := \
 	libbinder \
 	libhardware \

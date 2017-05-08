@@ -187,7 +187,7 @@ public class AlwaysOnWiFiHotspotService extends Service {
             handlerCount=Integer.parseInt(handlerValue);
         }
 		PackageManager p = getPackageManager();
-        ComponentName componentName = new ComponentName(this, micronet.com.cellular_data_temperature_controlled.MainActivity.class); // activity which is first time open in manifiest file which is declare as <category android:name="android.intent.category.LAUNCHER" />
+        ComponentName componentName = new ComponentName(this, com.micronet.alwaysonwifihotspot.MainActivity.class); // activity which is first time open in manifiest file which is declare as <category android:name="android.intent.category.LAUNCHER" />
         p.setComponentEnabledSetting(componentName,PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
     }
 

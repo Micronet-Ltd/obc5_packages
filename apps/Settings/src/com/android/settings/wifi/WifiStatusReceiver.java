@@ -84,7 +84,7 @@ public final class WifiStatusReceiver extends BroadcastReceiver {
 				SystemProperties.set("persist.sys.iswificonfigured", "true");
 				starthotspot(true);		
 			}
-        }else if(action.equals("android.intent.action.BOOT_COMPLETED") && isWifiConfigured){ 		  
+        }else if(action.equals("android.intent.action.BOOT_COMPLETED") && isWifiConfigured && isHotspotEnabled){ 		  
             starthotspot(true);			
 		}else if(action.equals("android.intent.action.AIRPLANE_MODE") && isWifiConfigured){
 		    boolean isAirplaneMode = Settings.Global.getInt(mContext.getContentResolver(),

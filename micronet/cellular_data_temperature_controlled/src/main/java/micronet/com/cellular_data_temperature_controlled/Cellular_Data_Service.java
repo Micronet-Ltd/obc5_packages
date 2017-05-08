@@ -34,6 +34,8 @@ public class Cellular_Data_Service extends Service {
     private String enabledCountValue;
     private int disabledCount;
     private String disabledCountValue;
+	private boolean cellularDisabled=false;
+	
     @Override
     public void onCreate() {
         super.onCreate();
@@ -127,24 +129,15 @@ public class Cellular_Data_Service extends Service {
                 TemperatureValues.HigherTemp(context);
                 Log.d(TAG, "enabledcount=" + enabledCount);
                 TemperatureValues.NormalTemp(context);
-                if (TemperatureValues.NormalTempResult == true) {
-                    if (MobileDataManager.isMobileConnected(context) == true){//If Cellular Data is already turned ON
-                        mobileDataHandler.postDelayed(this, TWELVE_SECONDS);//Do Nothing and set post to 10 seconds
-                        return;
-                    }
-                    else if (MobileDataManager.getMobileDataState(context) == false) {
-                        enableCellularData();
-                        mobileDataHandler.postDelayed(this, TEN_SECONDS);//Setting post to ten seconds
-                        return;
-                    }
-                }
-                else if (TemperatureValues.HighTempResult == true)
+            
+                if (TemperatureValues.HighTempResult == true)
                     {
                         if (MobileDataManager.getMobileDataState(context) == false) {
                             mobileDataHandler.postDelayed(this, TWELVE_SECONDS);
                         return;
                         }
                         else
+							cellularDisabled=true;
                             MobileDataManager.setDataEnabled(context, false);   //Disabling the data
                          try {
                             Thread.sleep(1000);
@@ -161,6 +154,19 @@ public class Cellular_Data_Service extends Service {
                             mobileDataHandler.postDelayed(this, TEN_SECONDS);//setting post to thirty seconds
                             return;
                     }
+					
+					    else if (TemperatureValues.NormalTempResult == true && cellularDisabled==true) {
+                    if (MobileDataManager.isMobileConnected(context) == true){//If Cellular Data is already turned ON
+                        mobileDataHandler.postDelayed(this, TWELVE_SECONDS);//Do Nothing and set post to 10 seconds
+                        return;
+                    }
+                    else if (MobileDataManager.getMobileDataState(context) == false) {
+                        cellularDisabled=false;
+						enableCellularData();
+                        mobileDataHandler.postDelayed(this, TEN_SECONDS);//Setting post to ten seconds
+                        return;
+                    }
+                }
 
                 Log.d(TAG, "mobileDataHandler.postDelayed(this, TWELVE_SECONDS)");
                 mobileDataHandler.postDelayed(this, TEN_SECONDS);

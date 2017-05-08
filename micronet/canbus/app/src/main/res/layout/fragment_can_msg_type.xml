@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <SeekBar
+        android:id="@+id/seekBarJ1939"
+        android:layout_width="240dp"
+        android:layout_height="wrap_content"
+        android:max="1000"
+        android:maxHeight="5dip"
+        android:minHeight="5dip"
+        android:layout_marginTop="24dp"
+        android:layout_below="@+id/editTextData"
+        android:layout_alignParentEnd="true" />
+
+    <Switch
+        android:id="@+id/switchCyclicTx"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/cycle_transmit"
+        android:layout_marginTop="23dp"
+        android:layout_below="@+id/seekBarJ1939"
+        android:layout_alignStart="@+id/textView3" />
+
+    <EditText
+        android:id="@+id/editTextData"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:imeOptions="actionSend"
+        android:digits="0123456789ABCDEF"
+        android:inputType="textCapCharacters"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="341dp"
+        android:layout_marginTop="21dp"
+        android:layout_below="@+id/textViewData"
+        android:layout_alignParentEnd="true"
+        android:layout_alignStart="@+id/textViewData" />
+
+    <EditText
+        android:id="@+id/editTextType"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        android:imeOptions="actionSend"
+        tools:layout_editor_absoluteY="84dp"
+        tools:layout_editor_absoluteX="0dp"
+        android:layout_marginTop="14dp"
+        android:layout_below="@+id/textViewMessageType"
+        android:layout_alignStart="@+id/textViewMessageType" />
+
+    <EditText
+        android:id="@+id/editTextId"
+        android:digits="0123456789ABCDEF"
+        android:inputType="textCapCharacters"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:imeOptions="actionSend"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="220dp"
+        android:layout_marginTop="12dp"
+        android:layout_below="@+id/textViewId"
+        android:layout_alignParentEnd="true"
+        android:layout_alignStart="@+id/textViewId" />
+
+    <TextView
+        android:id="@+id/textViewMessageType"
+        android:layout_width="200dp"
+        android:layout_height="25dp"
+        android:layout_marginTop="18dp"
+        android:text="Enter Message Type "
+        android:textSize="16sp"
+        android:textStyle="bold"
+        tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteY="41dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignStart="@+id/textViewId" />
+
+    <TextView
+        android:id="@+id/textViewId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="26dp"
+        android:text="Enter Message ID "
+        android:textSize="16sp"
+        android:textStyle="bold"
+        tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteY="177dp"
+        android:layout_marginStart="19dp"
+        android:layout_below="@+id/editTextType"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:id="@+id/textViewData"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="35dp"
+        android:text="Enter CAN Data "
+        android:textSize="16sp"
+        android:textStyle="bold"
+        tools:layout_editor_absoluteX="28dp"
+        tools:layout_editor_absoluteY="300dp"
+        android:layout_below="@+id/editTextId"
+        android:layout_alignStart="@+id/editTextId" />
+
+    <Button
+        android:id="@+id/submitbutton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="SEND FRAME"
+        android:textColor="@color/colorPrimary"
+        android:textStyle="bold"
+        tools:layout_editor_absoluteX="128dp"
+        tools:layout_editor_absoluteY="423dp"
+        android:imeOptions="actionSend"
+        android:layout_alignBaseline="@+id/switchCyclicTx"
+        android:layout_alignBottom="@+id/switchCyclicTx"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="46dp" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/editTextData"
+        android:layout_alignTop="@+id/seekBarJ1939"
+        android:text="Cyclic Time" />
+
+</RelativeLayout>

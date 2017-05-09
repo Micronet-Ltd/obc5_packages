@@ -10,7 +10,7 @@
 
 
 #define invalid_arg "Invalid_Argument"
-#define CANBUS_JNI_VER "20170505.000"
+#define CANBUS_JNI_VER "20170509.000"
 
 #define MAX_SIZE 20
 #define RECEIVE_BUFFER_SIZE 8388608

@@ -20,8 +20,8 @@ import com.micronet.canbus.R;
 import com.micronet.canbus.MainActivity;
 
 public class CanOverviewFragment extends Fragment {
-    private int BITRATE_250K = 6;
-    private int BITRATE_500K = 7;
+    private int BITRATE_250K = 250000;
+    private int BITRATE_500K = 500000;
 
     private Thread updateUIThread;
 

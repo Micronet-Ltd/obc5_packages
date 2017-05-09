@@ -1,6 +1,6 @@
 package com.micronet.canbus;
 
-public class FlexCANCanbusInterfaceBridge implements ICanbusInterfaceBridge {
+final class FlexCANCanbusInterfaceBridge implements ICanbusInterfaceBridge {
     private boolean listeningModeEnable;
     private boolean termination;
     private int bitrate;

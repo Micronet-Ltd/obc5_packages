@@ -33,6 +33,9 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_cre
     int total_filters = 0;
     int total_filter_mask_types=0;
 
+    struct FLEXCAN_Flow_Control flowControlMessageArray[8];
+    int numFlowControlMessages;
+
     for (i = 0; i < numfilter; i++){
 
         jobject element = env->GetObjectArrayElement(hardwarefilter, i);
@@ -51,7 +54,7 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_cre
         jsize lengthOfMaskArray = env->GetArrayLength(masks);
 
         //Get filter and Mask type array
-        jmethodID methodFilterType = env->GetMethodID(cls, "getFilterMaskType", "()[I");
+        jmethodID methodFilterType = env->GetMethodID(cls, "getCharType", "()[I");
         jintArray FilterType = (jintArray)env->CallObjectMethod(element, methodFilterType);
         jint* filterMaskTypeInts = env->GetIntArrayElements(FilterType, NULL);
         jsize lengthOfFilterMaskTypeArray = env->GetArrayLength(FilterType);
@@ -147,10 +150,17 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_cre
             jsize lengthOfIdDataLengthArray = env->GetArrayLength(idDataLength);
 
             //TODO: Fix me
-            jmethodID methodResponseDataBytes = env-> GetMethodID(flowClass, "getDataBytes", "()[B");
+            /*jmethodID methodResponseDataBytes = env-> GetMethodID(flowClass, "getDataBytes", "()[[B");
             jbyteArray responseDataBytes = (jbyteArray) env->CallObjectMethod(flowElement, methodResponseDataBytes);
             jbyte *bufferPtr = env->GetByteArrayElements(responseDataBytes, NULL);
             jsize lengthOfArray = env->GetArrayLength(responseDataBytes);
+            //jmethodID methodResponseDataBytes = env->GetMethodID(flowClass, "getDataString", "([BLjava/lang/String;)");*/
+
+            jmethodID methodResponseDataBytes = env-> GetMethodID(flowClass, "getDataBytes", "()[[B");
+            jbyteArray responseDataBytes = (jbyteArray) env->CallObjectMethod(flowElement, methodResponseDataBytes);
+            jbyte *bufferPtr = env->GetByteArrayElements(responseDataBytes, NULL);
+            jsize lengthOfArray = env->GetArrayLength(responseDataBytes);
+
             //jmethodID methodResponseDataBytes = env->GetMethodID(flowClass, "getDataString", "([BLjava/lang/String;)");
 
 
@@ -197,7 +207,7 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_cre
         }
     }
 
-    jint fd = FlexCAN_startup(listeningModeEnable, bitrate, termination, filter_array, numfilter,port);
+    jint fd = FlexCAN_startup(listeningModeEnable, bitrate, termination, filter_array, numfilter,port, flowControlMessageArray,numFlowControlMessages);
     jfieldID fd_id;
 
     jclass clazz = env->FindClass("com/micronet/canbus/FlexCANCanbusInterfaceBridge");

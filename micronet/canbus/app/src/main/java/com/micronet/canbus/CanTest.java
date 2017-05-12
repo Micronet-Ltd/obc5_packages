@@ -162,15 +162,15 @@ public class CanTest {
         int[] ids = new int[]{123, 61444, 61443};
         int[]responseIds= new int[]{65248, 65276, 61445};
         int[] dataLength = {8,8,8};
-        int[] type={CanbusHardwareFilter.EXTENDED, CanbusHardwareFilter.EXTENDED, CanbusHardwareFilter.EXTENDED};
+        int[] type={CanbusFlowControl.EXTENDED, CanbusFlowControl.EXTENDED, CanbusFlowControl.EXTENDED};
         //String[] data={"1234567812345678","1234567812345678", "1234567812345678"};
         //int[] data1=new int[]{0x12,0x34,0x56,0x78,0x1f,0x2f,0x3f,0x4f};
         byte[] data1=new byte[]{0x12,0x34,0x56,0x78,0x1f,0x2f,0x3f,0x4f};
         byte[] data2=new byte[]{0x12,0x34,0x56,0x78,0x1f,0x2f,0x3f,0x4f};
         byte[] data3=new byte[]{0x12,0x34,0x56,0x78,0x1f,0x2f,0x3f,0x4f};
-        byte[][] databytes=new byte[][]{/*data1, */data2,data3 };
+        byte[][] databytes=new byte[][]{data1, data2,data3 };
 
-        flowControlMessagesList.add(new CanbusFlowControl(ids,responseIds,type,dataLength,data1 /*data*/));
+        flowControlMessagesList.add(new CanbusFlowControl(ids,responseIds,type,dataLength,databytes));
         flowControlMessages = flowControlMessagesList.toArray(new CanbusFlowControl[0]);
         return flowControlMessages;
     }
@@ -625,5 +625,4 @@ public class CanTest {
         }
     }
 */
-
 }

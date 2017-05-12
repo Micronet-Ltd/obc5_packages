@@ -12,7 +12,7 @@
 
 #define MAX_PACKET_SIZE 256
 
-char getFilterMaskType(uint32_t type ){
+char getCharType(uint32_t type){
     char typeChar=0;
     if(type==0){typeChar='t';}
     else if(type==1){typeChar='T';}
@@ -47,7 +47,7 @@ void setFilterAndMasks(FLEXCAN_filter_mask *filter_array, int numfilter){
             LOGD("Entered Loop");
 
             filterMaskType=tmp_filter.filter_mask_type[index];
-            filterMaskTypeChar=getFilterMaskType(filterMaskType);
+            filterMaskTypeChar=getCharType(filterMaskType);
 
             filterId=tmp_filter.filter_id[index];
             if(filterMaskTypeChar=='T'){
@@ -77,7 +77,76 @@ void setFilterAndMasks(FLEXCAN_filter_mask *filter_array, int numfilter){
         }filterMaskTypeChar=0;
 }
 
-int FlexCAN_startup(bool listeningModeEnable, int bitrate, int termination, FLEXCAN_filter_mask* filter_array,int numfilter, char *portName)
+void configureFlowControl(FLEXCAN_Flow_Control *configuration_array, int numfilter){
+    int i=0;
+    int flowCodeSetCount=0;
+
+    uint8_t flowMessageType=0;
+    char flowMessageTypeChar=0;
+
+    uint32_t searchId=0;
+    char searchIdString[MAX_MASK_FILTER_SIZE]={0};
+
+    uint32_t responseId=0; //TODO: ADD
+    char responseIdString[MAX_MASK_FILTER_SIZE]={0};
+
+    uint8_t dataLength=0; //TODO: ADD
+    char dataLengthChar[MAX_MASK_FILTER_SIZE]={0};
+
+    uint32_t dataBytes;
+    char dataBytesString;
+
+    struct FLEXCAN_Flow_Control tmp_filter={.search_id = {0},
+            .search_id_count={0},
+            .response_id = {0},
+            .response_id_count={0},
+            .flow_msg_type = {0},
+            .flow_msg_type_count = {0},
+            .response_data_bytes = {0},
+            .response_data_bytes_count = {0},
+            .flow_msg_data_length={0},
+            .flow_msg_data_length_count={0}
+            };
+
+    LOGD("Start configuring Flow control codes!");
+
+    tmp_filter = *configuration_array;
+
+    for(int index=0; index<tmp_filter.flow_msg_type_count;index++){
+
+        flowMessageType=tmp_filter.flow_msg_type[index];
+        flowMessageTypeChar= getCharType(flowMessageType);
+
+        searchId=tmp_filter.search_id[index];
+        if(flowMessageTypeChar=='T'){
+            sprintf ( (char*)searchIdString, "%08x", searchId);
+        } else if(flowMessageTypeChar=='t'){
+            sprintf ((char*)searchIdString, "%03x", searchId);
+        }
+
+        responseId=tmp_filter.response_id[index];
+        if(flowMessageTypeChar=='T'){
+            sprintf ( (char*)responseIdString, "%08x", responseId);
+        } else if(flowMessageTypeChar=='t'){
+            sprintf ((char*)responseIdString, "%03x", responseId);
+        }
+
+        dataLength=tmp_filter.flow_msg_data_length[index];
+        sprintf((char*)dataLengthChar, "%01x", dataLength);
+
+        //TODO: Deal with data bytes
+
+        if(flowCodeSetCount < tmp_filter.flow_msg_type_count && flowCodeSetCount<=8) {
+            setFlowControlMessage((char *) flowMessageTypeChar, searchIdString, responseIdString, (char *) dataLength, (char *) dataBytesString);
+            usleep(5000);
+            flowCodeSetCount++;
+            LOGD("Flow control message set, No of filters set = %d", flowCodeSetCount);
+        }
+    }flowMessageTypeChar=0;
+}
+
+
+int FlexCAN_startup(bool listeningModeEnable, int bitrate, int termination, FLEXCAN_filter_mask* filter_array,int numfilter, char *portName, FLEXCAN_Flow_Control* flexcan_flow_control,int numOfFlowMessages)
 {
     int i, ret;
     char *port = portName;
@@ -102,6 +171,8 @@ int FlexCAN_startup(bool listeningModeEnable, int bitrate, int termination, FLEX
 
     setFilterAndMasks(filter_array, numfilter);
     //TODO: Add setFlowControlMessage()
+    configureFlowControl(flexcan_flow_control, numOfFlowMessages);
+
 
     if(serial_start_monitor_thread())
     {

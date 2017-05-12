@@ -51,18 +51,33 @@
 #define CAN_MSG_ID_SIZE_STD 3
 #define CAN_MSG_ID_SIZE_EXT 8
 
-#define MAX_QB_CAN_FILTERS 24
+#define MAX_FLEXCAN_CAN_FILTERS 24
+#define MAX_FlexCAN_Flowcontrol_CAN 8
 
 struct FLEXCAN_filter_mask {
-    __u32 mask_id[MAX_QB_CAN_FILTERS];
+    __u32 mask_id[MAX_FLEXCAN_CAN_FILTERS];
     __u8 mask_count;
 
-    __u8 filter_mask_type[MAX_QB_CAN_FILTERS];
+    __u8 filter_mask_type[MAX_FLEXCAN_CAN_FILTERS];
     __u8 filter_mask_type_count;
 
-    __u32 filter_id[MAX_QB_CAN_FILTERS];
+    __u32 filter_id[MAX_FLEXCAN_CAN_FILTERS];
     __u8 filter_count;
 
+};
+
+struct FLEXCAN_Flow_Control{
+    //TODO: ADD STRUCTURE
+    __u32 search_id[MAX_FlexCAN_Flowcontrol_CAN];
+    __u8 search_id_count;
+    __u32 response_id[MAX_FlexCAN_Flowcontrol_CAN];
+    __u8 response_id_count;
+    __u8 flow_msg_type[MAX_FlexCAN_Flowcontrol_CAN];
+    __u8 flow_msg_type_count;
+    __u8 flow_msg_data_length[MAX_FlexCAN_Flowcontrol_CAN];
+    __u8 flow_msg_data_length_count;
+    __u32 response_data_bytes[MAX_FlexCAN_Flowcontrol_CAN][MAX_FlexCAN_Flowcontrol_CAN];
+    __u8 response_data_bytes_count;
 };
 
 struct canbus_globals
@@ -88,12 +103,11 @@ struct canbus_globals
 
 extern struct canbus_globals g_canbus;
 
-
 extern "C" {
 JNIEXPORT jint JNICALL Java_com_micronet_canbus_CanbusInterface_getImplId(JNIEnv * env, jclass cls);//added
 
 JNIEXPORT jint JNICALL
-Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_createInterface(JNIEnv *env, jobject instance, jboolean listeningModeEnable, jint bitrate, jboolean termination, jobjectArray  hardwarefilter, int port_number);
+Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_createInterface(JNIEnv *env, jobject instance, jboolean listeningModeEnable, jint bitrate, jboolean termination, jobjectArray  hardwarefilter, int port_number,jobjectArray flowControl);
 JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_removeInterface(JNIEnv *env, jobject instance);
 
 //Socket JNI
@@ -102,9 +116,5 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusSocket_sendJ1708(JN
 JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusSocket_registerCallback(JNIEnv *env, jobject instance, jobject listener);
 JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusSocket_closeSocket(JNIEnv *env, jobject instance);
 
-/*// TODO remove if interface can only be set when opening CAN
-JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_setInterfaceBitrate(JNIEnv *env,jobject instance, jint bitrate);
-JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_enableListeningMode(JNIEnv *env, jobject instance, jboolean enable);
-JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_setTermination(JNIEnv *env, jobject instance, jboolean enabled);*/
 };
 #endif /* CAN_BUS_H */

@@ -29,6 +29,8 @@ public class CanTest {
 
     CanbusFrameType canMessageType;
     CanbusHardwareFilter[] canbusFilter;
+    CanbusFlowControl[] canbusFlowControls;
+
     int canMessageId;
     byte[] canMessageData;
     boolean usersData =false;
@@ -41,7 +43,7 @@ public class CanTest {
 
     private CanbusInterface canbusInterface;
     private CanbusSocket canbusSocket;
-  /*  private FlexCANCanbusSocket flexCANCanbusSocket;*/
+
 
     private J1939Reader j1939Reader = null;
     private volatile boolean blockOnRead = false;
@@ -62,6 +64,7 @@ public class CanTest {
     private volatile boolean autoSendJ1939;
 
     private boolean enableFilters = false;
+    private boolean enableFlowControls = false;
     private boolean isCanInterfaceOpen = false;
     private boolean discardInBuffer;
 
@@ -88,6 +91,10 @@ public class CanTest {
         return baudrate;
     }
 
+    public void setBaudrate(int baudrate) {
+        this.baudrate = baudrate;
+    }
+
     public boolean getTermination() {
         return termination;
     }
@@ -96,13 +103,10 @@ public class CanTest {
         return portNumber;
     }
 
-    public void setBaudrate(int baudrate) {
-        this.baudrate = baudrate;
-    }
+    public void setPortNumber(int port) {this.portNumber = port;}
 
-    public String getVersion() {
-        return Info.VERSION;
-    }
+
+    public String getVersion() {return Info.VERSION;}
 
     public void CreateInterface( boolean silentMode, int baudrate,boolean termination, int port) {
         this.silentMode = silentMode;
@@ -113,7 +117,9 @@ public class CanTest {
         if (canbusInterface == null) {
             canbusInterface = new CanbusInterface();
             canbusFilter=setFilters();
-            canbusInterface.create(silentMode,baudrate,termination,canbusFilter,port);
+           // port=getPortNumber();
+            canbusFlowControls=setFlowControlMessages();
+            canbusInterface.create(silentMode,baudrate,termination,canbusFilter,port,canbusFlowControls);
         }
 
         if (canbusSocket == null) {
@@ -145,6 +151,27 @@ public class CanTest {
         filters = filterList.toArray(new CanbusHardwareFilter[0]);
 
         return filters;
+    }
+
+    public CanbusFlowControl[] setFlowControlMessages(){
+
+        enableFlowControls = true;
+        ArrayList<CanbusFlowControl> flowControlMessagesList = new ArrayList<CanbusFlowControl>();
+        CanbusFlowControl[] flowControlMessages;
+
+        int[] ids = new int[]{123, 61444, 61443};
+        int[]responseIds= new int[]{65248, 65276, 61445};
+        int[] dataLength = {8,8,8};
+        int[] type={CanbusHardwareFilter.EXTENDED, CanbusHardwareFilter.EXTENDED, CanbusHardwareFilter.EXTENDED};
+        //String[] data={"1234567812345678","1234567812345678", "1234567812345678"};
+        byte[] data1=new byte[]{0x12,0x34,0x56,0x78,0x1f,0x2f,0x3f,0x4f};
+        byte[] data2=new byte[]{0x12,0x34,0x56,0x78,0x1f,0x2f,0x3f,0x4f};
+        byte[] data3=new byte[]{0x12,0x34,0x56,0x78,0x1f,0x2f,0x3f,0x4f};
+        byte[][] databytes=new byte[][]{data1, data2,data3 };
+
+        flowControlMessagesList.add(new CanbusFlowControl(ids,responseIds,type,dataLength,databytes /*data*/));
+        flowControlMessages = flowControlMessagesList.toArray(new CanbusFlowControl[0]);
+        return flowControlMessages;
     }
 
     public void clearFilters() {

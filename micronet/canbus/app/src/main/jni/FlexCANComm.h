@@ -19,6 +19,8 @@ int sendReadStatusCommand(int fd);
 int setMasks(char *mask, char type);
 int setFilters( char *filter, char type);
 
+void setFlowControlMessage(char *type,char *searchID,char *responseID, char *dataLength, char *dataBytes);
+
 int serial_start_monitor_thread();
 int serial_send_data(unsigned char*, uint32_t);
 

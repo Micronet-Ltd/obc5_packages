@@ -12,15 +12,6 @@
 
 #define MAX_PACKET_SIZE 256
 
-/*int numberOfFilters;
-int count;
-
-void Flex_CAN_filter_list(struct FLEXCAN_filter_mask* filter_array, int numfilter){
-
-    numberOfFilters=numfilter;
-    tmp_filter=filter_array[count];
-}*/
-
 char getFilterMaskType(uint32_t type ){
     char typeChar=0;
     if(type==0){typeChar='t';}
@@ -106,11 +97,11 @@ int FlexCAN_startup(bool listeningModeEnable, int bitrate, int termination, FLEX
     }
    /*
     *The firmware has a 20ms delay after closing the port.
-    * */
+    */
     usleep(100000);
 
-
     setFilterAndMasks(filter_array, numfilter);
+    //TODO: Add setFlowControlMessage()
 
     if(serial_start_monitor_thread())
     {

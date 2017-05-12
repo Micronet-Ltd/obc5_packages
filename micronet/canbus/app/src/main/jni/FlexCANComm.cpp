@@ -102,6 +102,51 @@ int sendMessage(int fd, const char * message) {
     return 0;
 }
 
+void setFlowControlMessage(char type,char *searchID,char *responseID, char dataLength, char *dataBytes){
+    //TODO: Test if its working properly.
+    char flowControlMessage[36];
+    int i = 0, j = 0, k=0, l=0;
+    int messageLength=0;
+    flowControlMessage[i++]='M';
+    if(type='t'){
+        flowControlMessage[i++]='f';
+        for (i = 2; i<=4; i++) {
+            flowControlMessage[i] = searchID[j];
+            j++;
+        }
+        for(i=5; i<=7; i++){
+            flowControlMessage[i]=responseID[k];
+            k++;
+        }
+        flowControlMessage[i++]=dataLength;
+        for(i=9;i<=24;i++){
+            flowControlMessage[i] = searchID[l];
+            l++;
+        }
+        flowControlMessage[i++]='\r';
+        messageLength=i;
+    }
+    else if(type='T') {
+        flowControlMessage[i++]='F';
+        for (i = 2; i<=9; i++) {
+            flowControlMessage[i] = searchID[j];
+            j++;
+        }
+        for(i=10; i<=17; i++){
+            flowControlMessage[i]=responseID[k];
+            k++;
+        }
+        flowControlMessage[i++]=dataLength;
+        for(i=19;i<=34;i++){
+            flowControlMessage[i] = searchID[l];
+            l++;
+        }
+        flowControlMessage[i++]='\r';
+        messageLength=i;
+    }
+    sendMessage(fd,flowControlMessage);
+}
+
 int setMasks(char *mask, char type) {
     char maskString[16];
     char maskCommand[16];

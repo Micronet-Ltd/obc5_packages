@@ -41,6 +41,7 @@ public class CanOverviewFragment extends Fragment {
     private Switch swDiscardInBuffer;
     private SeekBar seekBarJ1939Send;
     /*  private SeekBar seekBarJ1708Send;*/
+
     /*
         Interface dependent UI
      */
@@ -157,11 +158,7 @@ public class CanOverviewFragment extends Fragment {
         swFilters.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /*if (swFilters.isChecked()) {
-                    canTest.setMasks();
-                } else {
-                    canTest.clearFilters();
-                }*/
+
                 if (swFilters.isChecked()) {
                     canTest.setFilters();
                 } else {
@@ -184,6 +181,7 @@ public class CanOverviewFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 canTest.setBaudrate(BITRATE_250K);
+                canTest.setPortNumber(2);
                 executeChangeBaudrate();
             }
         });
@@ -391,9 +389,9 @@ public class CanOverviewFragment extends Fragment {
                 publishProgress("Closing socket, please wait...");
                 canTest.closeSocket();
             }
-            if(baudrate == 0) {
+           /* if(baudrate == 0) {
                 return null;
-            }
+            }*/
             publishProgress("Opening, please wait...");
             canTest.CreateInterface(silent,baudrate,termination,port);
             return null;

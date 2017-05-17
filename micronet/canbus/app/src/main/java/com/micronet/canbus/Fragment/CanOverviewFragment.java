@@ -174,6 +174,7 @@ public class CanOverviewFragment extends Fragment {
                 if (canTest.isInterfaceOpen()) {
                     executeChangeBaudrate();
                 }
+
             }
         });
 
@@ -349,7 +350,6 @@ public class CanOverviewFragment extends Fragment {
                             e.printStackTrace();
                         }
                     }
-
                 }
             });
         }

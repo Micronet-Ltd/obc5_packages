@@ -76,7 +76,8 @@ struct FLEXCAN_Flow_Control{
     __u8 flow_msg_type_count;
     __u8 flow_msg_data_length[MAX_FlexCAN_Flowcontrol_CAN];
     __u8 flow_msg_data_length_count;
-    __u32 response_data_bytes[MAX_FlexCAN_Flowcontrol_CAN][MAX_FlexCAN_Flowcontrol_CAN];
+    //TODO change jbyteArray to __u8 response_data_bytes[MAX_FlexCAN_Flowcontrol_CAN]
+    jbyteArray response_data_bytes[MAX_FlexCAN_Flowcontrol_CAN];//__u32 response_data_bytes[MAX_FlexCAN_Flowcontrol_CAN][MAX_FlexCAN_Flowcontrol_CAN];
     __u8 response_data_bytes_count;
 };
 

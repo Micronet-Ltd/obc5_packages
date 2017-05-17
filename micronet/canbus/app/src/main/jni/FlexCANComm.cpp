@@ -94,7 +94,7 @@ int sendMessage(int fd, const char * message) {
     sprintf(buf, "%s", message);
     printf("Send %s\n", buf);
     int check=strlen(buf);
-    LOGD("ChecK value of the string - %d",check);
+    LOGD("Check value of the string - %d",check);
     if (-1 == write(fd, buf, strlen(buf))) {
         ERR("Error write %s command\n", buf );
         return -1;
@@ -102,58 +102,112 @@ int sendMessage(int fd, const char * message) {
     return 0;
 }
 
-void setFlowControlMessage(char type,char *searchID,char *responseID, char dataLength, char *dataBytes){
-    //TODO: Test if its working properly.
-    char flowControlMessage[36];
+void setFlowControlMessage(char type,char *searchID,char *responseID, int dataLength, BYTE *dataBytes){
+    //TODO: Test if its working properly. - Works fine
+    char *flowControlMessage = new char[36];
+    /*char*/ flowControlMessage[36]={'\0'};
     int i = 0, j = 0, k=0, l=0;
     int messageLength=0;
+    uint8_t tmp1=0;
 
     flowControlMessage[i++]='M';
-    if(type='t'){
-        flowControlMessage[i++]='f';
-        for (i = 2; i<=4; i++) {
-            flowControlMessage[i] = searchID[j];
-            j++;
-        }
-        for(i=5; i<=7; i++){
-            flowControlMessage[i]=responseID[k];
-            k++;
-        }
-        flowControlMessage[i++]=dataLength;
-        for(i=9;i<=24;i++){
-            flowControlMessage[i] = searchID[l];
-            l++;
-        }
-        flowControlMessage[i++]='\r';
-        messageLength=i;
-    }
-    else if(type='T') {
+
+    if(type=='T') {
         flowControlMessage[i++]='F';
+        //Add search ID
         for (i = 2; i<=9; i++) {
             flowControlMessage[i] = searchID[j];
             j++;
         }
+        //Add response ID
         for(i=10; i<=17; i++){
             flowControlMessage[i]=responseID[k];
             k++;
         }
-        flowControlMessage[i++]=dataLength;
-        for(i=19;i<=34;i++){
-            flowControlMessage[i] = searchID[l];
-            l++;
+        //Add data length
+        flowControlMessage[i++]=dataLength + '0';
+
+        //Add response data bytes
+        for(i=19;i<((2*dataLength)+18);i++){
+            for (int ind=0; ind <dataLength; ind++){
+                tmp1 = (dataBytes[ind] >> 4) & 0xF;
+                if (tmp1 > 9)
+                    flowControlMessage[i] = tmp1 - 10 + 'A';
+                else
+                    flowControlMessage[i] = tmp1 + '0';
+                i++;
+                tmp1 = dataBytes[ind] & 0xF;
+                if (tmp1 > 9)
+                    flowControlMessage[i] = tmp1 - 10 + 'A';
+                else
+                    flowControlMessage[i] = tmp1 + '0';
+                i++;
+            }
         }
-        flowControlMessage[i++]='\r';
+        i--;
+        //Add CAN_OK_RESPONSE character
+        flowControlMessage[i++]=CAN_OK_RESPONSE;
         messageLength=i;
+        flowControlMessage[i]={'\0'};
     }
-    sendMessage(fd,flowControlMessage);
+
+    else if (type=='t'){
+        flowControlMessage[i++]='f';
+
+        //Add search ID
+        for (i = 2; i<=4; i++) {
+            flowControlMessage[i] = searchID[j];
+            j++;
+        }
+        //Add response ID
+        for(i=5; i<=7; i++){
+            flowControlMessage[i]=responseID[k];
+            k++;
+        }
+        //Add data length
+        flowControlMessage[i++]= dataLength + '0';
+
+        //Add response data bytes
+        for(i=9;i<((2*dataLength)+8);i++){
+            for (int ind=0; ind < dataLength; ind++){
+                tmp1 = (dataBytes[ind] >> 4) & 0xF;
+                if (tmp1 > 9)
+                    flowControlMessage[i] = tmp1 - 10 + 'A';
+                else
+                    flowControlMessage[i] = tmp1 + '0';
+                i++;
+                tmp1 = dataBytes[ind] & 0xF;
+                if (tmp1 > 9)
+                    flowControlMessage[i] = tmp1 - 10 + 'A';
+                else
+                    flowControlMessage[i] = tmp1 + '0';
+                i++;
+            }
+        }
+        i--;
+        //Add CAN_OK_RESPONSE Character
+        flowControlMessage[i++]=CAN_OK_RESPONSE;
+        messageLength=i;
+        flowControlMessage[i]={'\0'};
+    }
+
+    //Check for valid extended and standard flow command based on its length
+    if((flowControlMessage[1]=='F' &&  flowControlMessage[messageLength-1]==CAN_OK_RESPONSE) || (flowControlMessage[1]=='f' &&  flowControlMessage[messageLength-1]==CAN_OK_RESPONSE)){
+        if (-1 == sendMessage(fd, flowControlMessage)) {
+            LOGE("!!!!Error sending flow message: %s for Flow code: !!!!", searchID);
+        }
+        LOGD("Flow message SET: Filter- %s", flowControlMessage);
+    }
+    else LOGD("Error: Flow control  message not set successfully!!! Message: %d, Message sixe=%d", flowControlMessage, messageLength);
 }
+
 
 int setMasks(char *mask, char type) {
     char maskString[16];
     char maskCommand[16];
-    char maskString1[16]={'m','T','0','0','0','0','F','E','F','1','\r'}; //Compliler issue
+    char standardFormat[5]={'0','0','0','0','0'};
     int maskLength;
-    int i = 0, j = 0;
+    int i = 0, j = 0, x=0;
 
     if(mask!=NULL) {
         maskString[i] = 'm';
@@ -167,7 +221,7 @@ int setMasks(char *mask, char type) {
             }
         } else if ((type == 't') || (type == 'r')) {
             for (i = 2; i < 7; i++) {
-                maskString[i] = 0;
+                maskString[i] = standardFormat[x];
             }
             for (i = 7; i < 10; i++) {
                 maskString[i] = mask[j];
@@ -176,6 +230,7 @@ int setMasks(char *mask, char type) {
         }
         maskString[i++] = '\r';
         maskLength = i;
+        maskString[i++]={'\0'};
 
         //send Mask string
         memcpy(maskCommand, maskString,maskLength);
@@ -188,15 +243,17 @@ int setMasks(char *mask, char type) {
 	return 0;
 }
 
-int setFilters(char *filter, char type) { char maskString1[16]={'m','T','0','0','0','0','F','E','F','1','\r'}; //Compliler issue
+int setFilters(char *filter, char type) {
     char filterCommand[16]={0};
     char filterString[16]={0};
+    char standardFormat[5]={'0','0','0','0','0'};
     int filters_length;
-    int i = 0, j = 0;
+    int i = 0, j = 0, x=0;
 
     if(filter!=NULL) {
         filterString[i++] = 'M';
         filterString[i++] = type;
+
         if ((type == 'T') || (type == 'R')) {
             for (i = 2; i < 10; i++) {
                 filterString[i] = filter[j];
@@ -204,14 +261,18 @@ int setFilters(char *filter, char type) { char maskString1[16]={'m','T','0','0',
             }
         } else if ((type == 't') || (type == 'r')) {
             for (i = 2; i < 7; i++) {
-                filterString[i] = 0;
-            }for (i = 7; i < 10; i++) {
+                filterString[i] =standardFormat[x];
+                x++;
+            }
+            for (i = 7; i < 10; i++) {
                 filterString[i] = filter[j];
                 j++;
             }
         }
         filterString[i++] = '\r';
         filters_length = i;
+        filterString[i++]={'\0'};
+
         memcpy(filterCommand, filterString,filters_length);
         if (-1 == sendMessage(fd, filterCommand)) {
             LOGE("!!!!Error sending Filter message: %s for Filter: !!!!", filterString);
@@ -373,9 +434,9 @@ int wait_for_data()
             LOGE("select returned, bu no fd, r = %d\n", r);
 
     }
-    else { // don't process when r==0 to reduce overhead
+    else {
+        // don't process when r==0 to reduce overhead
     }
-
     return -1;
 }
 

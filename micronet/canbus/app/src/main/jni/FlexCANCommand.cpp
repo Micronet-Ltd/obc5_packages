@@ -31,7 +31,8 @@ void setFilterAndMasks(FLEXCAN_filter_mask *filter_array, int numfilter){
 
     uint32_t maskId=0;
     char maskIdString[MAX_MASK_FILTER_SIZE]={0};
-    struct FLEXCAN_filter_mask tmp_filter={	.mask_id = {0},
+
+    struct FLEXCAN_filter_mask tmp_filter={ .mask_id = {0},
 											.mask_count = 0,
 											.filter_mask_type = {0},
 											.filter_mask_type_count = 0,
@@ -78,6 +79,17 @@ void setFilterAndMasks(FLEXCAN_filter_mask *filter_array, int numfilter){
 }
 
 void configureFlowControl(FLEXCAN_Flow_Control *configuration_array, int numfilter){
+
+   struct FLEXCAN_Flow_Control tmp_flow_control={NULL};/* ={.search_id = {0},
+            .search_id_count = 0,
+            .flow_msg_type = {0},
+            .flow_msg_type_count = 0,
+            .response_id = {0},
+            .response_id_count = 0,
+            .flow_msg_data_length = {0},
+            .flow_msg_data_length_count=0,
+    };*/
+
     int i=0;
     int flowCodeSetCount=0;
 
@@ -85,64 +97,68 @@ void configureFlowControl(FLEXCAN_Flow_Control *configuration_array, int numfilt
     char flowMessageTypeChar=0;
 
     uint32_t searchId=0;
-    char searchIdString[MAX_MASK_FILTER_SIZE]={0};
+    char *searchIdString = new char[MAX_FlexCAN_Flowcontrol_CAN];
+    //char searchIdString[MAX_FlexCAN_Flowcontrol_CAN]={0};
+    //char searchIdString = (char)malloc(MAX_FlexCAN_Flowcontrol_CAN * sizeof(char));
 
     uint32_t responseId=0; //TODO: ADD
-    char responseIdString[MAX_MASK_FILTER_SIZE]={0};
+    char *responseIdString = new char[MAX_FlexCAN_Flowcontrol_CAN];
+    //char responseIdString = (char) malloc(MAX_FlexCAN_Flowcontrol_CAN * sizeof(char));
+    //char responseIdString[MAX_FlexCAN_Flowcontrol_CAN]={0};
 
-    uint8_t dataLength=0; //TODO: ADD
-    char dataLengthChar[MAX_MASK_FILTER_SIZE]={0};
+    int dataLength=0;
+    uint8_t dataLen=0; //TODO: ADD
+    //char dataLengthChar={0};
 
-    uint32_t dataBytes;
-    char dataBytesString;
+    BYTE dataBytes[8]={ 0x44, 0x34, 0x56, 0x78, 0x1f, 0x2f, 0x3f, 0x4f };
 
-    struct FLEXCAN_Flow_Control tmp_filter={.search_id = {0},
-            .search_id_count={0},
-            .response_id = {0},
-            .response_id_count={0},
-            .flow_msg_type = {0},
-            .flow_msg_type_count = {0},
-            .response_data_bytes = {0},
-            .response_data_bytes_count = {0},
-            .flow_msg_data_length={0},
-            .flow_msg_data_length_count={0}
-            };
+    LOGD("Start Loop to configure Flow control codes ! Numfilter = %d",numfilter);
 
-    LOGD("Start configuring Flow control codes!");
+    tmp_flow_control = *configuration_array;
 
-    tmp_filter = *configuration_array;
-
-    for(int index=0; index<tmp_filter.flow_msg_type_count;index++){
-
-        flowMessageType=tmp_filter.flow_msg_type[index];
+    for(int index=0; index<tmp_flow_control.search_id_count;index++){
+        BYTE firstElement = dataBytes[0];
+        //Retrieving message type
+        flowMessageType=tmp_flow_control.flow_msg_type[index];
         flowMessageTypeChar= getCharType(flowMessageType);
 
-        searchId=tmp_filter.search_id[index];
-        if(flowMessageTypeChar=='T'){
-            sprintf ( (char*)searchIdString, "%08x", searchId);
-        } else if(flowMessageTypeChar=='t'){
-            sprintf ((char*)searchIdString, "%03x", searchId);
-        }
 
-        responseId=tmp_filter.response_id[index];
+        //Retrieving response ids
+        responseId=tmp_flow_control.response_id[index];
         if(flowMessageTypeChar=='T'){
             sprintf ( (char*)responseIdString, "%08x", responseId);
         } else if(flowMessageTypeChar=='t'){
             sprintf ((char*)responseIdString, "%03x", responseId);
         }
 
-        dataLength=tmp_filter.flow_msg_data_length[index];
-        sprintf((char*)dataLengthChar, "%01x", dataLength);
+        //Retrieving search ids
+        searchId=tmp_flow_control.search_id[index];
+        if(flowMessageTypeChar=='T'){
+            sprintf ((char*)searchIdString, "%08x", searchId);
+        } else if(flowMessageTypeChar=='t'){
+            sprintf ((char*)searchIdString, "%03x", searchId);
+        }
+
+        //Retriving the dataLength
+        dataLen=tmp_flow_control.flow_msg_data_length[index];
+        dataLength=tmp_flow_control.flow_msg_data_length[index];
 
         //TODO: Deal with data bytes
+       /* for(int i=0; i<dataLength; i++){
+            dataBytes[i]= (uint8_t) tmp_flow_control.response_data_bytes[j];
+            j++;
+        }*/
 
-        if(flowCodeSetCount < tmp_filter.flow_msg_type_count && flowCodeSetCount<=8) {
-            setFlowControlMessage((char *) flowMessageTypeChar, searchIdString, responseIdString, (char *) dataLength, (char *) dataBytesString);
+        if(flowCodeSetCount < tmp_flow_control.flow_msg_type_count && flowCodeSetCount<=8) {
+            setFlowControlMessage(flowMessageTypeChar, searchIdString, responseIdString, dataLength, dataBytes);
             usleep(5000);
             flowCodeSetCount++;
             LOGD("Flow control message set, No of filters set = %d", flowCodeSetCount);
+
         }
-    }flowMessageTypeChar=0;
+    }
+
+    flowMessageType=0;
 }
 
 

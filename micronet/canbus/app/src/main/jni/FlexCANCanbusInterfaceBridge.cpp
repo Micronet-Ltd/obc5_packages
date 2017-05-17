@@ -54,7 +54,7 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_cre
         jsize lengthOfMaskArray = env->GetArrayLength(masks);
 
         //Get filter and Mask type array
-        jmethodID methodFilterType = env->GetMethodID(cls, "getCharType", "()[I");
+        jmethodID methodFilterType = env->GetMethodID(cls, "getFilterMaskType", "()[I");
         jintArray FilterType = (jintArray)env->CallObjectMethod(element, methodFilterType);
         jint* filterMaskTypeInts = env->GetIntArrayElements(FilterType, NULL);
         jsize lengthOfFilterMaskTypeArray = env->GetArrayLength(FilterType);
@@ -111,6 +111,7 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_cre
     if(flowControl!=NULL) {
         struct FLEXCAN_Flow_Control flowControlMessageArray[8];
         int numFlowControlMessages = env->GetArrayLength(flowControl);
+        const char *responseDataString[MAX_FlexCAN_Flowcontrol_CAN];
         int totalSearchIds = 0;
         int totalResponseIds = 0;
         int totalIdTypes = 0;
@@ -150,60 +151,54 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_cre
             jsize lengthOfIdDataLengthArray = env->GetArrayLength(idDataLength);
 
             //TODO: Fix me
-            /*jmethodID methodResponseDataBytes = env-> GetMethodID(flowClass, "getDataBytes", "()[[B");
-            jbyteArray responseDataBytes = (jbyteArray) env->CallObjectMethod(flowElement, methodResponseDataBytes);
-            jbyte *bufferPtr = env->GetByteArrayElements(responseDataBytes, NULL);
-            jsize lengthOfArray = env->GetArrayLength(responseDataBytes);
-            //jmethodID methodResponseDataBytes = env->GetMethodID(flowClass, "getDataString", "([BLjava/lang/String;)");*/
+            jmethodID methodResponseDataBytes=env->GetMethodID(flowClass,"getDataBytes","()[B");
+            jbyteArray responseDataBytes=(jbyteArray)env->CallObjectMethod(flowElement, methodResponseDataBytes);
 
-            jmethodID methodResponseDataBytes = env-> GetMethodID(flowClass, "getDataBytes", "()[[B");
-            jbyteArray responseDataBytes = (jbyteArray) env->CallObjectMethod(flowElement, methodResponseDataBytes);
-            jbyte *bufferPtr = env->GetByteArrayElements(responseDataBytes, NULL);
-            jsize lengthOfArray = env->GetArrayLength(responseDataBytes);
-
-            //jmethodID methodResponseDataBytes = env->GetMethodID(flowClass, "getDataString", "([BLjava/lang/String;)");
-
+            jbyte *bufferPtr=env->GetByteArrayElements(responseDataBytes,NULL);
+            jsize lengthOfResponseArray=env->GetArrayLength(responseDataBytes);
 
             //Saving search ids
             flowControlMessageArray[j].search_id_count = lengthOfSearchIdArray;
             for (sids = 0; sids < lengthOfSearchIdArray; sids++) {
                 flowControlMessageArray[j].search_id[sids] = intsSearchIds[sids];
                 totalSearchIds++;
+                LOGD("Search id stored: %d and total search ids set=%d", intsSearchIds[sids], totalSearchIds);
             }
             // Saving response ids
             flowControlMessageArray[j].response_id_count = lengthOfResponseIdArray;
             for (rids = 0; rids < lengthOfResponseIdArray; rids++) {
                 flowControlMessageArray[j].response_id[rids] = intsResponseIds[rids];
                 totalResponseIds++;
+                LOGD("Response id stored: %d and total Response ids set=%d", intsResponseIds[rids], totalResponseIds);
             }
             //Saving Id types
             flowControlMessageArray[j].flow_msg_type_count = lengthOfIdTypeArray;
             for (idtypes = 0; idtypes < lengthOfIdTypeArray; idtypes++) {
                 flowControlMessageArray[j].flow_msg_type[idtypes] = idTypeInts[idtypes];
                 totalIdTypes++;
+                LOGD("ID type stored: %d and total id types set=%d", idTypeInts[idtypes], totalIdTypes);
             }
             //Saving Id data lengths
             flowControlMessageArray[j].flow_msg_data_length_count = lengthOfIdDataLengthArray;
             for (datalengths = 0; datalengths < lengthOfIdDataLengthArray; datalengths++) {
                 flowControlMessageArray[j].flow_msg_data_length[datalengths] = idDataLengthInts[datalengths];
                 totalIdDataLengths++;
+                LOGD("ID Data lengths stored: %d and total datalengths saved=%d", idDataLengthInts[datalengths], totalIdDataLengths);
             }
             //Saving response data bytes
-            flowControlMessageArray[j].response_data_bytes_count = lengthOfIdDataLengthArray;
-            for (databytes = 0; databytes < lengthOfResponseIdArray; databytes++) {
-                /* flowControlMessageArray[j].response_data_bytes[databytes][databytes]= responseDataBytes[databytes];*/
+            flowControlMessageArray[j].response_data_bytes_count = lengthOfResponseArray;
+            for (databytes = 0; databytes < lengthOfResponseArray; databytes++) {
+                flowControlMessageArray[j].response_data_bytes[databytes]= (jbyteArray) bufferPtr[databytes];
                 totalResponseDatabytes++;
+                LOGD("Response data bytes stored: %d and total databytes saved=%d", (jbyteArray) bufferPtr[databytes], totalResponseDatabytes);
             }
         }
-        if (totalSearchIds > 8 || totalResponseIds > 8 || totalIdTypes > 8 ||
-            totalIdDataLengths > 8) {
+
+        if (totalSearchIds > 8 || totalResponseIds > 8 || totalIdTypes > 8 || totalIdDataLengths > 8) {
             char str_flow_message[60];
-            snprintf(str_flow_message, sizeof(str_flow_message),
-                     "[SearchIds:%d, ResponseIds:%d, TotalIdTypes:%d, TotalIdDataLength:%d]",
-                     totalSearchIds, totalResponseIds, totalIdTypes, totalIdDataLengths);
-            throwException(env,
-                           "FlowControlMessage Error: Received too many arguments (%s). Max allowed - 8",
-                           str_flow_message);
+
+            snprintf(str_flow_message, sizeof(str_flow_message),"[SearchIds:%d, ResponseIds:%d, TotalIdTypes:%d, TotalIdDataLength:%d]", totalSearchIds, totalResponseIds, totalIdTypes, totalIdDataLengths);
+            throwException(env, "FlowControlMessage Error: Received too many arguments (%s). Max allowed - 8", str_flow_message);
         }
     }
 
@@ -215,7 +210,10 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_cre
     fd_id = env->GetFieldID(clazz, "fd", "I");
     env->SetIntField(instance, fd_id, fd);
 
+
+
     return 0;
+
 
     error:
     return SYSTEM_ERROR;

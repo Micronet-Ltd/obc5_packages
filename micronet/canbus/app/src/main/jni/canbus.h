@@ -67,7 +67,6 @@ struct FLEXCAN_filter_mask {
 };
 
 struct FLEXCAN_Flow_Control{
-    //TODO: ADD STRUCTURE
     __u32 search_id[MAX_FlexCAN_Flowcontrol_CAN];
     __u8 search_id_count;
     __u32 response_id[MAX_FlexCAN_Flowcontrol_CAN];

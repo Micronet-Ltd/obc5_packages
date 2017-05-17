@@ -103,7 +103,7 @@ int sendMessage(int fd, const char * message) {
 }
 
 void setFlowControlMessage(char type,char *searchID,char *responseID, int dataLength, BYTE *dataBytes){
-    //TODO: Test if its working properly. - Works fine
+
     char *flowControlMessage = new char[36];
     /*char*/ flowControlMessage[36]={'\0'};
     int i = 0, j = 0, k=0, l=0;

@@ -101,13 +101,13 @@ void configureFlowControl(FLEXCAN_Flow_Control *configuration_array, int numfilt
     //char searchIdString[MAX_FlexCAN_Flowcontrol_CAN]={0};
     //char searchIdString = (char)malloc(MAX_FlexCAN_Flowcontrol_CAN * sizeof(char));
 
-    uint32_t responseId=0; //TODO: ADD
+    uint32_t responseId=0;
     char *responseIdString = new char[MAX_FlexCAN_Flowcontrol_CAN];
     //char responseIdString = (char) malloc(MAX_FlexCAN_Flowcontrol_CAN * sizeof(char));
     //char responseIdString[MAX_FlexCAN_Flowcontrol_CAN]={0};
 
     int dataLength=0;
-    uint8_t dataLen=0; //TODO: ADD
+    uint8_t dataLen=0;
     //char dataLengthChar={0};
 
     BYTE dataBytes[8]={ 0x44, 0x34, 0x56, 0x78, 0x1f, 0x2f, 0x3f, 0x4f };
@@ -186,9 +186,8 @@ int FlexCAN_startup(bool listeningModeEnable, int bitrate, int termination, FLEX
     usleep(100000);
 
     setFilterAndMasks(filter_array, numfilter);
-    //TODO: Add setFlowControlMessage()
-    configureFlowControl(flexcan_flow_control, numOfFlowMessages);
 
+    configureFlowControl(flexcan_flow_control, numOfFlowMessages);
 
     if(serial_start_monitor_thread())
     {

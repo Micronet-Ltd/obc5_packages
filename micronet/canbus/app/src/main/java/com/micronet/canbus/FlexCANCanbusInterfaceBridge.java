@@ -26,6 +26,7 @@ final class FlexCANCanbusInterfaceBridge implements ICanbusInterfaceBridge {
      * @param portNumber 2, CAN1.
      *                   3, CAN2 (Can also be used as single wired CAN if the baud rate is set to 33.33 Kbits per seconds).
      *                   4, J1708
+     * @param flowControls Search Ids, Response Ids, Response Data lengths, Response Data pairs to set auto respond flow control messages.
      */
     public void create(CanbusHardwareFilter[] hardwareFilters, int portNumber, CanbusFlowControl[] flowControls) {
         createInterface(false,250000,true,hardwareFilters,portNumber,flowControls);
@@ -44,12 +45,13 @@ final class FlexCANCanbusInterfaceBridge implements ICanbusInterfaceBridge {
      *                   4, J1708
      */
     public void create(boolean listeningModeEnable,CanbusHardwareFilter[] hardwareFilters,int portNumber) {
-        createInterface(listeningModeEnable, 250000, false,hardwareFilters,portNumber,null);
+        createInterface(listeningModeEnable, 250000, true,hardwareFilters,portNumber,null);
     }
 
 
+
     /**
-     * Creates new CAN interface in the specified mode
+     * Creates new CAN interface in the specified mode with a default Baud rate [Baud rate - 2500000]
      * @param listeningModeEnable true, disables the CAN module's transmit signal. The CAN module is still able to receive messages from the CANbus.
      *                            This mode may be used to analyze a CANbus without disturbing the bus.
      *                            false, turns on the CAN module's transmitter and receiver.
@@ -58,9 +60,10 @@ final class FlexCANCanbusInterfaceBridge implements ICanbusInterfaceBridge {
      * @param portNumber 2, CAN1.
      *                   3, CAN2 (Can also be used as single wired CAN if the baud rate is set to 33.33 Kbits per seconds).
      *                   4, J1708
+     * @param flowControls Search Ids, Response Ids, Response Data lengths, Response Data pairs to set auto respond flow control messages.
      */
     public void create(boolean listeningModeEnable,CanbusHardwareFilter[] hardwareFilters,int portNumber,CanbusFlowControl[] flowControls) {
-        createInterface(listeningModeEnable, 250000, false,hardwareFilters,portNumber,flowControls);
+        createInterface(listeningModeEnable, 250000, true,hardwareFilters,portNumber,flowControls);
     }
 
 
@@ -94,6 +97,7 @@ final class FlexCANCanbusInterfaceBridge implements ICanbusInterfaceBridge {
      * @param portNumber 2, CAN1.
      *                   3, CAN2 (Can also be used as single wired CAN if the baud rate is set to 33.33 Kbits per seconds).
      *                   4, J1708
+     *@param flowControls Search Ids, Response Ids, Response Data lengths, Response Data pairs to set auto respond flow control messages.
      *
      */
     public void create(boolean listeningModeEnable, int bitrate, boolean termination, CanbusHardwareFilter[] hardwareFilters, int portNumber,CanbusFlowControl[] flowControls) {
@@ -103,12 +107,11 @@ final class FlexCANCanbusInterfaceBridge implements ICanbusInterfaceBridge {
         createInterface(listeningModeEnable, bitrate, termination, hardwareFilters,portNumber,flowControls);
     }
 
-
-
     /**
-     * Removes Canbus interface (down). //TODO: Check, which interface is removed? CAN1? CAN2?
+     * Removes Canbus interface (down).
      */
     public void remove() {
+        //TODO: Check, which interface is removed? CAN1? CAN2?
         removeInterface();
     }
 
@@ -136,7 +139,8 @@ final class FlexCANCanbusInterfaceBridge implements ICanbusInterfaceBridge {
      * @param hardwareFilters Filters, masks and filter types used for filtering CAN packets.
      * @param portNumber 2, CAN1.
      *                   3, CAN2 (Can also be used as single wired CAN if the baud rate is set to 33.33 Kbits per seconds).
-     *                   4, J1708
+     *                   4, J1708/
+     * @param flowControls Search Ids, Response Ids, Response Data lengths, Response Data pairs to set auto respond flow control messages.
      */
     public void setBitrate(int bitrate,CanbusHardwareFilter[] hardwareFilters, int portNumber,CanbusFlowControl[] flowControls) {
         createInterface(this.listeningModeEnable, bitrate, this.termination, hardwareFilters, portNumber,flowControls);
@@ -165,10 +169,10 @@ final class FlexCANCanbusInterfaceBridge implements ICanbusInterfaceBridge {
      * @param portNumber 2, CAN1.
      *                   3, CAN2 (Can also be used as single wired CAN if the baud rate is set to 33.33 Kbits per seconds).
      *                   4, J1708
-     *@param flowControl Set auto respond flow control messages.
+     * @param flowControls Search Ids, Response Ids, Response Data lengths, Response Data pairs to set auto respond flow control messages.
      */
-    public void setCANTermination(boolean termination, CanbusHardwareFilter[] hardwareFilters, int portNumber,CanbusFlowControl[] flowControl) {
-        createInterface(this.listeningModeEnable, this.bitrate, termination,hardwareFilters, portNumber,flowControl);
+    public void setCANTermination(boolean termination, CanbusHardwareFilter[] hardwareFilters, int portNumber,CanbusFlowControl[] flowControls) {
+        createInterface(this.listeningModeEnable, this.bitrate, termination,hardwareFilters, portNumber,flowControls);
     }
 
 
@@ -194,10 +198,6 @@ final class FlexCANCanbusInterfaceBridge implements ICanbusInterfaceBridge {
     public void setListeningMode(boolean listeningModeEnable,CanbusHardwareFilter[] hardwareFilters, int portNumber,CanbusFlowControl[] flowControl){
         createInterface(listeningModeEnable, this.bitrate, this.termination,hardwareFilters, portNumber,flowControl);
     }
-
-
-
-
 
 
     private native int createInterface(boolean listeningModeEnable, int bitrate, boolean termination,CanbusHardwareFilter[] hardwareFilters, int portNumber, CanbusFlowControl[] flowControl);

@@ -159,12 +159,12 @@ public class CanTest {
 
         int[] ids = new int[]{61444, 61443, 124};
         int[] responseIds = new int[]{ 65276, 61445, 741};
-        int[] dataLength = {8,8, 8};
+        int[] dataLength = {8,4,6};
         int[] type={CanbusFlowControl.EXTENDED, CanbusFlowControl.EXTENDED, CanbusFlowControl.STANDARD};
         byte[] data1=new byte[]{0x7f,0x34,0x56,0x78,0x1f,0x2f,0x3f,0x4f};
-        byte[] data2=new byte[]{0x1f,0x2f,0x3f,0x4f,0x12,0x34,0x56,0x78};
-        byte[] data3=new byte[]{0x12,0x34,0x56,0x78,0x1f,0x2f,0x3f,0x4f};
-        byte[][] databytes=new byte[][]{data3, data2,data1};
+        byte[] data2=new byte[]{0x1f,0x2f,0x3f,0x4f};
+        byte[] data3=new byte[]{0x12,0x34,0x56,0x78,0x1f,0x2f};
+        byte[][] databytes=new byte[][]{data1, data2,data3};
 
         flowControlMessagesList.add(new CanbusFlowControl(ids,responseIds,type,dataLength,databytes));
         flowControlMessages = flowControlMessagesList.toArray(new CanbusFlowControl[0]);

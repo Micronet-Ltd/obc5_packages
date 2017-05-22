@@ -102,12 +102,13 @@ int sendMessage(int fd, const char * message) {
     return 0;
 }
 
-void setFlowControlMessage(char type,char *searchID,char *responseID, int dataLength, BYTE *dataBytes){
+void setFlowControlMessage(char type,char *searchID,char *responseID, int dataLength, BYTE* dataBytes){
 
     char *flowControlMessage = new char[36];
-    /*char*/ flowControlMessage[36]={'\0'};
+    memset(flowControlMessage,'\0',sizeof(char));
     int i = 0, j = 0, k=0, l=0;
-    int messageLength=0;
+    int standardMessageLength=0;
+    int extendedMessageLength=0;
     uint8_t tmp1=0;
 
     flowControlMessage[i++]='M';
@@ -147,7 +148,7 @@ void setFlowControlMessage(char type,char *searchID,char *responseID, int dataLe
         i--;
         //Add CAN_OK_RESPONSE character
         flowControlMessage[i++]=CAN_OK_RESPONSE;
-        messageLength=i;
+        extendedMessageLength=i;
         flowControlMessage[i]={'\0'};
     }
 
@@ -187,18 +188,18 @@ void setFlowControlMessage(char type,char *searchID,char *responseID, int dataLe
         i--;
         //Add CAN_OK_RESPONSE Character
         flowControlMessage[i++]=CAN_OK_RESPONSE;
-        messageLength=i;
+        standardMessageLength=i;
         flowControlMessage[i]={'\0'};
     }
 
     //Check for valid extended and standard flow command based on its length
-    if((flowControlMessage[1]=='F' &&  flowControlMessage[messageLength-1]==CAN_OK_RESPONSE) || (flowControlMessage[1]=='f' &&  flowControlMessage[messageLength-1]==CAN_OK_RESPONSE)){
+    if((flowControlMessage[1]=='F' &&  flowControlMessage[extendedMessageLength-1]==CAN_OK_RESPONSE) || (flowControlMessage[1]=='f' &&  flowControlMessage[standardMessageLength-1]==CAN_OK_RESPONSE)){
         if (-1 == sendMessage(fd, flowControlMessage)) {
             LOGE("!!!!Error sending flow message: %s for Flow code: !!!!", searchID);
         }
-        LOGD("Flow message SET: Filter- %s", flowControlMessage);
+        LOGD("Flow message SET: FlowMessage- %s", flowControlMessage);
     }
-    else LOGD("Error: Flow control  message not set successfully!!! Message: %d, Message sixe=%d", flowControlMessage, messageLength);
+    else LOGD("Error: Flow control  message not set successfully!!! Message: %d, Extended Message size=%d or StandardMessageSize=%d", flowControlMessage, extendedMessageLength,standardMessageLength);
 }
 
 

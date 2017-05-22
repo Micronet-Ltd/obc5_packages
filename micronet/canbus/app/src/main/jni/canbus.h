@@ -75,9 +75,23 @@ struct FLEXCAN_Flow_Control{
     __u8 flow_msg_type_count;
     __u8 flow_msg_data_length[MAX_FlexCAN_Flowcontrol_CAN];
     __u8 flow_msg_data_length_count;
-    //TODO change jbyteArray to __u8 response_data_bytes[MAX_FlexCAN_Flowcontrol_CAN]
-    jbyteArray response_data_bytes[MAX_FlexCAN_Flowcontrol_CAN];//__u32 response_data_bytes[MAX_FlexCAN_Flowcontrol_CAN][MAX_FlexCAN_Flowcontrol_CAN];
-    __u8 response_data_bytes_count;
+    BYTE response_data_bytes1[MAX_FlexCAN_Flowcontrol_CAN];
+    BYTE response_data_bytes2[MAX_FlexCAN_Flowcontrol_CAN];
+    BYTE response_data_bytes3[MAX_FlexCAN_Flowcontrol_CAN];
+    BYTE response_data_bytes4[MAX_FlexCAN_Flowcontrol_CAN];
+    BYTE response_data_bytes5[MAX_FlexCAN_Flowcontrol_CAN];
+    BYTE response_data_bytes6[MAX_FlexCAN_Flowcontrol_CAN];
+    BYTE response_data_bytes7[MAX_FlexCAN_Flowcontrol_CAN];
+    BYTE response_data_bytes8[MAX_FlexCAN_Flowcontrol_CAN];
+    __u8 response_databytes1_count;
+    __u8 response_databytes2_count;
+    __u8 response_databytes3_count;
+    __u8 response_databytes4_count;
+    __u8 response_databytes5_count;
+    __u8 response_databytes6_count;
+    __u8 response_databytes7_count;
+    __u8 response_databytes8_count;
+
 };
 
 struct canbus_globals

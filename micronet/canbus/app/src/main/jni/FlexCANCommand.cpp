@@ -80,17 +80,9 @@ void setFilterAndMasks(FLEXCAN_filter_mask *filter_array, int numfilter){
 
 void configureFlowControl(FLEXCAN_Flow_Control *configuration_array, int numfilter){
 
-   struct FLEXCAN_Flow_Control tmp_flow_control={NULL};/* ={.search_id = {0},
-            .search_id_count = 0,
-            .flow_msg_type = {0},
-            .flow_msg_type_count = 0,
-            .response_id = {0},
-            .response_id_count = 0,
-            .flow_msg_data_length = {0},
-            .flow_msg_data_length_count=0,
-    };*/
+   struct FLEXCAN_Flow_Control tmp_flow_control={NULL};
 
-    int i=0;
+    int i=0, j=0;
     int flowCodeSetCount=0;
 
     uint8_t flowMessageType=0;
@@ -98,21 +90,13 @@ void configureFlowControl(FLEXCAN_Flow_Control *configuration_array, int numfilt
 
     uint32_t searchId=0;
     char *searchIdString = new char[MAX_FlexCAN_Flowcontrol_CAN];
-    //char searchIdString[MAX_FlexCAN_Flowcontrol_CAN]={0};
-    //char searchIdString = (char)malloc(MAX_FlexCAN_Flowcontrol_CAN * sizeof(char));
 
     uint32_t responseId=0;
     char *responseIdString = new char[MAX_FlexCAN_Flowcontrol_CAN];
-    //char responseIdString = (char) malloc(MAX_FlexCAN_Flowcontrol_CAN * sizeof(char));
-    //char responseIdString[MAX_FlexCAN_Flowcontrol_CAN]={0};
 
     int dataLength=0;
-    uint8_t dataLen=0;
-    //char dataLengthChar={0};
 
-    BYTE dataBytes[8]={ 0x44, 0x34, 0x56, 0x78, 0x1f, 0x2f, 0x3f, 0x4f };
-
-    LOGD("Start Loop to configure Flow control codes ! Numfilter = %d",numfilter);
+    BYTE dataBytes[8]={0,0,0,0,0,0,0,0};
 
     tmp_flow_control = *configuration_array;
 
@@ -139,26 +123,68 @@ void configureFlowControl(FLEXCAN_Flow_Control *configuration_array, int numfilt
             sprintf ((char*)searchIdString, "%03x", searchId);
         }
 
-        //Retriving the dataLength
-        dataLen=tmp_flow_control.flow_msg_data_length[index];
+        //Retrieving the dataLength
         dataLength=tmp_flow_control.flow_msg_data_length[index];
 
-        //TODO: Deal with data bytes
-       /* for(int i=0; i<dataLength; i++){
-            dataBytes[i]= (uint8_t) tmp_flow_control.response_data_bytes[j];
-            j++;
-        }*/
+      //Retrieving data bytes
+        if(index==0){
+            for(int i=0; i<dataLength; i++){
+                dataBytes[i]= tmp_flow_control.response_data_bytes1[j++];
+            }
+            j=0;
+        }
+        else if(index==1){
+            for(int i=0; i<dataLength; i++){
+                dataBytes[i]= tmp_flow_control.response_data_bytes2[j++];
+            }
+            j=0;
+        }
+        else if(index==2){
+            for(int i=0; i<dataLength; i++){
+                dataBytes[i]= tmp_flow_control.response_data_bytes3[j++];
+            }
+            j=0;
+        }
+        else if(index==3){
+            for(int i=0; i<dataLength; i++){
+                dataBytes[i]= tmp_flow_control.response_data_bytes4[j++];
+            }
+            j=0;
+        }
+        else if(index==4){
+            for(int i=0; i<dataLength; i++){
+                dataBytes[i]= tmp_flow_control.response_data_bytes5[j++];
+            }
+            j=0;
+        }
 
-        if(flowCodeSetCount < tmp_flow_control.flow_msg_type_count && flowCodeSetCount<=8) {
-            setFlowControlMessage(flowMessageTypeChar, searchIdString, responseIdString, dataLength, dataBytes);
+        else if(index==5){
+            for(int i=0; i<dataLength; i++){
+                dataBytes[i]= tmp_flow_control.response_data_bytes6[j++];
+            }
+            j=0;
+        }
+        else if(index==6){
+            for(int i=0; i<dataLength; i++){
+                dataBytes[i]= tmp_flow_control.response_data_bytes7[j++];
+            }
+            j=0;
+        }
+        else if(index==7){
+            for(int i=0; i<dataLength; i++){
+                dataBytes[i]= tmp_flow_control.response_data_bytes8[j++];
+            }
+            j=0;
+        }
+
+        if((flowCodeSetCount <= tmp_flow_control.flow_msg_type_count) && (flowCodeSetCount<=8)) {
+            setFlowControlMessage(flowMessageTypeChar, searchIdString, responseIdString, dataLength,dataBytes);
+            memset(dataBytes,0, sizeof dataBytes);
             usleep(5000);
             flowCodeSetCount++;
             LOGD("Flow control message set, No of filters set = %d", flowCodeSetCount);
-
         }
     }
-
-    flowMessageType=0;
 }
 
 

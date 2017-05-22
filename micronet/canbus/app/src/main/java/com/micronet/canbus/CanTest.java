@@ -105,7 +105,6 @@ public class CanTest {
 
     public void setPortNumber(int port) {this.portNumber = port;}
 
-
     public String getVersion() {return Info.VERSION;}
 
     public void CreateInterface( boolean silentMode, int baudrate,boolean termination, int port) {
@@ -117,7 +116,6 @@ public class CanTest {
         if (canbusInterface == null) {
             canbusInterface = new CanbusInterface();
             canbusFilter=setFilters();
-           // port=getPortNumber();
             canbusFlowControls=setFlowControlMessages();
             canbusInterface.create(silentMode,baudrate,termination,canbusFilter,port,canbusFlowControls);
         }
@@ -163,14 +161,12 @@ public class CanTest {
         int[] responseIds = new int[]{ 65276, 61445, 741};
         int[] dataLength = {8,8, 8};
         int[] type={CanbusFlowControl.EXTENDED, CanbusFlowControl.EXTENDED, CanbusFlowControl.STANDARD};
-//        //int[] data1=new int[]{0x12,0x34,0x56,0x78,0x1f,0x2f,0x3f,0x4f};
-        byte[] data1=new byte[]{0x12,0x34,0x56,0x78,0x1f,0x2f,0x3f,0x4f};
-        byte[] data2=new byte[]{0x12,0x34,0x56,0x78,0x1f,0x2f,0x3f,0x4f};
+        byte[] data1=new byte[]{0x7f,0x34,0x56,0x78,0x1f,0x2f,0x3f,0x4f};
+        byte[] data2=new byte[]{0x1f,0x2f,0x3f,0x4f,0x12,0x34,0x56,0x78};
         byte[] data3=new byte[]{0x12,0x34,0x56,0x78,0x1f,0x2f,0x3f,0x4f};
-        byte[][] databytes=new byte[][]{data1, data2,data3 };
+        byte[][] databytes=new byte[][]{data3, data2,data1};
 
-
-        flowControlMessagesList.add(new CanbusFlowControl(ids,responseIds,type,dataLength,data1));
+        flowControlMessagesList.add(new CanbusFlowControl(ids,responseIds,type,dataLength,databytes));
         flowControlMessages = flowControlMessagesList.toArray(new CanbusFlowControl[0]);
         return flowControlMessages;
     }

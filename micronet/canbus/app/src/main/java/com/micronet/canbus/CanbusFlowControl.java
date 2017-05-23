@@ -135,5 +135,12 @@ public class CanbusFlowControl {
         return dataBytes7;
     }
 
+    /**
+     * Returns an array of data bytes for the eight pair of search and response ids
+     */
+    public byte[] getDataBytes8() {
+        return dataBytes8;
+    }
+
 
 }

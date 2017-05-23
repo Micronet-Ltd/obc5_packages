@@ -149,7 +149,7 @@ void setFlowControlMessage(char type,char *searchID,char *responseID, int dataLe
         //Add CAN_OK_RESPONSE character
         flowControlMessage[i++]=CAN_OK_RESPONSE;
         extendedMessageLength=i;
-        flowControlMessage[i]={'\0'};
+        flowControlMessage[i]= 0;
     }
 
     else if (type=='t'){
@@ -189,7 +189,7 @@ void setFlowControlMessage(char type,char *searchID,char *responseID, int dataLe
         //Add CAN_OK_RESPONSE Character
         flowControlMessage[i++]=CAN_OK_RESPONSE;
         standardMessageLength=i;
-        flowControlMessage[i]={'\0'};
+        flowControlMessage[i]= 0;
     }
 
     //Check for valid extended and standard flow command based on its length
@@ -199,7 +199,7 @@ void setFlowControlMessage(char type,char *searchID,char *responseID, int dataLe
         }
         LOGD("Flow message SET: FlowMessage- %s", flowControlMessage);
     }
-    else LOGD("Error: Flow control  message not set successfully!!! Message: %d, Extended Message size=%d or StandardMessageSize=%d", flowControlMessage, extendedMessageLength,standardMessageLength);
+    else LOGD("Error: Flow control  message not set successfully!!! Message: %s, Extended Message size=%d or StandardMessageSize=%d", flowControlMessage, extendedMessageLength,standardMessageLength);
 }
 
 
@@ -231,7 +231,7 @@ int setMasks(char *mask, char type) {
         }
         maskString[i++] = '\r';
         maskLength = i;
-        maskString[i++]={'\0'};
+        maskString[i++]= 0;
 
         //send Mask string
         memcpy(maskCommand, maskString,maskLength);
@@ -272,7 +272,7 @@ int setFilters(char *filter, char type) {
         }
         filterString[i++] = '\r';
         filters_length = i;
-        filterString[i++]={'\0'};
+        filterString[i++]= 0;
 
         memcpy(filterCommand, filterString,filters_length);
         if (-1 == sendMessage(fd, filterCommand)) {

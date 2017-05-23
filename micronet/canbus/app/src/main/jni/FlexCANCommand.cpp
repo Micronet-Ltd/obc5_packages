@@ -80,7 +80,32 @@ void setFilterAndMasks(FLEXCAN_filter_mask *filter_array, int numfilter){
 
 void configureFlowControl(FLEXCAN_Flow_Control *configuration_array, int numfilter){
 
-   struct FLEXCAN_Flow_Control tmp_flow_control={NULL};
+   struct FLEXCAN_Flow_Control tmp_flow_control={
+           .search_id = {0},
+           .search_id_count = 0,
+           .response_id = {0},
+           .response_id_count = 0,
+           .flow_msg_type = {0},
+           .flow_msg_type_count = 0,
+           .flow_msg_data_length = {0},
+           .flow_msg_data_length_count = 0,
+           .response_data_bytes1 = {0},
+           .response_data_bytes2 = {0},
+           .response_data_bytes3 = {0},
+           .response_data_bytes4 = {0},
+           .response_data_bytes5 = {0},
+           .response_data_bytes6 = {0},
+           .response_data_bytes7 = {0},
+           .response_data_bytes8 = {0},
+           .response_databytes1_count = 0,
+           .response_databytes2_count = 0,
+           .response_databytes3_count = 0,
+           .response_databytes4_count = 0,
+           .response_databytes5_count = 0,
+           .response_databytes6_count = 0,
+           .response_databytes7_count = 0,
+           .response_databytes8_count = 0
+   };
 
     int i=0, j=0;
     int flowCodeSetCount=0;

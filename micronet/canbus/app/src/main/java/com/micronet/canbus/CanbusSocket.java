@@ -1,7 +1,7 @@
 package com.micronet.canbus;
 
 /**
- * Handles the read/write Canbus communication via CanSocket interface.
+ * Handles the readPort1/write1939Port1 Canbus communication via CanSocket interface.
  * CanbusSocket can be created when Canbus interface is available.
  */
 public class CanbusSocket implements CanbusListener{
@@ -10,11 +10,12 @@ public class CanbusSocket implements CanbusListener{
 
 
 	protected CanbusSocket() {}
+
 	/**
 	 * Reads Canbus frame. Will block the calling thread until data
 	 * is written to Canbus socket.
 	 */
-	public CanbusFrame read(){
+	public CanbusFramePort1 readPort1(){
 		throw new IllegalArgumentException("Not implemented");
 	}
 
@@ -26,7 +27,7 @@ public class CanbusSocket implements CanbusListener{
 	 *
 	 * @return the head Canbus frame, or null if the specified waiting time elapses before Canbus frame is available
 	 */
-	public CanbusFrame read(long timeout) {
+	public CanbusFramePort1 readPort1(long timeout) {
 		throw new IllegalArgumentException("Not implemented");
 	}
 	
@@ -54,9 +55,17 @@ public class CanbusSocket implements CanbusListener{
 	 * For internal use only.
 	 */
 	@Override
-	public void onPacketReceive(CanbusFrame frame) {
+	public void onPacketReceive1939Port1(CanbusFramePort1 frame) {
 	}
-	
+
+	/**
+	 * For internal use only.
+	 */
+	@Override
+	public void onPacketReceive1939Port2(CanbusFramePort2 frame) {
+
+	}
+
 	/**
 	 * For internal use only.
 	 */
@@ -67,7 +76,13 @@ public class CanbusSocket implements CanbusListener{
 	/**
      * Sends Canbus frame through socket.
      */
-	public void write(CanbusFrame frame){
+	public void write1939Port1(CanbusFramePort1 frame){
+	}
+
+	/**
+	 * Sends Canbus frame through socket.
+	 */
+	public void write1939Port2(CanbusFramePort2 frame){
 	}
 
 	/**
@@ -78,16 +93,30 @@ public class CanbusSocket implements CanbusListener{
 
 
 	/**
-	 * Opens Canbus socket for read/write operations.
+	 * Opens Canbus socket for readPort1/readPort1/write1939Port1 operations.
 	 */
 	public void open() {
 	}
 
 	/**
-	 * Closes Canbus socket.
+	 * Closes Canbus socket for Port 1.
 	 */
-	public void close(){
+	public void close1939Port1(){
 	}
+
+	/**
+	 * Closes Canbus socket for Port 1.
+	 */
+	public void close1939Port2(){
+	}
+
+	/**
+	 * Closes Canbus socket for Port 1.
+	 */
+	public void close1708(){
+	}
+
+
 	/**
 	 * Discards packets from the queue's receive buffer. Due to the nature of the QBridge buffer,
 	 * packets will be discarded for 3 seconds following execution of this command.

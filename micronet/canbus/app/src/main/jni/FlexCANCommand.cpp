@@ -19,7 +19,7 @@ char getCharType(uint32_t type){
     return typeChar;
 }
 
-void setFilterAndMasks(FLEXCAN_filter_mask *filter_array, int numfilter){
+void setFilterAndMasks(FLEXCAN_filter_mask *filter_array, int numfilter, int port_fd){
     int i=0;
     uint32_t filterId=0;
     char filterIdString[MAX_MASK_FILTER_SIZE]={0};
@@ -57,7 +57,7 @@ void setFilterAndMasks(FLEXCAN_filter_mask *filter_array, int numfilter){
                 sprintf ((char*)filterIdString, "%03x", filterId);
             }
             if(filterSetCount<tmp_filter.filter_count || filterSetCount<=24) {
-                setFilters(filterIdString, filterMaskTypeChar);
+                setFilters(filterIdString, filterMaskTypeChar,port_fd);
                usleep(5000);
                 filterSetCount++;
                 LOGD("Filter Set, No of filters set = %d", filterSetCount);
@@ -70,7 +70,7 @@ void setFilterAndMasks(FLEXCAN_filter_mask *filter_array, int numfilter){
                 sprintf ((char*)maskIdString, "%03x", maskId);
             }
             if(maskSetCount<tmp_filter.mask_count && maskSetCount<=16){
-                setMasks(maskIdString, filterMaskTypeChar);
+                setMasks(maskIdString, filterMaskTypeChar,port_fd);
                 maskSetCount++;
                 usleep(5000);
                 LOGD("Mask Set, No of masks set = %d", maskSetCount);
@@ -78,7 +78,7 @@ void setFilterAndMasks(FLEXCAN_filter_mask *filter_array, int numfilter){
         }filterMaskTypeChar=0;
 }
 
-void configureFlowControl(FLEXCAN_Flow_Control *configuration_array, int numfilter){
+void configureFlowControl(FLEXCAN_Flow_Control *configuration_array, int numfilter, int port_fd){
 
    struct FLEXCAN_Flow_Control tmp_flow_control={
            .search_id = {0},
@@ -203,7 +203,7 @@ void configureFlowControl(FLEXCAN_Flow_Control *configuration_array, int numfilt
         }
 
         if((flowCodeSetCount <= tmp_flow_control.flow_msg_type_count) && (flowCodeSetCount<=8)) {
-            setFlowControlMessage(flowMessageTypeChar, searchIdString, responseIdString, dataLength,dataBytes);
+            setFlowControlMessage(flowMessageTypeChar, searchIdString, responseIdString, dataLength,dataBytes, port_fd);
             memset(dataBytes,0, sizeof dataBytes);
             usleep(5000);
             flowCodeSetCount++;
@@ -215,9 +215,9 @@ void configureFlowControl(FLEXCAN_Flow_Control *configuration_array, int numfilt
 
 int FlexCAN_startup(bool listeningModeEnable, int bitrate, int termination, FLEXCAN_filter_mask* filter_array,int numfilter, char *portName, FLEXCAN_Flow_Control* flexcan_flow_control,int numOfFlowMessages)
 {
-    int i, ret;
+    int i=0, ret=-1;
     char *port = portName;
-    int fd;
+    int fd=-1;
 
     fd = ret = serial_init(port);
 
@@ -225,7 +225,7 @@ int FlexCAN_startup(bool listeningModeEnable, int bitrate, int termination, FLEX
         return -1;
     }
 
-    /* first always close the CAN module (bug #250)
+    /* first always close1939Port1 the CAN module (bug #250)
      http://192.168.1.234/redmine/issues/250
      */
     if (closeCAN(fd) == -1) {
@@ -236,9 +236,9 @@ int FlexCAN_startup(bool listeningModeEnable, int bitrate, int termination, FLEX
     */
     usleep(100000);
 
-    setFilterAndMasks(filter_array, numfilter);
+    setFilterAndMasks(filter_array, numfilter,fd);
 
-    configureFlowControl(flexcan_flow_control, numOfFlowMessages);
+    configureFlowControl(flexcan_flow_control, numOfFlowMessages,fd);
 
     if(serial_start_monitor_thread())
     {

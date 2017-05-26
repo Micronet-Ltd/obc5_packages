@@ -299,14 +299,24 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_cre
         }
     }
 
-    jint fd = FlexCAN_startup(listeningModeEnable, bitrate, termination, filter_array, numfilter,port, flowControlMessageArray,numFlowControlMessages);
-    jfieldID fd_id;
 
     jclass clazz = env->FindClass("com/micronet/canbus/FlexCANCanbusInterfaceBridge");
 
-    fd_id = env->GetFieldID(clazz, "fd", "I");
-    env->SetIntField(instance, fd_id, fd);
+    if (port_number==2) {
+        jint fd = FlexCAN_startup(listeningModeEnable, bitrate, termination, filter_array, numfilter, port, flowControlMessageArray, numFlowControlMessages);
+        jfieldID fd_id;
+        fd_id = env->GetFieldID(clazz, "fd_can_port1", "I");
+        env->SetIntField(instance, fd_id, fd);
+    }
 
+    else if (port_number==3){
+        jint fd = FlexCAN_startup(listeningModeEnable, bitrate, termination, filter_array, numfilter, port, flowControlMessageArray, numFlowControlMessages);
+        jfieldID fd_id;
+        fd_id = env->GetFieldID(clazz, "fd_can_port2", "I");
+        env->SetIntField(instance, fd_id, fd);
+    }
+
+    //TODO : Add and else if for 1708
     return 0;
 
     error:
@@ -315,7 +325,7 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_cre
 
 JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_removeInterface(JNIEnv *env, jobject instance) {
 
-    // TODO close Canbus
+    // TODO close1939Port1 Canbus
     int false_fd;
     qb_close();
 

@@ -6,6 +6,9 @@ final class FlexCANCanbusInterfaceBridge implements ICanbusInterfaceBridge {
     private int bitrate;
     private static final String TAG = "CanbusSocket";
     private int fd=0;
+    private int fd_can_port1=0;
+    private int fd_can_port2=0;
+    private int fd_j1708=0;
 
     /**
      * Creates new Canbus interface (up).

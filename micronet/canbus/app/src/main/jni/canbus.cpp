@@ -52,7 +52,7 @@ jint JNI_OnLoad(JavaVM* vm, void* reserved)
 
 
     // Initialization for FlexCAN Implementation
-    jclass cls = env->FindClass("com/micronet/canbus/CanbusFrame");
+    jclass cls = env->FindClass("com/micronet/canbus/CanbusFramePort1");
     g_canbus.canbusFrameClass = (jclass)env->NewGlobalRef(cls);
 
     jclass j1708Class = env->FindClass("com/micronet/canbus/J1708Frame");

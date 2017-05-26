@@ -42,7 +42,9 @@ public class CanTest {
     private String txCanMessage="";
 
     private CanbusInterface canbusInterface;
+    //private CanbusInterface canbusInterface1;
     private CanbusSocket canbusSocket;
+    //private CanbusSocket canbusSocket1;
 
 
     private J1939Reader j1939Reader = null;
@@ -56,7 +58,7 @@ public class CanTest {
     private Thread j1939ReaderThread = null;
     private Thread j1939SendThread = null;
 
-    private final int READ_TIMEOUT = 500; // read timeout (in milliseconds)
+    private final int READ_TIMEOUT = 500; // readPort1 timeout (in milliseconds)
     private int baudrate;
     private boolean silentMode;
     private int portNumber;
@@ -79,7 +81,7 @@ public class CanTest {
     public boolean isSocketOpen() {
         // there's actually no api call to check status of canbus socket but
         // this app will open the socket as soon as object is initialized.
-        // also socket doesn't actually close even with call to QBridgeCanbusSocket.close()
+        // also socket doesn't actually close1939Port1 even with call to QBridgeCanbusSocket.close1939Port1()
         return canbusSocket != null;
     }
 
@@ -113,19 +115,23 @@ public class CanTest {
         this.termination=termination;
         this.portNumber=port;
 
-        if (canbusInterface == null) {
+        if (canbusInterface == null  ) {
             canbusInterface = new CanbusInterface();
             canbusFilter=setFilters();
             canbusFlowControls=setFlowControlMessages();
             canbusInterface.create(silentMode,baudrate,termination,canbusFilter,port,canbusFlowControls);
+           // canbusInterface.create(silentMode,baudrate,termination,canbusFilter,2,canbusFlowControls);
         }
 
         if (canbusSocket == null) {
             canbusSocket = canbusInterface.createSocket();
+//            canbusSocket = canbusInterface.createSocket();
             canbusSocket.open();
+//            canbusSocket.open();
         }
         if (discardInBuffer) {
             canbusSocket.discardInBuffer();
+            //canbusSocket1.discardInBuffer();
     }
         isCanInterfaceOpen = true;
         startThreads();
@@ -217,7 +223,8 @@ public class CanTest {
     }
     public void closeSocket() {
         if (isSocketOpen()) {
-            canbusSocket.close();
+            canbusSocket.close1939Port1();
+            //canbusSocket.close1708();
             canbusSocket = null;
 
             if (j1939ReaderThread != null && j1939ReaderThread.isAlive()) {
@@ -313,12 +320,12 @@ public class CanTest {
             //final int mask =0x03FFFF00;
 
             while (true) {
-                CanbusFrame canbusFrame1 = null;
+                CanbusFramePort1 canbusFrame1 = null;
                 try {
                     if (blockOnRead) {
-                        canbusFrame1 = canbusSocket.read();
+                        canbusFrame1 = canbusSocket.readPort1();
                     } else {
-                        canbusFrame1 = canbusSocket.read(READ_TIMEOUT);
+                        canbusFrame1 = canbusSocket.readPort1(READ_TIMEOUT);
                     }
                     if (canbusFrame1 != null) {
                         long time = SystemClock.elapsedRealtime();
@@ -509,7 +516,7 @@ public class CanTest {
                 a[7] = 0x4F;
                 MessageData=a;
                         if(canbusSocket != null) {
-                            canbusSocket.write(new CanbusFrame(MessageId, MessageData,MessageType));
+                            canbusSocket.write1939Port1(new CanbusFramePort1(MessageId, MessageData,MessageType));
                 }
                 try {
                     Thread.sleep(j1939IntervalDelay);
@@ -524,7 +531,7 @@ public class CanTest {
         public void run() {
             do {
                 if(canbusSocket != null) {
-                    canbusSocket.write(new CanbusFrame(canMessageId, canMessageData,canMessageType));
+                    canbusSocket.write1939Port1(new CanbusFramePort1(canMessageId, canMessageData,canMessageType));
                 }
                 try {
                     Thread.sleep(j1939IntervalDelay);

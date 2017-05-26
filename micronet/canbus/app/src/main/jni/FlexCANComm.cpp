@@ -9,7 +9,11 @@
 #include "canbus.h"
 #include "FlexCANComm.h"
 
-static int fd=-1; //serial port file descriptor (handle)
+//static int fd=-1; //serial port file descriptor (handle)
+static int fd_CAN1;
+static int fd_CAN2;
+static int fd_J1708;
+
 static pthread_t thread;
 static bool quit = false;
 
@@ -30,21 +34,43 @@ int serial_set_nonblocking(int fd) {
 
 int serial_init(char *portName){
 
-    char *tty=portName;
     DD("opening port: '%s'\n", portName);
 
-    if ((fd = open(portName, O_RDWR | O_NOCTTY | O_NONBLOCK)) < 0) {
-        perror(portName);
-        exit(EXIT_FAILURE);
+    //Initialising CAN1_TTY
+    if(strcmp(portName, CAN1_TTY)==0){
+        if ((fd_CAN1 = open(portName, O_RDWR | O_NOCTTY | O_NONBLOCK)) < 0) {
+            perror(portName);
+            exit(EXIT_FAILURE);
+        }
+            serial_set_nonblocking(fd_CAN1);
+            DD("opened port: '%s', fd=%d", CAN1_TTY, fd_CAN1);
+            initTerminalInterface(fd_CAN1);
+            return fd_CAN1;
+        }
+        //Initialising CAN2_TTY
+    else if(strcmp(portName,CAN2_TTY)== 0){
+        if ((fd_CAN2 = open(portName, O_RDWR | O_NOCTTY | O_NONBLOCK)) < 0) {
+            perror(portName);
+            exit(EXIT_FAILURE);
+        }
+            serial_set_nonblocking(fd_CAN2);
+            DD("opened port: '%s', fd=%d", CAN2_TTY, fd_CAN2);
+            initTerminalInterface(fd_CAN2);
+        return fd_CAN2;
     }
 
-    serial_set_nonblocking(fd);
+    //Initialising J1708
+    else if(strcmp(portName,J1708_TTY)== 0){
+        if ((fd_J1708 = open(portName, O_RDWR | O_NOCTTY | O_NONBLOCK)) < 0) {
+            perror(portName);
+            exit(EXIT_FAILURE);
+        }
+        serial_set_nonblocking(fd_J1708);
+        DD("opened port: '%s', fd=%d", CAN1_TTY, fd_J1708);
+        initTerminalInterface(fd_J1708);
+        return fd_J1708;
+    }
 
-    DD("opened port: '%s', fd=%d",CAN1_TTY, fd);
-
-    initTerminalInterface(fd);
-
-    return fd;
 }
 
 int initTerminalInterface(int fd) {
@@ -74,14 +100,14 @@ int initTerminalInterface(int fd) {
 
     return 0;
 }
-
-int closeCAN(int false_fd) { //was fd
-    // first always close the CAN module (bug #250)
+//TODO: changed fd --> close_fd
+int closeCAN(int close_fd) { //was fd
+    // first always close1939Port1 the CAN module (bug #250)
     // http://192.168.1.234/redmine/issues/250
     char buf[256];
     sprintf(buf, "C\r");
-    if (-1 == write(fd, buf, strlen(buf))) {
-        ERR("Error write %s command\n", buf);
+    if (-1 == write(close_fd, buf, strlen(buf))) {
+        ERR("Error write1939Port1 %s command\n", buf);
         return -1;
     }
     LOGD("Closing can channel ");
@@ -89,20 +115,20 @@ int closeCAN(int false_fd) { //was fd
 }
 
 //Can send the entire message including the CAN OK RESPONSE
-int sendMessage(int fd, const char * message) {
+int sendMessage(int fd_port, const char * message) {
     char buf[256]={0};
     sprintf(buf, "%s", message);
     printf("Send %s\n", buf);
     int check=strlen(buf);
     LOGD("Check value of the string - %d",check);
-    if (-1 == write(fd, buf, strlen(buf))) {
-        ERR("Error write %s command\n", buf );
+    if (-1 == write(fd_port, buf, strlen(buf))) {
+        ERR("Error write1939Port1 %s command\n", buf );
         return -1;
     }
     return 0;
 }
 
-void setFlowControlMessage(char type,char *searchID,char *responseID, int dataLength, BYTE* dataBytes){
+void setFlowControlMessage(char type,char *searchID,char *responseID, int dataLength, BYTE* dataBytes, int port_fd){
 
     char *flowControlMessage = new char[36];
     memset(flowControlMessage,'\0',sizeof(char));
@@ -194,7 +220,7 @@ void setFlowControlMessage(char type,char *searchID,char *responseID, int dataLe
 
     //Check for valid extended and standard flow command based on its length
     if((flowControlMessage[1]=='F' &&  flowControlMessage[extendedMessageLength-1]==CAN_OK_RESPONSE) || (flowControlMessage[1]=='f' &&  flowControlMessage[standardMessageLength-1]==CAN_OK_RESPONSE)){
-        if (-1 == sendMessage(fd, flowControlMessage)) {
+        if (-1 == sendMessage(port_fd, flowControlMessage)) {
             LOGE("!!!!Error sending flow message: %s for Flow code: !!!!", searchID);
         }
         LOGD("Flow message SET: FlowMessage- %s", flowControlMessage);
@@ -203,7 +229,7 @@ void setFlowControlMessage(char type,char *searchID,char *responseID, int dataLe
 }
 
 
-int setMasks(char *mask, char type) {
+int setMasks(char *mask, char type, int port_fd) {
     char maskString[16];
     char maskCommand[16];
     char standardFormat[5]={'0','0','0','0','0'};
@@ -235,7 +261,7 @@ int setMasks(char *mask, char type) {
 
         //send Mask string
         memcpy(maskCommand, maskString,maskLength);
-        if (-1 == sendMessage(fd, maskString)) {
+        if (-1 == sendMessage(port_fd, maskString)) {
             LOGE("!!!!Error sending Mask message: %s for Filter: !!!!", maskString);
         }
         LOGD("Mask set SET %s", mask);
@@ -244,7 +270,7 @@ int setMasks(char *mask, char type) {
 	return 0;
 }
 
-int setFilters(char *filter, char type) {
+int setFilters(char *filter, char type, int port_fd) {
     char filterCommand[16]={0};
     char filterString[16]={0};
     char standardFormat[5]={'0','0','0','0','0'};
@@ -275,7 +301,7 @@ int setFilters(char *filter, char type) {
         filterString[i++]= 0;
 
         memcpy(filterCommand, filterString,filters_length);
-        if (-1 == sendMessage(fd, filterCommand)) {
+        if (-1 == sendMessage(port_fd, filterCommand)) {
             LOGE("!!!!Error sending Filter message: %s for Filter: !!!!", filterString);
         }
         LOGD("Filter SET: Filter- %s", filter);
@@ -326,7 +352,7 @@ int setBitrate(int fd, int speed) {
 /*    sprintf(buf, "C\rS%d\r", baud);*/
     sprintf(buf, "S%d\r", baud);
     if (-1 == write(fd, buf, strlen(buf))) {
-        ERR("Error write %s command\n", buf);
+        ERR("Error write1939Port1 %s command\n", buf);
         return -1;
     }
     return 0;
@@ -338,7 +364,7 @@ int openCANandSetTermination(int fd, bool term) {
     char buf[256];
     sprintf(buf, "O%d\r", termination);
     if (-1 == write(fd, buf, strlen(buf))) {
-        ERR("Error write %s command\n", buf);
+        ERR("Error write1939Port1 %s command\n", buf);
         return -1;
     }
     LOGD("Opened can channel");
@@ -351,7 +377,7 @@ int setListeningMode(int fd, bool term) {
     char buf[256];
     sprintf(buf, "L%d\r", termination);
     if (-1 == write(fd, buf, strlen(buf))) {
-        ERR("Error write %s command\n", buf);
+        ERR("Error write1939Port1 %s command\n", buf);
         return -1;
     }
     return 0;
@@ -361,7 +387,7 @@ int sendReadStatusCommand(int fd) {
     char buf[256];
     sprintf(buf, "F\r");
     if (-1 == write(fd, buf, strlen(buf))) {
-        ERR("Error write %s command\n", buf);
+        ERR("Error write1939Port1 %s command\n", buf);
         return -1;
     }
     return 0;
@@ -403,7 +429,7 @@ int parseHex(uint8_t * asciiString, int len, uint8_t * hexValue) {
     return 0;
 }
 
-int wait_for_data()
+int wait_for_data(int port_fd)
 {
     int r;
     fd_set fds;
@@ -413,8 +439,8 @@ int wait_for_data()
 
     do {
         FD_ZERO(&fds);
-        FD_SET(fd, &fds);
-        r= select(fd+1, &fds, NULL, NULL, &delay);
+        FD_SET(port_fd, &fds);
+        r= select(port_fd+1, &fds, NULL, NULL, &delay);
     } while (-1 == r && errno == EINTR);
 
     if(-1 == r)
@@ -427,7 +453,7 @@ int wait_for_data()
         if(r != 1)
             LOGE("select did not return 1, returned %d\n", r);
 
-        if(FD_ISSET(fd, &fds))
+        if(FD_ISSET(port_fd, &fds))
         {
             return 0;
         }
@@ -455,7 +481,7 @@ void j1939rxd(BYTE *rxd) {
     uint8_t canData[16];
     BYTE hexData[8]={0};
 
-    // Convert rxd (frame) into CanbusFrame object
+    // Convert rxd (frame) into CanbusFramePort1 object
     if (*rxd == 't') {
         type=STANDARD;
         dataStartPos=5;
@@ -512,7 +538,6 @@ void j1939rxd(BYTE *rxd) {
 
 static void *monitor_data_thread(void *param) {
     uint8_t data[8 * 1024];
-
     uint8_t *pdata = data;
 	unsigned char * thread_char = (unsigned char *)(void *)(&thread);
 
@@ -521,17 +546,17 @@ static void *monitor_data_thread(void *param) {
     LOGD("thread=%02x",(unsigned char)*thread_char);
     int quit = 0;
     while (!quit) {
-        // sanity check to kill stale read thread
+        // sanity check to kill stale readPort1 thread
          if(thread != pthread_self()) {
-             LOGD("read thread stale, thread=%02x", (unsigned char)*thread_char);
+             LOGD("readPort1 thread stale, thread=%02x", (unsigned char)*thread_char);
              break;
          } //if statement was commented out
-        if(fd<0){break;}
+        if(fd_CAN1<0){break;}
 
-        if (!wait_for_data()) {
+        if (!wait_for_data(fd_CAN1)) {
             int readData;
             uint8_t *pend = NULL;
-            readData = read(fd, pdata, sizeof(data) - (pdata - data)); //Returns the number of bytes read
+            readData = read(fd_CAN1, pdata, sizeof(data) - (pdata - data)); //Returns the number of bytes readPort1
 
             if (0 == readData) {
                 quit = true;
@@ -541,7 +566,7 @@ static void *monitor_data_thread(void *param) {
             if (-1 == readData) {
                 if (EAGAIN == errno)
                     continue;
-                LOGE("%s:%d read: %s\n", __func__, __LINE__, strerror(errno));
+                LOGE("%s:%d readPort1: %s\n", __func__, __LINE__, strerror(errno));
                 abort();
             }
             /*To check validity of a packet:
@@ -613,7 +638,7 @@ int serial_deinit() {
     if (thread) {
         LOGD("Entered if(thread)");
         int retval, *retvalp;
-        // cancel out read threads
+        // cancel out readPort1 threads
         quit = 1;
         /*retvalp = &retval;*/
         LOGD("Begin cancelling the threads");
@@ -626,7 +651,7 @@ int serial_deinit() {
 }
 
 int qb_close() {
-    LOGD("Entered the close()! ");
+    LOGD("Entered the close1939Port1()! ");
     return serial_deinit();
 }
 
@@ -634,7 +659,7 @@ int qb_close() {
 int serial_send_data(BYTE *mydata, DWORD bytes_to_write) {
     DWORD numwr = 0;
 
-    numwr = write(fd, mydata, bytes_to_write);
+    numwr = write(fd_CAN1, mydata, bytes_to_write);
     //TODO: this may not be an error
     if( numwr != bytes_to_write ){
         return -1;

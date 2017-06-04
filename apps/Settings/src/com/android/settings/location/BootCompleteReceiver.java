@@ -11,9 +11,11 @@ public class BootCompleteReceiver extends BroadcastReceiver {
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		if(Utils.IsAutoEnableIZat()){
-			Intent i = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-			i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-			context.startActivity(i);
+			//Intent i = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+			//i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			//context.startActivity(i);
+	        Intent service = new Intent(context, iZatEnableService.class);
+	        context.startService(service);			
 		}
 	}
 }

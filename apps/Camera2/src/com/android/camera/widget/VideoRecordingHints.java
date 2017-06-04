@@ -31,6 +31,8 @@ import com.android.camera2.R;
 
 import java.lang.ref.WeakReference;
 import android.graphics.RectF;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * This class is designed to show the video recording hint when device is held in
@@ -60,6 +62,8 @@ public class VideoRecordingHints extends View {
     private int mCenterX = UNSET;
     private int mCenterY = UNSET;
     private int mLastOrientation = OrientationEventListener.ORIENTATION_UNKNOWN;
+	private boolean allow_draw=false;
+	private Timer time;
 
     private static class RotationAnimatorListener implements Animator.AnimatorListener {
         private final WeakReference<VideoRecordingHints> mHints;
@@ -144,6 +148,9 @@ public class VideoRecordingHints extends View {
 
     public VideoRecordingHints(Context context, AttributeSet attrs) {
         super(context, attrs);
+		myTimeTask task = new myTimeTask();
+		time = new Timer();
+		time.schedule(task, 4 * 1000);
         mRotateArrows = getResources().getDrawable(R.drawable.rotate_arrows);
         mPhoneGraphic = getResources().getDrawable(R.drawable.ic_phone_graphic);
         mRotateArrowsHalfSize = getResources().getDimensionPixelSize(
@@ -217,10 +224,14 @@ public class VideoRecordingHints extends View {
         if (mIsInLandscape && !mAlphaAnimator.isRunning()) {
             return;
         }
-        canvas.save();
-        canvas.rotate(-mRotation, mCenterX, mCenterY);
-        mRotateArrows.draw(canvas);
-        canvas.restore();
+		//zhoukai modified
+		if(allow_draw){
+			
+		}else{
+			canvas.save();
+			canvas.rotate(-mRotation, mCenterX, mCenterY);
+			mRotateArrows.draw(canvas);
+			canvas.restore();
         if (mIsInLandscape) {
             canvas.save();
             canvas.rotate(90, mCenterX, mCenterY);
@@ -229,7 +240,18 @@ public class VideoRecordingHints extends View {
         } else {
             mPhoneGraphic.draw(canvas);
         }
+		}
+        
     }
+	//zhoukai add
+	private class myTimeTask extends TimerTask {
+
+		@Override
+		public void run() {	
+		
+			allow_draw=true;
+		}
+	}
 
     /**
      * Handles orientation change by starting/stopping the video hint based on the
@@ -248,6 +270,11 @@ public class VideoRecordingHints extends View {
         if (getVisibility() == VISIBLE) {
             if (mIsInLandscape) {
                 // Landscape.
+				//zhoukai add
+				if(time!=null){
+				   time.cancel();
+				}
+				allow_draw=false;
                 mRotationAnimation.cancel();
                 // Start fading out.
                 if (mAlphaAnimator.isRunning()) {
@@ -256,6 +283,10 @@ public class VideoRecordingHints extends View {
                 mAlphaAnimator.start();
             } else {
                 // Portrait.
+				//zhoukia add
+				myTimeTask task = new myTimeTask();
+				time = new Timer();
+				time.schedule(task, 4 * 1000);
                 continueRotationAnimation();
             }
         }

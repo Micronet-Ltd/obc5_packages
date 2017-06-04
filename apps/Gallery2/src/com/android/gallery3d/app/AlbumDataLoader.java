@@ -307,8 +307,10 @@ public class AlbumDataLoader {
             }
             int start = Math.max(info.reloadStart, mContentStart);
             int end = Math.min(info.reloadStart + items.size(), mContentEnd);
-
-            for (int i = start; i < end; ++i) {
+			//zhoukai modified (delete the last picture,refresh view)
+			int i = 0;
+			boolean isEndItem =true;
+            for (i = start; i < end; ++i) {
                 int index = i % DATA_CACHE_SIZE;
                 mSetVersion[index] = info.version;
                 MediaItem updateItem = items.get(i - info.reloadStart);
@@ -318,9 +320,15 @@ public class AlbumDataLoader {
                     mData[index] = updateItem;
                     if (mDataListener != null && i >= mActiveStart && i < mActiveEnd) {
                         mDataListener.onContentChanged(i);
+						isEndItem = false;
                     }
                 }
             }
+			if(i == end && isEndItem){
+				if (mDataListener != null) {
+                    mDataListener.onContentChanged(i-1);
+                }				
+			}
             return null;
         }
     }

@@ -48,6 +48,16 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+//{{begin,mod by chenqi 2016-02-22 17:23
+//reason:incoming ui too late to tone
+import android.content.BroadcastReceiver;
+import android.content.IntentFilter;
+import android.content.Intent;
+import android.os.UserHandle;
+//}}end,mod by chenqi
+import android.media.AudioManager;
+
+
 /**
  * Takes updates from the CallList and notifies the InCallActivity (UI)
  * of the changes.
@@ -93,6 +103,7 @@ public class InCallPresenter implements CallList.Listener, InCallPhoneListener {
     private boolean mAccountSelectionCancelled = false;
     private InCallCameraManager mInCallCameraManager = null;
     private PowerManager mPowerManager;
+	private AudioManager mAudioManager;    //lihui added @20160726
     private PowerManager.WakeLock mWakeLock = null;
 
     private final Phone.Listener mPhoneListener = new Phone.Listener() {
@@ -216,6 +227,7 @@ public class InCallPresenter implements CallList.Listener, InCallPhoneListener {
         addListener(mProximitySensor);
 
         mPowerManager = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
+		mAudioManager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);    //lihui added @20160726
         mWakeLock = mPowerManager.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK |
                 PowerManager.ACQUIRE_CAUSES_WAKEUP, "InCallPresenter");
 
@@ -429,6 +441,8 @@ public class InCallPresenter implements CallList.Listener, InCallPhoneListener {
         if (isActivityStarted()) {
             mInCallActivity.dismissKeyguard(false);
         }
+
+        wakeUpScreen();
     }
 
     /**
@@ -586,8 +600,14 @@ public class InCallPresenter implements CallList.Listener, InCallPhoneListener {
 
         Call call = mCallList.getIncomingCall();
         if (call != null) {
+			/*lihui @20160726 modified for turn off the speaker before answer incoming call which is turned on by the third app start*/
+			Log.d(this,"mAudioManager.isSpeakerphoneOn()=" + mAudioManager.isSpeakerphoneOn());
+            if (mAudioManager.isSpeakerphoneOn() == true) {
+                Log.i(this, "turning off speaker.");
+                mAudioManager.setSpeakerphoneOn(false);
+            }
+			/*lihui @20160726 modified for turn off the speaker before answer incoming call which is turned on by the third app end*/
             TelecomAdapter.getInstance().answerCall(call.getId(), videoState);
-            showInCall(false, false/* newOutgoingCall */);
         }
     }
 
@@ -721,6 +741,7 @@ public class InCallPresenter implements CallList.Listener, InCallPhoneListener {
 
         if (showing) {
             mIsActivityPreviouslyStarted = true;
+			sendBroadcast_incoming_tone_play();//add by chenqi,incoming ui too late to tone,2016-02-22-17:23
         } else {
             updateIsChangingConfigurations();
         }
@@ -1031,6 +1052,8 @@ public class InCallPresenter implements CallList.Listener, InCallPhoneListener {
         }
     }
 
+    public static final String ACTION_EHANG_INCOMING_UI = "android.intent.action.EHANG_INCOMING_UI";//add by chenqi,incoming ui too late to tone,2016-02-22-17:24
+
     private boolean startUi(InCallState inCallState) {
         final Call incomingCall = mCallList.getIncomingCall();
         boolean isCallWaiting = mCallList.getActiveCall() != null &&
@@ -1063,9 +1086,26 @@ public class InCallPresenter implements CallList.Listener, InCallPhoneListener {
             }
         } else {
             mStatusBarNotifier.updateNotification(inCallState, mCallList);
+
+//{{begin,mod by chenqi 2016-02-22 17:24
+//reason:incoming ui too late to tone
+			if (!mProximitySensor.isScreenReallyOff()){
+				sendBroadcast_incoming_tone_play();
+			}
+//}}end,mod by chenqi
         }
         return true;
     }
+//{{begin,mod by chenqi 2016-02-22 17:24
+//reason:incoming ui too late to tone
+	private void sendBroadcast_incoming_tone_play(){
+		Intent incomingBroadcast = new Intent(ACTION_EHANG_INCOMING_UI);
+		//mContext.sendBroadcast(incomingBroadcast);
+        mContext.sendBroadcastAsUser(incomingBroadcast, UserHandle.OWNER);
+        Log.d(this, "sendBroadcast_incoming_tone_play");
+
+	}
+//}}end,mod by chenqi
 
     /**
      * Checks to see if both the UI is gone and the service is disconnected. If so, tear it all
@@ -1202,51 +1242,24 @@ public class InCallPresenter implements CallList.Listener, InCallPhoneListener {
     }
 
     /**
-     * Handles changes to the device rotation.
+     * Notifies listeners of changes in orientation and notify calls of rotation angle change.
      *
-     * @param rotation The device rotation.
-     */
-    public void onDeviceRotationChange(int rotation) {
-        Log.d(this, "onDeviceRotationChange: rotation=" + rotation);
-        // First translate to rotation in degrees.
-        if (mCallList!=null) {
-            mCallList.notifyCallsOfDeviceRotation(toRotationAngle(rotation));
-        } else {
-            Log.w(this, "onDeviceRotationChange: CallList is null.");
-        }
-    }
-
-    /**
-     * Converts rotation constants to rotation in degrees.
-     * @param rotation Rotation constants.
-     */
-    public static int toRotationAngle(int rotation) {
-        int rotationAngle;
-        switch (rotation) {
-            case Surface.ROTATION_0:
-                rotationAngle = 0;
-                break;
-            case Surface.ROTATION_90:
-                rotationAngle = 90;
-                break;
-            case Surface.ROTATION_180:
-                rotationAngle = 180;
-                break;
-            case Surface.ROTATION_270:
-                rotationAngle = 270;
-                break;
-            default:
-                rotationAngle = 0;
-        }
-        return rotationAngle;
-    }
-
-    /**
-     * Notifies listeners of changes in orientation (e.g. portrait/landscape).
-     *
-     * @param orientation The orientation of the device.
+     * @param orientation The screen orientation of the device (one of :
+     * {@link InCallOrientationEventListener#SCREEN_ORIENTATION_0},
+     * {@link InCallOrientationEventListener#SCREEN_ORIENTATION_90},
+     * {@link InCallOrientationEventListener#SCREEN_ORIENTATION_180},
+     * {@link InCallOrientationEventListener#SCREEN_ORIENTATION_270}).
      */
     public void onDeviceOrientationChange(int orientation) {
+        Log.d(this, "onDeviceOrientationChange: orientation= " + orientation);
+
+        if (mCallList!=null) {
+            mCallList.notifyCallsOfDeviceRotation(orientation);
+        } else {
+            Log.w(this, "onDeviceOrientationChange: CallList is null.");
+        }
+
+        // Notify listeners of device orientation changed.
         for (InCallOrientationListener listener : mOrientationListeners) {
             listener.onDeviceOrientationChanged(orientation);
         }
@@ -1421,5 +1434,12 @@ public class InCallPresenter implements CallList.Listener, InCallPhoneListener {
 
     public void showDowngradeToast() {
         mInCallActivity.getCallCardFragment().showDowngradeToast();
+    }
+
+    public boolean isDialpadVisible() {
+        if (mInCallActivity == null) {
+            return false;
+        }
+        return mInCallActivity.isDialpadVisible();
     }
 }

@@ -2,10 +2,15 @@
 <resources>
 
     <string name="app_name">Gesture</string>
-    <string name="action_settings">Settings</string>
+    <string name="gesture_name">Gesture</string>
+    <string name="glove_mode">Glove mode</string>
+    <string name="subtitleglove">When wearing gloves, touch screen can also be operated</string>
     <string name="title">Gesture</string>
-    <string name="open_camera">Open Camera</string>
-    <string name="light_screen">Light Screen</string>
+    <string name="subtitle">When the screen is off, you can operate the touch screen as follow</string>
+    <string name="open_camera">Draw \"C\" to open the camera</string>
+    <string name="light_screen">Double click to light the screen</string>
     <string name="open_counter">Open Counter</string>
+    <string name="open">On</string>
+    <string name="close">Off</string>
 
 </resources>

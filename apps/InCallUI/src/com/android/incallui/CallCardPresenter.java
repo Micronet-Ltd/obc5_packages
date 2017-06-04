@@ -285,8 +285,7 @@ public class CallCardPresenter extends Presenter<CallCardPresenter.CallCardUi>
         /* Hide the end call button instantly if we're receiving an incoming call
            or when receiving a modify request */
         getUi().setEndCallButtonEnabled(
-                enableEndCallButton, callState != Call.State.INCOMING &&
-                !isModifyRequest /* animate */);
+                enableEndCallButton, false /* animate */);
     }
 
     @Override
@@ -895,6 +894,10 @@ public class CallCardPresenter extends Presenter<CallCardPresenter.CallCardUi>
 
         String cameraId = cameraManager.getActiveCameraId();
         if (cameraId != null) {
+            final int cameraDir = cameraManager.isUsingFrontFacingCamera()
+                    ? Call.VideoSettings.CAMERA_DIRECTION_FRONT_FACING
+                    : Call.VideoSettings.CAMERA_DIRECTION_BACK_FACING;
+            mPrimary.getVideoSettings().setCameraDir(cameraDir);
             videoCall.setCamera(cameraId);
             videoCall.requestCameraCapabilities();
         }

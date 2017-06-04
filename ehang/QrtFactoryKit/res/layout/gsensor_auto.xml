@@ -15,16 +15,50 @@
         android:id="@+id/gsensor_auto_result"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"/>
+    
+    <TextView
+        android:id="@+id/gsensor_auto_calibrate_result"
+        android:layout_width="fill_parent"
+        android:layout_below="@+id/gsensor_auto_result"
+        android:textSize="22dip"
+        android:layout_marginTop="10dip"
+        android:layout_height="wrap_content"/>
+    
 
     <LinearLayout
+        	android:id="@+id/gsensor_auto_buttom_layout"
             android:layout_alignParentBottom="true"
             android:layout_marginBottom="0dip"
             android:layout_height="wrap_content"
-            android:layout_width="fill_parent">
-        <Button
-                android:id="@+id/gsensor_auto_cancel"
-                android:layout_width="fill_parent"
+            android:layout_width="fill_parent"
+            android:orientation="horizontal">
+            <Button
+                android:id="@+id/gsensor_auto_ok"
+                android:layout_width="0dip"
                 android:layout_height="80dip"
-                android:text="@string/cancel" />
+                android:layout_weight="1"
+                android:text="@string/pass" />
+        	<Button
+                android:id="@+id/gsensor_auto_cancel"
+                android:layout_width="0dip"
+                android:layout_height="80dip"
+                android:layout_weight="1"
+                android:text="@string/fail" />
+        
     </LinearLayout>
+    
+    <Button
+	    android:id="@+id/gsensor_auto_calibrate"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_above="@+id/gsensor_auto_buttom_layout"
+	    android:text="@string/calibrate" />
+    
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_above="@+id/gsensor_auto_calibrate"
+        android:textSize="22dip"
+        android:layout_marginTop="10dip"
+        android:text="@string/adjustment_tip"
+        android:layout_height="wrap_content"/>
 </RelativeLayout>

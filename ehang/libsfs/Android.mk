@@ -1,4 +1,7 @@
-
+ifeq ($(EH_PRODUCT_NAME),Q10)
+else
+ifeq ($(EH_PRODUCT_NAME),Q8)
+else
 LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
@@ -72,4 +75,5 @@ LOCAL_MODULE:= rpmb_key
 LOCAL_MODULE_TAGS := optional eng
 
 include $(BUILD_EXECUTABLE)
-
+endif
+endif

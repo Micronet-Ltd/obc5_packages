@@ -215,10 +215,23 @@
                 android:process=":ui">
         </activity>
 
+<!-- mod by chenqi 2016-03-07 09:55
+	reason:this broadcast received slowlly
+	I set priority  highest
+-->
         <receiver android:name=".CallReceiver"
                 android:exported="true"
                 android:permission="android.permission.MODIFY_PHONE_STATE"
                 android:process="system">
+            <intent-filter android:priority="1000">
+                <action android:name="android.intent.action.CALL_PRIVILEGED" />
+            </intent-filter>
+            <intent-filter android:priority="1000">
+                <action android:name="android.intent.action.CALL_EMERGENCY" />
+            </intent-filter>
+            <intent-filter android:priority="1000">
+                <action android:name="android.intent.action.CALL" />
+            </intent-filter>
         </receiver>
 
         <service android:name="BluetoothPhoneService"

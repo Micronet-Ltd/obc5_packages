@@ -297,7 +297,7 @@ public class SecuritySettings extends SettingsPreferenceFragment
 
         // Trust Agent preferences
         PreferenceGroup securityCategory = (PreferenceGroup)
-                root.findPreference(KEY_SECURITY_CATEGORY);
+                root.findPreference(KEY_SECURITY_CATEGORY);								
         if (securityCategory != null) {
             final boolean hasSecurity = mLockPatternUtils.isSecure();
             ArrayList<TrustAgentComponentInfo> agents =

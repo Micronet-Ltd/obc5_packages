@@ -15,6 +15,8 @@ typedef enum
 	PING_REQ		= 4,
 	PING_RESP		= 5,
 	GPIO_INT_STATUS	= 6,
+	POWER_MGM_STATUS = 7,
+	ONE_WIRE_DATA =   8,
 } packet_type_enum;
 
 struct control_thread_context
@@ -41,6 +43,7 @@ struct control_thread_context
     bool dont_send;
     int max_app_watchdog_ping_time;
     struct timespec last_app_ping_time;
+    int one_wire_fd;
 };
 
 

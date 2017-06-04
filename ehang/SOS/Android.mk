@@ -1,3 +1,7 @@
+ifeq ($(EH_PRODUCT_NAME),Q10)
+else
+ifeq ($(EH_PRODUCT_NAME),Q8)
+else
 LOCAL_PATH:= $(call my-dir)
     include $(CLEAR_VARS)
     LOCAL_MODULE_TAGS := optional
@@ -20,3 +24,5 @@ include $(CLEAR_VARS)
 LOCAL_PREBUILT_LIBS := libs/liblocSDK6.so
 LOCAL_MODULE_TAGS := optional
 include $(BUILD_MULTI_PREBUILT)
+endif
+endif

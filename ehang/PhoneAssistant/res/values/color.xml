@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="white">#FFFFFF </color>
+    <color name="black">#263238</color>
+    <color name="lines">#DDDDDD</color>
+    <!--<color name="install_cloor">#313131</color>-->
+    <color name="packagename"> #4D4D4D</color>
+    <color name="transparent">#00000000</color>
+	<color name="protect">#37474F</color>
+	<color name="protect_color">#6FC4BC</color>
+	<color name="install_color">#FFFFFF</color>
+</resources>

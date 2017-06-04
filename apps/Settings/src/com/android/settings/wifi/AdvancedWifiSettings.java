@@ -55,7 +55,7 @@ import com.android.settings.Utils;
 import java.util.Collection;
 
 public class AdvancedWifiSettings extends SettingsPreferenceFragment
-        implements Preference.OnPreferenceChangeListener {
+	implements Preference.OnPreferenceChangeListener, Preference.OnPreferenceClickListener{
 
     private static final String TAG = "AdvancedWifiSettings";
     private static final String KEY_MAC_ADDRESS = "mac_address";
@@ -103,6 +103,8 @@ public class AdvancedWifiSettings extends SettingsPreferenceFragment
     private NetworkScoreManager mNetworkScoreManager;
     private static final int WPS_PBC_DIALOG_ID = 1;
     private static final int WPS_PIN_DIALOG_ID = 2;
+	private static final int WAPI_INSTALL_DIALOG_ID = 3;
+	private static final int WAPI_UNINSTALL_DIALOG_ID = 4;
 
     CheckBoxPreference mAutoConnectionEnablePref;
     ListPreference mCellularToWlanPref;
@@ -120,11 +122,18 @@ public class AdvancedWifiSettings extends SettingsPreferenceFragment
             }
         }
     };
+	private static final String KEY_WAPI_CERT_INSTALL = "wapi_cert_install";
+	private static final String KEY_WAPI_CERT_UNINSTALL = "wapi_cert_uninstall";
+	private Preference mWapiCertInstall;
+	private Preference mWapiCertUninstall;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.wifi_advanced_settings);
+        Log.e(TAG, "Oncreate findpref.");
+        mWapiCertInstall = findPreference(KEY_WAPI_CERT_INSTALL);
+        mWapiCertUninstall = findPreference(KEY_WAPI_CERT_UNINSTALL);
     }
 
     @Override
@@ -142,6 +151,8 @@ public class AdvancedWifiSettings extends SettingsPreferenceFragment
     public void onResume() {
         super.onResume();
         initPreferences();
+        initWapiCertInstallPreference();
+        initWapiCertUninstallPreference();
         getActivity().registerReceiver(mReceiver, mFilter);
         refreshWifiInfo();
     }
@@ -154,11 +165,22 @@ public class AdvancedWifiSettings extends SettingsPreferenceFragment
 
     @Override
     public Dialog onCreateDialog(int dialogId) {
+       WapiCertMgmtDialog wapiDialog;
         switch (dialogId) {
             case WPS_PBC_DIALOG_ID:
                  return new WpsDialog(getActivity(), WpsInfo.PBC);
             case WPS_PIN_DIALOG_ID:
                  return new WpsDialog(getActivity(), WpsInfo.DISPLAY);
+            case WAPI_INSTALL_DIALOG_ID:
+                 wapiDialog = new WapiCertMgmtDialog(getActivity());
+                 wapiDialog.setMode(WapiCertMgmtDialog.MODE_INSTALL);
+                 wapiDialog.setTitle(R.string.wifi_wapi_cert_install);
+                 return wapiDialog;
+            case WAPI_UNINSTALL_DIALOG_ID:
+                 wapiDialog = new WapiCertMgmtDialog(getActivity());
+                 wapiDialog.setMode(WapiCertMgmtDialog.MODE_UNINSTALL);
+                 wapiDialog.setTitle(R.string.wifi_wapi_cert_uninstall);
+                 return wapiDialog;
         }
         return super.onCreateDialog(dialogId);
     }
@@ -392,6 +414,8 @@ public class AdvancedWifiSettings extends SettingsPreferenceFragment
             }
         }
 
+		mWapiCertInstall = findPreference(KEY_WAPI_CERT_INSTALL);
+		mWapiCertUninstall = findPreference(KEY_WAPI_CERT_UNINSTALL);
         sleepPolicyPref.setSummary("");
         Log.e(TAG, "Invalid sleep policy value: " + value);
     }
@@ -645,5 +669,37 @@ public class AdvancedWifiSettings extends SettingsPreferenceFragment
             return new WpsDialog(getActivity(), mWpsSetup);
         }
     }
+	//WAPI+++
+	private void initWapiCertInstallPreference() {
+		 Preference pref = findPreference(KEY_WAPI_CERT_INSTALL);
+		 if (null != pref) {
+			 Log.e(TAG, "initWapiCertInstallPreference pref != null");
+			 pref.setOnPreferenceClickListener((Preference.OnPreferenceClickListener)this);
+		 } else {
+			 Log.e(TAG, "initWapiCertInstallPreference pref == null");
+		 }
+    }
+	private void initWapiCertUninstallPreference() {
+		 Preference pref = findPreference(KEY_WAPI_CERT_UNINSTALL);
+		 if (null != pref) {
+			 Log.e(TAG, "initWapiCertUninstallPreference pref != null");
+			 pref.setOnPreferenceClickListener((Preference.OnPreferenceClickListener)this);
+		 } else {
+			 Log.e(TAG, "initWapiCertUninstallPreference pref == null");
+	     }
+	}
+	public boolean onPreferenceClick(Preference preference) {
+		 String key = preference.getKey();
+		 Log.e(TAG, "onPreferenceClick key " + key);
+		 if (key == null) return true;
+		 if (key.equals(KEY_WAPI_CERT_INSTALL)) {
+			 Log.e(TAG, "onPreferenceClick key 1" + key);
+			 showDialog(WAPI_INSTALL_DIALOG_ID);
+		 } else if (key.equals(KEY_WAPI_CERT_UNINSTALL)) {
+			 Log.e(TAG, "onPreferenceClick key 2" + key);
+			 showDialog(WAPI_UNINSTALL_DIALOG_ID);
+		 }
+		 return true;
+	}
 
 }

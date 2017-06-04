@@ -20,6 +20,7 @@ import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -37,6 +38,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.os.Vibrator;
+import android.os.SystemProperties;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceCategory;
@@ -362,9 +364,65 @@ public class NotificationSettings extends SettingsPreferenceFragment implements 
                     cursor.close();
                 }
             }
+			//added by shanbp more ringtone 20160106 --begin--
+	        CharSequence ringtoneUnknown = context
+                    .getString(com.android.internal.R.string.ringtone_unknown);
+            if (summary.equals(ringtoneUnknown)) {
+                CharSequence defaultRingtone = resetRingtoneToDefault(context);
+                if (defaultRingtone != null) {
+                    summary = defaultRingtone;
+                }
+            }	
         }
         return summary;
     }
+	private static CharSequence resetRingtoneToDefault(Context context) {
+		final int COLUMN_ID = 0;
+		final int COLUMN_TITLE = 1;
+		CharSequence summary = null;
+		Cursor c = null;
+		try {
+			String defaultRingtoneFilename = SystemProperties.get("ro.config."
+					+ Settings.System.NOTIFICATION_SOUND);
+			c = context
+					.getContentResolver()
+					.acquireProvider("media")
+					.query(context.getPackageName(),
+							MediaStore.Audio.Media.INTERNAL_CONTENT_URI,
+							new String[] {
+									MediaStore.Audio.Media._ID,
+									MediaStore.Audio.Media.TITLE
+							},
+							MediaStore.Audio.Media.DISPLAY_NAME + "=?",
+							new String[] {
+								defaultRingtoneFilename
+							},
+							null, null);
+			if (c != null) {
+				if (c.getCount() > 0 && c.moveToFirst()) {
+					int rowId = c.getInt(COLUMN_ID);
+					summary = c.getString(COLUMN_TITLE);
+					Uri defaultRingtoneUri = ContentUris.withAppendedId(
+							MediaStore.Audio.Media.INTERNAL_CONTENT_URI, rowId);
+					String setting;
+					setting = Settings.System.NOTIFICATION_SOUND;
+
+					Settings.System.putString(
+							context.getContentResolver(),
+							setting,
+							defaultRingtoneUri.toString());
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (c != null) {
+				c.close();
+			}
+		}
+		return summary;
+	}
+	//added by shanbp more ringtone 20160106 --end--
 
     // === Vibrate when ringing ===
 

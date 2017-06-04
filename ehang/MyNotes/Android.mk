@@ -1,3 +1,7 @@
+ifeq ($(EH_PRODUCT_NAME),Q10)
+else
+ifeq ($(EH_PRODUCT_NAME),Q8)
+else
 LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
 
@@ -11,3 +15,5 @@ LOCAL_PACKAGE_NAME := MyNotes
 LOCAL_DEX_PREOPT := false
 
 include $(BUILD_PACKAGE)
+endif
+endif

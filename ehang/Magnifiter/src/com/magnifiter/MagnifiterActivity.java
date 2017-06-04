@@ -6,8 +6,10 @@ import java.util.List;
 import com.magnifiter.R;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.hardware.Camera;
+import android.hardware.Camera.AutoFocusCallback;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.SurfaceHolder;
@@ -16,14 +18,14 @@ import android.view.WindowManager;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-
-public class MagnifiterActivity extends Activity implements SurfaceHolder.Callback {
+public class MagnifiterActivity extends Activity implements
+		SurfaceHolder.Callback {
 	private static final String TAG = "Magnifier";
 	private SurfaceView mSurfaceView;
 	private TextView mTextView;
 	private SeekBar mSeekBar;
 	private int value = 0;
-	private Camera.Parameters parameters;
+	private Camera.Parameters mParameters;
 	private Camera mCamera;
 	private SurfaceHolder holder;
 	private boolean mFlag = false;
@@ -32,7 +34,8 @@ public class MagnifiterActivity extends Activity implements SurfaceHolder.Callba
 	private static final int ROTATION = 90;
 	private static final int REVERT = 180;
 	private int mZoomMax;
-	
+	private AutoFocusCallback myAutoFocusCallback = null;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -46,7 +49,19 @@ public class MagnifiterActivity extends Activity implements SurfaceHolder.Callba
 				WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-
+		myAutoFocusCallback = new AutoFocusCallback() {
+			public void onAutoFocus(boolean success, Camera camera) {
+				// TODO Auto-generated method stub
+				if (success)// success
+				{
+					Log.i(TAG, "myAutoFocusCallback: success...");
+					mCamera.setOneShotPreviewCallback(null);
+				} else {
+					// failed
+					Log.i(TAG, "myAutoFocusCallback: failed...");
+				}
+			}
+		};
 		mSurfaceView = (SurfaceView) findViewById(R.id.surfaceView);
 		mSeekBar = (SeekBar) findViewById(R.id.seekBar);
 
@@ -55,9 +70,10 @@ public class MagnifiterActivity extends Activity implements SurfaceHolder.Callba
 			public void onStopTrackingTouch(SeekBar seekBar) {
 				// TODO Auto-generated method stub
 				Log.i(TAG, "stop tracking touch");
-				parameters.setZoom(value);
-				mCamera.setParameters(parameters);
+				mParameters.setZoom(value);
+				mCamera.setParameters(mParameters);
 				mCamera.startPreview();
+				mCamera.autoFocus(myAutoFocusCallback);
 			}
 			
 			@Override
@@ -102,11 +118,29 @@ public class MagnifiterActivity extends Activity implements SurfaceHolder.Callba
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
+		//added close ledlight where systemui_tile and launcher_widget
+		String CLOSE_LAUNCHER_LEDWIDGET = "qualcomm.android.LEDWidget";
+		String CLOSE_SYSTEMUI_FLASHLIGHTTILE = "com.android.SystemUI.FlashlightTile";
+        sendBroadcast(new Intent(CLOSE_LAUNCHER_LEDWIDGET));
+        sendBroadcast(new Intent(CLOSE_SYSTEMUI_FLASHLIGHTTILE));
+		//end
 		holder = mSurfaceView.getHolder();
 		holder.addCallback(this);
 		startCamera();	
 	}
-
+	
+	@Override
+	protected void onStop() {
+		// TODO Auto-generated method stub
+		super.onStop();
+		//added close ledlight where systemui_tile and launcher_widget
+		String CLOSE_LAUNCHER_LEDWIDGET = "qualcomm.android.LEDWidget";
+		String CLOSE_SYSTEMUI_FLASHLIGHTTILE = "com.android.SystemUI.FlashlightTile";
+        sendBroadcast(new Intent(CLOSE_LAUNCHER_LEDWIDGET));
+        sendBroadcast(new Intent(CLOSE_SYSTEMUI_FLASHLIGHTTILE));
+		//end
+	}
+	
 	private void startCamera() {
 		// TODO Auto-generated method stub
 		if(mFlag){
@@ -123,15 +157,17 @@ public class MagnifiterActivity extends Activity implements SurfaceHolder.Callba
 			e.printStackTrace();
 			mCamera = null;
 		}
-		
-		if(mCamera != null){
-			mCamera.setDisplayOrientation(mCameraId == BACK_CAMERA ? ROTATION : ROTATION);
-			parameters = mCamera.getParameters();
+
+		if (mCamera != null) {
+			mCamera.setDisplayOrientation(mCameraId == BACK_CAMERA ? ROTATION
+					: ROTATION);
+			mParameters = mCamera.getParameters();
 
 			int PreviewWidth = 0;  
 			int PreviewHeight = 0;
 
-			List<Camera.Size> previewSizes = parameters.getSupportedPreviewSizes(); 
+			List<Camera.Size> previewSizes = mParameters
+					.getSupportedPreviewSizes();
 			int lengthList = previewSizes.size();
 			Log.i(TAG, "startCamera sizeList.size = " + lengthList);
  
@@ -144,24 +180,28 @@ public class MagnifiterActivity extends Activity implements SurfaceHolder.Callba
 				Iterator<Camera.Size> itor = previewSizes.iterator();  
 				while (itor.hasNext()) {  
 					Camera.Size cur = itor.next();  
-					if (cur.width >= PreviewWidth  && cur.height >= PreviewHeight) {  
+					if (cur.width >= PreviewWidth
+							&& cur.height >= PreviewHeight) {
 						PreviewWidth = cur.width;  
 						PreviewHeight = cur.height;  
 						break;  
 					}  
 				}  
 			}  
-			parameters.setPreviewSize(PreviewWidth, PreviewHeight);  
-			parameters.set("orientation", "portrait");
-			parameters.setRotation(mCameraId == BACK_CAMERA ? ROTATION : REVERT + ROTATION);
-			
+			mParameters.setPreviewSize(PreviewWidth, PreviewHeight);  
+			mParameters.set("orientation", "portrait");
+	        mParameters.setAntibanding(Camera.Parameters.ANTIBANDING_50HZ);
+	        mParameters.setRotation(mCameraId == BACK_CAMERA ? ROTATION : REVERT
+					+ ROTATION);
+
 			mZoomMax = value;
-			parameters.setZoom(mZoomMax);
-			mCamera.setParameters(parameters);
+			mParameters.setZoom(mZoomMax);
+			mCamera.setParameters(mParameters);
 			
 			try{
 				mCamera.setPreviewDisplay(holder);
 				mCamera.startPreview();
+				mCamera.autoFocus(myAutoFocusCallback);
 				mFlag = true;
 			}catch(Exception e){
 				mCamera.release();
@@ -184,9 +224,11 @@ public class MagnifiterActivity extends Activity implements SurfaceHolder.Callba
 	@Override
 	public void surfaceDestroyed(SurfaceHolder holder) {
 		// TODO Auto-generated method stub
-		mCamera.stopPreview();  
-		mCamera.release();  
-		mCamera=null; 
+		if (mCamera != null && holder != null) {
+			mCamera.stopPreview();
+			mCamera.release();
+			mCamera = null;
+		}
 	}
 
 	// @Override

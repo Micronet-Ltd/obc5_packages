@@ -11,7 +11,7 @@ import java.util.Date;
  */
 public class MControl {
 
-    public static boolean DBG = false;
+    public static boolean DBG = true;
 
     static {
         System.loadLibrary("mctl");

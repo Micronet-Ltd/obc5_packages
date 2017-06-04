@@ -1,4 +1,4 @@
-package com.micronet.mcontrol;
+package com.micronet.mcontrol.interfaces;
 
 import java.io.IOException;
 

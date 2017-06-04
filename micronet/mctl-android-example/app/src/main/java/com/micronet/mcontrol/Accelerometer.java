@@ -1,23 +1,14 @@
 package com.micronet.mcontrol;
 
-import android.content.Context;
 import android.util.Log;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
+import com.micronet.mcontrol.interfaces.AccelerometerInterface;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.RandomAccessFile;
-import java.io.StringReader;
-import java.nio.ByteBuffer;
 import java.sql.Time;
-
-import static android.os.SystemClock.sleep;
 
 /**
  * Created by abid.esmail on 11/7/2016.

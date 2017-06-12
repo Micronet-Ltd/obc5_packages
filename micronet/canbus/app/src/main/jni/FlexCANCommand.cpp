@@ -240,10 +240,19 @@ int FlexCAN_startup(bool listeningModeEnable, int bitrate, int termination, FLEX
 
     configureFlowControl(flexcan_flow_control, numOfFlowMessages,fd);
 
-    if(serial_start_monitor_thread())
-    {
-        LOGE("unable to start serial monitor thread\n");
-        return -1;
+    if(strcmp(portName, CAN1_TTY)==0){
+        if(serial_start_monitor_thread_can_port1())
+        {
+            LOGE("unable to start serial monitor thread__port1\n");
+            return -1;
+        }
+    }
+    else if(strcmp(portName, CAN2_TTY)==0){
+        if(serial_start_monitor_thread_can_port2())
+        {
+            LOGE("unable to start serial monitor thread__port2\n");
+            return -1;
+        }
     }
 
     if(setBitrate(fd, bitrate) == -1) {

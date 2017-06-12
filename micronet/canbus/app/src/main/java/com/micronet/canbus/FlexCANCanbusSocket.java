@@ -9,7 +9,10 @@ import java.util.concurrent.TimeUnit;
 class FlexCANCanbusSocket extends CanbusSocket implements CanbusListener{
     private static final String TAG = "CanbusSocket";
 
-    private int mSocket;
+    private int mSocket1;
+    private int mSocket2;
+    private int mSocket3;
+
     //TODO: how many elements ??
     // Needs enough to prevent blocking insertion.
     BlockingQueue<CanbusFramePort1> mQueuej1939Port1 = new LinkedBlockingQueue<CanbusFramePort1>(2000);
@@ -19,12 +22,14 @@ class FlexCANCanbusSocket extends CanbusSocket implements CanbusListener{
     /**
      * Creates Canbus socket.
      */
-    protected FlexCANCanbusSocket(int fd) {
-        mSocket = fd;
+    protected FlexCANCanbusSocket(int fd, int port) {
+        if (port==2) {mSocket1 = fd;}
+        else if (port==3){mSocket2=fd;}
+        else if (port==3){mSocket3=fd;}
     }
 
     /**
-     * Reads Canbus frame. Will block the calling thread until data
+     * Reads Canbus frame. Will block the calling thread__port1 until data
      * is written to Canbus socket.
      */
     public CanbusFramePort1 readPort1(){
@@ -41,7 +46,7 @@ class FlexCANCanbusSocket extends CanbusSocket implements CanbusListener{
     }
 
     /**
-     * Reads Canbus frame. Will block the calling thread until data
+     * Reads Canbus frame. Will block the calling thread__port1 until data
      * is written to Canbus socket or timeout has elapsed.
      *
      * @param timeout how long to wait before giving up, in units of milliseconds
@@ -63,7 +68,7 @@ class FlexCANCanbusSocket extends CanbusSocket implements CanbusListener{
     }
 
     /**
-     * Reads Canbus frame. Will block the calling thread until data
+     * Reads Canbus frame. Will block the calling thread__port1 until data
      * is written to Canbus socket.
      */
     public CanbusFramePort2 readPort2(){
@@ -80,7 +85,7 @@ class FlexCANCanbusSocket extends CanbusSocket implements CanbusListener{
     }
 
     /**
-     * Reads Canbus frame. Will block the calling thread until data
+     * Reads Canbus frame. Will block the calling thread__port1 until data
      * is written to Canbus socket or timeout has elapsed.
      *
      * @param timeout how long to wait before giving up, in units of milliseconds
@@ -104,41 +109,41 @@ class FlexCANCanbusSocket extends CanbusSocket implements CanbusListener{
     @Override
     public void onPacketReceive1939Port1(CanbusFramePort1 frame) {
         if(!mQueuej1939Port1.offer(frame))
-            Log.e(TAG, "Unable to put frame, dropping.");
+            Log.e(TAG, "Unable to put frame from CAN1_TTY, frame dropping.");
 
     }
 
     @Override
     public void onPacketReceive1939Port2(CanbusFramePort2 frame) {
         if(!mQueuej1939Port2.offer(frame))
-            Log.e(TAG, "Unable to put frame, dropping.");
+            Log.e(TAG, "Unable to put frame from CAN2_TTY, frame dropping.");
     }
 
     @Override
-    public void onPacketReceiveJ1708(J1708Frame frame) {
+    public void onPacketReceiveJ1708Port(J1708Frame frame) {
         if(!mQueueJ1708.offer(frame))
-            Log.e(TAG, "Unable to put frame, dropping.");
+            Log.e(TAG, "Unable to put frame from J1708Port, frame dropping.");
     }
 
     /**
      * Sends Canbus frame to port 1 through socket.
      */
     public void write1939Port1(CanbusFramePort1 frame){
-        sendJ1939Port1(mSocket, frame);
+        sendJ1939Port1(mSocket1, frame);
     }
 
     /**
      * Sends Canbus frame to port 2 through socket.
      */
     public void write1939Port2(CanbusFramePort2 frame){
-        sendJ1939Port2(mSocket, frame);
+        sendJ1939Port2(mSocket2, frame);
     }
 
     /**
      * Sends J1708 frame through socket.
      */
-    public void writeJ1708(J1708Frame frame){
-        sendJ1708(mSocket, frame);
+    public void writeJ1708Port(J1708Frame frame){
+        sendJ1708(mSocket3, frame);
     }
 
     /**
@@ -165,15 +170,34 @@ class FlexCANCanbusSocket extends CanbusSocket implements CanbusListener{
     /**
      * Closes Canbus socket for port 1
      */
-    public void close1708(){closeSocketJ1939Port2();}
+    public void close1708Port(){closeSocketJ1939Port2();}
 
 
     /**
-     * Returns Canbus socket id.
+     * Returns Canbus socket id for port CAN1_TTY
      */
-    public int getId(){
-        return mSocket;
+    public int getCan1PortId(){
+        return mSocket1;
     }
+
+    /**
+     * Returns Canbus socket id for port CAN2_TTY
+     */
+    public int getCan2PortId(){
+        return mSocket2;
+    }
+
+    /**
+     * Returns Canbus socket id for J1708 port
+     */
+    public int getJ708PortId(){
+        return mSocket2;
+    }
+
+    public int getId(){return mSocket1;}
+
+
+
 
     private void setPacketListener(CanbusListener listener) {
         registerCallback(listener);

@@ -1,20 +1,15 @@
 package com.micronet.canbus.Fragment;
 
 import android.os.Bundle;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.Switch;
-import android.widget.TextView;
 
 import com.micronet.canbus.CanTest;
-import com.micronet.canbus.Info;
-import com.micronet.canbus.MainActivity;
 import com.micronet.canbus.R;
 
 /**
@@ -45,7 +40,7 @@ public class CanbusMessageTypeFragment extends android.support.v4.app.Fragment {
      }
 
      private void setStateSocketDependentUI() {
-          boolean open = canTest.isSocketOpen();
+          boolean open = canTest.isPort1SocketOpen();
           submit_data.setEnabled(open);
           seekBarJ1939.setEnabled(open);
           switchCyclicTx.setEnabled(open);

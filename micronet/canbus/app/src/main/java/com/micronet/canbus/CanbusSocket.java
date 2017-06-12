@@ -12,7 +12,7 @@ public class CanbusSocket implements CanbusListener{
 	protected CanbusSocket() {}
 
 	/**
-	 * Reads Canbus frame. Will block the calling thread until data
+	 * Reads Canbus frame. Will block the calling thread__port1 until data
 	 * is written to Canbus socket.
 	 */
 	public CanbusFramePort1 readPort1(){
@@ -20,7 +20,15 @@ public class CanbusSocket implements CanbusListener{
 	}
 
 	/**
-	 * Reads Canbus frame. Will block the calling thread until data
+	 * Reads Canbus frame. Will block the calling thread__port1 until data
+	 * is written to Canbus socket.
+	 */
+	public CanbusFramePort2 readPort2(){
+		throw new IllegalArgumentException("Not implemented");
+	}
+
+	/**
+	 * Reads Canbus frame. Will block the calling thread__port1 until data
 	 * is written to Canbus socket or timeout has elapsed.
 	 *
 	 * @param timeout how long to wait before giving up, in units of milliseconds
@@ -30,9 +38,22 @@ public class CanbusSocket implements CanbusListener{
 	public CanbusFramePort1 readPort1(long timeout) {
 		throw new IllegalArgumentException("Not implemented");
 	}
+
+
+	/**
+	 * Reads Canbus frame. Will block the calling thread__port1 until data
+	 * is written to Canbus socket or timeout has elapsed.
+	 *
+	 * @param timeout how long to wait before giving up, in units of milliseconds
+	 *
+	 * @return the head Canbus frame, or null if the specified waiting time elapses before Canbus frame is available
+	 */
+	public CanbusFramePort2 readPort2(long timeout) {
+		throw new IllegalArgumentException("Not implemented");
+	}
 	
 	/**
-     * Reads J1708 frame. Will block the calling thread until data
+     * Reads J1708 frame. Will block the calling thread__port1 until data
      * is written to Canbus socket.
      */
 	public J1708Frame readJ1708(){
@@ -40,7 +61,7 @@ public class CanbusSocket implements CanbusListener{
 	}
 
 	/**
-	 * Reads J1708 frame. Will block the calling thread until data
+	 * Reads J1708 frame. Will block the calling thread__port1 until data
 	 * is written to Canbus socket or timeout has elapsed.
 	 *
 	 * @param timeout how long to wait before giving up, in units of milliseconds
@@ -70,7 +91,7 @@ public class CanbusSocket implements CanbusListener{
 	 * For internal use only.
 	 */
 	@Override
-	public void onPacketReceiveJ1708(J1708Frame frame) {
+	public void onPacketReceiveJ1708Port(J1708Frame frame) {
 	}
 
 	/**
@@ -88,7 +109,7 @@ public class CanbusSocket implements CanbusListener{
 	/**
      * Sends Canbus frame through socket.
      */
-	public void writeJ1708(J1708Frame frame){
+	public void writeJ1708Port(J1708Frame frame){
 	}
 
 
@@ -113,7 +134,7 @@ public class CanbusSocket implements CanbusListener{
 	/**
 	 * Closes Canbus socket for Port 1.
 	 */
-	public void close1708(){
+	public void close1708Port(){
 	}
 
 
@@ -123,12 +144,40 @@ public class CanbusSocket implements CanbusListener{
 	 */
 	public void discardInBuffer(){
 	}
+//
+//	/**
+//	 * Returns Canbus socket id.
+//	 */
+//	public int getId(){
+//		return -1;
+//	}
+
 	/**
-	 * Returns Canbus socket id.
+	 * Returns Canbus socket id for CAN Port 1
 	 */
+	public int getCan1PortId(){
+		return -1;
+	}
+
+	/**
+	 * Returns Canbus socket id for CAN Port 2
+	 */
+	public int getCan2PortId(){
+		return -1;
+	}
+
+	/**
+	 * Returns Canbus socket id for J1708 port
+	 */
+	public int getJ708PortId(){
+		return -1;
+	}
+
 	public int getId(){
 		return -1;
 	}
 
-	
+
+
+
 }

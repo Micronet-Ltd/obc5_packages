@@ -191,11 +191,26 @@ public class CanbusInterface {
 
 
 	/**
-	 *	Creates new socket on Canbus interface. 
+	 *	Creates new socket on Canbus interface on CAN port 1.
 	 */
-	public CanbusSocket createSocket(){
-		return impl.createSocket();
+	public CanbusSocket createSocketCAN1(){
+		return impl.createSocketCAN1();
 	}
+
+	/**
+	 *	Creates new socket on Canbus interface on CAN port 2 .
+	 */
+	public CanbusSocket createSocketCAN2(){
+		return impl.createSocketCAN2();
+	}
+
+	/**
+	 *	Creates new socket on J1708 interface.
+	 */
+	public CanbusSocket createSocketJ1708(){
+		return impl.createSocketCAN2();
+	}
+
 
 
 

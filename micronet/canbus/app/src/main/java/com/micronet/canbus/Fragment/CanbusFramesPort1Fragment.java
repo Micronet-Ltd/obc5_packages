@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.micronet.canbus.CanTest;
@@ -19,10 +18,10 @@ import com.micronet.canbus.R;
  * Created by eemaan.siddiqi on 3/3/2017.
  */
 
-public class CanbusFramesFragment extends Fragment {
+public class CanbusFramesPort1Fragment extends Fragment {
     private ArrayAdapter<String> j1939FrameAdapter;
 //    private ArrayAdapter<String> j1708FrameAdapter;
-    private TextView lvJ1939Frames;
+    private TextView lvJ1939FramesPort1;
 //    private TextView lvJ1708Frames;
     private CanTest canTest;
     private Handler mHandler;
@@ -30,12 +29,12 @@ public class CanbusFramesFragment extends Fragment {
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public CanbusFramesFragment() {
+    public CanbusFramesPort1Fragment() {
     }
 
     @SuppressWarnings("unused")
-    public static CanbusFramesFragment newInstance(int columnCount) {
-        return new CanbusFramesFragment();
+    public static CanbusFramesPort1Fragment newInstance(int columnCount) {
+        return new CanbusFramesPort1Fragment();
     }
 
     @Override
@@ -63,11 +62,11 @@ public class CanbusFramesFragment extends Fragment {
 
     private void updateCountUI()
     {
-        if(lvJ1939Frames.length() > 2000) {
-            lvJ1939Frames.setText("");
+        if(lvJ1939FramesPort1.length() > 2000) {
+            lvJ1939FramesPort1.setText("");
         }
-        lvJ1939Frames.append(canTest.canData);
-        canTest.canData.setLength(0);
+        lvJ1939FramesPort1.append(canTest.can1Data);
+        canTest.can1Data.setLength(0);
 
        /* if(lvJ1708Frames.length() > 2000) {
             lvJ1708Frames.setText("");
@@ -78,9 +77,9 @@ public class CanbusFramesFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_canframes, container, false);
-        lvJ1939Frames = (TextView)  view.findViewById(R.id.lvJ1939Frames);
-        lvJ1939Frames.setMovementMethod(new ScrollingMovementMethod());
+        View view = inflater.inflate(R.layout.fragment_can1_frames, container, false);
+        lvJ1939FramesPort1 = (TextView)  view.findViewById(R.id.lvJ1939FramesPort1);
+        lvJ1939FramesPort1.setMovementMethod(new ScrollingMovementMethod());
 /*      lvJ1708Frames = (TextView)  view.findViewById(R.id.lvJ1708Frames);
         lvJ1708Frames.setMovementMethod(new ScrollingMovementMethod());*/
         return view;

@@ -107,12 +107,15 @@ struct canbus_globals
 
     JavaVM* g_vm;
     JavaVMAttachArgs args;
-    jmethodID g_onPacketReceive;
+    jmethodID g_onPacketReceive1939Port1;
     jmethodID g_onPacketReceiveJ1708;
+    jmethodID g_onPacketReceive1939Port2;
 
 
-    jclass canbusFrameClass;
+    jclass canbusFramePort1Class;
+    jclass canbusFramePort2Class;
     jclass j1708FrameClass;
+
 };
 
 extern struct canbus_globals g_canbus;

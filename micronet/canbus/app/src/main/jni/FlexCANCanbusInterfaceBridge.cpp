@@ -303,20 +303,20 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_cre
     jclass clazz = env->FindClass("com/micronet/canbus/FlexCANCanbusInterfaceBridge");
 
     if (port_number==2) {
-        jint fd = FlexCAN_startup(listeningModeEnable, bitrate, termination, filter_array, numfilter, port, flowControlMessageArray, numFlowControlMessages);
+        jint fdCanPort1 = FlexCAN_startup(listeningModeEnable, bitrate, termination, filter_array, numfilter, port, flowControlMessageArray, numFlowControlMessages);
         jfieldID fd_id;
-        fd_id = env->GetFieldID(clazz, "fd_can_port1", "I");
-        env->SetIntField(instance, fd_id, fd);
+        fd_id = env->GetFieldID(clazz, "fdCanPort1", "I");
+        env->SetIntField(instance, fd_id, fdCanPort1);
     }
 
     else if (port_number==3){
-        jint fd = FlexCAN_startup(listeningModeEnable, bitrate, termination, filter_array, numfilter, port, flowControlMessageArray, numFlowControlMessages);
+        jint fdCanPort2 = FlexCAN_startup(listeningModeEnable, bitrate, termination, filter_array, numfilter, port, flowControlMessageArray, numFlowControlMessages);
         jfieldID fd_id;
-        fd_id = env->GetFieldID(clazz, "fd_can_port2", "I");
-        env->SetIntField(instance, fd_id, fd);
+        fd_id = env->GetFieldID(clazz, "fdCanPort2", "I");
+        env->SetIntField(instance, fd_id, fdCanPort2);
     }
 
-    //TODO : Add and else if for 1708
+    //TODO : Add and else if for 1708 to configure 1708 ports
     return 0;
 
     error:

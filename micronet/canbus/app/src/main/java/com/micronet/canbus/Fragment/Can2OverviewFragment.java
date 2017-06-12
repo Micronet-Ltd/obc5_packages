@@ -16,10 +16,10 @@ import android.widget.TextView;
 
 import com.micronet.canbus.CanTest;
 import com.micronet.canbus.Info;
-import com.micronet.canbus.R;
 import com.micronet.canbus.MainActivity;
+import com.micronet.canbus.R;
 
-public class CanOverviewFragment extends Fragment {
+public class Can2OverviewFragment extends Fragment {
     private int BITRATE_250K = 250000;
     private int BITRATE_500K = 500000;
 
@@ -53,7 +53,7 @@ public class CanOverviewFragment extends Fragment {
     private ChangeBaudRateTask changeBaudRateTask;
     Switch swFilters;
 
-    public CanOverviewFragment() {
+    public Can2OverviewFragment() {
         // Required empty public constructor
     }
 
@@ -64,7 +64,7 @@ public class CanOverviewFragment extends Fragment {
     }
 
     private void setStateSocketDependentUI() {
-        boolean open = canTest.isSocketOpen();
+        boolean open = canTest.isPort2SocketOpen();
         btnTransmitCAN.setEnabled(open);
       /*  btnTransmitJ1708.setEnabled(open);*/
         swCycleTransmitJ1939.setEnabled(open);
@@ -74,7 +74,7 @@ public class CanOverviewFragment extends Fragment {
     }
 
     private void setStateInterfaceDependentUI() {
-        boolean open = canTest.isInterfaceOpen();
+        boolean open = canTest.isCAN2InterfaceOpen();
         btnGetBaudrate.setEnabled(open);
         swFilters.setEnabled(open);
     }
@@ -84,7 +84,7 @@ public class CanOverviewFragment extends Fragment {
         if(status != null) {
             txtInterfaceStatus.setText(status);
             txtInterfaceStatus.setBackgroundColor(Color.YELLOW);
-        } else if(canTest.isInterfaceOpen()) {
+        } else if(canTest.isCAN2InterfaceOpen()) {
             txtInterfaceStatus.setText(getString(R.string.open));
             txtInterfaceStatus.setBackgroundColor(Color.GREEN);
         } else { // closed
@@ -96,7 +96,7 @@ public class CanOverviewFragment extends Fragment {
         if(status != null) {
             txtSocketStatus.setText(status);
             txtSocketStatus.setBackgroundColor(Color.YELLOW);
-        } else if(canTest.isSocketOpen()) {
+        } else if(canTest.isPort2SocketOpen()) {
             txtSocketStatus.setText(getString(R.string.open));
             txtSocketStatus.setBackgroundColor(Color.GREEN);
         } else { // closed
@@ -171,7 +171,7 @@ public class CanOverviewFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 canTest.silentMode(swSilentMode.isChecked());
-                if (canTest.isInterfaceOpen()) {
+                if (canTest.isCAN2InterfaceOpen()) {
                     executeChangeBaudrate();
                 }
 
@@ -182,7 +182,7 @@ public class CanOverviewFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 canTest.setBaudrate(BITRATE_250K);
-                canTest.setPortNumber(2);
+                canTest.setPortNumber(3);
                 executeChangeBaudrate();
             }
         });
@@ -280,7 +280,7 @@ public class CanOverviewFragment extends Fragment {
         swBlockOnRead.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                canTest.setBlockOnRead(swBlockOnRead.isChecked());
+                canTest.setBlockOnReadPort1(swBlockOnRead.isChecked());
             }
         });
 
@@ -311,9 +311,9 @@ public class CanOverviewFragment extends Fragment {
     }
 
     private void updateCountUI() {
-        String s = "J1939 Frames/Bytes: " + canTest.getCanbusFrameCount() + "/" + canTest.getCanbusByteCount() + "\n";
+        String s = "J1939 Frames/Bytes: " + canTest.getPort2CanbusFrameCount() + "/" + canTest.getPort2CanbusByteCount() + "\n";
 //
-//                + "Rollovers/MaxDiff: " + canTest.getCanbusRollovers() + "/" + canTest.getCanbusMaxdiff() + "\n";
+//                + "Rollovers/MaxDiff: " + canTest.getPort2CanbusRollovers() + "/" + canTest.getPort2CanbusMaxdiff() + "\n";
 
       /*  *//* for J1708 library *//*
         s += "\nJ1708 Frames/Bytes: " + canTest.getJ1708FrameCount() + "/" + canTest.getJ1708ByteCount();
@@ -364,7 +364,7 @@ public class CanOverviewFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_can_overview, container, false);
+        return inflater.inflate(R.layout.fragment_can_2_overview, container, false);
     }
 
     private class ChangeBaudRateTask extends AsyncTask<Void, String, Void> {
@@ -383,17 +383,17 @@ public class CanOverviewFragment extends Fragment {
 
         @Override
         protected Void doInBackground(Void... params) {
-            if(canTest.isInterfaceOpen() || canTest.isSocketOpen()) {
+            if(canTest.isCAN2InterfaceOpen() || canTest.isPort2SocketOpen()) {
                 publishProgress("Closing interface, please wait...");
-                canTest.closeInterface();
+                canTest.closeCan2Interface();
                 publishProgress("Closing socket, please wait...");
-                canTest.closeSocket();
+                canTest.closeCan2Socket();
             }
            /* if(baudrate == 0) {
                 return null;
             }*/
             publishProgress("Opening, please wait...");
-            canTest.CreateInterface(silent,baudrate,termination,port);
+            canTest.CreateCanInterface2(silent,baudrate,termination,port);
             return null;
         }
 

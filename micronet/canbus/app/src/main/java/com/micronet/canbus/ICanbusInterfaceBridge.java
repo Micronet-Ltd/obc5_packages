@@ -17,7 +17,10 @@ interface ICanbusInterfaceBridge {
         public void setCANTermination(boolean termination, CanbusHardwareFilter[] hardwareFilters,int portNumber);
         public void setCANTermination(boolean termination, CanbusHardwareFilter[] hardwareFilters,int portNumber,CanbusFlowControl[] flowControls);
 
-        public CanbusSocket createSocket();
+        public CanbusSocket createSocketCAN1();
+        public CanbusSocket createSocketCAN2();
+        public CanbusSocket createSocketJ1708();
+
         public void remove();
 
 

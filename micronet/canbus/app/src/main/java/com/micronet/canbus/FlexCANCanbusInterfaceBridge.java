@@ -5,10 +5,12 @@ final class FlexCANCanbusInterfaceBridge implements ICanbusInterfaceBridge {
     private boolean termination;
     private int bitrate;
     private static final String TAG = "CanbusSocket";
-    private int fd=0;
-    private int fd_can_port1=0;
-    private int fd_can_port2=0;
-    private int fd_j1708=0;
+    private int fdCanPort1 =0;
+    private int fdCanPort2 =0;
+    private int fdJ1708 =0;
+    static int canPort1Number=2;
+    static int canPort2Number=3;
+    static int j708PortNumber=4;
 
     /**
      * Creates new Canbus interface (up).
@@ -178,14 +180,28 @@ final class FlexCANCanbusInterfaceBridge implements ICanbusInterfaceBridge {
         createInterface(this.listeningModeEnable, this.bitrate, termination,hardwareFilters, portNumber,flowControls);
     }
 
-
+    /**
+     *	Creates new socket on Canbus interface for CAN port 1
+     */
+    public CanbusSocket createSocketCAN1(){
+        return new FlexCANCanbusSocket(fdCanPort1,canPort1Number);
+    }
 
     /**
-     *	Creates new socket on Canbus interface.
+     *	Creates new socket on Canbus interface for CAN port 2
      */
-    public CanbusSocket createSocket(){
-        return new FlexCANCanbusSocket(fd);
+    public CanbusSocket createSocketCAN2(){
+        return new FlexCANCanbusSocket(fdCanPort2,canPort2Number);
     }
+
+    /**
+     *  Creates new socket on J1708 interface
+    */
+
+    public CanbusSocket createSocketJ1708(){
+        return new FlexCANCanbusSocket(fdJ1708,j708PortNumber);
+    }
+
 
     /**
      * {@inheritDoc}

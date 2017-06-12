@@ -174,9 +174,7 @@ public class CanTest {
         startPort2Threads();
     }
 
-
 /*
-
     public void CreateCanInterface2( boolean silentMode, int baudrate,boolean termination, int port) {
         this.silentMode = silentMode;
         this.baudrate = baudrate;
@@ -265,20 +263,6 @@ public class CanTest {
 
         j1939Port1ReaderThread.setPriority(Thread.NORM_PRIORITY + 3);
         j1939Port1ReaderThread.start();
-
-        /*//For CAN2_TTY
-        if (j1939Port2Reader == null) {
-            j1939Port2Reader = new J1939Port2Reader();
-        }
-
-        j1939Port2Reader.clearValues();
-
-        if (j1939Port2ReaderThread == null || j1939Port2ReaderThread.getState() != Thread.State.NEW) {
-            j1939Port2ReaderThread = new Thread(j1939Port2Reader);
-        }
-
-        j1939Port2ReaderThread.setPriority(Thread.NORM_PRIORITY + 3);
-        j1939Port2ReaderThread.start();*/
 
      /*   // For J1708 version of library
         if (j1708Reader == null) {

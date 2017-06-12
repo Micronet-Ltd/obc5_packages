@@ -209,15 +209,6 @@ public class Can1OverviewFragment extends Fragment {
             }
         });
 
-/*
-        btnCloseInterface.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                canTest.setBaudrate(0);
-                executeChangeBaudrate();
-
-            }
-        });*/
 
         swCycleTransmitJ1939.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -389,9 +380,7 @@ public class Can1OverviewFragment extends Fragment {
                 publishProgress("Closing socket, please wait...");
                 canTest.closeCan1Socket();
             }
-           /* if(baudrate == 0) {
-                return null;
-            }*/
+
             publishProgress("Opening, please wait...");
             canTest.CreateCanInterface1(silent,baudrate,termination,port);
             //canTest.CreateCanInterface2(silent,baudrate,termination,3);

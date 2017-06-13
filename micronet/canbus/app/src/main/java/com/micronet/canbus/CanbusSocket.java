@@ -4,12 +4,14 @@ package com.micronet.canbus;
  * Handles the readPort1/write1939Port1 Canbus communication via CanSocket interface.
  * CanbusSocket can be created when Canbus interface is available.
  */
-public class CanbusSocket implements CanbusListener{
+public class CanbusSocket implements CanbusListenerPort1,CanbusListenerPort2,CanbusListenerJ1708{
 
 	private static final String TAG = "CanbusSocket";
 
 
-	protected CanbusSocket() {}
+	protected CanbusSocket() {
+
+	}
 
 	/**
 	 * Reads Canbus frame. Will block the calling thread__port1 until data
@@ -56,7 +58,7 @@ public class CanbusSocket implements CanbusListener{
      * Reads J1708 frame. Will block the calling thread__port1 until data
      * is written to Canbus socket.
      */
-	public J1708Frame readJ1708(){
+	public J1708Frame readJ1708Port2(){
 		throw new IllegalArgumentException("Not implemented");
 	}
 
@@ -68,7 +70,7 @@ public class CanbusSocket implements CanbusListener{
 	 *
 	 * @return the head J1708 frame, or null if th specified waiting time elapses before J1708 frame is available
 	 */
-	public J1708Frame readJ1708(long timeout){
+	public J1708Frame readJ1708Port2(long timeout){
 		throw new IllegalArgumentException("Not implemented");
 	}
 	
@@ -114,10 +116,25 @@ public class CanbusSocket implements CanbusListener{
 
 
 	/**
-	 * Opens Canbus socket for readPort1/readPort1/write1939Port1 operations.
+	 * Opens Canbus socket for readPort1/write1939Port1 operations.
 	 */
-	public void open() {
+	public void openCan1() {
 	}
+
+	/**
+	 * Opens Canbus socket for readPort2/write1939Port2 operations.
+	 */
+	public void openCan2() {
+	}
+
+	/**
+	 * Opens J1708 socket for read1708/write1708Port operations.
+	 */
+	public void openJ1708() {
+	}
+
+
+
 
 	/**
 	 * Closes Canbus socket for Port 1.
@@ -144,13 +161,6 @@ public class CanbusSocket implements CanbusListener{
 	 */
 	public void discardInBuffer(){
 	}
-//
-//	/**
-//	 * Returns Canbus socket id.
-//	 */
-//	public int getId(){
-//		return -1;
-//	}
 
 	/**
 	 * Returns Canbus socket id for CAN Port 1

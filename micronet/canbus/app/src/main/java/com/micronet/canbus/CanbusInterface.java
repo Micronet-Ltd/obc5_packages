@@ -6,7 +6,7 @@ package com.micronet.canbus;
  */
 
 public class CanbusInterface { 
-	private static final String TAG = "CanbusSocket";
+	private static final String TAG = "CanbusSocketPort1";
 
 	ICanbusInterfaceBridge impl;
 
@@ -208,7 +208,7 @@ public class CanbusInterface {
 	 *	Creates new socket on J1708 interface.
 	 */
 	public CanbusSocket createSocketJ1708(){
-		return impl.createSocketCAN2();
+		return impl.createSocketJ1708();
 	}
 
 

@@ -66,11 +66,11 @@ public class Can1OverviewFragment extends Fragment {
     private void setStateSocketDependentUI() {
         boolean open = canTest.isPort1SocketOpen();
         btnTransmitCAN.setEnabled(open);
-      /*  btnTransmitJ1708.setEnabled(open);*/
+      /*  btnTransmitJ1708.setEnabled(openCan1);*/
         swCycleTransmitJ1939.setEnabled(open);
-/*        swCycleTransmitJ1708.setEnabled(open);*/
+/*        swCycleTransmitJ1708.setEnabled(openCan1);*/
         seekBarJ1939Send.setEnabled(open);
-       /* seekBarJ1708Send.setEnabled(open);*/
+       /* seekBarJ1708Send.setEnabled(openCan1);*/
     }
 
     private void setStateInterfaceDependentUI() {

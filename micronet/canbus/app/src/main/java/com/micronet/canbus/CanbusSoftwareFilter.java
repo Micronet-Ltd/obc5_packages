@@ -3,7 +3,7 @@ package com.micronet.canbus;
 /**
  * Sets Canbus socket to pass certain packet ids.
  * Identifier fields of incoming messages are compared to the filter value. 
- * If there is a match, that message will pass and reach CanbusSocket. 
+ * If there is a match, that message will pass and reach CanbusSocketPort1.
  */
 public class CanbusSoftwareFilter { 
  
@@ -45,7 +45,7 @@ public class CanbusSoftwareFilter {
 	
 	/**
      * Sets the frame id.
-     * @param id this id will pass filter and reach CanbusSocket
+     * @param id this id will pass filter and reach CanbusSocketPort1
 
      */
 	public void setId(int id) {

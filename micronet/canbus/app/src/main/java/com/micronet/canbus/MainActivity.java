@@ -53,9 +53,9 @@ public class MainActivity extends AppCompatActivity {
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         adapter.addFrag(new Can1OverviewFragment(), "CAN 1");
-        adapter.addFrag(new CanbusFramesPort1Fragment(), "CAN 1 Frames");
+        adapter.addFrag(new CanbusFramesPort1Fragment(), "CAN1 Frames");
         adapter.addFrag(new Can2OverviewFragment(), "CAN 2");
-        adapter.addFrag(new CanbusFramesPort2Fragment(), "CAN 2 Frames");
+        adapter.addFrag(new CanbusFramesPort2Fragment(), "CAN2 Frames");
         /*adapter.addFrag(new CanbusMessageTypeFragment(), "Transmit Message");*/
         viewPager.setAdapter(adapter);
     }
@@ -95,21 +95,5 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-      /*    CanbusInterface canbus = new CanbusInterface();
-        CanbusSocket canbusSocket=new CanbusSocket();
-        CanbusInterface setFilters=new CanbusInterface();
-        ArrayList<CanbusHardwareFilter> filterList = new ArrayList<CanbusHardwareFilter>();
-        CanbusHardwareFilter[] filters;
-
-        // Up to 24 filters.
-        int[] ids = new int[]{65265, 61444, 61443, 65248, 65276, 61445, 65262, 65266, 60416 , 60160, 61444};
-        int[] mask = {0x1F000000,0x1FF00000};
-        int[] type={CanbusHardwareFilter.EXTENDED, CanbusHardwareFilter.EXTENDED};
-
-        filterList.add(new CanbusHardwareFilter(ids,mask, type));
-        filters = filterList.toArray(new CanbusHardwareFilter[0]);
-
-      canbus.create(filters);
-        canbusSocket.open();*/
     }
 }

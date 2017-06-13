@@ -4,7 +4,7 @@ final class FlexCANCanbusInterfaceBridge implements ICanbusInterfaceBridge {
     private boolean listeningModeEnable;
     private boolean termination;
     private int bitrate;
-    private static final String TAG = "CanbusSocket";
+    private static final String TAG = "CanbusSocketPort1";
     private int fdCanPort1 =0;
     private int fdCanPort2 =0;
     private int fdJ1708 =0;
@@ -210,7 +210,6 @@ final class FlexCANCanbusInterfaceBridge implements ICanbusInterfaceBridge {
         createInterface(listeningModeEnable, this.bitrate, this.termination,hardwareFilters, portNumber,null);
     }
 
-
     /**
      * {@inheritDoc}
      */
@@ -218,13 +217,8 @@ final class FlexCANCanbusInterfaceBridge implements ICanbusInterfaceBridge {
         createInterface(listeningModeEnable, this.bitrate, this.termination,hardwareFilters, portNumber,flowControl);
     }
 
-
     private native int createInterface(boolean listeningModeEnable, int bitrate, boolean termination,CanbusHardwareFilter[] hardwareFilters, int portNumber, CanbusFlowControl[] flowControl);
     private native int removeInterface();
-
-
-
-
 
     static
     {

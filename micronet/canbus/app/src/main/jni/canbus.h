@@ -8,12 +8,8 @@
 #ifndef CAN_BUS_H
 #define CAN_BUS_H
 
-
 #define invalid_arg "Invalid_Argument"
-#define CANBUS_JNI_VER "20170523.000"
-
-#define MAX_SIZE 20
-#define RECEIVE_BUFFER_SIZE 8388608
+#define CANBUS_JNI_VER "20170613.000"
 
 #define STANDARD 0
 #define EXTENDED 1
@@ -27,21 +23,15 @@
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR,LOG_TAG,__VA_ARGS__)
 #define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
 
-#define SINGLE_WIRE_TTY "/dev/ttyACM1"
 #define CAN1_TTY    "/dev/ttyACM2"
 #define CAN2_TTY    "/dev/ttyACM3"
-#define J1708_TTY   "/dev/ttyACM4"
+#define J1708_TTY   "/dev/mcu_j1708"
 
 #define DWORD uint32_t
-#define WORD uint16_t
 #define BYTE uint8_t
-#define BOOL int
 
 #define TRUE 1
 #define FALSE 0
-
-#define ACK_OK 0
-
 
 #define CAN_OK_RESPONSE 	0x0D
 #define CAN_ERROR_RESPONSE	0x07
@@ -97,7 +87,9 @@ struct FLEXCAN_Flow_Control{
 struct canbus_globals
 {
     jbyteArray data;
-    jobject g_listenerObject;
+    jobject g_listenerObject_J1708;
+    jobject g_listenerObject_Can1;
+    jobject g_listenerObject_Can2;
     jobject type_s;
     jobject type_e;
     jobject type_e_r;
@@ -131,10 +123,11 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_rem
 JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusSocket_sendJ1939Port1(JNIEnv *env, jobject instance, jint socket, jobject frame);
 JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusSocket_sendJ1708(JNIEnv *env, jobject instance, jint socket, jobject frame);
 JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusSocket_registerCallback(JNIEnv *env, jobject instance, jobject listener);
+JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusSocket_registerCallbackCanPort2(JNIEnv *env, jobject obj, jobject listenerObj);
+JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusSocket_registerCallbackJ1708Port(JNIEnv *env, jobject obj, jobject listenerObj);
 JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusSocket_closeSocketJ1939Port1(JNIEnv *env, jobject instance);
 JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusSocket_closeSocketJ1939Port2(JNIEnv *env, jobject instance);
 JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusSocket_closeSocketJ1708(JNIEnv *env, jobject instance);
-
 
 };
 #endif /* CAN_BUS_H */

@@ -30,6 +30,7 @@ int serial_send_data(unsigned char*, uint32_t);
 int sendMessage(int fd_port, const char * message);
 
 int serial_start_monitor_thread_can_port1();
+int serial_start_monitor_thread_can_port2();
 
 static void *monitor_data_thread_port1(void *param);
 static void *monitor_data_thread_can_port2(void *param);
@@ -41,7 +42,8 @@ void sendCanbusFramePort1(uint32_t frameId, int type, int length, BYTE* data );
 void sendCanbusFramePort2(uint32_t frameId, int type, int length, BYTE* data);
 
 int qb_close();
-int serial_deinit();
+int serial_deinit_thread_port1();
+int serial_deinit_thread_port2();
 int serial_set_nonblocking(int fd);
 
 

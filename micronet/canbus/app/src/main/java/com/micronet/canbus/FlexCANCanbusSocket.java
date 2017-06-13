@@ -6,8 +6,12 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-class FlexCANCanbusSocket extends CanbusSocket implements CanbusListener{
-    private static final String TAG = "CanbusSocket";
+/**
+ * Handles the read/write Canbus communication via CanSocket interface.
+ * CanbusSocketPort1 can be created when Canbus interface is available.
+ */
+class FlexCANCanbusSocket extends CanbusSocket implements CanbusListenerPort1, CanbusListenerPort2{
+    private static final String TAG = "CanbusSocketPort1";
 
     private int mSocket1;
     private int mSocket2;
@@ -22,10 +26,10 @@ class FlexCANCanbusSocket extends CanbusSocket implements CanbusListener{
     /**
      * Creates Canbus socket.
      */
-    protected FlexCANCanbusSocket(int fd, int port) {
+    protected FlexCANCanbusSocket(int fd, int port){
         if (port==2) {mSocket1 = fd;}
-        else if (port==3){mSocket2=fd;}
-        else if (port==3){mSocket3=fd;}
+        else if (port==3){mSocket2 = fd;}
+        else if (port==3){mSocket3 = fd;}
     }
 
     /**
@@ -63,7 +67,7 @@ class FlexCANCanbusSocket extends CanbusSocket implements CanbusListener{
             Log.e(TAG, "readPort1 queue error !!");
             e.printStackTrace();
         }
-
+        Log.d(TAG,"Returning a frame from CanbusFramePort1 readPort2(timeout)");
         return frame;
     }
 
@@ -108,21 +112,24 @@ class FlexCANCanbusSocket extends CanbusSocket implements CanbusListener{
 
     @Override
     public void onPacketReceive1939Port1(CanbusFramePort1 frame) {
+        Log.e(TAG, "Received a frame from Port1 in the Queue!");
         if(!mQueuej1939Port1.offer(frame))
-            Log.e(TAG, "Unable to put frame from CAN1_TTY, frame dropping.");
+            Log.e(TAG, "Unable to push frame from CAN Port 1, frame dropping.");
 
     }
 
     @Override
     public void onPacketReceive1939Port2(CanbusFramePort2 frame) {
+        Log.e(TAG, "Received a frame from Port2 in the Queue!");
         if(!mQueuej1939Port2.offer(frame))
-            Log.e(TAG, "Unable to put frame from CAN2_TTY, frame dropping.");
+            Log.e(TAG, "Unable to push frame from CAN Port 2, frame dropping.");
     }
 
     @Override
     public void onPacketReceiveJ1708Port(J1708Frame frame) {
+        Log.e(TAG, "Received a frame from J1708 Port in the Queue!");
         if(!mQueueJ1708.offer(frame))
-            Log.e(TAG, "Unable to put frame from J1708Port, frame dropping.");
+            Log.e(TAG, "Unable to push frame from J1708 Port, frame dropping.");
     }
 
     /**
@@ -149,8 +156,22 @@ class FlexCANCanbusSocket extends CanbusSocket implements CanbusListener{
     /**
      * Opens Canbus socket for readPort1/write1939Port1 operations.
      */
-    public void open() {
+    public void openCan1() {
         setPacketListener(this);
+    }
+
+    /**
+     * Opens Canbus socket for readPort1/write1939Port1 operations.
+     */
+    public void openCan2() {
+        setPacketListenerCanPort2(this);
+    }
+
+    /**
+     * Opens Canbus socket for readPort1/write1939Port1 operations.
+     */
+    public void openJ1708() {
+        setPacketListenerCanPort2(this);
     }
 
     /**
@@ -194,19 +215,21 @@ class FlexCANCanbusSocket extends CanbusSocket implements CanbusListener{
         return mSocket2;
     }
 
-    public int getId(){return mSocket1;}
 
-
-
-
-    private void setPacketListener(CanbusListener listener) {
+    private void setPacketListener(CanbusListenerPort1 listener) {
         registerCallback(listener);
     }
+
+    private void setPacketListenerCanPort2(CanbusListenerPort2 listener) {registerCallbackCanPort2(listener);}
+
+    private void setPacketListenerJ1708Port(CanbusListenerJ1708 listener) {registerCallbackJ1708Port(listener);}
 
     private native int sendJ1939Port1(int socket, CanbusFramePort1 frame);
     private native int sendJ1939Port2(int socket, CanbusFramePort2 frame);
     private native int sendJ1708(int socket, J1708Frame frame);
-    private native int registerCallback(CanbusListener listener);
+    private native int registerCallback(CanbusListenerPort1 listener);
+    private native int registerCallbackCanPort2(CanbusListenerPort2 listener);
+    private native int registerCallbackJ1708Port(CanbusListenerJ1708 listener);
     private native int closeSocketJ1939Port1();
     private native int closeSocketJ1939Port2();
     private native int closeSocketJ1708();

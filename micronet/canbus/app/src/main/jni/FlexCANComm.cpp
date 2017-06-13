@@ -9,17 +9,19 @@
 #include "canbus.h"
 #include "FlexCANComm.h"
 
-//static int fd=-1; //serial port file descriptor (handle)
 static int fd_CAN1;
 static int fd_CAN2;
 static int fd_J1708;
 
 static pthread_t thread__port1;
 static pthread_t thread__port2;
-static bool quit = false;
+static bool quit_port1 = false;
+static bool quit_port2 = false;
 
-int serial_set_nonblocking(int fd) {
+int serial_set_nonblocking(int fd)
+{
     int flags;
+
     if(-1 == (flags = fcntl(fd, F_GETFL))) {
         LOGE("%s:%d fnctl: %s\n", __FILE__, __LINE__, strerror(errno));
         return -1;
@@ -33,8 +35,8 @@ int serial_set_nonblocking(int fd) {
     return 0;
 }
 
-int serial_init(char *portName){
-
+int serial_init(char *portName)
+{
     DD("opening port: '%s'\n", portName);
 
     //Initialising CAN1_TTY
@@ -416,7 +418,7 @@ int sendReadStatusCommand(int fd) {
 
 int serial_start_monitor_thread_can_port1()
 {
-    quit = false;
+    quit_port1 = false;
     int r = pthread_create(&thread__port1, NULL, monitor_data_thread_port1, 0);
     if( r != 0 ){
         error_message("thread__port1 has failed to be created");
@@ -426,14 +428,47 @@ int serial_start_monitor_thread_can_port1()
     return 0;
 }
 
+//TODO : check this function
+int serial_deinit_thread_port1() {
+    LOGD("Entered serial_deinit_thread_port1()");
+    if (thread__port1) {
+        int retval, *retvalp;
+        // cancel out readPort1 threads
+        quit_port1 = 1;
+        /*retvalp = &retval;*/
+        LOGD("Begin cancelling the threads");
+        pthread_join(thread__port1,NULL/* (void **) &retvalp*/);
+        LOGD("cancel out the threads");
+        return retval;
+    }
+    LOGD("Failed to enter the if(thread__port1)");
+    return 0;
+}
+
 int serial_start_monitor_thread_can_port2() {
-    quit = false;
+    quit_port2 = false;
     int r = pthread_create(&thread__port2, NULL, monitor_data_thread_can_port2, 0);
     if (r != 0) {
         error_message("thread__port2 has failed to be created");
         thread__port2 = 0;
         return -1;
     }
+    return 0;
+}
+
+int serial_deinit_thread_port2() {
+    LOGD("Entered serial_deinit_thread_port1()");
+    if (thread__port2) {
+        int retval, *retvalp;
+        // cancel out readPort1 threads
+        quit_port2 = 1;
+        /*retvalp = &retval;*/
+        LOGD("Begin cancelling the threads");
+        pthread_join(thread__port2,NULL/* (void **) &retvalp*/);
+        LOGD("cancel out the threads");
+        return retval;
+    }
+    LOGD("Failed to enter the if(thread__port1)");
     return 0;
 }
 
@@ -521,8 +556,8 @@ void sendCanbusFramePort1(uint32_t frameId, int type, int length, BYTE* data ){
     env->SetObjectField(frameObj, typeField, type == STANDARD ? g_canbus.type_s : g_canbus.type_e);
 
     // on rare occasion, frame is received before socket is initialized
-    if (g_canbus.g_listenerObject != NULL && g_canbus.g_onPacketReceive1939Port1 != NULL) {
-        env->CallVoidMethod(g_canbus.g_listenerObject, g_canbus.g_onPacketReceive1939Port1, frameObj);
+    if (g_canbus.g_listenerObject_Can1 != NULL && g_canbus.g_onPacketReceive1939Port1 != NULL) {
+        env->CallVoidMethod(g_canbus.g_listenerObject_Can1, g_canbus.g_onPacketReceive1939Port1, frameObj);
     }
     LOGD("######### PORT 1 ########## Message pushed to the java layer successfully");
     env->DeleteLocalRef(frameObj);
@@ -554,14 +589,16 @@ void sendCanbusFramePort2(uint32_t frameId, int type, int length, BYTE* data){
     env->SetObjectField(frameObj, typeField, type == STANDARD ? g_canbus.type_s : g_canbus.type_e);
 
     // on rare occasion, frame is received before socket is initialized
-    if (g_canbus.g_listenerObject != NULL && g_canbus.g_onPacketReceive1939Port2 != NULL) {
-        env->CallVoidMethod(g_canbus.g_listenerObject, g_canbus.g_onPacketReceive1939Port2, frameObj);
+    if (g_canbus.g_listenerObject_Can2 != NULL && g_canbus.g_onPacketReceive1939Port2 != NULL) {
+        env->CallVoidMethod(g_canbus.g_listenerObject_Can2, g_canbus.g_onPacketReceive1939Port2, frameObj);
     }
     LOGD("######### PORT 2 ########## Message pushed to the java layer successfully");
     env->DeleteLocalRef(frameObj);
     env->DeleteLocalRef(data_l);
     g_canbus.g_vm->DetachCurrentThread();
 }
+
+//TODO: Add sendJ1708()
 
 
 void j1939rxd(BYTE *rxd, int portNumber) {
@@ -614,23 +651,38 @@ void j1939rxd(BYTE *rxd, int portNumber) {
     }
 }
 
-static void *monitor_data_thread_port1(void *param) {
+static void *monitor_data_thread_port1(void *param)
+{
     uint8_t data[8 * 1024];
     uint8_t *pdata = data;
-
-	unsigned char * thread_char = (unsigned char *)(void *)(&thread__port1);
+    //TODO: Uncomment the following
+	/*unsigned char * thread_char = (unsigned char *)(void *)(&thread__port1);*/
 
     prctl(PR_SET_NAME, "monitor_thread_port1", 0, 0, 0);
     LOGD("monitor_thread_port1 started");
 
-    //TODO
+    //TODO: Uncomment the following
+   /* LOGD("thread__port1=%02x",(unsigned char)*thread_char);*/
 
-    LOGD("thread__port1=%02x",(unsigned char)*thread_char);
-    int quit = 0;
-    while (!quit){
+    // Attach thread
+    JNIEnv *env;
+    LOGD("read thread1, thread=%d, pthread_self=%d", thread__port1, pthread_self());
+    jint rs = g_canbus.g_vm->AttachCurrentThread(&env, &g_canbus.args);
+    LOGD("read thread2, thread=%d, pthread_self=%d", thread__port1, pthread_self());
+    if(rs != JNI_OK) {
+        error_message("monitor_data_thread failed to attach!");
+    }
+
+    LOGD("thread=%d", thread__port1);
+
+
+    while (!quit_port1){
         // sanity check to kill stale readPort1 thread__port1
          if(thread__port1 != pthread_self()) {
-             LOGD("readPort1 thread__port1 stale, thread__port1=%02x", (unsigned char)*thread_char);
+             //TODO: Delete
+             LOGD("read thread stale, thread=%d, pthread_self=%d", thread__port1, pthread_self());
+             //TODO: Uncomment the following
+            /* LOGD("readPort1 thread__port1 stale, thread__port1=%02x", (unsigned char)*thread_char);*/
              break;
          } //if statement was commented out
         if(fd_CAN1<0){break;}
@@ -641,8 +693,8 @@ static void *monitor_data_thread_port1(void *param) {
             readData = read(fd_CAN1, pdata, sizeof(data) - (pdata - data)); //Returns the number of bytes readPort1
 
             if (0 == readData) {
-                quit = true;
-                LOGD("quit1=%d", quit);
+                quit_port1 = true;
+                LOGD("quit1=%d", quit_port1);
                 break;
             }
             if (-1 == readData) {
@@ -712,21 +764,22 @@ static void *monitor_data_thread_port1(void *param) {
                 else LOGD("######### PORT 1 ########## Incomplete packet received: Frame not sent to j1939rxd()");
             }
         }
-        LOGD("WAITFOR_DATA_PORT1 issue");
     }
-    return 0;
+
 }
 
 static void *monitor_data_thread_can_port2(void *param) {
+
     uint8_t data[8 * 1024];
     uint8_t *pdata = data;
     unsigned char * thread_char = (unsigned char *)(void *)(&thread__port2);
 
     prctl(PR_SET_NAME, "monitor_thread_port2", 0, 0, 0);
     LOGD("monitor_thread_port2 started");
+
     LOGD("thread__port2=%02x",(unsigned char)*thread_char);
-    int quit = 0;
-    while (!quit) {
+
+    while (!quit_port2) {
         // sanity check to kill stale readPort2 thread__port2
         if(thread__port2 != pthread_self()) {
             LOGD("readPort2 thread__port2 stale, thread__port2=%02x", (unsigned char)*thread_char);
@@ -740,8 +793,8 @@ static void *monitor_data_thread_can_port2(void *param) {
             readData = read(fd_CAN2, pdata, sizeof(data) - (pdata - data)); //Returns the number of bytes readPort1
 
             if (0 == readData) {
-                quit = true;
-                LOGD("quit2=%d", quit);
+                quit_port2 = true;
+                LOGD("quit2=%d", quit_port2);
                 break;
             }
             if (-1 == readData) {
@@ -814,27 +867,11 @@ static void *monitor_data_thread_can_port2(void *param) {
     }
     return 0;
 }
-//TODO : add for thread__port1
-int serial_deinit() {
-    LOGD("Entered serial_deinit()");
-    if (thread__port1) {
-        LOGD("Entered if(thread__port1)");
-        int retval, *retvalp;
-        // cancel out readPort1 threads
-        quit = 1;
-        /*retvalp = &retval;*/
-        LOGD("Begin cancelling the threads");
-        pthread_join(thread__port1,NULL/* (void **) &retvalp*/);
-        LOGD("cancel out the threads");
-        return retval;
-    }
-    LOGD("Failed to enter the if(thread__port1)");
-    return 0;
-}
+
 
 int qb_close() {
     LOGD("Entered the close1939Port1()! ");
-    return serial_deinit();
+    return serial_deinit_thread_port1();
 }
 
 

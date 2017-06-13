@@ -141,7 +141,7 @@ public class CanTest {
 
         if (canbusSocket1 == null) {
             canbusSocket1 = canbusInterface1.createSocketCAN1();
-            canbusSocket1.open();
+            canbusSocket1.openCan1();
         }
         if (discardInBuffer) {
             canbusSocket1.discardInBuffer();
@@ -165,7 +165,7 @@ public class CanTest {
         }
         if (canbusSocket2 == null) {
             canbusSocket2 = canbusInterface2.createSocketCAN2();
-            canbusSocket2.open();
+            canbusSocket2.openCan2();
         }
         if (discardInBuffer) {
             canbusSocket2.discardInBuffer();
@@ -337,7 +337,7 @@ public class CanTest {
     }
 
 
-//TODO : implement for Port2
+//TODO: implement for Port2
     public boolean isAutoSendJ1939() {
         return autoSendJ1939;
     }
@@ -819,9 +819,9 @@ public class CanTest {
                 J1708Frame j1708Frame = null;
                 try {
                     if (blockOnReadPort1) {
-                        j1708Frame = canbusSocket1.readJ1708();
+                        j1708Frame = canbusSocket1.readJ1708Port2();
                     } else {
-                        j1708Frame = canbusSocket1.readJ1708(READ_TIMEOUT);
+                        j1708Frame = canbusSocket1.readJ1708Port2(READ_TIMEOUT);
                     }
 
                     if (j1708Frame != null) {

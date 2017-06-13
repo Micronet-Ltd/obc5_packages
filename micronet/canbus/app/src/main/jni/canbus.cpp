@@ -67,12 +67,10 @@ jint JNI_OnLoad(JavaVM* vm, void* reserved)
     jfieldID typeExtendedRemoteField = env->GetStaticFieldID(clsCanbusFrameType, "EXTENDED_REMOTE", "Lcom/micronet/canbus/CanbusFrameType;");
     jfieldID typeStandardRemoteField = env->GetStaticFieldID(clsCanbusFrameType, "STANDARD_REMOTE", "Lcom/micronet/canbus/CanbusFrameType;");
 
-
     g_canbus.type_s = (jobject) env->NewGlobalRef(env->GetStaticObjectField(clsCanbusFrameType, typeStandardField));
     g_canbus.type_e = (jobject) env->NewGlobalRef(env->GetStaticObjectField(clsCanbusFrameType, typeExtendedField));
     g_canbus.type_s_r = (jobject) env->NewGlobalRef(env->GetStaticObjectField(clsCanbusFrameType, typeStandardRemoteField));
     g_canbus.type_e_r= (jobject) env->NewGlobalRef(env->GetStaticObjectField(clsCanbusFrameType, typeExtendedRemoteField));
-    // end FlexCAN
 
     return JNI_VERSION_1_6;
 }

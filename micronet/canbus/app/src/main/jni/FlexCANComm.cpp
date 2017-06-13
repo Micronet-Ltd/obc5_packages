@@ -617,9 +617,14 @@ void j1939rxd(BYTE *rxd, int portNumber) {
 static void *monitor_data_thread_port1(void *param) {
     uint8_t data[8 * 1024];
     uint8_t *pdata = data;
+
 	unsigned char * thread_char = (unsigned char *)(void *)(&thread__port1);
+
     prctl(PR_SET_NAME, "monitor_thread_port1", 0, 0, 0);
     LOGD("monitor_thread_port1 started");
+
+    //TODO
+
     LOGD("thread__port1=%02x",(unsigned char)*thread_char);
     int quit = 0;
     while (!quit){

@@ -26,7 +26,7 @@ static int get_frame_type(JNIEnv *env, jobject object)
     int type;
 
     jclass cls = env->GetObjectClass(object);
-    jmethodID methodId = env->GetMethodID(cls, "getCharType", "()Lcom/micronet/canbus/CanbusFrameType;");
+    jmethodID methodId = env->GetMethodID(cls, "getType", "()Lcom/micronet/canbus/CanbusFrameType;");
     jobject o = env->CallObjectMethod(object, methodId);
     jclass typeclass = env->FindClass("com/micronet/canbus/CanbusFrameType");
     g_canbus.typeField = env->GetFieldID(typeclass, "mType", "I");

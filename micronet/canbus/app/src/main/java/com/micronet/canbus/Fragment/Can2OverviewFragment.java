@@ -389,9 +389,7 @@ public class Can2OverviewFragment extends Fragment {
                 publishProgress("Closing socket, please wait...");
                 canTest.closeCan2Socket();
             }
-           /* if(baudrate == 0) {
-                return null;
-            }*/
+
             publishProgress("Opening, please wait...");
             canTest.CreateCanInterface2(silent,baudrate,termination,port);
             return null;

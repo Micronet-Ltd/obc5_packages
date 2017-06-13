@@ -308,7 +308,9 @@ public class Can1OverviewFragment extends Fragment {
 
       /*  *//* for J1708 library *//*
         s += "\nJ1708 Frames/Bytes: " + canTest.getJ1708FrameCount() + "/" + canTest.getJ1708ByteCount();
+
 */
+     //   s += "\nJ1939 Frames/Bytes: " + canTest.getPort2CanbusFrameCount() + "/" + canTest.getPort2CanbusByteCount();
         swCycleTransmitJ1939.setChecked(canTest.isAutoSendJ1939());
         textView.setText(s);
     }

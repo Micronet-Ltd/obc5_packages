@@ -158,11 +158,6 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_cre
             jint *idDataLengthInts = env->GetIntArrayElements(idDataLength, NULL);
             jsize lengthOfIdDataLengthArray = env->GetArrayLength(idDataLength);
 
-            //TODO: Fix me
-       /*     jmethodID methodResponseDataBytes1=env->GetMethodID(flowClass,"getDataBytes","()[[B");
-            jbyteArray responseDataBytes1=(jbyteArray)env->CallObjectMethod(flowElement, methodResponseDataBytes1);
-            jsize lengthOfResponseArray1=env->GetArrayLength(responseDataBytes1);
-            LOGD("Response Data bytes=%d", responseDataBytes1[0]);*/
 
             jmethodID methodResponseDataBytes1=env->GetMethodID(flowClass,"getDataBytes1","()[B");
             jbyteArray responseDataBytes1=(jbyteArray)env->CallObjectMethod(flowElement, methodResponseDataBytes1);

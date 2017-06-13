@@ -174,32 +174,6 @@ public class CanTest {
         startPort2Threads();
     }
 
-/*
-    public void CreateCanInterface2( boolean silentMode, int baudrate,boolean termination, int port) {
-        this.silentMode = silentMode;
-        this.baudrate = baudrate;
-        this.termination=termination;
-        this.portNumber=port;
-
-        if (canbusInterface2 == null  ) {
-            canbusInterface2 = new CanbusInterface();
-            canbusFilter=setFilters();
-            canbusFlowControls=setFlowControlMessages();
-            canbusInterface2.create(silentMode,baudrate,termination,canbusFilter,3,canbusFlowControls);
-        }
-        if (canbusSocket1 == null) {
-            canbusSocket1 = canbusInterface2.createSocketCAN2();
-            canbusSocket1.open();
-        }
-        if (discardInBuffer) {
-            canbusSocket1.discardInBuffer();
-        }
-        isCan2InterfaceOpen = true;
-        startPort2Threads();
-    }
-*/
-
-
     public void silentMode(boolean silentMode) {
         this.silentMode = silentMode;
     }
@@ -263,18 +237,6 @@ public class CanTest {
 
         j1939Port1ReaderThread.setPriority(Thread.NORM_PRIORITY + 3);
         j1939Port1ReaderThread.start();
-
-     /*   // For J1708 version of library
-        if (j1708Reader == null) {
-            j1708Reader = new J1708Reader();
-        }
-
-        j1708Reader.clearValues();
-
-        if (j1708ReaderThread == null || j1708ReaderThread.getState() != Thread.State.NEW) {
-            j1708ReaderThread = new Thread(j1708Reader);
-        }
-        j1708ReaderThread.start();*/
     }
 
     private void startPort2Threads(){

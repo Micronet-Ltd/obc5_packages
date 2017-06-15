@@ -1,6 +1,6 @@
 package com.micronet.canbus;
 
-interface ICanbusInterfaceBridge {
+interface IVehicleInterfaceBridge {
 
         public void create(CanbusHardwareFilter[] hardwareFilters,int portNumber );
         public void create(CanbusHardwareFilter[] hardwareFilters,int portNumber,CanbusFlowControl[] flowControls );
@@ -19,9 +19,11 @@ interface ICanbusInterfaceBridge {
 
         public CanbusSocket createSocketCAN1();
         public CanbusSocket createSocketCAN2();
-        public CanbusSocket createSocketJ1708();
 
-        public void remove();
+        public void removeCAN1();
+        public void removeCAN2();
+
+        public J1708Socket createSocketJ1708();
 
 
 }

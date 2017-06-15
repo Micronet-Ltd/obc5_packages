@@ -29,7 +29,7 @@ static int get_frame_type(JNIEnv *env, jobject object)
     return type;
 }
 
-JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusSocket_registerCallback(JNIEnv *env, jobject obj, jobject listenerObj)
+JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusSocket_registerCallbackCanPort1(JNIEnv *env, jobject obj, jobject listenerObj)
 {
 
     g_canbus.g_listenerObject_Can1 = (jobject) env->NewGlobalRef(listenerObj);
@@ -61,25 +61,9 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusSocket_registerCall
 
     return 0;
 }
-JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusSocket_registerCallbackJ1708Port(JNIEnv *env, jobject obj, jobject listenerObj){
-
-    g_canbus.g_listenerObject_J1708 = (jobject) env->NewGlobalRef(listenerObj);
-    jclass canbusListenerClass = env->GetObjectClass(listenerObj);
-    if (canbusListenerClass == NULL) {
-        LOGE("!!!!!!!!!!!!!!!! canbusSocketClass error - J708 Port !!!!!!!!!!!!!!!!");
-    }
-
-    g_canbus.g_onPacketReceiveJ1708 = env->GetMethodID(canbusListenerClass, "onPacketReceiveJ1708Port", "(Lcom/micronet/canbus/J1708Frame;)V");
-    if (g_canbus.g_onPacketReceiveJ1708 == NULL) {
-        LOGE("!!!!!!!!!!!!!!!! g_onPacketReceiveJ1708 error !!!!!!!!!!!!!!!!");
-    }
-
-}
 
 JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusSocket_sendJ1939Port1(JNIEnv *env, jobject obj, jint socket, jobject canbusFrameObj) {
 
-    int data_sent;
-    char id_str[64];
     int id, type;
 
     jclass cls = env->GetObjectClass(canbusFrameObj);
@@ -93,7 +77,7 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusSocket_sendJ1939Por
     jsize lengthOfArray = env->GetArrayLength(data);
     type = get_frame_type(env, canbusFrameObj);
 
-    FlexCAN_send_can_packet((BYTE)type,id,lengthOfArray, (BYTE*) bufferPtr);
+    FlexCAN_send_can_packet((BYTE)type,id,lengthOfArray, (BYTE*) bufferPtr, CAN1_TTY_NUMBER);
 
     env->ReleaseByteArrayElements(data, bufferPtr, JNI_ABORT);
 
@@ -102,8 +86,6 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusSocket_sendJ1939Por
 
 JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusSocket_sendJ1939Port2(JNIEnv *env, jobject obj, jint socket, jobject canbusFrameObj) {
 
-    int data_sent;
-    char id_str[64];
     int id, type;
 
     jclass cls = env->GetObjectClass(canbusFrameObj);
@@ -117,44 +99,18 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusSocket_sendJ1939Por
     jsize lengthOfArray = env->GetArrayLength(data);
     type = get_frame_type(env, canbusFrameObj);
 
-    FlexCAN_send_can_packet((BYTE)type,id,lengthOfArray, (BYTE*) bufferPtr);
+    FlexCAN_send_can_packet((BYTE)type,id,lengthOfArray, (BYTE*) bufferPtr, CAN2_TTY_NUMBER);
 
     env->ReleaseByteArrayElements(data, bufferPtr, JNI_ABORT);
 
     return 0;
 }
 
-JNIEXPORT jint Java_com_micronet_canbus_FlexCANCanbusSocket_sendJ1708(JNIEnv *env, jobject obj, jint socket, jobject j1708FrameObj){
-
-    int data_sent;
-    char id_str[64];
-    int id, type;
-    int priority;
-
-    jclass cls = env->GetObjectClass(j1708FrameObj);
-    jmethodID methodId = env->GetMethodID(cls, "getData", "()[B");
-    jbyteArray data = (jbyteArray)env->CallObjectMethod(j1708FrameObj, methodId);
-
-    methodId = env->GetMethodID(cls, "getId", "()I");
-    id = env->CallIntMethod(j1708FrameObj, methodId);
-
-    methodId = env->GetMethodID(cls, "getPriority", "()I");
-    priority = env->CallIntMethod(j1708FrameObj, methodId);
-
-    jbyte* bufferPtr = env->GetByteArrayElements(data, NULL);
-    jsize lengthOfArray = env->GetArrayLength(data);
-
-    //qb_send_j1708_packet(id, (BYTE*) bufferPtr, (BYTE)priority, lengthOfArray);
-
-    env->ReleaseByteArrayElements(data, bufferPtr, JNI_ABORT);
-
-    return 0;
-}
 JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusSocket_closeSocketJ193Port1(JNIEnv *env, jobject instance) {
 
-    if(closePort(CAN1_TTY_NUMBER) == -1) {
+/*    if(closePort(CAN1_TTY_NUMBER) == -1) {
         return -1;
-    }
+    }*/
     env->DeleteGlobalRef(g_canbus.g_listenerObject_Can1);
     g_canbus.g_listenerObject_Can1 = NULL;
     g_canbus.g_onPacketReceive1939Port1 = NULL;
@@ -173,14 +129,3 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusSocket_closeSocketJ
     return 0;
 }
 
-JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusSocket_closeSocketJ1708(JNIEnv *env, jobject instance) {
-
-    if(closePort(J1708_TTY_NUMBER) == -1) {
-        return -1;
-    }
-
-    env->DeleteGlobalRef(g_canbus.g_listenerObject_J1708);
-    g_canbus.g_listenerObject_J1708 = NULL;
-    g_canbus.g_onPacketReceiveJ1708 = NULL;
-    return 0;
-}

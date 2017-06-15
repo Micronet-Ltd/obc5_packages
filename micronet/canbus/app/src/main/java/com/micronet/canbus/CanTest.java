@@ -27,13 +27,19 @@ public class CanTest {
 
     private final static String TAG = "CanTest";
 
-    CanbusFrameType canMessageType;
     CanbusHardwareFilter[] canbusFilter;
     CanbusFlowControl[] canbusFlowControls;
 
-    int canMessageId;
-    byte[] canMessageData;
-    boolean usersData =false;
+    int canMessageIdPort1;
+    byte[] canMessageDataPort1;
+    boolean usersDataPort1 =false;
+    CanbusFrameType canMessageTypePort1;
+
+    int canMessageIdPort2;
+    byte[] canMessageDataPort2;
+    boolean usersDataPort2 =false;
+    CanbusFrameType canMessageTypePort2;
+
     private static final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
     private static final String STD = "STD";
     private static final String EXT = "EXT";
@@ -69,7 +75,8 @@ public class CanTest {
     private boolean silentMode;
     private int portNumber;
     private boolean termination;
-    private volatile boolean autoSendJ1939;
+    private volatile boolean autoSendJ1939Port1;
+    private volatile boolean autoSendJ1939Port2;
 
     private boolean enableFilters = false;
     private boolean enableFlowControls = false;
@@ -258,7 +265,7 @@ public class CanTest {
 
     public void closeCan1Interface() {
         if (canbusInterface1 != null) {
-            canbusInterface1.remove();
+            canbusInterface1.removeCAN1();
             canbusInterface1 = null;
         }
         isCan1InterfaceOpen = false;
@@ -267,7 +274,7 @@ public class CanTest {
 
     public void closeCan2Interface() {
         if (canbusInterface2 != null) {
-            canbusInterface2.remove();
+            canbusInterface2.removeCAN1();
             canbusInterface2 = null;
         }
         isCan2InterfaceOpen = false;
@@ -336,14 +343,20 @@ public class CanTest {
         return j1939Port2Reader.getMaxdiff();
     }
 
-
-//TODO: implement for Port2
-    public boolean isAutoSendJ1939() {
-        return autoSendJ1939;
+    public boolean isAutoSendJ1939Port1() {
+        return autoSendJ1939Port1;
     }
 
-    public void setAutoSendJ1939(boolean autoSendJ1939) {
-        this.autoSendJ1939 = autoSendJ1939;
+    public void setAutoSendJ1939Port1(boolean autoSendJ1939Port1) {
+        this.autoSendJ1939Port1 = autoSendJ1939Port1;
+    }
+
+    public boolean isAutoSendJ1939Port2() {
+        return autoSendJ1939Port2;
+    }
+
+    public void setAutoSendJ1939Port2(boolean autoSendJ1939Port2) {
+        this.autoSendJ1939Port2 = autoSendJ1939Port2;
     }
 /*
     public boolean isAutoSendJ1708() {
@@ -697,38 +710,38 @@ public class CanTest {
         }
         return new String(hexChars);
     }
-    public void sendJ1939() {
+    public void sendJ1939Port1() {
         if (j1939Port1SendThread == null || !j1939Port1SendThread.isAlive()) {
-            j1939Port1SendThread = new Thread(sendJ1939Runnable);
+            j1939Port1SendThread = new Thread(sendJ1939Port1Runnable);
             j1939Port1SendThread.start();
         }
     }
 
-    public void sendJ1939(boolean userData,String messageType, String messageId,String messageData) {
-        usersData=userData;
-        canMessageData = messageData.getBytes();
-        canMessageId = Integer.parseInt(messageId);
+    public void sendJ1939Port1(boolean userData, String messageType, String messageId, String messageData){
+        usersDataPort1 =userData;
+        canMessageDataPort1 = messageData.getBytes();
+        canMessageIdPort1 = Integer.parseInt(messageId);
 
         if (messageType.toString() == "T") {
-            canMessageType = CanbusFrameType.EXTENDED;
+            canMessageTypePort1 = CanbusFrameType.EXTENDED;
         }
         else if (messageType.toString() == "t") {
-            canMessageType = CanbusFrameType.STANDARD;
+            canMessageTypePort1 = CanbusFrameType.STANDARD;
         }
         else if (messageType == "R") {
-            canMessageType = CanbusFrameType.EXTENDED_REMOTE;
+            canMessageTypePort1 = CanbusFrameType.EXTENDED_REMOTE;
         }
         else if (messageType == "r") {
-            canMessageType = CanbusFrameType.STANDARD_REMOTE;
+            canMessageTypePort1 = CanbusFrameType.STANDARD_REMOTE;
         }
 
         if (j1939Port1SendThread == null || !j1939Port1SendThread.isAlive()) {
-            j1939Port1SendThread = new Thread(sendJ1939Runnablle);
+            j1939Port1SendThread = new Thread(sendJ1939Port1Runnablle);
             j1939Port1SendThread.start();
         }
     }
 
-    private Runnable sendJ1939Runnable = new Runnable() {
+    private Runnable sendJ1939Port1Runnable = new Runnable() {
         @Override
         public void run() {
             CanbusFrameType MessageType;
@@ -760,27 +773,107 @@ public class CanTest {
                     Thread.sleep(j1939IntervalDelay);
                 } catch (InterruptedException e) {
                 }
-            } while (autoSendJ1939);
+            } while (autoSendJ1939Port1);
         }
     };
 
-    private Runnable sendJ1939Runnablle = new Runnable() {
+    private Runnable sendJ1939Port1Runnablle = new Runnable() {
         @Override
         public void run() {
             do {
                 if(canbusSocket1 != null) {
-                    canbusSocket1.write1939Port1(new CanbusFramePort1(canMessageId, canMessageData,canMessageType));
+                    canbusSocket1.write1939Port1(new CanbusFramePort1(canMessageIdPort1, canMessageDataPort1, canMessageTypePort1));
                 }
                 try {
                     Thread.sleep(j1939IntervalDelay);
                 } catch (InterruptedException e) {
                 }
-            } while (autoSendJ1939);
+            } while (autoSendJ1939Port1);
+        }
+    };
+
+    public void sendJ1939Port2() {
+        if (j1939Port2SendThread == null || !j1939Port2SendThread.isAlive()) {
+            j1939Port2SendThread = new Thread(sendJ1939Port2Runnable);
+            j1939Port2SendThread.start();
+        }
+    }
+
+    public void sendJ1939Port2(boolean userData, String messageType, String messageId, String messageData){
+        usersDataPort2 =userData;
+        canMessageDataPort2 = messageData.getBytes();
+        canMessageIdPort2 = Integer.parseInt(messageId);
+
+        if (messageType.toString() == "T") {
+            canMessageTypePort2 = CanbusFrameType.EXTENDED;
+        }
+        else if (messageType.toString() == "t") {
+            canMessageTypePort2 = CanbusFrameType.STANDARD;
+        }
+        else if (messageType == "R") {
+            canMessageTypePort2 = CanbusFrameType.EXTENDED_REMOTE;
+        }
+        else if (messageType == "r") {
+            canMessageTypePort2 = CanbusFrameType.STANDARD_REMOTE;
+        }
+
+        if (j1939Port2SendThread == null || !j1939Port2SendThread.isAlive()) {
+            j1939Port2SendThread = new Thread(sendJ1939Port2Runnablle);
+            j1939Port2SendThread.start();
+        }
+    }
+
+    private Runnable sendJ1939Port2Runnable = new Runnable() {
+        @Override
+        public void run() {
+            CanbusFrameType MessageType;
+            int MessageId;
+            byte[] MessageData;
+            do {
+                //To send a different type of frame change this to CanbusFrameType.EXTENDED
+                MessageType=CanbusFrameType.EXTENDED;
+                //A different ID Can be sent by changing the value here
+                MessageId=0xF110;
+                int data = 0;
+                ByteBuffer dbuf = ByteBuffer.allocate(8);
+                dbuf.order(ByteOrder.LITTLE_ENDIAN);
+                dbuf.putInt(data++);
+                byte[] a = dbuf.array();
+                a[0] = 0x12;
+                a[1] = 0x34;
+                a[2] = 0x45;
+                a[3] = 0x67;
+                a[4] = 0x1F;
+                a[5] = 0x2F;
+                a[6] = 0x3F;
+                a[7] = 0x4F;
+                MessageData=a;
+                if(canbusSocket2 != null) {
+                    canbusSocket2.write1939Port2(new CanbusFramePort2(MessageId, MessageData,MessageType));
+                }
+                try {
+                    Thread.sleep(j1939IntervalDelay);
+                } catch (InterruptedException e) {
+                }
+            } while (autoSendJ1939Port2);
+        }
+    };
+
+    private Runnable sendJ1939Port2Runnablle = new Runnable() {
+        @Override
+        public void run() {
+            do {
+                if(canbusSocket2 != null) {
+                    canbusSocket2.write1939Port2(new CanbusFramePort2(canMessageIdPort2, canMessageDataPort2, canMessageTypePort2));
+                }
+                try {
+                    Thread.sleep(j1939IntervalDelay);
+                } catch (InterruptedException e) {
+                }
+            } while (autoSendJ1939Port2);
         }
     };
     /// End J1939 methods
-
-
     
   /*  /// J1708 Reader Thread
     public int getJ1708FrameCount() {

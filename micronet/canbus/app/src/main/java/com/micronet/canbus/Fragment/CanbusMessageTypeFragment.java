@@ -73,7 +73,8 @@ public class CanbusMessageTypeFragment extends android.support.v4.app.Fragment {
                     messageId=message_id.getText().toString();
                     /*canTest.buildString(messageType,messageId,messageData);*/
                     /*canTest.buildString(messageType, Integer.parseInt(messageId),messageData.getBytes());*/
-                    canTest.sendJ1939(true,messageType,messageId,messageData);}
+                    canTest.sendJ1939Port1(true,messageType,messageId,messageData);
+                    canTest.sendJ1939Port2(true,messageType,messageId,messageData);}
           });
 
      }

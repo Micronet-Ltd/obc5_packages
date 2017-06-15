@@ -21,7 +21,7 @@ static void throwException(JNIEnv *env, const char *message, const char* add) {
     env->ThrowNew(cls, msg);
 }
 
-JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_createInterface(JNIEnv *env, jobject instance, jboolean listeningModeEnable, jint bitrate, jboolean termination, jobjectArray  hardwarefilter, int port_number,jobjectArray flowControl) {
+JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANVehicleInterfaceBridge_createCanInterface(JNIEnv *env, jobject instance, jboolean listeningModeEnable, jint bitrate, jboolean termination, jobjectArray  hardwarefilter, int port_number,jobjectArray flowControl) {
 
     char *port=NULL;
     int ttyport_number=0;
@@ -294,8 +294,7 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_cre
         }
     }
 
-
-    jclass clazz = env->FindClass("com/micronet/canbus/FlexCANCanbusInterfaceBridge");
+    jclass clazz = env->FindClass("com/micronet/canbus/FlexCANVehicleInterfaceBridge");
 
     if (port_number==2) {
         jint fdCanPort1 = FlexCAN_startup(listeningModeEnable, bitrate, termination, filter_array, numfilter, port, flowControlMessageArray, numFlowControlMessages);
@@ -311,20 +310,50 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_cre
         env->SetIntField(instance, fd_id, fdCanPort2);
     }
 
-    //TODO : Add and else if for 1708 to configure 1708 ports
     return 0;
 
     error:
     return SYSTEM_ERROR;
 }
 
-JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusInterfaceBridge_removeInterface(JNIEnv *env, jobject instance) {
+JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANVehicleInterfaceBridge_removeCAN1Interface(JNIEnv *env, jobject instance) {
 
-    // TODO close1939Port1 Canbus
-    int false_fd;
-    qb_close();
+    closeInterfaceCAN1();
+    if(closePort(CAN1_TTY_NUMBER) == -1) {
+        return -1;
+    }
+    else return 0;
+}
 
-    return closeCAN(false_fd);
+JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANVehicleInterfaceBridge_removeCAN2Interface(JNIEnv *env, jobject instance) {
+
+    closeInterfaceCAN2();
+    if(closePort(CAN2_TTY_NUMBER) == -1) {
+        return -1;
+    }
+    else return 0;
+}
+
+JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANVehicleInterfaceBridge_createJ1708Interface(JNIEnv *env, jobject instance){
+    /*
+     * TODO: Create Interface (Set bitrate for serial port communication), Push the fd to the java layer
+     * */
+    jint fd = FlexCAN_j1708_startup();
+    jfieldID fd_id;
+
+    jclass clazz = env->FindClass("com/micronet/canbus/FlexCANVehicleInterfaceBridge");
+
+    fd_id = env->GetFieldID(clazz, "fd", "I");
+    env->SetIntField(instance, fd_id, fd);
+
+    return 0;
+
+    error:
+    return SYSTEM_ERROR;
+}
+JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANVehicleInterfaceBridge_removeJ1708Interface(JNIEnv *env, jobject instance){
+    //TODO: Cancel out the read threads (Deinit)
+    //
 }
 
 

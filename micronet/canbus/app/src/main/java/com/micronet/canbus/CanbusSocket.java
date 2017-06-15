@@ -4,10 +4,9 @@ package com.micronet.canbus;
  * Handles the readPort1/write1939Port1 Canbus communication via CanSocket interface.
  * CanbusSocket can be created when Canbus interface is available.
  */
-public class CanbusSocket implements CanbusListenerPort1,CanbusListenerPort2,CanbusListenerJ1708{
+public class CanbusSocket implements CanbusListenerPort1,CanbusListenerPort2{
 
 	private static final String TAG = "CanbusSocket";
-
 
 	protected CanbusSocket() {
 
@@ -54,25 +53,7 @@ public class CanbusSocket implements CanbusListenerPort1,CanbusListenerPort2,Can
 		throw new IllegalArgumentException("Not implemented");
 	}
 	
-	/**
-     * Reads J1708 frame. Will block the calling thread__port1 until data
-     * is written to Canbus socket.
-     */
-	public J1708Frame readJ1708Port2(){
-		throw new IllegalArgumentException("Not implemented");
-	}
 
-	/**
-	 * Reads J1708 frame. Will block the calling thread__port1 until data
-	 * is written to Canbus socket or timeout has elapsed.
-	 *
-	 * @param timeout how long to wait before giving up, in units of milliseconds
-	 *
-	 * @return the head J1708 frame, or null if th specified waiting time elapses before J1708 frame is available
-	 */
-	public J1708Frame readJ1708Port2(long timeout){
-		throw new IllegalArgumentException("Not implemented");
-	}
 	
 	/**
 	 * For internal use only.
@@ -90,13 +71,6 @@ public class CanbusSocket implements CanbusListenerPort1,CanbusListenerPort2,Can
 	}
 
 	/**
-	 * For internal use only.
-	 */
-	@Override
-	public void onPacketReceiveJ1708Port(J1708Frame frame) {
-	}
-
-	/**
      * Sends Canbus frame through socket.
      */
 	public void write1939Port1(CanbusFramePort1 frame){
@@ -108,11 +82,6 @@ public class CanbusSocket implements CanbusListenerPort1,CanbusListenerPort2,Can
 	public void write1939Port2(CanbusFramePort2 frame){
 	}
 
-	/**
-     * Sends Canbus frame through socket.
-     */
-	public void writeJ1708Port(J1708Frame frame){
-	}
 
 
 	/**
@@ -128,15 +97,6 @@ public class CanbusSocket implements CanbusListenerPort1,CanbusListenerPort2,Can
 	}
 
 	/**
-	 * Opens J1708 socket for read1708/write1708Port operations.
-	 */
-	public void openJ1708() {
-	}
-
-
-
-
-	/**
 	 * Closes Canbus socket for Port 1.
 	 */
 	public void close1939Port1(){
@@ -148,11 +108,7 @@ public class CanbusSocket implements CanbusListenerPort1,CanbusListenerPort2,Can
 	public void close1939Port2(){
 	}
 
-	/**
-	 * Closes Canbus socket for Port 1.
-	 */
-	public void close1708Port(){
-	}
+
 
 
 	/**
@@ -176,12 +132,6 @@ public class CanbusSocket implements CanbusListenerPort1,CanbusListenerPort2,Can
 		return -1;
 	}
 
-	/**
-	 * Returns Canbus socket id for J1708 port
-	 */
-	public int getJ708PortId(){
-		return -1;
-	}
 
 	public int getId(){
 		return -1;

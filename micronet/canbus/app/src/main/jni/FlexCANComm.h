@@ -19,6 +19,7 @@ int setBitrate(int fd, int speed);
 int openCANandSetTermination(int fd, bool term);
 int setListeningMode(int fd, bool term);
 int sendReadStatusCommand(int fd);
+int setFd(int portNumber);
 
 int setMasks(char *mask, char type, int fd);
 int setFilters( char *filter, char type, int fd);
@@ -26,7 +27,7 @@ void setFlowControlMessage(char type,char *searchID,char *responseID, int dataLe
 
 int serial_start_monitor_thread_can_port1();
 int serial_start_monitor_thread_can_port2();
-int serial_send_data(unsigned char*, uint32_t);
+int serial_send_data(unsigned char*, uint32_t bytesToWrite, int fd);
 int sendMessage(int fd_port, const char * message);
 
 int serial_start_monitor_thread_can_port1();
@@ -41,7 +42,8 @@ int parseHex(uint8_t * asciiString, int len, uint8_t * hexValue);
 void sendCanbusFramePort1(uint32_t frameId, int type, int length, BYTE* data );
 void sendCanbusFramePort2(uint32_t frameId, int type, int length, BYTE* data);
 
-int qb_close();
+int closeInterfaceCAN1();
+int closeInterfaceCAN2();
 int serial_deinit_thread_port1();
 int serial_deinit_thread_port2();
 int serial_set_nonblocking(int fd);

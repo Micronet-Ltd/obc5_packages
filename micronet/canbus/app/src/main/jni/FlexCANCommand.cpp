@@ -212,6 +212,10 @@ void configureFlowControl(FLEXCAN_Flow_Control *configuration_array, int numfilt
     }
 }
 
+int FlexCAN_j1708_startup(){
+    return -1;
+}
+
 
 int FlexCAN_startup(bool listeningModeEnable, int bitrate, int termination, FLEXCAN_filter_mask* filter_array,int numfilter, char *portName, FLEXCAN_Flow_Control* flexcan_flow_control,int numOfFlowMessages)
 {
@@ -349,14 +353,16 @@ int32_t ParseCanMessToString(int msg_type, int id, int data_len, BYTE * data, ui
     return (int32_t)curr_msg_len;
 }
 
-void FlexCAN_send_can_packet(BYTE type, DWORD id, int data_len, BYTE *data) {
+void FlexCAN_send_can_packet(BYTE type, DWORD id, int data_len, BYTE *data, int portNumber) {
     int index = 0, i = 0;
+    int fd=-1;
     uint8_t canPacketToTx[MAX_PACKET_SIZE] = {0};
     int msgLength = 0;
+    fd=setFd(portNumber);
 
     msgLength = ParseCanMessToString(type, id, data_len, data, canPacketToTx);
 
-    if( serial_send_data(canPacketToTx, msgLength)){
+    if( serial_send_data(canPacketToTx, msgLength, fd)){
         error_message("!!!!!!!!!!!!!!! Couldn't send FLEXCAN CAN message !!!!!!!!!!!!!!!!!");
         return;
     }

@@ -142,7 +142,7 @@ public class Can1OverviewFragment extends Fragment {
         btnTransmitCAN.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                canTest.sendJ1939();
+                canTest.sendJ1939Port1();
             }
         });
 
@@ -213,8 +213,8 @@ public class Can1OverviewFragment extends Fragment {
         swCycleTransmitJ1939.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                canTest.setAutoSendJ1939(swCycleTransmitJ1939.isChecked());
-                canTest.sendJ1939();
+                canTest.setAutoSendJ1939Port1(swCycleTransmitJ1939.isChecked());
+                canTest.sendJ1939Port1();
             }
         });
 
@@ -311,7 +311,7 @@ public class Can1OverviewFragment extends Fragment {
 
 */
      //   s += "\nJ1939 Frames/Bytes: " + canTest.getPort2CanbusFrameCount() + "/" + canTest.getPort2CanbusByteCount();
-        swCycleTransmitJ1939.setChecked(canTest.isAutoSendJ1939());
+        swCycleTransmitJ1939.setChecked(canTest.isAutoSendJ1939Port1());
         textView.setText(s);
     }
 

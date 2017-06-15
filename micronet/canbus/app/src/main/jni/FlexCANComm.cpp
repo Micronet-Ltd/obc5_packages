@@ -118,22 +118,22 @@ int closeCAN(int close_fd) {
     return 0;
 }
 
+int setFd(int portNumber){
+    if(portNumber==CAN1_TTY_NUMBER){
+            return fd_CAN1;
+    }
+    else if(portNumber==CAN2_TTY_NUMBER){
+            return fd_CAN2;
+    }
+    else if(portNumber==J1708_TTY_NUMBER){
+            return fd_J1708;
+    }
+}
+
 int closePort(int port_number){
-    if(port_number==CAN1_TTY_NUMBER){
-        if (closeCAN(fd_CAN1) == -1) {
-            return -1;
-        }
-    }
-    else if(port_number==CAN2_TTY_NUMBER){
-        if (closeCAN(fd_CAN2) == -1) {
-            return -1;
-        }
-    }
-    //TODO: check if this is required??
-    else if(port_number==J1708_TTY_NUMBER){
-        if (closeCAN(fd_J1708) == -1) {
-            return -1;
-        }
+    int closeFd=setFd(port_number);
+    if (closeCAN(closeFd) == -1) {
+        return -1;
     }
 }
 
@@ -869,19 +869,26 @@ static void *monitor_data_thread_can_port2(void *param) {
 }
 
 
-int qb_close() {
+int closeInterfaceCAN1() {
     LOGD("Entered the close1939Port1()! ");
     return serial_deinit_thread_port1();
 }
 
+int closeInterfaceCAN2() {
+    LOGD("Entered the close1939Port2()! ");
+    return serial_deinit_thread_port2();
+}
 
-int serial_send_data(BYTE *mydata, DWORD bytes_to_write) {
+int serial_send_data(BYTE *mydata, DWORD bytes_to_write, int fd) {
     DWORD numwr = 0;
-
-    numwr = write(fd_CAN1, mydata, bytes_to_write);
-    //TODO: this may not be an error
-    if( numwr != bytes_to_write ){
-        return -1;
+    if(fd!=-1){
+        numwr = write(fd, mydata, bytes_to_write);
+        LOGD("Frame sent sucessfully!! frame =%s fd=%d", mydata,fd);
+        //TODO: this may not be an error
+        if(numwr != bytes_to_write ){
+            return -1;
+        }
+        return 0;
     }
-    return 0;
+    else return -1 ;
 }

@@ -252,7 +252,7 @@
 
 
     <Button
-        android:id="@+id/btnCloseInterface"
+        android:id="@+id/btnCloseCan1Interface"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/label_vertical_margin"

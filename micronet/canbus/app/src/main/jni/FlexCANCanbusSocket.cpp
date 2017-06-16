@@ -106,11 +106,8 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusSocket_sendJ1939Por
     return 0;
 }
 
-JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusSocket_closeSocketJ193Port1(JNIEnv *env, jobject instance) {
+JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusSocket_closeSocketJ1939Port1(JNIEnv *env, jobject instance){
 
-/*    if(closePort(CAN1_TTY_NUMBER) == -1) {
-        return -1;
-    }*/
     env->DeleteGlobalRef(g_canbus.g_listenerObject_Can1);
     g_canbus.g_listenerObject_Can1 = NULL;
     g_canbus.g_onPacketReceive1939Port1 = NULL;
@@ -120,9 +117,6 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusSocket_closeSocketJ
 
 JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusSocket_closeSocketJ1939Port2(JNIEnv *env, jobject instance) {
 
-    if(closePort(CAN2_TTY_NUMBER) == -1) {
-        return -1;
-    }
     env->DeleteGlobalRef(g_canbus.g_listenerObject_Can2);
     g_canbus.g_listenerObject_Can2 = NULL;
     g_canbus.g_onPacketReceive1939Port2 = NULL;

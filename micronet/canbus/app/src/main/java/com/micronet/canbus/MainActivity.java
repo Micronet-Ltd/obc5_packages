@@ -11,8 +11,7 @@ import android.support.v7.widget.Toolbar;
 
 import com.micronet.canbus.Fragment.Can1OverviewFragment;
 import com.micronet.canbus.Fragment.Can2OverviewFragment;
-import com.micronet.canbus.Fragment.CanbusFramesPort1Fragment;
-import com.micronet.canbus.Fragment.CanbusFramesPort2Fragment;
+import com.micronet.canbus.Fragment.CanbusFramesFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,9 +25,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        CanTest canTest;
+  /*      CanTest canTest;
         canTest = CanTest.getInstance();
-        canTest.closeCan1Interface();
+        canTest.closeCan1Interface();*/
 
     }
 
@@ -53,9 +52,9 @@ public class MainActivity extends AppCompatActivity {
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         adapter.addFrag(new Can1OverviewFragment(), "CAN 1");
-        adapter.addFrag(new CanbusFramesPort1Fragment(), "CAN1 Frames");
+        adapter.addFrag(new CanbusFramesFragment(), "CAN Frames");
         adapter.addFrag(new Can2OverviewFragment(), "CAN 2");
-        adapter.addFrag(new CanbusFramesPort2Fragment(), "CAN2 Frames");
+   /*     adapter.addFrag(new CanbusFramesPort2Fragment(), "CAN2 Frames");*/
         /*adapter.addFrag(new CanbusMessageTypeFragment(), "Transmit Message");*/
         viewPager.setAdapter(adapter);
     }

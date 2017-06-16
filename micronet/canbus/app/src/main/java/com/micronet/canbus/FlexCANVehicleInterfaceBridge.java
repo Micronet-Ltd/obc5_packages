@@ -4,7 +4,7 @@ final class FlexCANVehicleInterfaceBridge implements IVehicleInterfaceBridge {
     private boolean listeningModeEnable;
     private boolean termination;
     private int bitrate;
-    private static final String TAG = "CanbusSocketPort1";
+    private static final String TAG = "FlexCANVehicleInterfaceBridge";
     private int fdCanPort1 =0;
     private int fdCanPort2 =0;
     private int fdJ1708 =0;
@@ -214,7 +214,6 @@ final class FlexCANVehicleInterfaceBridge implements IVehicleInterfaceBridge {
     private native int createCanInterface(boolean listeningModeEnable, int bitrate, boolean termination, CanbusHardwareFilter[] hardwareFilters, int portNumber, CanbusFlowControl[] flowControl);
     private native int removeCAN1Interface();
     private native int removeCAN2Interface();
-
     private native int createJ1708Interface();
     private native int removeJ1708Interface();
 

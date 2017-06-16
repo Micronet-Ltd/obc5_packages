@@ -152,12 +152,11 @@ class FlexCANCanbusSocket extends CanbusSocket implements CanbusListenerPort1, C
     /**
      * Closes Canbus socket for port 1
      */
-    public void close1939Port1(){
-        closeSocketJ1939Port1();
-    }
+    public void close1939Port1(){closeSocketJ1939Port1();}
+
 
     /**
-     * Closes Canbus socket for port 1
+     * Closes Canbus socket for port 2
      */
     public void close1939Port2(){
         closeSocketJ1939Port2();

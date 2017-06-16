@@ -46,8 +46,8 @@
         android:id="@+id/btnGetBaudrate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/btnCloseInterface"
-        android:layout_alignBottom="@+id/btnCloseInterface"
+        android:layout_alignBaseline="@+id/btnCloseCan1Interface"
+        android:layout_alignBottom="@+id/btnCloseCan1Interface"
         android:layout_alignStart="@+id/yAxis"
         android:text="@string/get_baudrate"
         android:textColor="@color/colorPrimaryDark"
@@ -80,7 +80,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/btnCloseInterface"
+        android:layout_below="@+id/btnCloseCan1Interface"
         android:layout_marginTop="17dp"
         android:text="@string/j1939_send_interval"
         android:textColor="@android:color/black"
@@ -176,7 +176,7 @@
 
 
     <Button
-        android:id="@+id/btnCloseInterface"
+        android:id="@+id/btnCloseCan1Interface"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"

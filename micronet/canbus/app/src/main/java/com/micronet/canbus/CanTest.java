@@ -72,6 +72,8 @@ public class CanTest {
 
     private final int READ_TIMEOUT = 500; // readPort1 timeout (in milliseconds)
     private int baudrate;
+    private boolean removeCan1;
+    private boolean removeCan2;
     private boolean silentMode;
     private int portNumber;
     private boolean termination;
@@ -113,12 +115,37 @@ public class CanTest {
 
     public boolean isCAN2InterfaceOpen() {return isCan2InterfaceOpen;}
 
+
+
     public int getBaudrate() {
         return baudrate;
     }
+    public boolean isSilentChecked() {
+        return silentMode;
+    }
+
+    public boolean getRemoveCan1InterfaceState() {
+        return removeCan1;
+    }
+
+    public boolean getRemoveCan2InterfaceState() {
+        return removeCan2;
+    }
+
 
     public void setBaudrate(int baudrate) {
         this.baudrate = baudrate;
+    }
+
+    public void setSilentMode(boolean isSilent) {
+        this.silentMode = isSilent;
+    }
+
+    public void setRemoveCan1State(boolean removeCan1) {
+        this.removeCan1 = removeCan1;
+    }
+    public void setRemoveCan2State(boolean removeCan2) {
+        this.removeCan2 = removeCan2;
     }
 
     public boolean getTermination() {
@@ -274,11 +301,12 @@ public class CanTest {
 
     public void closeCan2Interface() {
         if (canbusInterface2 != null) {
-            canbusInterface2.removeCAN1();
+            canbusInterface2.removeCAN2();
             canbusInterface2 = null;
         }
         isCan2InterfaceOpen = false;
     }
+
     public void closeCan1Socket() {
         if (isPort1SocketOpen()) {
             canbusSocket1.close1939Port1();
@@ -293,10 +321,11 @@ public class CanTest {
                 }
             }
         }
+
     }
 
     public void closeCan2Socket() {
-        if (isPort1SocketOpen()) {
+        if (isPort2SocketOpen()) {
             canbusSocket2.close1939Port2();
             canbusSocket2 = null;
 
@@ -310,9 +339,6 @@ public class CanTest {
             }
         }
     }
-
-
-
 
     /// J1939 Canbus Reader
     public int getPort1CanbusFrameCount() {return j1939Port1Reader.getCanbusFrameCount();}

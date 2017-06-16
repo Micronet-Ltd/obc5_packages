@@ -114,7 +114,7 @@ int closeCAN(int close_fd) {
         ERR("Error write1939Port1 %s command\n", buf);
         return -1;
     }
-    LOGD("Closing can channel ");
+    LOGD("Closed can channel ");
     return 0;
 }
 
@@ -131,10 +131,13 @@ int setFd(int portNumber){
 }
 
 int closePort(int port_number){
-    int closeFd=setFd(port_number);
+    int closeFd;
+    closeFd=setFd(port_number);
     if (closeCAN(closeFd) == -1) {
+
         return -1;
     }
+    return 0;
 }
 
 //Can send the entire message including the CAN OK RESPONSE
@@ -430,6 +433,19 @@ int serial_start_monitor_thread_can_port1()
 
 //TODO : check this function
 int serial_deinit_thread_port1() {
+/*    LOGD("Entered serial_deinit_thread_port1()");
+    if (thread__port1) {
+        int retval, *retvalp;
+        // cancel out readPort1 threads
+        quit_port1 = 1;
+//        retvalp = &retval;
+        LOGD("Begin cancelling the threads");
+        pthread_join(thread__port1,NULL);
+        LOGD("cancel out the threads");
+        return retval;
+    }
+    LOGD("Failed to enter the if(thread__port1)");
+    return 0;*/
     LOGD("Entered serial_deinit_thread_port1()");
     if (thread__port1) {
         int retval, *retvalp;
@@ -655,26 +671,12 @@ static void *monitor_data_thread_port1(void *param)
 {
     uint8_t data[8 * 1024];
     uint8_t *pdata = data;
-    //TODO: Uncomment the following
-	/*unsigned char * thread_char = (unsigned char *)(void *)(&thread__port1);*/
+	unsigned char * thread_char = (unsigned char *)(void *)(&thread__port1);
 
     prctl(PR_SET_NAME, "monitor_thread_port1", 0, 0, 0);
     LOGD("monitor_thread_port1 started");
 
-    //TODO: Uncomment the following
-   /* LOGD("thread__port1=%02x",(unsigned char)*thread_char);*/
-
-    // Attach thread
-    JNIEnv *env;
-    LOGD("read thread1, thread=%d, pthread_self=%d", thread__port1, pthread_self());
-    jint rs = g_canbus.g_vm->AttachCurrentThread(&env, &g_canbus.args);
-    LOGD("read thread2, thread=%d, pthread_self=%d", thread__port1, pthread_self());
-    if(rs != JNI_OK) {
-        error_message("monitor_data_thread failed to attach!");
-    }
-
-    LOGD("thread=%d", thread__port1);
-
+    LOGD("thread__port1=%02x",(unsigned char)*thread_char);
 
     while (!quit_port1){
         // sanity check to kill stale readPort1 thread__port1

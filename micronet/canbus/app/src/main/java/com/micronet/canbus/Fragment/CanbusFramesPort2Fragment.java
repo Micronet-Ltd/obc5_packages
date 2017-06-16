@@ -14,10 +14,7 @@ import android.widget.TextView;
 import com.micronet.canbus.CanTest;
 import com.micronet.canbus.R;
 
-/**
- * Created by eemaan.siddiqi on 3/3/2017.
- */
-
+//This class is not being used
 public class CanbusFramesPort2Fragment extends Fragment {
     private ArrayAdapter<String> j1939FrameAdapter;
     private TextView lvJ1939Port2Frames;

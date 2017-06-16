@@ -29,7 +29,7 @@
         android:layout_alignParentStart="true"
         android:layout_alignRight="@id/yAxis"
         android:gravity="center"
-        android:text="@string/can"
+        android:text="@string/can1"
         android:textStyle="normal|bold"/>
 
     <TextView
@@ -47,34 +47,6 @@
         android:textAllCaps="true"
         android:text="@string/can2"/>
 
-
-    <TextView
-        android:id="@+id/lblJ1708"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@id/yAxis"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignStart="@id/yAxis"
-        android:gravity="center"
-        android:text="@string/j1708"
-        android:textStyle="normal|bold"/>
-
-    <TextView
-        android:id="@+id/lblJ17082"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@id/yAxis"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignStart="@id/yAxis"
-        android:layout_below="@id/lblJ1708"
-        android:layout_marginLeft="5dp"
-        android:layout_marginStart="5dp"
-        android:textColor="@color/colorAccent"
-        android:textAllCaps="true"
-        android:text="@string/j17082"/>
-
     <TextView
         android:id="@+id/lvJ1939FramesPort1"
         android:layout_width="wrap_content"
@@ -91,17 +63,41 @@
         android:maxLines="20"
         android:minLines="1"
         android:textSize="13sp"
-        android:typeface="monospace"/>
+        android:typeface="monospace" />
 
     <TextView
-        android:id="@+id/lvJ1708Frames"
+        android:id="@+id/lblCan2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@id/yAxis"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_alignStart="@id/yAxis"
-        android:layout_below="@id/lblJ17082"
+        android:gravity="center"
+        android:text="CAN2 "
+        android:textSize="14sp"
+        android:textStyle="normal|bold" />
+
+    <TextView
+        android:id="@+id/lblCan2Packets"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:text="@string/can2"
+        android:textAllCaps="true"
+        android:textColor="@color/colorAccent"
+        android:layout_below="@+id/lblCan2"
+        android:layout_toEndOf="@+id/yAxis" />
+
+    <TextView
+        android:id="@+id/lvJ1939FramesPort2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/yAxis"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignStart="@id/yAxis"
+        android:layout_below="@id/lblCan2Packets"
         android:layout_marginTop="5dp"
         android:layout_marginLeft="5dp"
         android:layout_marginStart="5dp"
@@ -109,6 +105,7 @@
         android:maxLines="20"
         android:minLines="1"
         android:scrollbars="vertical"
-        />
+        android:textSize="13sp"
+        android:typeface="monospace"/>
 
 </RelativeLayout>

@@ -652,6 +652,7 @@ void j1939rxd(BYTE *rxd, int portNumber) {
             memcpy(pId, (const void *) (rxd + idStart), 8);
             parseHex(id,8, hexId);
             mId.dwVal=(uint32_t)((hexId[0]<<24)| (hexId[1]<<16)|(hexId[2]<<8) | (hexId[3]<<0));
+            frameId=mId.dwVal;
             dLength = *(rxd + 9) - '0';
             memcpy(canData, (const void *) (rxd + dataStartPos), dLength*2);
             parseHex(canData,dLength*2,hexData);

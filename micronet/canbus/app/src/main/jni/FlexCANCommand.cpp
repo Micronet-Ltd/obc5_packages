@@ -213,6 +213,8 @@ void configureFlowControl(FLEXCAN_Flow_Control *configuration_array, int numfilt
 }
 
 int FlexCAN_j1708_startup(){
+    //TODO: Check if CAN 1 is enabled, it isn't then enable power to the GPIO pin
+
     return -1;
 }
 

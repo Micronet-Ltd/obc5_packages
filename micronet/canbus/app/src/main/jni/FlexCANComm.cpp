@@ -15,6 +15,7 @@ static int fd_J1708;
 
 static pthread_t thread__port1;
 static pthread_t thread__port2;
+
 static bool quit_port1 = false;
 static bool quit_port2 = false;
 
@@ -105,6 +106,20 @@ int initTerminalInterface(int fd) {
     return 0;
 }
 
+int closeTerminalInterface(int port){
+    if (port==2){
+        close(fd_CAN1);
+        fd_CAN1=-1;
+    }
+    else if(port==3){
+        close(fd_CAN2);
+        fd_CAN2=-1;
+    }
+    else
+        close(fd_J1708);
+        fd_J1708=-1;
+}
+
 int closeCAN(int close_fd) {
     // first always close1939Port1 the CAN module (bug #250)
     // http://192.168.1.234/redmine/issues/250
@@ -130,13 +145,15 @@ int setFd(int portNumber){
     }
 }
 
-int closePort(int port_number){
+int closePort(int portNumber){
     int closeFd;
-    closeFd=setFd(port_number);
-    if (closeCAN(closeFd) == -1) {
-
-        return -1;
+    closeFd=setFd(portNumber);
+    if(portNumber==2 || portNumber==3){
+        if (closeCAN(closeFd) == -1) {
+            return -1;
+        }
     }
+    closeTerminalInterface(portNumber);
     return 0;
 }
 
@@ -198,7 +215,6 @@ void setFlowControlMessage(char type,char *searchID,char *responseID, int dataLe
             }
         }
         i--;
-        //Add CAN_OK_RESPONSE character
         flowControlMessage[i++]=CAN_OK_RESPONSE;
         extendedMessageLength=i;
         flowControlMessage[i]= 0;
@@ -281,7 +297,7 @@ int setMasks(char *mask, char type, int port_fd) {
                 j++;
             }
         }
-        maskString[i++] = '\r';
+        maskString[i++] = CAN_OK_RESPONSE;
         maskLength = i;
         maskString[i++]= 0;
 
@@ -322,7 +338,7 @@ int setFilters(char *filter, char type, int port_fd) {
                 j++;
             }
         }
-        filterString[i++] = '\r';
+        filterString[i++] = CAN_OK_RESPONSE;
         filters_length = i;
         filterString[i++]= 0;
 
@@ -433,19 +449,6 @@ int serial_start_monitor_thread_can_port1()
 
 //TODO : check this function
 int serial_deinit_thread_port1() {
-/*    LOGD("Entered serial_deinit_thread_port1()");
-    if (thread__port1) {
-        int retval, *retvalp;
-        // cancel out readPort1 threads
-        quit_port1 = 1;
-//        retvalp = &retval;
-        LOGD("Begin cancelling the threads");
-        pthread_join(thread__port1,NULL);
-        LOGD("cancel out the threads");
-        return retval;
-    }
-    LOGD("Failed to enter the if(thread__port1)");
-    return 0;*/
     LOGD("Entered serial_deinit_thread_port1()");
     if (thread__port1) {
         int retval, *retvalp;
@@ -551,6 +554,7 @@ int wait_for_data(int port_fd)
 }
 
 void sendCanbusFramePort1(uint32_t frameId, int type, int length, BYTE* data ){
+
     // Attach thread__port1
     JNIEnv *env;
     jint rs = g_canbus.g_vm->AttachCurrentThread(&env, &g_canbus.args);
@@ -575,16 +579,15 @@ void sendCanbusFramePort1(uint32_t frameId, int type, int length, BYTE* data ){
     if (g_canbus.g_listenerObject_Can1 != NULL && g_canbus.g_onPacketReceive1939Port1 != NULL) {
         env->CallVoidMethod(g_canbus.g_listenerObject_Can1, g_canbus.g_onPacketReceive1939Port1, frameObj);
     }
-    LOGD("######### PORT 1 ########## Message pushed to the java layer successfully");
+    LOGD("#### PORT 1 #### Message pushed to the java layer successfully");
     env->DeleteLocalRef(frameObj);
     env->DeleteLocalRef(data_l);
     g_canbus.g_vm->DetachCurrentThread();
 }
 
 void sendCanbusFramePort2(uint32_t frameId, int type, int length, BYTE* data){
-//TODO: Add
-    // Attach thread__port2
 
+    // Attach thread__port2
     JNIEnv *env;
     jint rs = g_canbus.g_vm->AttachCurrentThread(&env, &g_canbus.args);
     if (rs != JNI_OK) {
@@ -608,7 +611,7 @@ void sendCanbusFramePort2(uint32_t frameId, int type, int length, BYTE* data){
     if (g_canbus.g_listenerObject_Can2 != NULL && g_canbus.g_onPacketReceive1939Port2 != NULL) {
         env->CallVoidMethod(g_canbus.g_listenerObject_Can2, g_canbus.g_onPacketReceive1939Port2, frameObj);
     }
-    LOGD("######### PORT 2 ########## Message pushed to the java layer successfully");
+    LOGD("#### PORT 2 #### Message pushed to the java layer successfully");
     env->DeleteLocalRef(frameObj);
     env->DeleteLocalRef(data_l);
     g_canbus.g_vm->DetachCurrentThread();
@@ -626,7 +629,7 @@ void j1939rxd(BYTE *rxd, int portNumber) {
     int idStart = 1;
     uint8_t dLength;
     int length;
-    uint8_t id[8]; //maximum size of an Identifer is 8 bytes Long
+    uint8_t id[8];
     uint8_t *pId=id;
     uint8_t hexId[8]={0};
     int dataStartPos;
@@ -668,61 +671,64 @@ void j1939rxd(BYTE *rxd, int portNumber) {
     }
 }
 
-static void *monitor_data_thread_port1(void *param)
-{
+static void *monitor_data_thread_port1(void *param) {
+
     uint8_t data[8 * 1024];
     uint8_t *pdata = data;
 	unsigned char * thread_char = (unsigned char *)(void *)(&thread__port1);
+    int i, packetCount = 0,j = 0, start = 0, packetLength=0;
+    uint8_t frame[31]; //31 is the maximum size of an extended packet
 
     prctl(PR_SET_NAME, "monitor_thread_port1", 0, 0, 0);
     LOGD("monitor_thread_port1 started");
-
-    LOGD("thread__port1=%02x",(unsigned char)*thread_char);
+    LOGD("thread_port1=%02x",thread__port1);
 
     while (!quit_port1){
         // sanity check to kill stale readPort1 thread__port1
          if(thread__port1 != pthread_self()) {
-             //TODO: Delete
-             LOGD("read thread stale, thread=%d, pthread_self=%d", thread__port1, pthread_self());
-             //TODO: Uncomment the following
-            /* LOGD("readPort1 thread__port1 stale, thread__port1=%02x", (unsigned char)*thread_char);*/
+             LOGD("readPort1 thread__port1 stale, thread__port1=%02x", (unsigned char)*thread_char);
              break;
-         } //if statement was commented out
-        if(fd_CAN1<0){break;}
+         }
+
+        if(fd_CAN1<0){
+            break;
+        }
 
         if (!wait_for_data(fd_CAN1)) {
             int readData;
             uint8_t *pend = NULL;
-            readData = read(fd_CAN1, pdata, sizeof(data) - (pdata - data)); //Returns the number of bytes readPort1
+
+            //Returns the number of bytes readPort1
+            readData = read(fd_CAN1, pdata, sizeof(data) - (pdata - data));
 
             if (0 == readData) {
                 quit_port1 = true;
                 LOGD("quit1=%d", quit_port1);
                 break;
             }
+
             if (-1 == readData) {
                 if (EAGAIN == errno)
                     continue;
                 LOGE("%s:%d readPort1: %s\n", __func__, __LINE__, strerror(errno));
                 abort();
             }
-            /*To check validity of a packet:
-             * /r- Data is correct
-             * BEL - Data is incorrect */
 
-            int i, packetCount = 0,j = 0, start = 0, packetLength=0;
             //To identify the message type and store each valid message in the process buffer in data[]
             for (i = j; i <= readData; i++) {
+                int carriageReturn = 0;
                 uint8_t idata = data[i];
-                if (idata == '\r') {
+
+                if (idata == CAN_OK_RESPONSE) {
                     continue;
                 }
-                int carriageReturn = 0;
+
                 //For an extended CAN frame
-                if (data[i] == 'T'){//T0x54
+                else if (data[i] == 'T'){//T0x54
                     start = i;
-                    uint8_t dataLength = (data[i + 9] - '0'); // get the actual value
-                    if (dataLength == 0 || dataLength <= 8) {      // validating if the dataLength is in an actual number range (0-8)
+                    uint8_t dataLength = (data[i + 9] - '0');
+                    // validating if the dataLength is in an actual number range (0-8)
+                    if (dataLength == 0 || dataLength <= 8) {
                         carriageReturn = i + 14 + 2 * dataLength;
                         i = carriageReturn;
                         if (data[carriageReturn] == 13) {
@@ -737,8 +743,9 @@ static void *monitor_data_thread_port1(void *param)
                     }
                     else LOGD("### PORT 1 ### Error:Invalid data length! ");
                 }
+
                 //For standard can frame
-                if (data[i] == 't') {//T=0x74
+                else if (data[i] == 't'){//T=0x74
                     start = i;
                     uint8_t dataLength = (data[i + 4] - '0');
                     if (dataLength == 0 || dataLength <= 8) {
@@ -747,53 +754,55 @@ static void *monitor_data_thread_port1(void *param)
                         if (data[carriageReturn] == 13){
                             packetCount++;
                             packetLength=carriageReturn-start +1;
-                            LOGD("### PORT 1 ### One complete standard packet received, Data Length- %d", dataLength);
+                            LOGD("CAN Port1: One complete standard packet received, Data Length- %d", dataLength);
                             j = carriageReturn;
                         }
                         else
-                            LOGD("### PORT 1 ### Error: Incomplete packet");
+                            LOGD("CAN Port 1 Error: Incomplete packet");
                     }
-                    else LOGD("### PORT 1 ### Error:Invalid data length! ");
+                    else LOGD("CAN PORT 1 Error:Invalid data length! ");
                 }
 
                 // extract one packet and convert into a byte array
-                uint8_t frame[31]; //31 is the maximum size of an extended packet
-                uint8_t * pFrame=frame;
                 memcpy(frame, (const void *) (pdata+start), packetLength);
-                LOGD("######### PORT 1 ########## FRAME = %s", frame);
-                if ((frame[0] == 't' && frame[packetLength-1] == '\r') || (frame[0] == 'T' && frame[packetLength-1] == '\r')) {
+                LOGD("CAN PORT 1 FRAME = %s", frame);
+                if ((frame[0] == 't' && frame[packetLength-1] == CAN_OK_RESPONSE) || (frame[0] == 'T' && frame[packetLength-1] ==CAN_OK_RESPONSE)) {
                     j1939rxd(frame, CAN1_TTY_NUMBER);
                 }
-                else LOGD("######### PORT 1 ########## Incomplete packet received: Frame not sent to j1939rxd()");
+                else LOGD("CAN PORT 1 ERROR: Incomplete packet received - Frame not sent to j1939rxd()");
             }
         }
     }
-
+    return 0;
 }
 
 static void *monitor_data_thread_can_port2(void *param) {
 
     uint8_t data[8 * 1024];
     uint8_t *pdata = data;
+
     unsigned char * thread_char = (unsigned char *)(void *)(&thread__port2);
+    int i, packetCount = 0,j = 0, start = 0, packetLength=0;
 
     prctl(PR_SET_NAME, "monitor_thread_port2", 0, 0, 0);
     LOGD("monitor_thread_port2 started");
-
     LOGD("thread__port2=%02x",(unsigned char)*thread_char);
 
-    while (!quit_port2) {
+
+    while (!quit_port2){
         // sanity check to kill stale readPort2 thread__port2
         if(thread__port2 != pthread_self()) {
             LOGD("readPort2 thread__port2 stale, thread__port2=%02x", (unsigned char)*thread_char);
             break;
-        } //if statement was commented out
+        }
+
         if(fd_CAN2<0){break;}
 
-        if (!wait_for_data(fd_CAN2)) {
+        if (!wait_for_data(fd_CAN2)){
             int readData;
             uint8_t *pend = NULL;
-            readData = read(fd_CAN2, pdata, sizeof(data) - (pdata - data)); //Returns the number of bytes readPort1
+            //Returns the number of bytes readPort1
+            readData = read(fd_CAN2, pdata, sizeof(data) - (pdata - data));
 
             if (0 == readData) {
                 quit_port2 = true;
@@ -806,39 +815,39 @@ static void *monitor_data_thread_can_port2(void *param) {
                 LOGE("%s:%d readPort2: %s\n", __func__, __LINE__, strerror(errno));
                 abort();
             }
-            /*To check validity of a packet:
-             * /r- Data is correct
-             * BEL - Data is incorrect */
 
-            int i, packetCount = 0,j = 0, start = 0, packetLength=0;
             //To identify the message type and store each valid message in the process buffer in data[]
             for (i = j; i <= readData; i++) {
                 uint8_t idata = data[i];
-                if (idata == '\r') {
+
+                if (idata == CAN_OK_RESPONSE) {
                     continue;
                 }
                 int carriageReturn = 0;
+
                 //For an extended CAN frame
                 if (data[i] == 'T'){//T0x54
                     start = i;
-                    uint8_t dataLength = (data[i + 9] - '0'); // get the actual value
-                    if (dataLength == 0 || dataLength <= 8) {      // validating if the dataLength is in an actual number range (0-8)
+                    uint8_t dataLength = (data[i + 9] - '0');
+                    // validating if the dataLength is in an actual number range (0-8)
+                    if (dataLength == 0 || dataLength <= 8) {
                         carriageReturn = i + 14 + 2 * dataLength;
                         i = carriageReturn;
                         if (data[carriageReturn] == 13) {
                             packetCount++;
                             packetLength=carriageReturn-start +1;
-                            LOGD("### PORT 2 ### One complete extended packet received, Data Length- %d", dataLength);
+                            //LOGD("CAN PORT 2: One complete extended packet received, Data Length- %d", dataLength);
                             j = carriageReturn;
                         }
                         else {
-                            LOGD("### PORT 2 ### Error:Incomplete packet");
+                            LOGD("CAN Port 2 Error: Incomplete packet");
                         }
                     }
                     else LOGD("Error:Invalid data length! ");
                 }
+
                 //For standard can frame
-                if (data[i] == 't') {//T=0x74
+                else if (data[i] == 't') {//T=0x74
                     start = i;
                     uint8_t dataLength = (data[i + 4] - '0');
                     if (dataLength == 0 || dataLength <= 8) {
@@ -847,11 +856,11 @@ static void *monitor_data_thread_can_port2(void *param) {
                         if (data[carriageReturn] == 13){
                             packetCount++;
                             packetLength=carriageReturn-start +1;
-                            LOGD("### PORT 2 ### One complete standard packet received, Data Length- %d", dataLength);
+                            //LOGD("CAN PORT 2: One complete standard packet received, Data Length- %d", dataLength);
                             j = carriageReturn;
                         }
                         else
-                            LOGD("### PORT 2 ### Error: Incomplete packet");
+                            LOGD("CAN PORT 2 Error: Incomplete packet");
                     }
                     else LOGD("Error:Invalid data length! ");
                 }
@@ -860,11 +869,11 @@ static void *monitor_data_thread_can_port2(void *param) {
                 uint8_t frame[31]; //31 is the maximum size of an extended packet
                 uint8_t * pFrame=frame;
                 memcpy(frame, (const void *) (pdata+start), packetLength);
-                LOGD("######### PORT 2 ########## FRAME = %s", frame);
-                if ((frame[0] == 't' && frame[packetLength-1] == '\r') || (frame[0] == 'T' && frame[packetLength-1] == '\r')  /*(frame[0] == 'r' && frame[5] == '\r')*/) {
+                LOGD("CAN PORT 2 FRAME = %s", frame);
+                if ((frame[0] == 't' && frame[packetLength-1] == CAN_OK_RESPONSE) || (frame[0] == 'T' && frame[packetLength-1] == CAN_OK_RESPONSE)) {
                     j1939rxd(frame,CAN2_TTY_NUMBER);
                 }
-                else LOGD("######### PORT 2 ########## Incomplete packet received: Frame not sent to j1939rxd()");
+                else LOGD("CAN PORT 2 ERROR: Incomplete packet received - Frame not sent to j1939rxd()");
             }
         }
     }
@@ -879,6 +888,11 @@ int closeInterfaceCAN1() {
 
 int closeInterfaceCAN2() {
     LOGD("Entered the close1939Port2()! ");
+    return serial_deinit_thread_port2();
+}
+
+int closeInterfaceJ1708() {
+    LOGD("Entered the close1708()! ");
     return serial_deinit_thread_port2();
 }
 

@@ -13,7 +13,8 @@ static int J1708_TTY_NUMBER= 4;
 int serial_init(char *name);
 
 int initTerminalInterface(int fd);
-int closePort(int port_number);
+int closeTerminalInterface(int port);
+int closePort(int portNumber);
 int closeCAN(int close_fd);
 int setBitrate(int fd, int speed);
 int openCANandSetTermination(int fd, bool term);

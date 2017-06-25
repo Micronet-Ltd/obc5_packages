@@ -95,6 +95,7 @@ public class ContactListItemView extends ViewGroup
     private int mNameTextViewTextSize;
     private int mHeaderWidth;
     private Drawable mActivatedBackgroundDrawable;
+	private static final int ofset_item_height=18;//mod by chenqi 2016-01-25,for item height
 
     // Set in onLayout. Represent left and right position of the View on the screen.
     private int mLeftOffset;
@@ -511,8 +512,7 @@ public class ContactListItemView extends ViewGroup
                     MeasureSpec.makeMeasureSpec(mQuickCallViewWidth, MeasureSpec.EXACTLY),
                     MeasureSpec.makeMeasureSpec(mQuickCallViewHeight, MeasureSpec.EXACTLY));
         }
-
-        setMeasuredDimension(specWidth, height);
+        setMeasuredDimension(specWidth, height+ofset_item_height);//mod by chenqi 2016-01-25,for item height
     }
 
     @Override

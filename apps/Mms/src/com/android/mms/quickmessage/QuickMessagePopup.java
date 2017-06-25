@@ -327,6 +327,10 @@ public class QuickMessagePopup extends Activity {
             ClearAllReceiver.removeCancel(getApplicationContext());
             ClearAllReceiver.clearAll(true);
         }
+		//added by ao
+		if(this.getWindow()!=null)
+			this.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
+		
     }
 
     @Override

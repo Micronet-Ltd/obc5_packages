@@ -711,7 +711,9 @@ public final class Utils {
         Intent intent = onBuildStartFragmentIntent(context, fragmentName, args,
                 null /* titleResPackageName */, titleResId, title, isShortcut);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+		/*yihang hanxiaoming 2016.4.19 delete for recentapps bug begin*/
+        //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        /*yihang hanxiaoming 2016.4.19 delete for recentapps bug end*/
         context.startActivityAsUser(intent, userHandle);
     }
 
@@ -1190,7 +1192,7 @@ public final class Utils {
 	* auto enable IZat
 	*/
 	public static boolean IsAutoEnableIZat(){
-		String Model = "TREQ";
+		String Model = "TREQr";
 		Log.v(TAG, "android.os.Build.MODEL =="+android.os.Build.MODEL);
 		if(android.os.Build.MODEL.length() < Model.length())
 			return false;

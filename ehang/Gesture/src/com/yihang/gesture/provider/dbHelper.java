@@ -36,12 +36,16 @@ public class dbHelper extends SQLiteOpenHelper {
 		}
 		db.execSQL("CREATE TABLE 'switchstate' ('switchstate' INTEGER PRIMARY KEY  NOT NULL, 'updateTime' TEXT, 'createTime' TEXT)");
 		db.execSQL("INSERT INTO 'switchstate' VALUES(0,NULL,'" + date + "');");
+		
+		db.execSQL("CREATE TABLE 'golveswitchstate' ('switchstate' INTEGER PRIMARY KEY  NOT NULL, 'updateTime' TEXT, 'createTime' TEXT)");
+		db.execSQL("INSERT INTO 'golveswitchstate' VALUES(0,NULL,'" + date + "');");
 	}
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		db.execSQL("DROP TABLE IF EXISTS list");
 		db.execSQL("DROP TABLE IF EXISTS switchstate");
+		db.execSQL("DROP TABLE IF EXISTS golveswitchstate");
 		onCreate(db);
 	}
 }

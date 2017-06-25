@@ -118,7 +118,7 @@ public class AlarmService extends Service {
             if (AlarmService.this.getResources().getBoolean(R.bool.config_silent_during_call)
                     && state != TelephonyManager.CALL_STATE_IDLE) {
                 sendBroadcast(AlarmStateManager.createStateChangeIntent(AlarmService.this,
-                        "AlarmService", mCurrentAlarm, AlarmInstance.MISSED_STATE));
+                        "AlarmService", mCurrentAlarm, AlarmInstance.SNOOZE_STATE));//change missed_state to snooze_state
             } else if (state != TelephonyManager.CALL_STATE_IDLE && state != mInitialCallState) {
                 sendBroadcast(AlarmStateManager.createStateChangeIntent(AlarmService.this,
                         "AlarmService", mCurrentAlarm, AlarmInstance.MISSED_STATE));

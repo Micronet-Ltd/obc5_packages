@@ -2417,8 +2417,8 @@ public class Controller
             }
         }
         if (andQuit) {
-            mTabControl.setCurrentTab(newTab);
             closeTab(current);
+			mTabControl.setCurrentTab(newTab);
         } else if (switchToTab(newTab)) {
             // Close window
             closeTab(current);

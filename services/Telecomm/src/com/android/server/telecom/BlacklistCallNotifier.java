@@ -39,7 +39,7 @@ import android.os.SystemProperties;
  */
 class BlacklistCallNotifier extends CallsManagerListenerBase {
 
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     private static final RelativeSizeSpan TIME_SPAN = new RelativeSizeSpan(0.7f);
 

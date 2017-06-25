@@ -593,6 +593,8 @@
     <string name="wifi_stopping" msgid="8952524572499500804">"正在关闭WLAN…"</string>
     <string name="wifi_error" msgid="3207971103917128179">"出错"</string>
     <string name="wifi_in_airplane_mode" msgid="8652520421778203796">"正处于飞行模式下"</string>
+	<!-- Toast message when the bluetooth space restriction is set -->
+    <string name="ss_bluetooth_disabled">此空间下蓝牙被限制使用</string>
     <string name="wifi_fail_to_scan" msgid="1265540342578081461">"扫描不到网络"</string>
     <string name="wifi_notify_open_networks" msgid="3755768188029653293">"网络通知"</string>
     <string name="wifi_notify_open_networks_summary" msgid="3716818008370391253">"有可用的公共网络时通知我"</string>
@@ -752,6 +754,33 @@
     <string name="wifi_hotspot_configure_ap_text_summary" msgid="5618031116920832182">"AndroidAP WPA2 PSK便携式WLAN热点"</string>
     <string name="wifi_tether_configure_subtext" msgid="7957547035983257748">"<xliff:g id="NETWORK_SSID">%1$s</xliff:g> <xliff:g id="NETWORK_SECURITY">%2$s</xliff:g>便携式WLAN热点"</string>
     <string name="wifi_tether_configure_ssid_default" msgid="8467525402622138547">"Android热点"</string>
+	<string name="wifi_wapi_certification_dont_exist">输入的密码不对，请重新输入</string>
+    <string name="please_type_passphrase">无线密码</string>
+    <string name="wifi_certificate">证书</string>
+    <string name="wifi_wapi_cert_mgmt_titlebar">WAPI证书管理</string>
+    <string name="wifi_wapi_cert_install">安装WAPI证书</string>
+    <string name="wifi_wapi_cert_install_button">安装</string>
+    <string name="wifi_wapi_cert_uninstall_button">卸载</string>
+    <string name="wifi_wapi_cert_cancel_button">取消</string>
+    <string name="wifi_wapi_cert_uninstall">卸载WAPI证书</string>
+    <string name="wifi_wapi_cert_create_subdir">新建文件夹</string>
+    <string name="wifi_wapi_cert_delet_subdir">选择一个适合的证书</string>
+    <string name="wifi_wapi_as_cert">AS证书</string>
+    <string name="wifi_wapi_user_cert">用户证书</string>
+    <string name="wifi_wapi_cert_mgmt_subdir_name_is_empty">请输入新建文件夹的名称</string>
+    <string name="wifi_wapi_cert_mgmt_subdir_exist">输入的文件夹名称已经存在，请输入其他名称</string>
+    <string name="wifi_wapi_cert_mgmt_subdir_create_fail">新建文件夹失败</string>
+    <string name="wifi_wapi_cert_mgmt_as_name_is_empty">请输入AS证书的名称</string>
+    <string name="wifi_wapi_cert_mgmt_as_dont_exist">在SD卡和内部存储器上找不到AS证书，请确认后重试</string>
+    <string name="wifi_wapi_cert_mgmt_as_format_is_wrong">AS证书无法解析，请重新安装可用的AS证书</string>
+    <string name="wifi_wapi_cert_mgmt_user_format_is_wrong">用户证书无法解析，请重新安装可用的用户证书</string>
+    <string name="wifi_wapi_cert_mgmt_user_name_is_empty">请输入用户证书的名称</string>
+    <string name="wifi_wapi_cert_mgmt_user_dont_exist">在SD卡和内部存储器上找不到用户证书，请确认后重试</string>
+    <string name="wifi_context_menu_connect">连接到网络</string>
+    <string name="wifi_context_menu_forget">取消保存网络</string>
+    <string name="wifi_context_menu_change_password">更改密码</string>
+    <string name="wifi_context_menu_change_wapi_certificate">更换WAPI证书</string>
+    <string name="wifi_wapi_cert_not_installed">找不到安装的证书，请安装证书后重试</string>
     <string name="home_settings" msgid="212375129455718176">"主屏幕"</string>
     <string name="display_settings_title" msgid="1708697328627382561">"显示"</string>
     <string name="sound_settings" msgid="5534671337768745343">"声音"</string>
@@ -853,7 +882,7 @@
     <string name="sim_enter_new" msgid="8742727032729243562">"新SIM卡PIN码"</string>
     <string name="sim_reenter_new" msgid="6523819386793546888">"重新输入新的PIN码"</string>
     <string name="sim_change_pin" msgid="7328607264898359112">"SIM卡PIN码"</string>
-    <string name="sim_bad_pin" msgid="2345230873496357977">"PIN码不正确"</string>
+    <string name="sim_bad_pin" msgid="2345230873496357977">"长度不正确，请输入4到8位的PIN码。"</string>
     <string name="sim_pins_dont_match" msgid="8449681619822460312">"PIN码不匹配"</string>
     <string name="sim_change_failed" msgid="304964924772218382">"无法更改PIN码。\n输入的PIN码可能不正确。"</string>
     <string name="sim_change_succeeded" msgid="8556135413096489627">"已成功更改SIM卡PIN码"</string>
@@ -2798,4 +2827,6 @@
 	
 	<string name="wifi_ssid_input_limit">已经超出限制</string>
     <!-- add by shengweiguang end-->
+	<string name="gestures_name">手势体感</string>
+	<string name="battery_management_name">省电管理</string>
 </resources>

@@ -312,5 +312,5 @@ s -->
     </string>
 	
 	<string name="folder_isfull">The folder is full</string>
-	
+	<string name="theme_is_switching">Theme is Switching, Please wait ...</string>
 </resources>

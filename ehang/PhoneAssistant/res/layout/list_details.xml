@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white" >
+
+    <LinearLayout
+        android:id="@+id/lay_item"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:orientation="horizontal" >
+
+        <ImageView
+            android:id="@+id/picture"
+            android:layout_width="55dp"
+            android:layout_height="50dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="10dp" />
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:id="@+id/apkname"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:ellipsize="end"
+                android:maxEms="10"
+                android:singleLine="true"
+                android:textColor="@color/packagename"
+                android:textSize="17sp" />
+
+           <!-- <TextView
+                android:id="@+id/version_promote"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:text="@string/versionname"
+                android:textColor="@color/packagename"
+                android:textSize="10sp" />
+
+            <TextView
+                android:id="@+id/versionname"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:layout_toRightOf="@id/version_promote"
+                android:textColor="@color/packagename"
+                android:textSize="10sp" />-->
+
+            <TextView
+                android:id="@+id/protect"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:paddingBottom="13dp"
+                android:textColor="@color/protect_color"
+				android:textStyle="bold"
+                android:textSize="15sp" />
+				
+            <TextView
+                android:id="@+id/packagename"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:paddingBottom="15dp"
+                android:textColor="@color/packagename"
+                android:textSize="13sp" />
+        </RelativeLayout>
+        <!-- 选择信任的话就相当于一个白名单 -->
+    </LinearLayout>
+    <!-- 子布局中必须把焦点和点击 设置成false,不然ListView无法无法争正确显示 -->
+
+    <!--<CheckBox
+        android:id="@+id/choose"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerInParent="true"
+        android:layout_marginRight="65dp"
+        android:checked="false"
+        android:clickable="false"
+        android:focusable="false"
+        android:scaleX="0.9"
+        android:scaleY="0.8" />
+
+    <TextView
+        android:id="@+id/xinren"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerInParent="true"
+        android:layout_marginRight="30dp"
+        android:text="@string/trust"
+        android:textColor="@color/packagename"
+        android:textSize="15sp" />  -->
+	 <ToggleButton
+        android:id="@+id/mswitch"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:button="@drawable/checkbox_iphone"
+		android:background="@color/transparent" 
+		android:layout_centerInParent="true"
+		android:layout_alignParentRight="true"
+		android:layout_marginRight="25dp"
+		android:textOff=""
+        android:textOn=""
+        android:clickable="false"
+        android:focusable="false"
+        />
+    <!-- 设置下边的线 -->
+
+	
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@id/lay_item"
+        android:layout_marginLeft="14dp"
+        android:layout_marginRight="20dp"
+        android:background="@color/lines" />
+
+</RelativeLayout>

@@ -76,6 +76,12 @@ import com.android.internal.telephony.uicc.IccCardStatus.CardState;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import android.util.Log;
+import java.lang.reflect.Field;
+
+
+
+
 
 import static com.android.internal.telephony.cat.CatCmdMessage.
                    SetupEventListConstants.IDLE_SCREEN_AVAILABLE_EVENT;
@@ -1133,7 +1139,15 @@ public class StkAppService extends Service {
                 | getFlagActivityNoUserAction(InitiatedByUserAction.unknown));
         newIntent.putExtra(SLOT_ID, mCurrentSlotId);
         newIntent.putExtra("TEXT", mCurrentCmd.geTextMessage());
-        startActivity(newIntent);
+		/*yihang hanxiaoming 2016.4.7 add for alarm bug begin*/
+        //startActivity(newIntent);
+        if(getstackinformation().equals("com.android.deskclock")){
+			Log.e("StkAppService","no start startActivity");
+		}else{
+			startActivity(newIntent);
+			Log.e("StkAppService","started startActivity");
+		}
+		/*yihang hanxiaoming 2016.4.7 add for alarm bug end*/
         // For display texts with immediate response, send the terminal response
         // immediately. responseNeeded will be false, if display text command has
         // the immediate response tlv.
@@ -1141,6 +1155,34 @@ public class StkAppService extends Service {
             sendResponse(RES_ID_CONFIRM, mCurrentSlotId, true);
         }
     }
+	/*yihang hanxiaoming 2016.4.7 add for alarm bug begin*/
+	public String getstackinformation(){
+		 final int PROCESS_STATE_TOP = 2;
+		 //String[] packname=null;
+		 	try 
+			{
+    			Field processStateField = ActivityManager.RunningAppProcessInfo.class
+    					.getDeclaredField("processState");
+    			List<ActivityManager.RunningAppProcessInfo> processes = ((ActivityManager) mContext
+    					.getSystemService(Context.ACTIVITY_SERVICE))
+    					.getRunningAppProcesses();
+    			for (ActivityManager.RunningAppProcessInfo process : processes) {
+    				if (process.importance <= ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND
+    						&& process.importanceReasonCode == 0) {
+    					int state = processStateField.getInt(process);
+    					if (state == PROCESS_STATE_TOP) {
+    						 //packname = process.pkgList;
+							 String[] packname = process.pkgList;
+						     return packname[0];	
+    					}
+    				}
+    			}
+    		} catch (Exception e) {
+    			throw new RuntimeException(e);
+    		}
+			return "";
+	}
+	/*yihang hanxiaoming 2016.4.7 add for alarm bug end*/
 
     private void sendSetUpEventResponse(int event, byte[] addedInfo) {
         CatLog.d(this, "sendSetUpEventResponse: event : " + event);

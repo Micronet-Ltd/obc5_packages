@@ -10,6 +10,7 @@
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_MEDIA_STORAGE" />
     <uses-permission android:name="android.permission.READ_DREAM_STATE" />
     <uses-permission android:name="android.permission.WRITE_DREAM_STATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
@@ -80,7 +81,8 @@
     <uses-permission android:name="android.permission.READ_PHONE_BLACKLIST" />
     <uses-permission android:name="android.permission.CHANGE_PHONE_BLACKLIST" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
-	
+    <uses-permission android:name="android.permission.INJECT_EVENTS"/>
+    	
     <permission
         android:name="cyanogenmod.permission.PROTECTED_APP"
         android:protectionLevel="signatureOrSystem" />
@@ -922,7 +924,9 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-
+        
+        <service android:name=".location.iZatEnableService" />
+        
        <activity android:name="DeviceXinxi"
                 android:label="@string/device_xinxi"
                 android:configChanges="orientation|screenSize">
@@ -1411,7 +1415,6 @@
                 android:value="true" />
         </activity>
 
-<!--qj 
         <activity android:name="Settings$PrintSettingsActivity"
                 android:label="@string/print_settings"
                 android:taskAffinity="com.android.settings"
@@ -1442,7 +1445,6 @@
             <meta-data android:name="com.android.settings.TOP_LEVEL_HEADER_ID"
                 android:resource="@id/print_settings" />
         </activity>
--->
 
         <!-- Keep compatibility with old shortcuts. -->
         <activity-alias android:name="DevelopmentSettings"

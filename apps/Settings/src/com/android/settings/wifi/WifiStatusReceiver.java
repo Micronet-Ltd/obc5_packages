@@ -84,7 +84,7 @@ public final class WifiStatusReceiver extends BroadcastReceiver {
 				SystemProperties.set("persist.sys.iswificonfigured", "true");
 				starthotspot(true);		
 			}
-        }else if(action.equals("android.intent.action.BOOT_COMPLETED") && isWifiConfigured){ 		  
+        }else if(action.equals("android.intent.action.BOOT_COMPLETED") && isWifiConfigured && isHotspotEnabled){ 		  
             starthotspot(true);			
 		}else if(action.equals("android.intent.action.AIRPLANE_MODE") && isWifiConfigured){
 		    boolean isAirplaneMode = Settings.Global.getInt(mContext.getContentResolver(),
@@ -116,9 +116,9 @@ public final class WifiStatusReceiver extends BroadcastReceiver {
 
 	private void setDefaultApConfiguration(String imei) {
 						
-			String ssid_prefix = "TREQr_5_";		
-			
-			config.SSID = ssid_prefix + imei.substring(9);
+			String ssid_prefix = android.os.Build.MODEL;
+
+			config.SSID = ssid_prefix + "_" + imei.substring(9);
 			
 			Log.e(TAG, "SSID=" + config.SSID);
 				

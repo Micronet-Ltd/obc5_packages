@@ -1480,6 +1480,7 @@
     <string name="wifi_notify_open_networks">Network notification</string>
     <!-- Checkbox summary for option to notify user when open networks are nearby [CHAR LIMIT=60]-->
     <string name="wifi_notify_open_networks_summary">Notify whenever a public network is available</string>
+    <string name="wifi_wapi_certification_dont_exist">The network password you typed is not correct. Please try again.</string>
     <!-- Checkbox title for option to toggle poor network detection -->
     <string name="wifi_poor_network_detection">Avoid poor connections</string>
     <!-- Checkbox summary for option to toggle poor network detection -->
@@ -1618,6 +1619,7 @@
     <string name="wifi_eap_anonymous">Anonymous identity</string>
     <!-- Label for the password of the secured network -->
     <string name="wifi_password">Password</string>
+    <string name="please_type_passphrase">Wireless password</string>
     <!-- Label for the check box to show password -->
     <string name="wifi_show_password">Show password</string>
     <!-- Label for the spinner to show ip settings [CHAR LIMIT=25] -->
@@ -1662,6 +1664,8 @@
     <string name="wifi_security_short_psk_generic">@string/wifi_security_short_wpa_wpa2</string>
     <!-- Do not translate.  Concise terminology for wifi with 802.1x EAP security -->
     <string name="wifi_security_short_eap">802.1x</string>
+    <string name="wifi_security_short_WAPI_PSK">WAPI PSK</string>
+    <string name="wifi_security_short_WAPI_CERT">WAPI CERT</string>
 
     <!-- Used in Wi-Fi settings dialogs when Wi-Fi does not have any security. -->
     <string name="wifi_security_none">None</string>
@@ -1678,6 +1682,8 @@
     <string name="wifi_security_psk_generic">@string/wifi_security_wpa_wpa2</string>
     <!-- Do not translate.  Concise terminology for wifi with 802.1x EAP security -->
     <string name="wifi_security_eap">802.1x EAP</string>
+    <string name="wifi_security_WAPI_PSK">WAPI PSK</string>
+    <string name="wifi_security_WAPI_CERT">WAPI CERT</string>
 
     <string name="wifi_scan_always_turnon_message">To improve location accuracy and for other purposes, <xliff:g id="app_name">%1$s</xliff:g> wants to turn on network scanning, even when Wi-Fi is off.\n\nAllow this for all apps that want to scan?</string>
     <!-- Message informing the user how to turn off  [CHAR LIMIT=200] -->
@@ -1731,6 +1737,47 @@
     <!-- Text alerting that Wi-Fi couldn't connect (phone) [CHAR LIMIT=NONE] -->
     <string name="wifi_connect_failed_message" product="default">The phone was unable to connect to this Wi\u2011Fi network.</string>
 
+	<!-- Wi-Fi settings screen, connect to network dialog box, spinner -->
+    <string name="wifi_certificate">Certificate</string>
+
+    <!-- Title of the WAPI certificate manage -->
+    <string name="wifi_wapi_cert_mgmt_titlebar">WAPI Certificate Management</string>
+    <!-- Caption for the WAPI certificate installation -->
+    <string name="wifi_wapi_cert_not_installed">Certificates Not Installed! Please Install the Certificates and try Connecting</string>
+    <!-- Action message of the install WAPI certificate -->
+    <string name="wifi_wapi_cert_install">Install WAPI Certificate</string>
+    <!-- Button caption to install wapi certificate button -->
+    <string name="wifi_wapi_cert_install_button">Install</string>
+    <!-- Button caption to uninstall wapi certificate button -->
+    <string name="wifi_wapi_cert_uninstall_button">Uninstall</string>
+    <!-- Button caption to  cancel wapi certificate button -->
+    <string name="wifi_wapi_cert_cancel_button">Cancel</string>
+    <!-- Action message of the uninstall WAPI certificate -->
+    <string name="wifi_wapi_cert_uninstall">Uninstall WAPI Certificate</string>
+    <!-- Caption for entering the directroy of wapi certificate which you want to storage -->
+    <string name="wifi_wapi_cert_create_subdir">Create a directory</string>
+    <!-- Caption for entering the directroy of wapi certificate which you want to delet -->
+    <string name="wifi_wapi_cert_delet_subdir">Select a suit certificate</string>
+    <!-- Caption for the wapi as certificate -->
+    <string name="wifi_wapi_as_cert">AS Certificate</string>
+    <!-- Caption for the wapi user certificate -->
+    <string name="wifi_wapi_user_cert">User Certificate</string>
+    <string name="wifi_wapi_cert_mgmt_subdir_name_is_empty">Please input the directory name which you want to create!</string>
+    <string name="wifi_wapi_cert_mgmt_subdir_exist">Please input the other directory name, this one does exist</string>
+    <string name="wifi_wapi_cert_mgmt_subdir_create_fail">Create directory fail</string>
+    <string name="wifi_wapi_cert_mgmt_as_name_is_empty">Please input the AS certificate name</string>
+    <string name="wifi_wapi_cert_mgmt_as_dont_exist">The SD card and internal storage do not have the AS certificate, please check it!</string>
+    <string name="wifi_wapi_cert_mgmt_as_format_is_wrong">Format of AS certificate is wrong! Please install the right AS certificate</string>
+    <string name="wifi_wapi_cert_mgmt_user_format_is_wrong">Format of user certificate is wrong! Please install the right user certificate</string>
+    <string name="wifi_wapi_cert_mgmt_user_name_is_empty">Please input the user certificate name</string>
+    <string name="wifi_wapi_cert_mgmt_user_dont_exist">The SD card and internal storage do not have the user certificate, please check it!</string>
+    <!--Wi-Fi settings screen, network context menu item -->
+    <string name="wifi_context_menu_connect">Connect to network</string>
+    <!--Wi-Fi settings screen, network context menu item -->
+    <string name="wifi_context_menu_forget">Forget network</string>
+    <!--Wi-Fi settings screen, network context menu item -->
+    <string name="wifi_context_menu_change_password">Change password</string>
+    <string name="wifi_context_menu_change_wapi_certificate">Change WAPI Certificate</string>
     <!-- Wi-Fi Advanced Settings --> <skip />
     <!-- Wi-Fi settings screen, Saved networks, settings section.  This is a header shown above Saved networks wifi settings. [CHAR LIMIT=30] -->
     <string name="wifi_saved_access_points_titlebar">Saved networks</string>
@@ -2153,7 +2200,7 @@
     <!-- SIM card lock settings screen, SIM PIN dialog message instruction  [CHAR LIMIT=40] -->
     <string name="sim_change_pin">SIM PIN</string>
     <!-- SIM card lock settings screen, SIM PIN dialog message when wrong PIN is entered  [CHAR LIMIT=40] -->
-    <string name="sim_bad_pin">Incorrect PIN</string>
+    <string name="sim_bad_pin">Incorrect length,please input 4 to 8 numbers.</string>
     <!-- SIM card lock settings screen, SIM PIN dialog message when PINs don't match  [CHAR LIMIT=40] -->
     <string name="sim_pins_dont_match">PINs don\'t match</string>
     <!-- SIM card lock settings screen, SIM PIN dialog message when SIM card is absent-->
@@ -5597,7 +5644,8 @@
 
     <!-- Label for are-notifications-enabled checkbox in app details [CHAR LIMIT=20] -->
     <string name="app_notifications_switch_label">Show notifications</string>
-   <string name="device_xinxi_summary">Screen model, the RAM</string>
+    <string name="device_xinxi">Hardware information</string>
+    <string name="device_xinxi_summary">Screen model, the RAM</string>
     <string name="cpu_1">CPU Model</string>
     <string name="cpu_1_summary">Qualcomm MSM8939</string>
     <string name="hexinshu">Number of core</string>
@@ -5607,11 +5655,11 @@
     <string name="fenbianlv">Resolution</string>
     <string name="fenbianlv_summary">1280*720</string>
     <string name="jsneicun">ROM</string>
-    <string name="jsneicun_summary">16GB</string>
+    <string name="jsneicun_summary">8GB</string>
     <string name="yxneicun">RAM</string>
-    <string name="yxneicun_summary">2GB</string>
+    <string name="yxneicun_summary">1GB</string>
     <string name="pm_size">Screen size</string>
-    <string name="pm_size_summary">8.0 Inch</string>
+    <string name="pm_size_summary">5.0 Inch</string>
     <!--  Help URLs for some screens. Not specified here. Specified in product overlays --><skip/>
     <!-- Help menu label [CHAR LIMIT=20] -->
     <string name="help_label">Help &amp; feedback</string>
@@ -6397,6 +6445,8 @@
    <string name="imei_information_summary">IMEI relative information</string>
    <string name="slot_number">(Slot<xliff:g id="slot_num">%1$d</xliff:g>)</string>
 
-    <string name="meta_info">Software version</string>
+   <string name="meta_info">Software version</string>
    <string name="wifi_ssid_input_limit">have exceeded the limitation</string>
+   <string name="gestures_name">Gesture</string>
+   <string name="battery_management_name">Power Management</string>
 </resources>

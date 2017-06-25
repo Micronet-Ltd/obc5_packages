@@ -38,17 +38,17 @@ import android.provider.Settings;
 
 public class MainUI extends Activity {
 
+	
 	LinearLayout setup_ll, numlist_ll, premms_ll, help_ll;
 	TextView numList_, premms_;
 	public static Button setup;
 	Intent intent;
-	static String txStr1, txStr2, txStr3, txStr4, txStr5, preMmsStr;
+	public static String txStr1, txStr2, txStr3, txStr4, txStr5, preMmsStr, setmsg;
 	LocationClient mLocationClient;
-	public static Boolean isPreLoc = false, haveSetup = false;
-	static String setmsg;
+	public static boolean isPreLoc = false, haveSetup = false;
 	TelephonyManager tm;
-	static Vibrator vibrator;
-	public static boolean isGpsOpen ;
+	public static Vibrator vibrator;
+	public static boolean isGpsOpen;
 	public static long startTime;
 	public LocationManager lm;
 	
@@ -89,7 +89,7 @@ public class MainUI extends Activity {
 		Log.d("SOS", " --MainUI--onResume-- " );
 		if (!haveSetup) {
 			isPreLoc = true;
-			openGps(this);
+			Utils.getInstance(this).openGps();
 			setup.setText(getString(R.string.setup));
 			setup.setClickable(true);
 		} else {
@@ -108,7 +108,7 @@ public class MainUI extends Activity {
 		super.onStop(); 
 		if (!haveSetup) {
 			Log.d("SOS", " --MainUI--onStop-- " );
-			closeGps(this);
+			Utils.getInstance(this).closeGps();
 			mLocationClient.stop();
 		}
 	}
@@ -122,7 +122,7 @@ public class MainUI extends Activity {
 		public void onClick(View arg0) {
 			switch (arg0.getId()) {
 			case R.id.setup:
-				if(hasCard()){
+				if (Utils.getInstance(MainUI.this).hasCard()) {
 					new Setup_Mod(MainUI.this).setup();
 					setup.setText(getString(R.string.setuped));
 					setup.setClickable(false);
@@ -217,40 +217,23 @@ public class MainUI extends Activity {
 	public static Handler txHandler = new Handler() {
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
-			case 1:
-				setup.setText(setmsg);
-				setup.setClickable(true);
-				break;
-			default:
-				break;
+				case 1:
+					setup.setText(setmsg);
+					setup.setClickable(true);
+					break;
+				case 2:
+					setup.setText((String)msg.obj);
+					setup.setClickable(false);
+					break;
+					
+				default:
+					break;
 			}
 		}
 	};
+	
+	
 
-
-	public static void openGps(Context context) {
-		Log.d("SOS", "openGps()---isGpsOpen= " + isGpsOpen);
-		if (isGpsOpen == false) {
-			Log.d("SOS", "gpsTurnOn--openGps()");
-			int mode = android.provider.Settings.Secure.LOCATION_MODE_HIGH_ACCURACY;
-			Intent mIntent = new Intent("com.android.settings.location.MODE_CHANGING");
-			mIntent.putExtra("NEW_MODE", mode);
-			context.sendBroadcast(mIntent,android.Manifest.permission.WRITE_SECURE_SETTINGS);
-			Settings.Secure.putInt(context.getContentResolver(), Settings.Secure.LOCATION_MODE, mode);
-		}
-	}
-
-	public static void closeGps(Context context) {
-		Log.d("SOS", "closeGps()---isGpsOpen= " + isGpsOpen);
-		if (isGpsOpen == false) {
-			Log.d("SOS", "gpsTurnDown--closeGps()");
-			int modeOff = android.provider.Settings.Secure.LOCATION_MODE_OFF;
-	        Intent intent = new Intent("com.android.settings.location.MODE_CHANGING");
-	        intent.putExtra("NEW_MODE", modeOff);
-	        context.sendBroadcast(intent, android.Manifest.permission.WRITE_SECURE_SETTINGS);
-	        Settings.Secure.putInt(context.getContentResolver(), Settings.Secure.LOCATION_MODE, modeOff);
-		}
-	}
 	
 	
 	public void textShow(TextView txv, String message) {
@@ -261,17 +244,7 @@ public class MainUI extends Activity {
 	}
 	
 	
-	public Boolean hasCard(){
-		if (tm.getSimState() == TelephonyManager.SIM_STATE_READY) {
-			return true;
-		} else if (tm.getSimState() == TelephonyManager.SIM_STATE_ABSENT) {//no card
-			Toast.makeText(MainUI.this, getString(R.string.nosim),Toast.LENGTH_SHORT).show();
-			return false;
-		} else {//error card
-			Toast.makeText(MainUI.this, getString(R.string.errsim),Toast.LENGTH_SHORT).show();
-		}
-		return false;
-	}
+
 	
 	
 	

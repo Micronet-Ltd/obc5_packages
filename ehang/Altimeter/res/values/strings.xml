@@ -36,5 +36,5 @@
     <string name="about_infos">"    气压会因高度、时段、地域、季节、天气、温度的不同有所不同。
     为了提高测量准确度，使用该软件测量海拔高度前，需先将当前所在地海平面气压值和温度值输入，校准高度计。"</string>
     <string name="company">一行科技有限责任公司</string>
-    <string name="copyrights">Copyright © 2015 YiHang Inc. All Rights Reserved.</string>
+    <string name="copyrights">Copyright © 2016 YiHang Inc. All Rights Reserved.</string>
 </resources>

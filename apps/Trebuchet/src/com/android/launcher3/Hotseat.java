@@ -147,9 +147,29 @@ public class Hotseat extends FrameLayout {
 
             LayoutInflater inflater = LayoutInflater.from(context);
             TextView allAppsButton = (TextView)
-                    inflater.inflate(R.layout.all_apps_button, mContent, false);
-            Drawable d = context.getResources().getDrawable(R.drawable.all_apps_button_icon);
-
+                    inflater.inflate(R.layout.all_apps_button, mContent, false);					
+			//add start
+			String pkgName=Utilities.getThemePkgName(mContext);
+			Drawable d=null;
+			if(pkgName!=null&&pkgName.equals("com.yihang.launcherEx.theme.blue_classic")){
+				d = context.getResources().getDrawable(R.drawable.all_apps_button_icon);
+			}else{
+				try{
+					final Context contexttheme = context.createPackageContext(pkgName,
+							Context.CONTEXT_IGNORE_SECURITY);
+					int resId = contexttheme.getResources().getIdentifier("ic_all_apps_button", "drawable", pkgName);				
+					if(resId>0){
+						d = contexttheme.getResources().getDrawable(resId);
+					}
+				}catch (Exception e) {
+					//Log.d(TAG, e.toString());
+				}
+				if(d==null){
+					d = context.getResources().getDrawable(R.drawable.all_apps_button_icon);
+				}	
+			}			
+			//add end					
+            //Drawable d = context.getResources().getDrawable(R.drawable.all_apps_button_icon);
             Utilities.resizeIconDrawable(d);
             allAppsButton.setCompoundDrawables(null, d, null, null);
 

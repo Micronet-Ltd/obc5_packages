@@ -140,7 +140,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import android.app.Dialog;
+import android.graphics.drawable.BitmapDrawable;
 
+import android.app.WallpaperManager;
+import android.app.AlertDialog;
 /**
  * Default launcher application.
  */
@@ -463,7 +467,7 @@ public class Launcher extends Activity
             updateDynamicGrid();
         }
     };
-
+	public Dialog mDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         if (DEBUG_STRICT_MODE) {
@@ -564,7 +568,56 @@ public class Launcher extends Activity
                 "cyanogenmod.intent.action.PROTECTED_COMPONENT_UPDATE");
         registerReceiver(protectedAppsChangedReceiver, protectedAppsFilter,
                 "cyanogenmod.permission.PROTECTED_APP", null);
+				
+		// Register for changes to the theme
+        ContentResolver resolver = getContentResolver();
+        resolver.registerContentObserver(Uri.parse("content://com.yihang.thememgr.Settings/theme/themes"), true,
+                mFavoritesObserver);
     }
+	Handler mHandler2 = new Handler() {
+		@Override
+		public void handleMessage(Message msg) {
+			switch(msg.what){
+				case 1:
+					LauncherAppState.getInstance().getIconCache().flush();			
+					LauncherAppState.getInstance().getModel().forceReload();
+					LauncherAppState.getInstance().getModel().setWorkspace(mWorkspace);
+					WallpaperManager wpm = (WallpaperManager) Launcher.this.getSystemService(Context.WALLPAPER_SERVICE);					
+					String pkgName=Utilities.getThemePkgName(Launcher.this);
+					Drawable d=null;
+					try{
+						final Context contexttheme = Launcher.this.createPackageContext(pkgName, Context.CONTEXT_IGNORE_SECURITY);
+						int resId = contexttheme.getResources().getIdentifier("theme_wallpaper", "drawable", pkgName);				
+						if(resId>0){
+							d = contexttheme.getResources().getDrawable(resId);
+						}
+						if(d!=null){
+							BitmapDrawable bd = (BitmapDrawable) d;
+							wpm.setBitmap(bd.getBitmap());
+						}
+					}catch (Exception e) {
+						if (true) Log.d("mFavoritesObserver", e.toString());
+					}
+				break;
+			}
+		}
+	};
+	private final ContentObserver mFavoritesObserver = new ContentObserver(mHandler2) {
+        @Override
+        public void onChange(boolean selfChange) {
+			showProgressbar();	
+			Message msg=new Message();
+			msg.what=1;
+			mHandler2.sendMessage(msg);				
+			mHandler2.postDelayed(new Runnable() {
+				public void run() {
+					dismissProgressBar();
+				}
+			},5*1000);
+        }
+    };
+
+	
 
     @Override
     public void onLauncherProviderChange() { }
@@ -2392,7 +2445,7 @@ public class Launcher extends Activity
 
         getContentResolver().unregisterContentObserver(mWidgetObserver);
         unregisterReceiver(mCloseSystemDialogsReceiver);
-
+		getContentResolver().unregisterContentObserver(mFavoritesObserver);
         mDragLayer.clearAllResizeFrames();
         ((ViewGroup) mWorkspace.getParent()).removeAllViews();
         mWorkspace.removeAllWorkspaceScreens();
@@ -5670,7 +5723,7 @@ public class Launcher extends Activity
         editor.putBoolean(INTRO_SCREEN_DISMISSED, true);
         editor.apply();
     }
-
+	private SharedPreferences StartNumberPreferences;
     private void showFirstRunClings() {
         // The two first run cling paths are mutually exclusive, if the launcher is preinstalled
         // on the device, then we always show the first run cling experience (or if there is no
@@ -5683,6 +5736,30 @@ public class Launcher extends Activity
                 launcherClings.showLongPressCling(true);
             }
         }
+		StartNumberPreferences = this.getSharedPreferences("isFirstStart", Context.MODE_PRIVATE); 
+		if(StartNumberPreferences.getBoolean("isfirst", true)){
+		     WallpaperManager wpm = (WallpaperManager) Launcher.this.getSystemService(Context.WALLPAPER_SERVICE);					
+					String pkgName=Utilities.getThemePkgName(Launcher.this);
+					Drawable d=null;
+					try{
+						final Context contexttheme = Launcher.this.createPackageContext(pkgName, Context.CONTEXT_IGNORE_SECURITY);
+						int resId = contexttheme.getResources().getIdentifier("theme_wallpaper", "drawable", pkgName);				
+						if(resId>0){
+							d = contexttheme.getResources().getDrawable(resId);
+							Log.e("allApps","  "+d);
+						}
+						if(d!=null){
+							BitmapDrawable bd = (BitmapDrawable) d;
+							wpm.setBitmap(bd.getBitmap());
+							Log.d("mFavoritesObserver", "d22=   "+d);
+						}
+					}catch (Exception e) {
+						if (true) Log.d("mFavoritesObserver", e.toString());
+					}				
+			SharedPreferences.Editor editor = StartNumberPreferences.edit(); 
+			editor.putBoolean("isfirst", false);
+			editor.commit();
+		}
     }
 
     void showWorkspaceSearchAndHotseat() {
@@ -5943,6 +6020,21 @@ public class Launcher extends Activity
         return SettingsProvider.getBoolean(this,
                 SettingsProvider.SETTINGS_UI_HOMESCREEN_SEARCH,
                 R.bool.preferences_interface_homescreen_search_default);
+    }
+
+	public void showProgressbar() {
+		if(mWorkspace!=null){
+			ViewGroup workspace = ((ViewGroup) mWorkspace.getParent());
+			workspace.findViewById(R.id.body);
+			mInflater.inflate(R.layout.theme_switch_progressbar, workspace);
+		}
+    }
+	public void dismissProgressBar() {
+		if(mWorkspace!=null){
+			View progressBar = ((ViewGroup) mWorkspace.getParent()).findViewById(R.id.body);
+			if(progressBar!=null)
+			((ViewGroup)progressBar.getParent()).removeView(progressBar);
+		}
     }
 }
 

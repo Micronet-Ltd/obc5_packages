@@ -1,3 +1,7 @@
+ifeq ($(EH_PRODUCT_NAME),Q10)
+else
+ifeq ($(EH_PRODUCT_NAME),Q8)
+else
 LOCAL_PATH:= $(call my-dir)
     include $(CLEAR_VARS)
     LOCAL_MODULE_TAGS := optional
@@ -9,4 +13,5 @@ LOCAL_PATH:= $(call my-dir)
     #LOCAL_DEX_PREOPT := false
     LOCAL_PROGUARD_FLAG_FILES := proguard.flags
 include $(BUILD_PACKAGE)
-				
+endif
+endif				

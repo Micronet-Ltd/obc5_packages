@@ -59,7 +59,7 @@
  	            android:paddingBottom="2dip"
  	            android:text="@string/text_tourch"
  	            android:textColor="#000000"
- 	            android:textSize="12sp" />
+ 	            android:textSize="12dip" />
 
  	        <Button
  	            android:id="@+id/imagebutton2"
@@ -74,7 +74,7 @@
  	            android:paddingBottom="2dip"
  	            android:text="@string/text_sos"
  	            android:textColor="#000000"
- 	            android:textSize="12sp" />
+ 	            android:textSize="12dip" />
  	    </LinearLayout>
 
  	    <LinearLayout
@@ -99,7 +99,7 @@
  	            android:paddingTop="3dip"
  	            android:text="@string/text_altimeter"
  	            android:textColor="#000000"
- 	            android:textSize="12sp" />
+ 	            android:textSize="12dip" />
 
  	        <Button
  	            android:id="@+id/imagebutton4"
@@ -115,7 +115,7 @@
  	            android:paddingTop="3dip"
  	            android:text="@string/text_controlrecorder"
  	            android:textColor="#000000"
- 	            android:textSize="12sp" />
+ 	            android:textSize="12dip" />
  	    </LinearLayout>
 
  	    <LinearLayout
@@ -140,7 +140,7 @@
  	            android:paddingTop="3dip"
  	            android:text="@string/text_magnifiter"
  	            android:textColor="#000000"
- 	            android:textSize="12sp" />
+ 	            android:textSize="12dip" />
 
  	        <Button
  	            android:id="@+id/imagebutton6"
@@ -156,7 +156,7 @@
  	            android:paddingTop="3dip"
  	            android:text="@string/text_mypedometer"
  	            android:textColor="#000000"
- 	            android:textSize="12sp" />
+ 	            android:textSize="12dip" />
  	    </LinearLayout>
 
  	    <LinearLayout
@@ -180,7 +180,7 @@
  	            android:paddingTop="3dip"
  	            android:text="@string/text_compass"
  	            android:textColor="#000000"
- 	            android:textSize="12sp" />
+ 	            android:textSize="12dip" />
 
  	        <Button
  	            android:id="@+id/imagebutton8"
@@ -196,7 +196,7 @@
  	            android:paddingTop="3dip"
  	            android:text="@string/text_about"
  	            android:textColor="#000000"
- 	            android:textSize="12sp" />
+ 	            android:textSize="12dip" />
  	    </LinearLayout>
  	    
  	</RelativeLayout>

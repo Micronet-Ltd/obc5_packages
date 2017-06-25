@@ -80,6 +80,8 @@ import android.app.Dialog;
 import android.app.AlertDialog;
 import android.view.WindowManager;
 import android.view.Window;
+import android.app.KeyguardManager;
+import android.content.Context;
 /**
  * CameraAppUI centralizes control of views shared across modules. Whereas module
  * specific views will be handled in each Module UI. For example, we can now
@@ -549,6 +551,7 @@ public class CameraAppUI implements ModeListView.ModeSwitchListener,
     private final FilmstripBottomPanel mFilmstripBottomControls;
     private final FilmstripContentPanel mFilmstripPanel;
     private Runnable mHideCoverRunnable;
+	private int  iscountdown_value;
     private final View.OnLayoutChangeListener mPreviewLayoutChangeListener
             = new View.OnLayoutChangeListener() {
         @Override
@@ -1262,6 +1265,8 @@ public class CameraAppUI implements ModeListView.ModeSwitchListener,
 		mSliderView.setSlideListener(new SlideView.SlideListener() {
             @Override
     public void onDone() {
+		mController.getSettingsManager().set(SettingsManager.SCOPE_GLOBAL,
+                                             Keys.KEY_COUNTDOWN_DURATION, iscountdown_value);
 		 mController.getAndroidContextActivity().getWindow().setType(WindowManager.LayoutParams.TYPE_BASE_APPLICATION);
          setSwipeEnabled(true);
 		 mPreviewOverlay.setOnTouchListener(new MyTouchListener());
@@ -1404,7 +1409,8 @@ public class CameraAppUI implements ModeListView.ModeSwitchListener,
          * can clearly see when the toggle becomes clickable again,
          * keep all of that logic at this level.
          */
-        disableModeOptions();
+		 //zhoukai modified
+        //disableModeOptions();
     }
 
     @Override
@@ -1471,6 +1477,8 @@ public class CameraAppUI implements ModeListView.ModeSwitchListener,
      */
     @Override
     public void onModeSelected(int modeIndex) {
+        mController.getAndroidContextActivity().closeLED();
+		
         mHideCoverRunnable = new Runnable() {
             @Override
             public void run() {
@@ -1697,7 +1705,19 @@ public class CameraAppUI implements ModeListView.ModeSwitchListener,
                 if (Keys.arewaterCameraOn(mController.getSettingsManager())) {
 					//mPreviewOverlay.setOnTouchListener(new waterMyTouchListener());
 					//fuyuan
-					dialog_prompt();
+					int countDownDuration=mController.getSettingsManager()
+				               .getInteger(SettingsManager.SCOPE_GLOBAL, Keys.KEY_COUNTDOWN_DURATION);
+								iscountdown_value=countDownDuration;
+								mController.getSettingsManager().set(SettingsManager.SCOPE_GLOBAL,
+                                             Keys.KEY_COUNTDOWN_DURATION, 0);
+					KeyguardManager mKeyguardManager = (KeyguardManager) mController.getAndroidContextActivity().getSystemService(Context.KEYGUARD_SERVICE);
+					boolean isLocked = mKeyguardManager.isKeyguardLocked();
+					if(isLocked){
+						
+					}else{
+						
+						dialog_prompt();
+					}
 	                mShutterButton.setClickable(false);
 	                mShutterButton.setVisibility(View.GONE);
 	                mSliderView.setVisibility(View.VISIBLE);

@@ -33,13 +33,32 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:textSize="20dip"/>
+        
+        <TextView
+                android:id="@+id/psensor_calibrate_tile"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="50dip"
+                android:textSize="20dip"/>
+        
     </LinearLayout>
+    
+        
 
     <LinearLayout
             android:layout_alignParentBottom="true"
             android:layout_marginBottom="0dip"
             android:layout_height="wrap_content"
-            android:layout_width="fill_parent">
+            android:layout_width="fill_parent"
+            android:orientation="vertical">
+
+        <Button
+                android:id="@+id/psensor_calibrate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dip"
+                android:layout_marginLeft="10dip"
+                android:text="@string/calibrate"/>
         <Button
                 android:id="@+id/psensor_cancel"
                 android:layout_width="fill_parent"

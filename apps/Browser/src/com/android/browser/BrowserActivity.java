@@ -60,8 +60,8 @@ public class BrowserActivity extends Activity {
         super.onCreate(icicle);
 
         if (shouldIgnoreIntents()) {
-            finish();
-            return;
+            //finish();
+            //return;
         }
 
         // If this was a web search request, pass it on to the default web

@@ -14,6 +14,7 @@
     <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
 
     <application
+        android:persistent="true"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
@@ -25,17 +26,21 @@
         </provider>
         
         <activity
+            android:excludeFromRecents="true"
             android:name="com.yihang.gesture.activity.MainActivity"
             android:label="@string/app_name" 
-            android:theme="@android:style/Theme.NoTitleBar" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            android:theme="@android:style/Theme.NoTitleBar">
         </activity>
         
         <activity
+            android:excludeFromRecents="true"
+            android:name="com.yihang.gesture.activity.GloveActivity"
+            android:label="@string/glove_mode" 
+            android:theme="@android:style/Theme.NoTitleBar" >
+        </activity>
+		
+        <activity		
+            android:excludeFromRecents="true"  
             android:name="com.yihang.gesture.activity.ShowGesture"
             android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen" 
             android:screenOrientation="portrait">
@@ -48,8 +53,8 @@
         </service>
         <receiver android:name="com.yihang.gesture.receiver.BootCompleteReceiver" >
             <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" >
-                </action>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+				<action android:name="com.securespaces.android.intent.ACTION_SPACE_SWITCHED" />
             </intent-filter>
         </receiver>
 

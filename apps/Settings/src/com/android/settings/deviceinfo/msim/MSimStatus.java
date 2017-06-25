@@ -307,15 +307,23 @@ public class MSimStatus extends PreferenceActivity {
 
         for (int i = 0; i < mNumPhones; i++) {
             mSim[i] = getMultiSimName(i);
-            mPhone[i] = PhoneFactory.getPhone(i);
-            if ("CDMA".equals(mPhone[i].getPhoneName())) {
-                indexOfCDMA = i;
-            } else {
-                // only show area info when SIM country is Brazil
-                if ("br".equals(mTelephonyManager.getSimCountryIso(0))) {
-                    mShowLatestAreaInfo = true;
+			/*lihui @20160201 added for other user didn't have authority to get phone object start*/
+			try { 
+			/*lihui @20160201 added for other user didn't have authority to get phone object end*/
+                mPhone[i] = PhoneFactory.getPhone(i);
+    			if ("CDMA".equals(mPhone[i].getPhoneName())) {
+                    indexOfCDMA = i;
+                } else {
+                    // only show area info when SIM country is Brazil
+                    if ("br".equals(mTelephonyManager.getSimCountryIso(0))) {
+                        mShowLatestAreaInfo = true;
+                    }
                 }
-            }
+			/*lihui @20160201 added for other user didn't have authority to get phone object start*/
+			} catch (IllegalStateException e) { 
+                e.printStackTrace(); 
+            } 
+			/*lihui @20160201 added for other user didn't have authority to get phone object end*/
             mPhoneStateListener[i] = getPhoneStateListener(i);
         }
         if (!mShowLatestAreaInfo) {
@@ -377,7 +385,8 @@ public class MSimStatus extends PreferenceActivity {
     }
 
     private void updateMSimSummery(int indexOfCDMA) {
-        if (DEBUG)
+        String rawNumber = null; //lihui @20160201 added for other user didn't have authority to get phone object
+		if (DEBUG)
             Log.d(TAG, "cdma index is " + indexOfCDMA);
 
         if (Utils.isWifiOnly(getApplicationContext())) {
@@ -386,9 +395,26 @@ public class MSimStatus extends PreferenceActivity {
             }
         } else {
             for (int i = 0; i < mNumPhones; i++) {
-
-                String rawNumber = mPhone[i].getLine1Number(); // may be null or empty
-                String formattedNumber = null;
+				/*lihui @20160201 added for other user didn't have authority to get phone object start*/
+                try{ 
+                /*lihui @20160201 added for other user didn't have authority to get phone object end*/
+                    rawNumber = mPhone[i].getLine1Number(); // may be null or empty
+                /*lihui @20160201 added for other user didn't have authority to get phone object start*/
+                } catch (NullPointerException e) { 
+                    e.printStackTrace(); 
+                    removePreferenceFromScreen(KEY_PRL_VERSION); 
+                    removePreferenceFromScreen(KEY_ESN_NUMBER); 
+                    removePreferenceFromScreen(KEY_MEID_NUMBER); 
+                    removePreferenceFromScreen(KEY_MIN_NUMBER); 
+                    removePreferenceFromScreen(KEY_ICC_ID); 
+                    removePreferenceFromScreen(KEY_IMEI); 
+                    removePreferenceFromScreen(KEY_IMEI_SV); 
+                    removePreferenceFromScreen(KEY_PHONE_NUMBER); 
+                    removePreferenceFromScreen(KEY_LATEST_AREA_INFO); 
+                    return; 
+                } 
+				/*lihui @20160201 added for other user didn't have authority to get phone object end*/
+				String formattedNumber = null;
 				/*lihui @20151215 added for get iccid for all inserted sim start*/
 				mIccIdSummary[i] = getSimSummary(i, mPhone[i].getIccSerialNumber());
 				/*lihui @20151215 added for get iccid for all inserted sim end*/
@@ -456,7 +482,9 @@ public class MSimStatus extends PreferenceActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
+		/*lihui @20160201 added for other user didn't have authority to get phone object start*/
+        try{
+        /*lihui @20160201 added for other user didn't have authority to get phone object end*/
         registerReceiver(mAreaInfoReceiver, new IntentFilter(CB_AREA_INFO_RECEIVED_ACTION),
                 CB_AREA_INFO_SENDER_PERMISSION, null);
         if (!Utils.isWifiOnly(getApplicationContext())) {
@@ -481,6 +509,11 @@ public class MSimStatus extends PreferenceActivity {
         }
         registerReceiver(mBatteryInfoReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
         mHandler.sendEmptyMessage(EVENT_UPDATE_STATS);
+		/*lihui @20160201 added for other user didn't have authority to get phone object start*/
+    	} catch (NullPointerException e) { 
+            e.printStackTrace(); 
+        } 
+		/*lihui @20160201 added for other user didn't have authority to get phone object end*/
     }
 
     @Override
@@ -687,6 +720,9 @@ public class MSimStatus extends PreferenceActivity {
 
     private void updateDataState(int phoneId) {
         String display = null;
+		/*lihui @20160201 added for other user didn't have authority to get phone object start*/
+        try {
+		/*lihui @20160201 added for other user didn't have authority to get phone object end*/
         if (PhoneFactory.getDataSubscription() == SubscriptionManager.getSubId(phoneId)[0]
                 && isDataServiceEnable(phoneId)) {
             switch (mDataState[phoneId]) {
@@ -709,6 +745,11 @@ public class MSimStatus extends PreferenceActivity {
 
         mDataStateSummary[phoneId] = getSimSummary(phoneId, display);
         setMSimSummary(KEY_DATA_STATE, mDataStateSummary);
+	    /*lihui @20160201 added for other user didn't have authority to get phone object start*/
+    	} catch (NullPointerException e) { 
+            e.printStackTrace(); 
+        } 
+		/*lihui @20160201 added for other user didn't have authority to get phone object end*/
     }
 
     private boolean isDataServiceEnable(int phoneId) {

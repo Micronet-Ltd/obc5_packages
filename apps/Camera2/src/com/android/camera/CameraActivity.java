@@ -1280,7 +1280,7 @@ public class CameraActivity extends QuickActivity
 
     private void removeData(int dataID) {
         mDataAdapter.removeData(dataID);
-        if (mDataAdapter.getTotalNumber() > 1) {
+        if (mDataAdapter.getTotalNumber() > 0) {
             showUndoDeletionBar();
         } else {
             // If camera preview is the only view left in filmstrip,
@@ -1372,42 +1372,11 @@ public class CameraActivity extends QuickActivity
         onModeSelected(getModeIndex());
     }
 	
-	
-    private final BroadcastReceiver mShowOnKeyGuardShutdownReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-			Log.d(TAG, "----------mShowOnKeyGuardShutdownReceiver.");
-            unregisterReceiver(mShowOnKeyGuardShutdownReceiver);
-    		finish();
-		}
-	};
-	
-    private final BroadcastReceiver mCameraShowWhenLockedReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-			Log.d(TAG, "----------mCameraShowWhenLockedReceiver");
-            Window win = getWindow();
-            WindowManager.LayoutParams params = win.getAttributes();
-            params.flags |= WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED;
-            win.setAttributes(params);
-			
-            IntentFilter filter_screen_off = new IntentFilter(Intent.ACTION_SCREEN_OFF);
-            registerReceiver(mShowOnKeyGuardShutdownReceiver/*mShutdownReceiver*/, filter_screen_off);
-
-            IntentFilter filter_user_unlock = new IntentFilter(Intent.ACTION_USER_PRESENT);
-            registerReceiver(mShowOnKeyGuardShutdownReceiver/*mShutdownReceiver*/, filter_user_unlock);
-        }
-    };
-	
-	
     @Override
     public void onCreateTasks(Bundle state) {
         CameraPerformanceTracker.onEvent(CameraPerformanceTracker.ACTIVITY_START);
         mAppContext = getApplication().getBaseContext();
-		
-        IntentFilter filter_camera_over_keyguard = new IntentFilter("CAMERA_SHOW_WHEN_LOCKED");
-        registerReceiver(mCameraShowWhenLockedReceiver, filter_camera_over_keyguard);
-		
+
         if (!Glide.isSetup()) {
             Glide.setup(new GlideBuilder(getAndroidContext())
                 .setResizeService(new FifoPriorityThreadPoolExecutor(2)));
@@ -1480,8 +1449,7 @@ public class CameraActivity extends QuickActivity
             mSecureCamera = intent.getBooleanExtra(SECURE_CAMERA_EXTRA, false);
         }
 		
-		boolean isKeyguardLocked = intent.getBooleanExtra(CameraKeyReceiver.KEYGUARD_LOCKED, false);
-        if (mSecureCamera || isKeyguardLocked) {
+        if (mSecureCamera) {
             // Change the window flags so that secure camera can show when
             // locked
 			Log.d(TAG, "----mSecureCamera || isKeyguardLocked");
@@ -1768,6 +1736,13 @@ public class CameraActivity extends QuickActivity
         CameraPerformanceTracker.onEvent(CameraPerformanceTracker.ACTIVITY_RESUME);
         Log.v(TAG, "Build info: " + Build.DISPLAY);
 
+		//added by ao, for close ledlight where systemui_tile and launcher_widget
+		String CLOSE_LAUNCHER_LEDWIDGET = "qualcomm.android.LEDWidget";
+		String CLOSE_SYSTEMUI_FLASHLIGHTTILE = "com.android.SystemUI.FlashlightTile";
+        sendBroadcast(new Intent(CLOSE_LAUNCHER_LEDWIDGET));
+        sendBroadcast(new Intent(CLOSE_SYSTEMUI_FLASHLIGHTTILE));
+		//end
+		
         mPaused = false;
         updateStorageSpaceAndHint(null);
 
@@ -1945,19 +1920,28 @@ public class CameraActivity extends QuickActivity
 
     @Override
     protected void onStopTasks() {
+		closeLED();
+
         mIsActivityRunning = false;
         mPanoramaViewHelper.onStop();
 
         mLocationManager.disconnect();
     }
-
+	
+	public void closeLED() {
+		//added by shanbp, for close ledlight where systemui_tile and launcher_widget
+		String CLOSE_LAUNCHER_LEDWIDGET = "qualcomm.android.LEDWidget";
+		String CLOSE_SYSTEMUI_FLASHLIGHTTILE = "com.android.SystemUI.FlashlightTile";
+        sendBroadcast(new Intent(CLOSE_LAUNCHER_LEDWIDGET));
+        sendBroadcast(new Intent(CLOSE_SYSTEMUI_FLASHLIGHTTILE));
+		//end
+	}
+	
     @Override
     public void onDestroyTasks() {
         if (mSecureCamera) {
             unregisterReceiver(mShutdownReceiver);
         }
-        unregisterReceiver(mCameraShowWhenLockedReceiver);
-		
         mSettingsManager.removeAllListeners();
         mCameraController.removeCallbackReceiver();
         mCameraController.setCameraExceptionHandler(null);

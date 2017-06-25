@@ -58,7 +58,7 @@ import java.util.Locale;
 public class PhotoDataAdapter implements PhotoPage.Model {
     @SuppressWarnings("unused")
     private static final String TAG = "PhotoDataAdapter";
-
+	private static final int MSG_NOTIFY_DELAYED = 0;
     private static final int MSG_LOAD_START = 1;
     private static final int MSG_LOAD_FINISH = 2;
     private static final int MSG_RUN_OBJECT = 3;
@@ -217,6 +217,10 @@ public class PhotoDataAdapter implements PhotoPage.Model {
                     }
                     case MSG_UPDATE_IMAGE_REQUESTS: {
                         updateImageRequests();
+                        return;
+                    }
+					case MSG_NOTIFY_DELAYED: {
+						mReloadTask.notifyDirty();
                         return;
                     }
                     default: throw new AssertionError();
@@ -1206,10 +1210,16 @@ public class PhotoDataAdapter implements PhotoPage.Model {
                 executeAndWait(new UpdateContent(info));
             }
         }
-
+		
         public synchronized void notifyDirty() {
-            mDirty = true;
-            notifyAll();
+			//zhoukai modified(delayed send message)
+           if(!mDirty){
+					mDirty = true;
+					notifyAll();
+				}else{
+					mDirty = true;
+					mMainHandler.sendEmptyMessageDelayed(MSG_NOTIFY_DELAYED, 50);
+				}
         }
 
         public synchronized void terminate() {

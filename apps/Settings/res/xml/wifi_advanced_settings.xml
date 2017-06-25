@@ -113,6 +113,14 @@
             android:persistent="false" />
 
     <Preference
+            android:key="wapi_cert_install"
+            android:title="@string/wifi_wapi_cert_install"
+            android:persistent="false" />
+    <Preference
+            android:key="wapi_cert_uninstall"
+            android:title="@string/wifi_wapi_cert_uninstall"
+            android:persistent="false" />
+    <Preference
             android:key="mac_address"
             android:title="@string/wifi_advanced_mac_address_title"
             android:layout="@layout/mac_preference" />

@@ -226,6 +226,7 @@
                 <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+						android:id="@+id/password_text"
                         style="@style/wifi_item_label"
                         android:text="@string/wifi_password" />
 
@@ -254,6 +255,19 @@
                         style="@style/wifi_item_content"
                         android:textSize="14sp"
                         android:text="@string/wifi_show_password" />
+                <TextView android:id="@+id/wapi_certificate_text"
+                        style="?android:attr/textAppearanceSmall"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dip"
+                        android:text="@string/wifi_certificate" />
+                <Spinner android:id="@+id/wapi_certificate_spinner"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content" />
+                <Spinner android:id="@+id/cfg_wapi_key_type_spinner"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:entries="@array/wifi_wapi_key_type" />
             </LinearLayout>
         </LinearLayout>
 

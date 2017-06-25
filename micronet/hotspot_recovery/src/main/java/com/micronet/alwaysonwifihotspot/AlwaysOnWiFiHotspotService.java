@@ -3,6 +3,7 @@ package com.micronet.alwaysonwifihotspot;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
@@ -185,6 +186,9 @@ public class AlwaysOnWiFiHotspotService extends Service {
             handlerValue=this.readFromFile(context);
             handlerCount=Integer.parseInt(handlerValue);
         }
+		PackageManager p = getPackageManager();
+        ComponentName componentName = new ComponentName(this, com.micronet.alwaysonwifihotspot.MainActivity.class); // activity which is first time open in manifiest file which is declare as <category android:name="android.intent.category.LAUNCHER" />
+        p.setComponentEnabledSetting(componentName,PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
     }
 
     final Runnable wifiApCheck = new Runnable() {

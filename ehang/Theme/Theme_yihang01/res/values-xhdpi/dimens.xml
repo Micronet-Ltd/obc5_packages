@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="folder_preview_size">120.0px</dimen>
+    <dimen name="folder_preview_padding">8.0dip</dimen>
+    <dimen name="folder_preview_margin_top">2.0dip</dimen>
+    <dimen name="folder_preview_name_padding_top">6.0dip</dimen>
+    <dimen name="apps_folder_preview_size">120.0px</dimen>
+    <dimen name="apps_folder_preview_padding">8.0dip</dimen>
+    <dimen name="apps_folder_preview_margin_top">4.0dip</dimen>
+    <dimen name="apps_folder_preview_name_padding_top">5.0dip</dimen>
+</resources>

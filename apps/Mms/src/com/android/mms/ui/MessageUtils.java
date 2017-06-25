@@ -616,6 +616,10 @@ public class MessageUtils {
         }
 
         // Sent: ***
+
+//{{begin,mod by chenqi 2016-02-25 16:30
+//reason:the data is samed by Delivered,removed
+        /*
         if (smsType == Sms.MESSAGE_TYPE_SENT) {
             long date_sent = cursor.getLong(cursor.getColumnIndexOrThrow(Sms.DATE_SENT));
             if (date_sent > 0) {
@@ -624,6 +628,8 @@ public class MessageUtils {
                 details.append(MessageUtils.formatTimeStampString(context, date_sent, true));
             }
         }
+        */
+//}}end,mod by chenqi
 
         // Received: ***
         details.append('\n');

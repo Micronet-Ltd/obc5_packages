@@ -209,6 +209,11 @@ public class CallActivity extends Activity {
         intent.setFlags(Intent.FLAG_RECEIVER_FOREGROUND);
         intent.setClass(this, CallReceiver.class);
         Log.d(this, "Sending broadcast as user to CallReceiver- isIncoming: %s", incoming);
+//{{begin,mod by chenqi 2016-03-07 10:10
+//	reason:this broadcast received slowlly
+//	I set priority  highest
+		intent.putExtra(CallReceiver.KEY_EHANG_FROM,CallReceiver.VAL_EHANG_FROM_CALLACTIVITY);
+//}}end,mod by chenqi
         sendBroadcastAsUser(intent, UserHandle.OWNER);
         return true;
     }

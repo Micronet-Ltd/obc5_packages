@@ -2,9 +2,9 @@
     <bool name="config_show_defult_theme">false</bool>
     <bool name="config_function_lockscreen">false</bool>
     
-    <string name="defalt_theme">com.yihang.launcherEx.theme.golden_age</string>    
-    <string name="defalt_launcherIcon">com.yihang.launcherEx.theme.golden_age</string>    
-    <string name="defalt_lockscreen">com.yihang.launcherEx.theme.golden_age</string>    
-    <string name="defalt_wallpaper">com.yihang.launcherEx.theme.golden_age</string>    
-    <string name="defalt_lockWallpaper">com.yihang.launcherEx.theme.golden_age</string>    
+    <string name="defalt_theme">com.yihang.launcherEx.theme.blue_classic</string>    
+    <string name="defalt_launcherIcon">com.yihang.launcherEx.theme.blue_classic</string>    
+    <string name="defalt_lockscreen">com.yihang.launcherEx.theme.blue_classic</string>    
+    <string name="defalt_wallpaper">com.yihang.launcherEx.theme.blue_classic</string>    
+    <string name="defalt_lockWallpaper">com.yihang.launcherEx.theme.blue_classic</string>    
 </resources>

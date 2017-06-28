@@ -322,8 +322,7 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANVehicleInterfaceBridge_re
     if (closePort(CAN1_TTY_NUMBER) == -1) {
         return -1;
         LOGD("Couldn't close CAN1 successfully ");
-    } else
-        LOGD("Returning a zerooo from remoeCAN1Interface()");
+    }
         return 0;
     error:
     return SYSTEM_ERROR;
@@ -338,17 +337,17 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANVehicleInterfaceBridge_re
         LOGD("Couldn't close CAN2 successfully ");
     }
 
-    else
-        LOGD("Returning a zerooo from remoeCAN2Interface()");
     return 0;
     error:
     return SYSTEM_ERROR;
 }
 
 JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANVehicleInterfaceBridge_createJ1708Interface(JNIEnv *env, jobject instance){
+
     /*
      * TODO: Create Interface (Set bitrate for serial port communication), Push the fd to the java layer
      * */
+
     jint fdJ1708 = FlexCAN_j1708_startup();
     jfieldID fd_id;
 

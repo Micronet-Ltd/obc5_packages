@@ -309,7 +309,7 @@ public class CanTest {
 
     public void closeCan1Socket() {
         if (isPort1SocketOpen()) {
-            canbusSocket1.close1939Port1();
+           canbusSocket1.close1939Port1();
             canbusSocket1 = null;
 
             if (j1939Port1ReaderThread != null && j1939Port1ReaderThread.isAlive()) {

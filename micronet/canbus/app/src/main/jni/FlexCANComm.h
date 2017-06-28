@@ -37,7 +37,7 @@ int serial_start_monitor_thread_can_port2();
 static void *monitor_data_thread_port1(void *param);
 static void *monitor_data_thread_can_port2(void *param);
 
-int wait_for_data(int port_fd);
+int waitForData(int port_fd);
 int parseHex(uint8_t * asciiString, int len, uint8_t * hexValue);
 
 void sendCanbusFramePort1(uint32_t frameId, int type, int length, BYTE* data );

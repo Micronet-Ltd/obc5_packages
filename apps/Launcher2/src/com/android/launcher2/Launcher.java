@@ -133,6 +133,7 @@ public final class Launcher extends Activity
     static final String TAG = "Launcher";
     static final boolean LOGD = false;
 
+
     static final boolean PROFILE_STARTUP = false;
     static final boolean DEBUG_WIDGETS = false;
     static final boolean DEBUG_STRICT_MODE = false;
@@ -462,7 +463,7 @@ public final class Launcher extends Activity
         updateGlobalIcons();
 
         // On large interfaces, we want the screen to auto-rotate based on the current orientation
-        unlockScreenOrientation(true);
+        //unlockScreenOrientation(true);
     }
 
     protected void onUserLeaveHint() {

@@ -525,4 +525,6 @@
     <string name="calibrate_err">Calibration failure</string>
     <string name="calibrate_ok">Calibration success</string>
     <string name="keypad_scrshot">Scrshot</string>
+    <!-- RS232 -->
+    <string name="rs232_connect">Please connect the RS232 Cable and click OK to continue</string>
 </resources>

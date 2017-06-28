@@ -242,6 +242,57 @@
     <string
         name="sdcard_to_insert">Please insert SD card</string>
 
+        <!-- Cradle -->
+      <string
+           name="cradle_name">Cradle and Ignition</string>
+      <string
+           name="cradle_done">Continue</string>
+       <string
+           name="cradle_wait">Please remove the device from the cradle.</string>
+       <string
+           name="cradle_remove">Please remove the device from the cradle.</string>
+       <string
+           name="cradle_insert">Please insert the device into the cradle without ignition.</string>
+        <string
+           name="cradle_ignition_on">Please set the ignition on. </string>
+        <string
+           name="cradle_when_done">when done, click  Continue.</string>
+         <integer-array name="CountDownMax">
+               <item>45</item>
+               <item>45</item>
+               <item>45</item>
+        </integer-array>
+  
+        <string-array
+            name="cradle_first_action">
+            <item>Please remove the device from any charging device in %s second!</item>
+            <item>Please insert the device into the cradle in %s second!</item>
+            <item>Please activate the ignition in %s second!</item>
+        </string-array>
+        <string-array
+            name="cradle_second_action">
+            <item>Please remove the device from any charging device!</item>
+            <item>Please insert the device into the cradle!</item>
+            <item>Please activate the ignition!</item>
+        </string-array>
+
+           <!-- Rs232 -->
+           <string
+                name="rs232_name">RS232</string>
+           <string
+                name="rs232_Done">Done</string>
+            <string
+                name="rs232_wait">Please remove the device from the cradle.</string>
+            <string
+                name="rs232_remove">Please remove the device from the cradle.</string>
+            <string
+                name="rs232_insert">Please insert the device into the cradle without ignition."</string>
+             <string
+                name="rs232_ignition_on">Please set the ignition on."</string>
+             <string
+                name="rs232_when_done">"when done, click  Done.</string> 
+
+    
     <!-- Bluetooth -->
     <string
         name="bluetooth_name">Bluetooth</string>

@@ -67,6 +67,7 @@ public class SpecialCharSequenceMgr {
 
     /*added by xuegang for factory test 20150817 begin*/
 	private static final String FACTORY_TEST_APP = "*937*70#";
+	private static final String FACTORY_TEST_APP_MICRONET = "*937*77#";
 	private static final String APLOG_APP = "####7878#";	
 	private static final String QXDMLOG_APP = "####8787#";	
 	/*added by xuegang for factory test 20150817 end*/
@@ -133,7 +134,9 @@ public class SpecialCharSequenceMgr {
             {
                 /*added by xuegang for factory test 20150817 begin*/
                 if(dialString.equals(FACTORY_TEST_APP)) {
-                    return handleFactoryTestDisplay(context);
+                    return handleFactoryTestDisplay(context, false);
+				} else if(dialString.equals(FACTORY_TEST_APP_MICRONET)) {
+                    return handleFactoryTestDisplay(context, true);
                 } else if(dialString.equals(APLOG_APP)) {
                     return handleSetPropDisplay(context,dialString);
                 } else if(dialString.equals(QXDMLOG_APP)) {
@@ -358,13 +361,16 @@ private static boolean isArrayContains(Object[] array, Object obj) {
 	return false;
 }
 
-private static void startFactoryTestActivity(Context context, boolean isAttchment) {
+private static void startFactoryTestActivity(Context context, boolean isAttchment, boolean isMicronet) {
 	Intent mIntent = new Intent(Intent.ACTION_MAIN);
 	mIntent.addCategory("android.category.factory.kit");
 	mIntent.setClassName("com.qrt.factory", "com.qrt.factory.ControlCenter");
 	mIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-	if (isAttchment) {
+	if (isAttchment) { // alwais false
 		mIntent.putExtra("attachment", true);
+	}
+	if (isMicronet) { // indicates to add the micronet test list from R.xml.item_config_micronet
+		mIntent.putExtra("micronet", true);
 	}
 	try {
 		context.startActivity(mIntent);
@@ -373,8 +379,8 @@ private static void startFactoryTestActivity(Context context, boolean isAttchmen
 	}
 }
 
-private static boolean handleFactoryTestDisplay(Context context) {
-	startFactoryTestActivity(context, false);
+private static boolean handleFactoryTestDisplay(Context context, boolean isMicronet) {
+	startFactoryTestActivity(context, false, isMicronet);
 	return true;
 }
 

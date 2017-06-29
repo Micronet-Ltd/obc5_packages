@@ -258,9 +258,9 @@
         <string
            name="cradle_when_done">when done, click  Continue.</string>
          <integer-array name="CountDownMax">
-               <item>45</item>
-               <item>45</item>
-               <item>45</item>
+               <item>30</item>
+               <item>30</item>
+               <item>30</item>
         </integer-array>
   
         <string-array
@@ -577,5 +577,7 @@
     <string name="calibrate_ok">Calibration success</string>
     <string name="keypad_scrshot">Scrshot</string>
     <!-- RS232 -->
-    <string name="rs232_connect">Please connect the RS232 Cable and click OK to continue</string>
+    <string name="rs232_disconnect">Please verify that RS232 plug is not connected. Press continue when done</string>
+    <string name="rs232_connect_countdown">Please Insert RS232 plug in %d Seconds</string>
+    <string name="rs232_connect">Please verify that RS232 plug is connected. Press continue when done</string>
 </resources>

@@ -1,6 +1,7 @@
 package com.qrt.factory.activity;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -17,6 +18,9 @@ public class Rs232 extends AbstractActivity {
     static {
         System.loadLibrary("Serial_port");
     }
+    private final Handler mCountdownHandler = new Handler();
+    private static int COUNTDOWN=30;
+    private static int STAGE =0;
     private static final String TAG = Rs232.class.getSimpleName();
     private final int BYTES_TO_READ = 128;
     private final byte[] data=new byte[]{
@@ -36,6 +40,31 @@ public class Rs232 extends AbstractActivity {
     Rs232Tester mRs232Tester;
     Rs232Tester mRs232TesterOther;
     boolean mFailOnce = false;
+    TextView mRs232Msg;
+
+    Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            if (COUNTDOWN >0)  {
+                mRs232Msg.setText(String.format(getString(R.string.rs232_connect_countdown),COUNTDOWN));
+                COUNTDOWN--;
+                if (readOnlyTest()){
+                    pass();
+                } else {
+                    mCountdownHandler.postDelayed(this,500);
+                }
+            } else {
+                mRs232Msg.setText("Time Left: 0");
+                COUNTDOWN =30;
+                mCountdownHandler.removeCallbacks(this);
+                if (readOnlyTest()){
+                    pass();
+                } else {
+                    mRs232Msg.setText(getString(R.string.rs232_connect));
+                }
+            }
+        }
+    };
 
 
 
@@ -47,8 +76,8 @@ public class Rs232 extends AbstractActivity {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
+    protected void onStart(){
+        super.onStart();
         findViewById(R.id.rs232_ok).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -61,32 +90,56 @@ public class Rs232 extends AbstractActivity {
                 fail();
             }
         });
-        doTest();
+        mRs232Msg=(TextView)findViewById(R.id.rs232_msg);
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        doTest();
     }
 
     private void doTest(){
-        if (readOnlyTest()){
-            pass();
-        } else {
-            if (mFailOnce) {
-                fail();
-            } else{
-                mFailOnce =true;
-                ((TextView)findViewById(R.id.rs232_msg)).setText(getString(R.string.rs232_connect));
-                findViewById(R.id.rs232_ok).setVisibility(View.VISIBLE);
-                findViewById(R.id.rs232_cancel).setVisibility(View.VISIBLE);
-            }
+        switch (STAGE){
+            case 0:
+                if (readOnlyTest()){
+                    mRs232Msg.setText(getString(R.string.rs232_disconnect));
+                    STAGE++;
+                } else {
+                    STAGE +=2;
+                }
+                break;
+            case 1:
+                if (readOnlyTest()){
+                    fail();
+                } else {
+                    STAGE++;
+                }
+                break;
+            case 2:
+                STAGE++;
+                doCountdown();
+                break;
+            case 3:
+                if (readOnlyTest()){
+                    pass();
+                } else {
+                    fail();
+                }
         }
+    }
+
+    private void doCountdown(){
+        mCountdownHandler.postDelayed(runnable, 500l);
     }
 
     protected boolean readOnlyTest() {
         if (mRs232Tester == null) {
-            mRs232Tester = new Rs232Tester("/dev/ttyHSL1",9600,1000);
+            mRs232Tester = new Rs232Tester("/dev/ttyHSL1",9600,500);
         }
 
         if (mRs232TesterOther==null){
-            mRs232TesterOther = new Rs232Tester("/dev/ttyHSL1",9600,1000);
+            mRs232TesterOther = new Rs232Tester("/dev/ttyHSL1",9600,500);
         }
 
         byte[] buffer = new byte[data.length];

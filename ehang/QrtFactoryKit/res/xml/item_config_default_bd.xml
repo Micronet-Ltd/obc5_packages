@@ -21,11 +21,17 @@
                     className="com.qrt.factory.activity.SdCard"/>
         </TestItem>
 
-        <TestItem name="Bluetooth" enable="true">
+        <TestItem name="Cradle" enable="true">
+            <Intent
+                    packageName="com.qrt.factory"
+                    className="com.qrt.factory.activity.Cradle"/>
+        </TestItem>
+
+        <!--<TestItem name="Bluetooth" enable="true">
             <Intent
                     packageName="com.qrt.factory"
                     className="com.qrt.factory.activity.Bluetooth"/>
-        </TestItem>
+        </TestItem>-->
 
         <TestItem name="WiFi" enable="true">
             <Intent

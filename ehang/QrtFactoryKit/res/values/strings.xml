@@ -577,6 +577,8 @@
     <string name="calibrate_ok">Calibration success</string>
     <string name="keypad_scrshot">Scrshot</string>
     <!-- RS232 -->
+    <string name="rs232_please_wait">Please Wait...</string>
+    <string name="rs232_continue">Continue</string>
     <string name="rs232_disconnect">Please verify that RS232 plug is not connected. Press continue when done</string>
     <string name="rs232_connect_countdown">Please Insert RS232 plug in %d Seconds</string>
     <string name="rs232_connect">Please verify that RS232 plug is connected. Press continue when done</string>

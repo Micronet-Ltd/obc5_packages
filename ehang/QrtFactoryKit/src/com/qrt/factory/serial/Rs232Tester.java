@@ -59,25 +59,25 @@ public class Rs232Tester {
 
         FutureTask<String> ft = new FutureTask<String>(new ReadTask());
         ExecutorService ex = Executors.newSingleThreadExecutor();
-        Log.d(TAG, "readMaxSize future task created !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        //Log.d(TAG, "readMaxSize future task created !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         mReceived = inBuffer;
         mMaxToReceive = maxSize;
         mUpToNowReceived = 0;
-        Log.d(TAG, "readMaxSize future task run !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        //Log.d(TAG, "readMaxSize future task run !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         ex.execute(ft);
 
 
-        Log.d(TAG, "readMaxSize future task running !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        //Log.d(TAG, "readMaxSize future task running !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         try {
-            Log.d(TAG, "readMaxSize future task try !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            //Log.d(TAG, "readMaxSize future task try !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             ft.get(mMaxMillis, TimeUnit.MILLISECONDS);
-            Log.d(TAG, "readMaxSize future task tried !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            //Log.d(TAG, "readMaxSize future task tried !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         } catch (Exception e) {
-            e.printStackTrace();
-//            ft.cancel(true);
+            //e.printStackTrace();
+            ft.cancel(true);
             ex.shutdownNow();
         }
-        Log.d(TAG, "readMaxSize future task ended !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        //Log.d(TAG, "readMaxSize future task ended !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         return mUpToNowReceived;
     }
 
@@ -87,9 +87,9 @@ public class Rs232Tester {
         if (size + mUpToNowReceived >= mMaxToReceive) {
             size = mMaxToReceive - mUpToNowReceived;
             isExit = true;
-            Log.d(TAG, "onDataReceived will interupt read thread size: " + size + " !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            //Log.d(TAG, "onDataReceived will interupt read thread size: " + size + " !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         }
-        Log.d(TAG, "onDataReceived add " + size + " to mReceived !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        //Log.d(TAG, "onDataReceived add " + size + " to mReceived !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         for (int i = 0; i < size; i++) {
             mReceived[mUpToNowReceived + i] = buffer[i];
             String received = "VOID";
@@ -101,21 +101,21 @@ public class Rs232Tester {
         }
 
         mUpToNowReceived += size;
-        Log.d(TAG, "onDataReceived mUpToNowReceived: " + mUpToNowReceived +
-                " !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        //Log.d(TAG, "onDataReceived mUpToNowReceived: " + mUpToNowReceived +
+        //        " !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         return isExit;
     }
 
     public void writeToSerial(byte[] inBytes, int inSize) {
         FutureTask<String> ft = new FutureTask<String>(new WriteTask(inBytes, inSize));
-        Log.d(TAG, "writeToSerial future task created !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        //Log.d(TAG, "writeToSerial future task created !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         ft.run();
         try {
             ft.get(mMaxMillis, TimeUnit.MILLISECONDS);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        Log.d(TAG, "writeToSerial before return !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        //Log.d(TAG, "writeToSerial before return !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         return;
     }
 
@@ -126,7 +126,7 @@ public class Rs232Tester {
             while (!isExit) {
                 int size;
                 try {
-                    byte[] buffer = new byte[64];
+                    byte[] buffer = new byte[16];
                     size = mInputStream.read(buffer);
                     if (size > 0) {
                         isExit = onDataReceived(buffer, size);
@@ -158,7 +158,7 @@ public class Rs232Tester {
 
         @Override
         public String call() {
-            Log.d(TAG, "in call() of WriteTask, textToWrite: <" + textToWrite + "> !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            //Log.d(TAG, "in call() of WriteTask, textToWrite: <" + textToWrite + "> !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             try {
                 mOutputStream.write(inBytes, 0, inSize);
                 mOutputStream.flush();

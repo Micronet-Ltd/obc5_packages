@@ -49,15 +49,17 @@ public class Rs232 extends AbstractActivity {
                 mRs232Msg.setText(String.format(getString(R.string.rs232_connect_countdown),COUNTDOWN));
                 COUNTDOWN--;
                 if (readOnlyTest()){
+                    resetCounter();
                     pass();
                 } else {
-                    mCountdownHandler.postDelayed(this,500);
+                    mCountdownHandler.postDelayed(this,750);
                 }
             } else {
                 mRs232Msg.setText("Time Left: 0");
                 COUNTDOWN =30;
                 mCountdownHandler.removeCallbacks(this);
                 if (readOnlyTest()){
+                    resetCounter();
                     pass();
                 } else {
                     mRs232Msg.setText(getString(R.string.rs232_connect));
@@ -87,6 +89,7 @@ public class Rs232 extends AbstractActivity {
         findViewById(R.id.rs232_cancel).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                resetCounter();
                 fail();
             }
         });
@@ -99,18 +102,28 @@ public class Rs232 extends AbstractActivity {
         doTest();
     }
 
+    private void resetCounter(){
+        mCountdownHandler.removeCallbacksAndMessages(null);
+        STAGE=0;
+        COUNTDOWN=30;
+    }
+
+
     private void doTest(){
         switch (STAGE){
             case 0:
+		mRs232Msg.setText(getString(R.string.rs232_please_wait));
                 if (readOnlyTest()){
-                    mRs232Msg.setText(getString(R.string.rs232_disconnect));
                     STAGE++;
+                    mRs232Msg.setText(getString(R.string.rs232_disconnect));
                 } else {
                     STAGE +=2;
+                    doTest();
                 }
                 break;
             case 1:
                 if (readOnlyTest()){
+                    STAGE=0;
                     fail();
                 } else {
                     STAGE++;
@@ -122,8 +135,10 @@ public class Rs232 extends AbstractActivity {
                 break;
             case 3:
                 if (readOnlyTest()){
+                    resetCounter();
                     pass();
                 } else {
+                    resetCounter();
                     fail();
                 }
         }
@@ -135,11 +150,11 @@ public class Rs232 extends AbstractActivity {
 
     protected boolean readOnlyTest() {
         if (mRs232Tester == null) {
-            mRs232Tester = new Rs232Tester("/dev/ttyHSL1",9600,500);
+            mRs232Tester = new Rs232Tester("/dev/ttyHSL1",9600,250);
         }
 
         if (mRs232TesterOther==null){
-            mRs232TesterOther = new Rs232Tester("/dev/ttyHSL1",9600,500);
+            mRs232TesterOther = new Rs232Tester("/dev/ttyHSL1",9600,250);
         }
 
         byte[] buffer = new byte[data.length];

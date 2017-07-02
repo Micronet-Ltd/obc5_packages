@@ -61,10 +61,10 @@ public class SerialPort {
     public SerialPort(File device, int baudrate, int flags) throws SecurityException, IOException {
 
 		/* Check access permission */
-        Log.d(TAG, "==> SerialPort before \" can read \" ========================================");
+        //Log.d(TAG, "==> SerialPort before \" can read \" ========================================");
         if (!device.canRead() || !device.canWrite()) {
             try {
-                Log.d(TAG, "==> SerialPort before no permission ========================================");
+                //Log.d(TAG, "==> SerialPort before no permission ========================================");
 				/* Missing read/write permission, trying to chmod the file */
                 Process su;
                 su = Runtime.getRuntime().exec("/system/bin/su");
@@ -79,16 +79,16 @@ public class SerialPort {
                 e.printStackTrace();
                 throw new SecurityException();
             }
-            Log.d(TAG, "==> SerialPort after no permission ========================================");
+            //Log.d(TAG, "==> SerialPort after no permission ========================================");
         }
-        Log.d(TAG, "==> SerialPort before open ========================================");
+        //Log.d(TAG, "==> SerialPort before open ========================================");
         mFd = open(device.getAbsolutePath(), baudrate, flags);
         if (mFd == null) {
-            Log.d(TAG, "==> SerialPort mFd = null ========================================");
-            Log.e(TAG, "native open returns null");
+            //Log.d(TAG, "==> SerialPort mFd = null ========================================");
+            //Log.e(TAG, "native open returns null");
             throw new IOException();
         }
-        Log.e(TAG, "native "+device.getAbsolutePath()+" opened successfully========================================");
+        //Log.e(TAG, "native "+device.getAbsolutePath()+" opened successfully========================================");
         mFileInputStream = new FileInputStream(mFd);
         mFileOutputStream = new FileOutputStream(mFd);
     }

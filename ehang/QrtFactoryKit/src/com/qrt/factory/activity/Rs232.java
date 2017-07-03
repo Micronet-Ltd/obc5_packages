@@ -127,6 +127,7 @@ public class Rs232 extends AbstractActivity {
                     fail();
                 } else {
                     STAGE++;
+                    doTest();
                 }
                 break;
             case 2:

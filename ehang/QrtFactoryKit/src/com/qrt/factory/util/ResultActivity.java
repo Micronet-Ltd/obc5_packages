@@ -1,16 +1,15 @@
 package com.qrt.factory.util;
 
-import com.qrt.factory.ControlCenter;
-import com.qrt.factory.FactoryKit;
-import com.qrt.factory.R;
-import com.qrt.factory.domain.TestItem;
-
 import android.app.Activity;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.telephony.TelephonyManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
@@ -18,6 +17,15 @@ import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.qrt.factory.FactoryKit;
+import com.qrt.factory.R;
+import com.qrt.factory.domain.TestItem;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -40,6 +48,11 @@ public class ResultActivity extends Activity {
 
     private boolean allPass = true;
 
+    StringBuilder data = new StringBuilder();
+    public static final String PASS="\"Pass\",";
+    public static final String FAIL="\"Fail\",";
+    public static final String NULL="\"Not Tested\",";
+
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
@@ -52,7 +65,7 @@ public class ResultActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-		//modified by tianfangzhou for autotest abort ,212 ,2013.5.21
+        //modified by tianfangzhou for autotest abort ,212 ,2013.5.21
         mItemList = FactoryKit.mItemList;
         initPanel();
         String title = getString(R.string.test_result);
@@ -62,6 +75,11 @@ public class ResultActivity extends Activity {
             title += " " + getString(R.string.fail) ;
         }
         setTitle(title);
+
+
+
+
+
     }
 
     private void initPanel() {
@@ -82,6 +100,7 @@ public class ResultActivity extends Activity {
                 allPass = false;
             }
             mLinearLayout.addView(textView);
+
         }
 /*
         LinkedList<TextView> linkedList = new LinkedList<TextView>();
@@ -119,6 +138,23 @@ public class ResultActivity extends Activity {
         for (TextView textView : linkedList) {
             mLinearLayout.addView(textView);
         }*/
+        data = getPhoneData(data);
+        String filename = "/storage/sdcard0/test_results.csv";
+        BufferedWriter bufferedWriter=null;
+        try {
+            bufferedWriter = new BufferedWriter(new FileWriter(new File(filename)));
+            bufferedWriter.write(data.substring(0,data.length()-1)+"\n");
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (bufferedWriter != null) {
+                try {
+                    bufferedWriter.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     @Override
@@ -169,4 +205,32 @@ public class ResultActivity extends Activity {
                 linkedList.size() % 2 == 1 ? Color.GRAY : Color.BLACK);
         return tmpTextView;
     }*/
+
+    private StringBuilder getPhoneData(StringBuilder results){
+        WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        WifiInfo wInfo = wifiManager.getConnectionInfo();
+        TelephonyManager telephonyManager = (TelephonyManager) getApplicationContext().getSystemService(TELEPHONY_SERVICE);
+        Calendar calendar = Calendar.getInstance();
+        results.append("\""+String.format("%04d",calendar.get(Calendar.YEAR))+String.format("%02d",(calendar.get(Calendar.MONTH)+1))
+                +String.format("%04d",calendar.get(Calendar.DAY_OF_MONTH))+"\",");
+        results.append("\""+Build.SERIAL+"\",");
+        results.append("\""+telephonyManager.getDeviceId()+"\",");
+        results.append("\""+Build.DISPLAY+"\",");
+        results.append("\""+wInfo.getMacAddress()+"\",");
+
+//        for (TestItem i :
+//                mItemList) {
+        for (int i=1;i<mItemList.size()-1;i++){
+            TestItem k = mItemList.get(i);
+            if (k.getPass()==null){
+                data.append(NULL);
+            } else if (k.getPass()){
+                data.append(PASS);
+            } else {
+                data.append(FAIL);
+            }
+        }
+
+        return results;
+    }
 }

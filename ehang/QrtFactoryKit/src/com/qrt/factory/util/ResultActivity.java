@@ -212,7 +212,7 @@ public class ResultActivity extends Activity {
         TelephonyManager telephonyManager = (TelephonyManager) getApplicationContext().getSystemService(TELEPHONY_SERVICE);
         Calendar calendar = Calendar.getInstance();
         results.append("\""+String.format("%04d",calendar.get(Calendar.YEAR))+String.format("%02d",(calendar.get(Calendar.MONTH)+1))
-                +String.format("%04d",calendar.get(Calendar.DAY_OF_MONTH))+"\",");
+                +String.format("%02d",calendar.get(Calendar.DAY_OF_MONTH))+"\",");
         results.append("\""+Build.SERIAL+"\",");
         results.append("\""+telephonyManager.getDeviceId()+"\",");
         results.append("\""+Build.DISPLAY+"\",");

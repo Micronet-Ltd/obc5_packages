@@ -138,7 +138,7 @@ public class XmlUtil {
 				try {Utilities.logd(TAG, "====================in fillBlackListFromXml start tag"); } catch (Exception e) { }
                 String tagName = mXmlPullParser.getName();
 				try {Utilities.logd(TAG, "====================in fillBlackListFromXml tag: " + tagName); } catch (Exception e) { }
-				if ("BlaclList".equals(tagName)) {
+				if ("BlackList".equals(tagName)) {
 					
                     isBlaclList = true;
 				} else if ("TestItem".equals(tagName)) {
@@ -155,7 +155,7 @@ public class XmlUtil {
 				try {Utilities.logd(TAG, "====================in fillBlackListFromXml start tag"); } catch (Exception e) { }
                 String tagName = mXmlPullParser.getName();
 
-                if ("BlaclList".equals(tagName)) {
+                if ("BlackList".equals(tagName)) {
                     isBlaclList = false;
 				}
 			}

@@ -26,7 +26,7 @@ public class XmlUtil {
 	private static final String TAG = "XmlUtil";
 	private static HashSet<String> mBlackList = new HashSet<String>();
 
-    public static List<TestItem>[] loadTestItems(Context context, int workType, boolean isMicronet)
+    public static List<TestItem>[] loadTestItems(Context context, int workType, int runCode)
             throws XmlPullParserException, IOException,
             PackageManager.NameNotFoundException {
         List<TestItem> autoTestItems = new ArrayList<TestItem>();
@@ -35,11 +35,13 @@ public class XmlUtil {
 		
 
         int xmlId = getItemResId(workType);
-		if (isMicronet) {
+		if (runCode > 1) {
 			fillBlackListFromXml(context, R.xml.item_black_list_micronet, mBlackList);
 		}
-		fillTestItemsFromXml(context, xmlId, autoTestItems, singleTestItems, mBlackList);
-		if (isMicronet) {
+		if (runCode < 3){
+			fillTestItemsFromXml(context, xmlId, autoTestItems, singleTestItems, mBlackList);
+		}
+		if (runCode > 1) {
 			fillTestItemsFromXml(context, R.xml.item_config_micronet, 
 								 autoTestItems, singleTestItems, null);
 		}

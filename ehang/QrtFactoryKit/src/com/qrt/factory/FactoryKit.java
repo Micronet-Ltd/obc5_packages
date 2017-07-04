@@ -56,7 +56,7 @@ public class FactoryKit extends Application{
 
 	    gps_en=Settings.Secure.getInt(mContext.getContentResolver(),Settings.Secure.TEXT_GPS_ENABLE,0);
 	    bd_en=Settings.Secure.getInt(mContext.getContentResolver(),Settings.Secure.TEXT_BD_ENABLE,0);    
-		boolean isMicronet = intent.getBooleanExtra("micronet", false);
+		int runCode = intent.getIntExtra("runcode", 1);
         try {
             int bootMode = 0;
             if (intent.getBooleanExtra("attachment", false)) {
@@ -105,7 +105,7 @@ public class FactoryKit extends Application{
 			//Log.d(TAG, "<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>");
 			//Log.d(TAG, "calling XmlUtil.loadTestItems(mContext, bootMode) bootMode = " + bootMode);
 
-            testItems = XmlUtil.loadTestItems(mContext, bootMode, isMicronet);
+            testItems = XmlUtil.loadTestItems(mContext, bootMode, runCode);
         } catch (Exception e) {
             Log.e(TAG, e.toString());
             Log.e(TAG, "loadTestItems Error Please Check Xml File");

@@ -566,6 +566,9 @@ public class ControlCenter extends ListActivity {
                                         int which) {
 
                                     mExitFlag = true;
+                                    FactoryKit.mItemList=new ArrayList<TestItem>(); // Clears but does not reset!
+                                    FactoryKit.mAutoTestItemList=null; // Clears but does not reset!
+                                    FactoryKit.testMode=-1;
                                     finish();
                                 }
                             }).setNegativeButton(getString(R.string.no),

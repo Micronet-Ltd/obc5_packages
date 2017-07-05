@@ -267,7 +267,7 @@ public class ControlCenter extends ListActivity {
 
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
-
+        (new File("/storage/sdcard0/test_results.csv")).delete();
         if (position == 0) {
             cleanTestState();
             TestSettings.SAVE_RESULT = true;

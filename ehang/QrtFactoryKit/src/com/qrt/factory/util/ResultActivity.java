@@ -48,10 +48,10 @@ public class ResultActivity extends Activity {
 
     private boolean allPass = true;
 
-    StringBuilder data = new StringBuilder();
-    public static final String PASS="\"Pass\",";
-    public static final String FAIL="\"Fail\",";
-    public static final String NULL="\"Not Tested\",";
+    private StringBuilder data = new StringBuilder();
+    private static final String PASS="\"Pass\",";
+    private static final String FAIL="\"Fail\",";
+    private static final String NULL="\"Not Tested\",";
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -218,14 +218,17 @@ public class ResultActivity extends Activity {
         results.append("\""+Build.DISPLAY+"\",");
         results.append("\""+wInfo.getMacAddress()+"\",");
 
-//        for (TestItem i :
-//                mItemList) {
-        for (int i=1;i<mItemList.size()-1;i++){
+        if (mItemList.size() < 27) { // Must update if number of tests changes!
+            for (int i=0;i<27;i++){
+                results.append(NULL);
+            }
+        }
+        for (int i = 1; i < mItemList.size()-1; i++) {
             TestItem k = mItemList.get(i);
-            if (k.getPass()==null){
-                data.append(NULL);
-            } else if (k.getPass()){
-                data.append(PASS);
+            if (k.getPass() == null) {
+                results.append(NULL);
+            } else if (k.getPass()) {
+                results.append(PASS);
             } else {
                 data.append(FAIL);
             }

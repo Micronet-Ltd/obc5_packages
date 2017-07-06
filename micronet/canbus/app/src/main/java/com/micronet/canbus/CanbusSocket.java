@@ -11,6 +11,19 @@ public class CanbusSocket implements CanbusListenerPort1,CanbusListenerPort2{
 	protected CanbusSocket() {
 
 	}
+	/*
+	* Internal testing only
+	* */
+	public void setCan1PacketCount(){
+		throw new IllegalArgumentException("Not implemented");
+	}
+
+	/*
+	* Internal testing only
+	* */
+	public void setCan2PacketCount(){
+		throw new IllegalArgumentException("Not implemented");
+	}
 
 	/**
 	 * Reads Canbus frame. Will block the calling thread__port1 until data

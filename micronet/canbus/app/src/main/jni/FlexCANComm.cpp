@@ -19,6 +19,13 @@ static pthread_t thread__port2;
 static bool quit_port1 = false;
 static bool quit_port2 = false;
 
+/*
+ * For internal testing only
+ * */
+static int can1PacketCount=0;
+static int can2PacketCount=0;
+
+
 int serial_set_nonblocking(int fd)
 {
     int flags;
@@ -438,6 +445,7 @@ int serial_start_monitor_thread_can_port1()
 {
     quit_port1 = false;
     int r = pthread_create(&thread__port1, NULL, monitor_data_thread_port1, 0);
+    can1PacketCount=0;
     if( r != 0 ){
         error_message("thread__port1 has failed to be created");
         thread__port1 = 0;
@@ -453,10 +461,10 @@ int serial_deinit_thread_port1() {
         int retval, *retvalp;
         // cancel out readPort1 threads
         quit_port1 = 1;
-        /*retvalp = &retval;*/
         LOGD("Begin cancelling the threads");
-        pthread_join(thread__port1,NULL/* (void **) &retvalp*/);
+        pthread_join(thread__port1,NULL);
         LOGD("cancel out the threads");
+        can1PacketCount=0;
         return retval;
     }
     LOGD("Failed to enter the if(thread__port1)");
@@ -466,6 +474,7 @@ int serial_deinit_thread_port1() {
 int serial_start_monitor_thread_can_port2() {
     quit_port2 = false;
     int r = pthread_create(&thread__port2, NULL, monitor_data_thread_can_port2, 0);
+    can2PacketCount=0;
     if (r != 0) {
         error_message("thread__port2 has failed to be created");
         thread__port2 = 0;
@@ -484,6 +493,7 @@ int serial_deinit_thread_port2() {
         LOGD("Begin cancelling the threads");
         pthread_join(thread__port2,NULL/* (void **) &retvalp*/);
         LOGD("cancel out the threads");
+        can2PacketCount=0;
         return retval;
     }
     LOGD("Failed to enter the if(thread__port1)");
@@ -578,7 +588,9 @@ void sendCanbusFramePort1(uint32_t frameId, int type, int length, BYTE* data ){
     if (g_canbus.g_listenerObject_Can1 != NULL && g_canbus.g_onPacketReceive1939Port1 != NULL) {
         env->CallVoidMethod(g_canbus.g_listenerObject_Can1, g_canbus.g_onPacketReceive1939Port1, frameObj);
     }
+    can1PacketCount++;
     LOGD("CAN1 Message: Successfully pushed the frame to the Java queue!");
+    LOGD("Message Pushed: CAN1 Packet Count =%d ",can1PacketCount);
     env->DeleteLocalRef(frameObj);
     env->DeleteLocalRef(data_l);
     g_canbus.g_vm->DetachCurrentThread();
@@ -610,7 +622,9 @@ void sendCanbusFramePort2(uint32_t frameId, int type, int length, BYTE* data){
     if (g_canbus.g_listenerObject_Can2 != NULL && g_canbus.g_onPacketReceive1939Port2 != NULL) {
         env->CallVoidMethod(g_canbus.g_listenerObject_Can2, g_canbus.g_onPacketReceive1939Port2, frameObj);
     }
+    can2PacketCount++;
     LOGD("CAN2 Message: Successfully pushed the frame to the Java queue!");
+    LOGD("Message Pushed: CAN2 Packet Count =%d ",can2PacketCount);
     env->DeleteLocalRef(frameObj);
     env->DeleteLocalRef(data_l);
     g_canbus.g_vm->DetachCurrentThread();
@@ -680,7 +694,7 @@ int parseCANFrame(int start, int packetLength, uint8_t *pdata, int portNumber){
     }
     else
         return -1;
-        LOGD("CAN PORT 1 ERROR: Incomplete packet received - Frame not sent to j1939rxd()");
+        LOGE("CAN PORT ttyACM%d ERROR: Incomplete packet received - Frame not sent to j1939rxd()", portNumber);
 }
 
 void parseCAN2Frame(int start, int packetLength, uint8_t *pdata, int portNumber){
@@ -690,16 +704,18 @@ void parseCAN2Frame(int start, int packetLength, uint8_t *pdata, int portNumber)
     if ((frame[0] == 't' && frame[packetLength-1] == CAN_OK_RESPONSE) || (frame[0] == 'T' && frame[packetLength-1] == CAN_OK_RESPONSE)) {
         j1939rxd(frame, portNumber);
     }
-    else LOGD("CAN PORT 1 ERROR: Incomplete packet received - Frame not sent to j1939rxd()");
+    else LOGE("CAN PORT 2 ERROR: Incomplete packet received - Frame not sent to j1939rxd()");
 }
 
 static void *monitor_data_thread_port1(void *param) {
 
     uint8_t data[8 * 1024];
     uint8_t *pdata = data;
+    uint8_t incompleteData[8*1024];
 	unsigned char * thread_char = (unsigned char *)(void *)(&thread__port1);
     int i, packetCount = 0,j = 0, start = 0, packetLength=0, carriageReturn = 0;
     int errorResponseCount=0;
+    int incompleteDataStart=0;
 
     prctl(PR_SET_NAME, "monitor_thread_port1", 0, 0, 0);
     LOGD("monitor_thread_port1 started");
@@ -722,6 +738,11 @@ static void *monitor_data_thread_port1(void *param) {
 
             //Returns the number of bytes readPort1
             readData = read(fd_CAN1, pdata, sizeof(data) - (pdata - data));
+
+            int checkdata=sizeof(data);
+            int checkpdatamdata=(pdata - data);
+            int result =checkdata-checkpdatamdata;
+            LOGD("CAN 1: sizeof(data)=%d, (pdata - data)=%d, Result=%d, readData=%d", checkdata,checkpdatamdata, result,readData);
 
             if (0 == readData) {
                 quit_port1 = true;
@@ -753,9 +774,11 @@ static void *monitor_data_thread_port1(void *param) {
                 }
 
                 //For an extended CAN frame
-                else if (data[i] == 'T'){//T0x54
-                    start = i;
+                else if ((data[i] == 'T')){//T0x54
                     uint8_t dataLength = (data[i + 9] - '0');
+                    start = i;
+                    if(i<readData)
+
                     // Validating if the dataLength is in an actual number range (0-8)
                     if (dataLength == 0 || dataLength <= 8) {
                         carriageReturn = i + 14 + 2 * dataLength;
@@ -764,17 +787,24 @@ static void *monitor_data_thread_port1(void *param) {
                             packetLength=carriageReturn-start +1;
                             LOGD("CAN1 Message: One complete extended packet received! DataLength=%d, Start=%d CarriageReturn=%d", dataLength, start, carriageReturn);
                             // Extract one packet and convert into a byte array
-//                            parseCANFrame(start, packetLength, pdata, CAN1_TTY_NUMBER);
                             if(0== parseCANFrame(start, packetLength, pdata, CAN1_TTY_NUMBER)){
-                                LOGD("CAN1 Packet count =%d", packetCount);
+                                LOGD("Read thread - CAN1 Packet Count =%d", packetCount);
                             }
                             //Incrementing i to read the first character after the frame that was sent
                             i = carriageReturn;
                             continue;
                         }
-                        else LOGD("CAN1 Error:Incomplete packet!");
+                        else
+                            LOGD("CAN1 Error:Incomplete/Invalid packet!");
+                        //TODO: Delete this (below)
+                            incompleteDataStart=start;
+                            for(int index=0; index<index+carriageReturn; index++){
+                                incompleteData[index]=data[incompleteDataStart++];
+                                LOGD("IncompleteData[index=%d]= %d", index, incompleteData[index]);
+                            }
+
                     }
-                    else LOGE("CAN1 Error: Recived frame with an Invalid Data Length! DataLength = %d", dataLength);
+                    else LOGE("CAN1 Error: Received frame with an Invalid Data Length! DataLength = %d, Index=%d", dataLength, start);
                 }
 
                 //For standard can frame
@@ -788,17 +818,16 @@ static void *monitor_data_thread_port1(void *param) {
                             packetLength=carriageReturn-start +1;
                             LOGD("CAN1 Message: One complete extended packet received! DataLength=%d, Start=%d CarriageReturn=%d", dataLength, start, carriageReturn);
                             // extract one packet and convert into a byte array
-//                            parseCANFrame(start, packetLength, pdata, CAN1_TTY_NUMBER);
                             if(0== parseCANFrame(start, packetLength, pdata, CAN1_TTY_NUMBER)){
-                                LOGD("CAN1 Packet count =%d", packetCount);
+                                LOGD("Read thread - CAN1 Packet Count =%d", packetCount);
                             }
                             //Incrementing i to read the first character after the frame that was sent
                             i = carriageReturn;
                             continue;
                         }
-                        else LOGD("CAN1 Error:Incomplete packet  ");
+                        else LOGD("CAN1 Error:Incomplete/Invalid packet");
                     }
-                    else LOGE("CAN1 Error: Recived frame with an Invalid Data Length! DataLength=%d", dataLength);
+                    else LOGE("CAN1 Error: Recieved frame with an Invalid Data Length! DataLength=%d, Index=%d", dataLength, start);
                 }
             }
         }
@@ -834,6 +863,10 @@ static void *monitor_data_thread_can_port2(void *param) {
             uint8_t *pend = NULL;
             //Returns the number of bytes readPort1
             readData = read(fd_CAN2, pdata, sizeof(data) - (pdata - data));
+            int checkdata=sizeof(data);
+            int checkpdatamdata=(pdata - data);
+            int result =checkdata-checkpdatamdata;
+            LOGD(" CAN2: sizeof(data)=%d, (pdata - data)=%d, Result=%d, readData=%d", checkdata,checkpdatamdata, result,readData);
 
             if (0 == readData) {
                 quit_port2 = true;
@@ -858,7 +891,7 @@ static void *monitor_data_thread_can_port2(void *param) {
                 }
                 else if (data[i] == CAN_ERROR_RESPONSE) {
                     errorResponseCount++;
-                    LOGD("CAN2 Message: CAN ERROR RESPONSE Recieved!!", errorResponseCount);
+                    LOGD("CAN2 Message: CAN ERROR RESPONSE Received!!", errorResponseCount);
                     continue;
                 }
 
@@ -875,15 +908,16 @@ static void *monitor_data_thread_can_port2(void *param) {
                             LOGD("CAN2 Message: One complete extended packet received! DataLength=%d, Start=%d CarriageReturn=%d", dataLength, start, carriageReturn);
                             // extract one packet and convert into a byte array
                             if(0== parseCANFrame(start, packetLength, pdata, CAN2_TTY_NUMBER)){
-                                LOGD("CAN2 Packet count =%d", packetCount);
+                                LOGD("Read thread - CAN2 Packet count =%d", packetCount);
                                 }
                             //Incrementing i to read the first character after the frame that was sent
                             i = carriageReturn;
                             continue;
                         }
-                        else LOGD("CAN2 Error: Incomplete packet! data[carriage return]=%s", data[carriageReturn]);
+                        else LOGD("CAN2 Error: Incomplete packet! data[carriage return]=%d", data[carriageReturn]);
                     }
-                    else LOGE("CAN2 Error: Recived frame with an Invalid data length! DataLength=%d", dataLength);
+                    else
+                        LOGE("CAN2 Error: Received frame with an Invalid data length! DataLength=%d, Index=%d", dataLength, start);
                 }
 
                 //For standard can frame
@@ -898,17 +932,16 @@ static void *monitor_data_thread_can_port2(void *param) {
                             LOGD("CAN2 Message: One complete extended packet received! DataLength=%d, Start=%d CarriageReturn=%d", dataLength, start, carriageReturn);
                             // extract one packet and convert into a byte array
                             if(0== parseCANFrame(start, packetLength, pdata, CAN2_TTY_NUMBER)){
-                                LOGD("CAN2 Packet count =%d", packetCount);
+                                LOGD("Read thread - CAN2 Packet count =%d", packetCount);
                             }
                             //Incrementing i to read the first character after the frame that was sent
                             i = carriageReturn;
                             continue;
                         }
-                        else {
-                            LOGD("CAN2 Error: Incomplete packet");
-                        }
+                        else LOGD("CAN2 Error: Incomplete packet! data[carriage return]=%d", data[carriageReturn]);
+
                     }
-                    else LOGE("CAN2 Error: Recived frame with an Invalid data length! DataLength=%d", dataLength);
+                    else LOGE("CAN2 Error: Recived frame with an Invalid data length! DataLength=%d Index=%d", dataLength, start);
                 }
             }
         }

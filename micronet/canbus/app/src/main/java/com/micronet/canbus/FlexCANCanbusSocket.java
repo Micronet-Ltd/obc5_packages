@@ -14,6 +14,8 @@ class FlexCANCanbusSocket extends CanbusSocket implements CanbusListenerPort1, C
     private static final String TAG = "FlexCANbusCanbusSocket";
     private int mSocket1;
     private int mSocket2;
+    private int can1PacketCount;
+    private int can2PacketCount;
 
     //TODO: how many elements ??
     // Needs enough to prevent blocking insertion.
@@ -27,6 +29,19 @@ class FlexCANCanbusSocket extends CanbusSocket implements CanbusListenerPort1, C
     protected FlexCANCanbusSocket(int fd, int port){
         if (port==2) {mSocket1 = fd;}
         else if (port==3){mSocket2 = fd;}
+    }
+    /*
+    * Internal testing only
+    * */
+    public void setCan1PacketCount(){
+        can1PacketCount=0;
+    }
+
+    /*
+     * Internal testing only
+     * */
+    public void setCan2PacketCount(){
+        can2PacketCount=0;
     }
 
     /**
@@ -108,7 +123,9 @@ class FlexCANCanbusSocket extends CanbusSocket implements CanbusListenerPort1, C
 
     @Override
     public void onPacketReceive1939Port1(CanbusFramePort1 frame) {
-           Log.d(TAG, "Received a frame from Port1 in the Queue!");
+         can1PacketCount++;
+           Log.d(TAG, "Received a frame from Port1 in the Queue! Packet Count =" +can1PacketCount);
+
         if(!mQueuej1939Port1.offer(frame))
             Log.e(TAG, "Unable to push frame from CAN Port 1, frame dropping.");
 
@@ -116,7 +133,8 @@ class FlexCANCanbusSocket extends CanbusSocket implements CanbusListenerPort1, C
 
     @Override
     public void onPacketReceive1939Port2(CanbusFramePort2 frame) {
-        Log.d(TAG, "Received a frame from Port2 in the Queue!");
+        can2PacketCount++;
+        Log.d(TAG, "Received a frame from Port2 in the Queue! Packet Count =" +can2PacketCount);
         if(!mQueuej1939Port2.offer(frame))
             Log.e(TAG, "Unable to push frame from CAN Port 2, frame dropping.");
     }

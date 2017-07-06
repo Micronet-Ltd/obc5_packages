@@ -51,6 +51,8 @@ public class CanTest {
     private CanbusInterface canbusInterface2;
     private CanbusSocket canbusSocket1;
     private CanbusSocket canbusSocket2;
+    //TODO: DELETE
+    private FlexCANCanbusSocket flexCANCanbusSocket;
 
 
     private J1939Port1Reader j1939Port1Reader = null;
@@ -108,18 +110,16 @@ public class CanTest {
         return canbusSocket2 != null;
     }
 
-
     public boolean isCAN1InterfaceOpen() {
         return isCan1InterfaceOpen;
     }
 
     public boolean isCAN2InterfaceOpen() {return isCan2InterfaceOpen;}
 
-
-
     public int getBaudrate() {
         return baudrate;
     }
+
     public boolean isSilentChecked() {
         return silentMode;
     }
@@ -131,7 +131,6 @@ public class CanTest {
     public boolean getRemoveCan2InterfaceState() {
         return removeCan2;
     }
-
 
     public void setBaudrate(int baudrate) {
         this.baudrate = baudrate;
@@ -176,6 +175,7 @@ public class CanTest {
         if (canbusSocket1 == null) {
             canbusSocket1 = canbusInterface1.createSocketCAN1();
             canbusSocket1.openCan1();
+            canbusSocket1.setCan1PacketCount();
         }
         if (discardInBuffer) {
             canbusSocket1.discardInBuffer();
@@ -200,6 +200,7 @@ public class CanTest {
         if (canbusSocket2 == null) {
             canbusSocket2 = canbusInterface2.createSocketCAN2();
             canbusSocket2.openCan2();
+            canbusSocket2.setCan2PacketCount();
         }
         if (discardInBuffer) {
             canbusSocket2.discardInBuffer();

@@ -5,4 +5,5 @@ package com.micronet.canbus;
  */
  interface CanbusListenerPort2 {
     public void onPacketReceive1939Port2(CanbusFramePort2 frame);
+    public void setCan2PacketCount();
 }

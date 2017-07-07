@@ -11,7 +11,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
-import android.support.annotation.Nullable;
+//import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -209,7 +209,7 @@ public class Cellular_Data_Service extends Service {
         Toast.makeText(this,"Service Stopped",Toast.LENGTH_LONG).show();
     }
 
-    @Nullable
+    //@Nullable
     @Override
     public IBinder onBind(Intent intent) {
         return null;

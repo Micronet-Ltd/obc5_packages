@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import static android.content.ContentValues.TAG;
 import static java.lang.Thread.sleep;
 
 
@@ -13,6 +12,7 @@ import static java.lang.Thread.sleep;
  * Created by eemaan.siddiqi on 1/13/2017.
  */
 public class ServiceManagerReceiver extends BroadcastReceiver {
+    public static final String TAG = "ServiceManagerReciever";
     public static final String ACTION_START_SERVICE = "micronet.com.cellular_data_temperature_controlled.START_SERVICE";
     public static final String ACTION_PAUSE_SERVICE = "micronet.com.cellular_data_temperature_controlled.PAUSE_SERVICE";
     public volatile static boolean pauseStatus;

@@ -6,12 +6,12 @@ import android.util.Log;
 import java.io.BufferedReader;
 import java.io.FileReader;
 
-import static android.content.ContentValues.TAG;
-
 /**
  * Created by eemaan.siddiqi on 12/19/2016.
  */
 public class TemperatureValues {
+
+    public static final String TAG = "TemperatureValues";
 
     public static Boolean HighTempResult;
     public static Boolean NormalTempResult;

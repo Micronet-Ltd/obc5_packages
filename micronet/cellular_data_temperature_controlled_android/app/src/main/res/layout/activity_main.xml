@@ -15,7 +15,7 @@
         android:layout_height="wrap_content" />
 
     <Button
-        android:text="start service "
+		android:text="@string/start_service"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/button"
@@ -24,7 +24,7 @@
         android:layout_marginBottom="43dp" />
 
     <Button
-        android:text="Stop Service "
+		android:text="@string/stop_service"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/button2"

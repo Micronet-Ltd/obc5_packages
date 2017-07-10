@@ -237,7 +237,6 @@ public class Cellular_Data_Service extends Service {
         Toast.makeText(this,"Service Stopped",Toast.LENGTH_LONG).show();
     }
 
-    @Nullable
     @Override
     public IBinder onBind(Intent intent) {
         return null;

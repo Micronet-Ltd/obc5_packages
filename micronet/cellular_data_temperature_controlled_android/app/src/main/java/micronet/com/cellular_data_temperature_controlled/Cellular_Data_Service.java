@@ -13,6 +13,7 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
+
 import java.io.File;
 
 /**
@@ -237,7 +238,6 @@ public class Cellular_Data_Service extends Service {
         Toast.makeText(this,"Service Stopped",Toast.LENGTH_LONG).show();
     }
 
-    @Nullable
     @Override
     public IBinder onBind(Intent intent) {
         return null;

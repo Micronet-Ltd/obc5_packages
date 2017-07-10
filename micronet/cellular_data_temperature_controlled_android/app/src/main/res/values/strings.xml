@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Cellular_Data_Temperature_Controlled</string>
+    <string name="service_description">Cellular Data Service</string>
+</resources>

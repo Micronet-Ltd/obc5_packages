@@ -30,7 +30,7 @@ public class Read_Write_File {
         if(!file.exists()) {
             //If MobileDataState.txt is not found, reset the state to 0
             //If the state is 0 - Service hasn't disabled cellular data else service has disabled it.
-            handlerValue = "1";
+            handlerValue = "0";
         }
         try {
             FileOutputStream fileOutputStream = new FileOutputStream(file);
@@ -49,8 +49,8 @@ public class Read_Write_File {
         //Creating a Text File to store the state of cellular data if the service managed it at any point.
         File file = new File(context.getFilesDir(), "MobileDataState.txt");
         if(!file.exists()) {
-            //ret= "1"; // If the file doesn't exist, return 1. The service will enable cellular data if all the temperatures are below 80 in this case. This will also happen when the serice starts for teh first time.
-            return ret;}
+            return ret;
+        }
         try {
             FileReader fileReader = new FileReader(file);
             BufferedReader bufferedReader = new BufferedReader(fileReader);
@@ -160,8 +160,9 @@ public class Read_Write_File {
         return ret;
     }
     //Logging the Service activity
-    public static void LogToFile(String handlerValue2, String handlerValue1 , Context context){
+    public static void LogToFile(String handlerValue2, String handlerValue1 , Context context, String additionalMessage){
         String timestamp=("Timestamp: ")+Utils.formatDate(System.currentTimeMillis())+("   "); //Getting current time stamp
+        String infoMessage="Message Info:   ";
         String ec= "    EnabledCount:   ";
         String dc= "    DisabledCount:   ";
         File file = new File(logDir, "ServiceLog.txt");//Created a Text File to maintain the service activity log
@@ -172,6 +173,8 @@ public class Read_Write_File {
             fileWriter = new FileWriter(file.getAbsoluteFile(), true);
             bufferedWriter = new BufferedWriter(fileWriter);
             bufferedWriter.write(timestamp);
+            bufferedWriter.write(infoMessage);
+            bufferedWriter.write(additionalMessage);
             bufferedWriter.write(TemperatureValues.temperaturevalues);
             bufferedWriter.write(ec);
             bufferedWriter.write(handlerValue1);

@@ -3,4 +3,5 @@
 	<string name="service_description">Cellular Data Service</string>
 	<string name="start_service">Start Service</string>
 	<string name="stop_service">Stop Service</string>
+	<string name="version_name">2.1</string>
 </resources>

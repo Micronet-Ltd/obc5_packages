@@ -8,14 +8,17 @@ import android.net.NetworkInfo;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import static android.content.ContentValues.TAG;
 
 /**
  * Created by eemaan.siddiqi on 12/20/2016.
  */
 public class MobileDataManager {
+
+    public static final String TAG = "MobileDataManager";
+
     //Function to Enable/Disable Cellular Data
     public static void setDataEnabled(Context context, boolean enabled) {
         TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(context.TELEPHONY_SERVICE);
@@ -73,5 +76,33 @@ public class MobileDataManager {
         return isAirplaneOn;
     }
 
-
+    public static boolean getModifiedCellularDataState(Context context){
+        boolean state=true;
+        String stateValueRead;
+        int stateRead;
+        stateValueRead=Read_Write_File.readStateFromFile(context);
+            if(stateValueRead==""){
+                //If the file corrupts due to some reason while the service is running, Enable cell data (Might override user's settings) if all the cores are below 80.
+                Log.e(TAG, "Error: MobileDataState.txt didn't exist! Enabling cell data and setting disabled state to false!");
+                Read_Write_File.writeStateToFile(Integer.toString(0),context);
+                state= false;
+                return state;
+            }
+            else {
+                stateRead=Integer.parseInt(stateValueRead);
+             if(stateRead==0){
+                 state= false;
+                 Log.d(TAG, "Read from file: CellularDataState:    " + state);
+                 return state;
+             }
+            else if(stateRead==1){
+                 state= true;
+                 Log.d(TAG, "Read from file: CellularDataState:    " + state);
+                 return state;
+            }
+            else
+                Log.e(TAG, "Error: MobileDataState.txt doesn't contain a 0 or a 1!! Returning disabled state as true! ");
+                return state;
+            }
+    }
 }

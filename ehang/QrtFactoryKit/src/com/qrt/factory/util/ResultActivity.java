@@ -44,14 +44,16 @@ public class ResultActivity extends Activity {
 
     private LinearLayout mLinearLayout = null;
 
+    private static final int VER=9;
+
     private List<TestItem> mItemList;
 
     private boolean allPass = true;
 
-    private StringBuilder data = new StringBuilder();
-    private static final String PASS="\"Pass\",";
-    private static final String FAIL="\"Fail\",";
-    private static final String NULL="\"Not Tested\",";
+    StringBuilder data = new StringBuilder();
+    public static final String PASS = "Pass,";
+    public static final String FAIL = "Fail,";
+    public static final String NULL = "Not Tested,";
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,14 +72,11 @@ public class ResultActivity extends Activity {
         initPanel();
         String title = getString(R.string.test_result);
         if (allPass) {
-            title += " " + getString(R.string.pass) ;
+            title += " " + getString(R.string.pass);
         } else {
-            title += " " + getString(R.string.fail) ;
+            title += " " + getString(R.string.fail);
         }
         setTitle(title);
-
-
-
 
 
     }
@@ -140,10 +139,12 @@ public class ResultActivity extends Activity {
         }*/
         data = getPhoneData(data);
         String filename = "/storage/sdcard0/test_results.csv";
-        BufferedWriter bufferedWriter=null;
+        BufferedWriter bufferedWriter = null;
         try {
-            bufferedWriter = new BufferedWriter(new FileWriter(new File(filename)));
-            bufferedWriter.write(data.substring(0,data.length()-1)+"\n");
+            File file = new File(filename);
+            file.delete();
+            bufferedWriter = new BufferedWriter(new FileWriter(file));
+            bufferedWriter.write(data.substring(0, data.length()));
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -206,18 +207,17 @@ public class ResultActivity extends Activity {
         return tmpTextView;
     }*/
 
-    private StringBuilder getPhoneData(StringBuilder results){
+    private StringBuilder getPhoneData(StringBuilder results) {
         WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         WifiInfo wInfo = wifiManager.getConnectionInfo();
         TelephonyManager telephonyManager = (TelephonyManager) getApplicationContext().getSystemService(TELEPHONY_SERVICE);
-        Calendar calendar = Calendar.getInstance();
-        results.append("\""+String.format("%04d",calendar.get(Calendar.YEAR))+String.format("%02d",(calendar.get(Calendar.MONTH)+1))
-                +String.format("%02d",calendar.get(Calendar.DAY_OF_MONTH))+"\",");
-        results.append("\""+Build.SERIAL+"\",");
-        results.append("\""+telephonyManager.getDeviceId()+"\",");
-        results.append("\""+Build.DISPLAY+"\",");
-        results.append("\""+wInfo.getMacAddress()+"\",");
+        results.append(Build.SERIAL + ",");
+        results.append(telephonyManager.getDeviceId() + ",");
+        results.append(Build.DISPLAY + ",");
+        results.append(wInfo.getMacAddress() + ",");
 
+//        for (TestItem i :
+//                mItemList) {
         if (mItemList.size() < 27) { // Must update if number of tests changes!
             for (int i=0;i<27;i++){
                 results.append(NULL);
@@ -234,6 +234,9 @@ public class ResultActivity extends Activity {
             }
         }
 
+        results.append(String.valueOf(VER));
         return results;
+
     }
 }
+

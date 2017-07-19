@@ -50,7 +50,7 @@ public class ResultActivity extends Activity {
 
     private boolean allPass = true;
 
-    StringBuilder data = new StringBuilder();
+    StringBuilder data;
     public static final String PASS = "Pass,";
     public static final String FAIL = "Fail,";
     public static final String NULL = "Not Tested,";
@@ -77,7 +77,25 @@ public class ResultActivity extends Activity {
             title += " " + getString(R.string.fail);
         }
         setTitle(title);
-
+        data = getPhoneData(new StringBuilder());
+        String filename = "/storage/sdcard0/test_results.csv";
+        BufferedWriter bufferedWriter = null;
+        try {
+            File file = new File(filename);
+            file.delete();
+            bufferedWriter = new BufferedWriter(new FileWriter(file));
+            bufferedWriter.write(data.substring(0, data.length()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (bufferedWriter != null) {
+                try {
+                    bufferedWriter.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
 
     }
 
@@ -137,25 +155,6 @@ public class ResultActivity extends Activity {
         for (TextView textView : linkedList) {
             mLinearLayout.addView(textView);
         }*/
-        data = getPhoneData(data);
-        String filename = "/storage/sdcard0/test_results.csv";
-        BufferedWriter bufferedWriter = null;
-        try {
-            File file = new File(filename);
-            file.delete();
-            bufferedWriter = new BufferedWriter(new FileWriter(file));
-            bufferedWriter.write(data.substring(0, data.length()));
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (bufferedWriter != null) {
-                try {
-                    bufferedWriter.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
     }
 
     @Override
@@ -230,7 +229,7 @@ public class ResultActivity extends Activity {
             } else if (k.getPass()) {
                 results.append(PASS);
             } else {
-                data.append(FAIL);
+                results.append(FAIL);
             }
         }
 

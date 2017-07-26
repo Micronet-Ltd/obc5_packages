@@ -19,7 +19,8 @@
 -->
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.android.launcher">
+    package="com.android.launcher"
+    android:versionCode="1">
 
     <original-package android:name="com.android.launcher2" />
 
@@ -75,8 +76,8 @@
             android:stateNotNeeded="true"
             android:resumeWhilePausing="true"
             android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan"
-            android:screenOrientation="nosensor">
+            android:windowSoftInputMode="adjustPan">
+            <!-- android:screenOrientation="nosensor" -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.HOME" />

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FactoryTest>
+
+    <Auto>
+
+       <!-- insert here automatic micronet tests 
+                automatic tests are tests that does not require any manual actions
+       <TestItem name="WiFi" enable="true">
+            <Intent
+                    packageName="com.qrt.factory"
+                    className="com.qrt.factory.activity.WiFi"/>
+        </TestItem>-->
+
+    </Auto>
+
+    <Single>
+
+        <TestItem name="Cradle" enable="true">
+            <Intent
+                    packageName="com.qrt.factory"
+                    className="com.qrt.factory.activity.Cradle"/>
+        </TestItem>
+
+	<!-- <TestItem name="Battery" enable="true">
+            <Intent
+                    packageName="com.qrt.factory"
+                    className="com.qrt.factory.activity.Battery"/>
+        </TestItem> -->
+
+        <TestItem name="Rs232" enable="true">
+            <Intent
+                    packageName="com.qrt.factory"
+                    className="com.qrt.factory.activity.Rs232"/>
+        </TestItem>
+
+ <!-- add here any non-automatic micronet test items
+        non-automatic tests are tests that requires some manual actions
+        <TestItem name="PanelKeyLight" enable="true">
+            <Intent
+                    packageName="com.qrt.factory"
+                    className="com.qrt.factory.activity.PanelKeyLight"/>
+        </TestItem> -->  
+    </Single>
+</FactoryTest>

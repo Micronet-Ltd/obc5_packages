@@ -66,6 +66,7 @@ public class TestItem {
     public void setName(String name) {
         this.name = name;
     }
+
     /*Add by zhangkaikai for QW810 Factorylog 2014-10-17 begin*/
     public String getTime() {
         return time;

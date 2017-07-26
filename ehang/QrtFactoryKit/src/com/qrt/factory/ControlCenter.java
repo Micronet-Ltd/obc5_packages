@@ -31,6 +31,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Criteria;
@@ -40,6 +41,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.media.AudioManager;
+import android.net.wifi.WifiInfo;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.Build;
@@ -50,7 +52,9 @@ import android.os.Message;
 import android.os.ServiceManager;
 import android.os.SystemProperties;
 import android.provider.Settings;
+//import android.provider.Settings.Secure;
 import android.text.format.Time;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -67,6 +71,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import java.lang.StringBuilder;
 import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -80,6 +85,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.HashSet;
 
 
 import static com.qrt.factory.TestSettings.BLUETOOTH_SCAN_TO_SUCESS;
@@ -121,6 +127,7 @@ public class ControlCenter extends ListActivity {
     private Bitmap FAIL_ICON;
 
     private AutoTestController mAutoTestController;
+	protected static ControlCenter sControlCenter = null;
 
     /*Add by zhangkaikai for QW810 Factorylog 2014-10-17 begin*/
     long gpsStartTime, wifiStartTime, btStartTime;
@@ -160,8 +167,9 @@ public class ControlCenter extends ListActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Log.d(TAG, "onCreate");
-        super.onCreate(savedInstanceState);
+		super.onCreate(savedInstanceState);
+        try {Utilities.logd(TAG, "========================================================"); } catch (Exception e) {}
+        
 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -169,15 +177,16 @@ public class ControlCenter extends ListActivity {
                 WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         //setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         setTitle(getString(R.string.app_name));
-      /*add by bwq for 810 log get sn  20141014 begin*/
+      
         final String getsn = getSn();
         sn = ("".equals(getsn.trim())) ? "Unknown" : getsn.trim();
         /*add by bwq for 810 log get sn  20141014 end*/
+		try {Utilities.logd(TAG, "========================================================before init()"); } catch (Exception e) {}
         init();
-
+		try {Utilities.logd(TAG, "=======================================before FactoryKit.initItemList(getIntent())"); } catch (Exception e) {}
         FactoryKit.initItemList(getIntent());
-        
-       //modified by tianfangzhou for autotest abort ,212 ,2013.5.21
+        try {Utilities.logd(TAG, "=======================================aftere FactoryKit.initItemList(getIntent())"); } catch (Exception e) {}
+       
         mAutoTestController = new AutoTestController(this, mHandler,
                 FactoryKit.mAutoTestItemList);
         setListAdapter(mBaseAdapter);
@@ -259,7 +268,7 @@ public class ControlCenter extends ListActivity {
 
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
-
+        (new File("/storage/sdcard0/test_results.csv")).delete();
         if (position == 0) {
             cleanTestState();
             TestSettings.SAVE_RESULT = true;
@@ -316,6 +325,7 @@ public class ControlCenter extends ListActivity {
                 //mdoified by tianfangzhou for autotest aborted,2013.5.20
                 FactoryKit.isAutoTesting = false;
                 saveTestResult();
+				saveMicronetResult();
                 //mdoified by tianfangzhou for autotest aborted,2013.5.20
                 mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
                 mAudioManager.setParameters("auxmic_test_enabled=false");
@@ -438,6 +448,108 @@ public class ControlCenter extends ListActivity {
             }
         }
     }
+	private String getSN() {
+		
+		String androidId = Settings.Secure.getString(getContentResolver(),Settings.Secure.ANDROID_ID);
+		return androidId;
+	}
+
+	private String getImei() {
+		TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+		String imei = tm.getDeviceId();
+		return imei;
+	}
+
+	private String getMac() {
+		WifiManager wfm = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+		WifiInfo wfInfo = wfm.getConnectionInfo();
+		String macAdrs = wfInfo.getMacAddress();
+		return macAdrs;
+	}
+
+	private void append(StringBuilder sb, String text) {
+		sb.append(text + ", ");
+	}
+
+	private void saveMicronetResult() {
+
+		final String SERIAL_NUMBER_HEAD = "SN";
+		final String IMEI_HEAD = "IMEI";
+		final String MAC_HEAD = "MAC";
+		final String NOT_TESTED_TEXT = "NOT TESTED";
+		
+		final String PASS_TEXT = "Pass";
+		final String FAIL_TEXT = "fail";
+
+		final String ALL_PASS_HEAD = "GLOBAL RESULT";
+		final String NOT_ALL_PASS_TEXT = "global fail";
+		final String ALL_PASS_TEXT = "all passed";
+		final String NONE_TESTED = "none tested";
+		boolean allPass = true;
+		boolean allNotTested = true;
+        FileOutputStream mFileOutputStream = null;
+        
+		StringBuilder resultBuffer = new StringBuilder(300);
+		StringBuilder resultHeader = new StringBuilder(300);
+		//add device identifications
+		append(resultHeader, SERIAL_NUMBER_HEAD);
+		append(resultBuffer, getSN());
+		append(resultHeader, IMEI_HEAD);
+		append(resultBuffer, getImei());
+		append(resultHeader, MAC_HEAD);
+		append(resultBuffer, getMac());
+		// add the items tested
+		for (TestItem testItem : FactoryKit.mItemList) {
+			append(resultHeader, testItem.getName());
+			if (null == testItem.getPass()) {
+				allPass = false;
+				append(resultBuffer, NOT_TESTED_TEXT);
+			} else {
+				allNotTested = false;
+				if(true == testItem.getPass()) {
+					append(resultBuffer, PASS_TEXT);
+				} else {
+					append(resultBuffer, FAIL_TEXT);
+					allPass = false;
+				}
+			}
+		}
+		// add global pass/fail
+		append(resultHeader, ALL_PASS_HEAD);
+		if (allPass) {
+			append(resultBuffer, ALL_PASS_TEXT);
+		} else if (allNotTested) {
+			append(resultBuffer, NONE_TESTED);
+		} else {
+			append(resultBuffer, NOT_ALL_PASS_TEXT);
+		}
+		// write the result file
+		try {
+            mFileOutputStream = new FileOutputStream(Utilities.getNewMicronetFile("results"));
+			byte[] resultBytes = resultBuffer.toString().getBytes();
+			mFileOutputStream.write(resultBytes);
+			mFileOutputStream.flush();
+			mFileOutputStream.close();
+		} catch (Exception e) {
+			Utilities.loge(TAG, "========================results output stream failed to open");
+		}
+		
+		
+		// write the heading file
+		try {
+            mFileOutputStream = new FileOutputStream(Utilities.getNewMicronetFile("headers"));
+			byte[] headerbytes = resultHeader.toString().getBytes();
+			mFileOutputStream.write(headerbytes);
+			mFileOutputStream.flush();
+			mFileOutputStream.close();
+		} catch (Exception e) {
+			Utilities.loge(TAG, "========================headers output stream failed to open");
+		}
+
+
+		
+	}
+
 
     @Override
     public void finish() {
@@ -455,6 +567,10 @@ public class ControlCenter extends ListActivity {
                                         int which) {
 
                                     mExitFlag = true;
+                                    FactoryKit.mItemList=new ArrayList<TestItem>(); // Clears but does not reset!
+                                    FactoryKit.mAutoTestItemList=null; // Clears but does not reset!
+                                    FactoryKit.testMode=-1;
+                                    XmlUtil.mBlackList = new HashSet<String>(); // Clears but does not reset!
                                     finish();
                                 }
                             }).setNegativeButton(getString(R.string.no),

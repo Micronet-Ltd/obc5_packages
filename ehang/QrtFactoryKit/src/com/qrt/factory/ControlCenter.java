@@ -85,6 +85,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.HashSet;
 
 
 import static com.qrt.factory.TestSettings.BLUETOOTH_SCAN_TO_SUCESS;
@@ -569,6 +570,7 @@ public class ControlCenter extends ListActivity {
                                     FactoryKit.mItemList=new ArrayList<TestItem>(); // Clears but does not reset!
                                     FactoryKit.mAutoTestItemList=null; // Clears but does not reset!
                                     FactoryKit.testMode=-1;
+                                    XmlUtil.mBlackList = new HashSet<String>(); // Clears but does not reset!
                                     finish();
                                 }
                             }).setNegativeButton(getString(R.string.no),

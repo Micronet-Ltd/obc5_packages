@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <BlackList>
+    <TestItem name="Battery" />
     <TestItem name = "HightSensor"/>
 </BlackList>

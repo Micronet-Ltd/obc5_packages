@@ -160,7 +160,17 @@ public class Rs232Tester {
         public String call() {
             //Log.d(TAG, "in call() of WriteTask, textToWrite: <" + textToWrite + "> !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             try {
-                mOutputStream.write(inBytes, 0, inSize);
+                Object synch = new Object();
+                for (int i=0; i<inSize;i++) {
+                    mOutputStream.write(inBytes, i, 1);
+                    synchronized (synch){
+                        try {
+                            synch.wait(0,50000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
                 mOutputStream.flush();
             } catch (IOException e) {
                 e.printStackTrace();

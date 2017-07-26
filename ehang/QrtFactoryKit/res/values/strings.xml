@@ -256,7 +256,7 @@
         <string
            name="cradle_ignition_on">Please set the ignition on. </string>
         <string
-           name="cradle_when_done">when done, click  Continue.</string>
+           name="cradle_when_done">Press continue when done.</string>
          <integer-array name="CountDownMax">
                <item>30</item>
                <item>30</item>
@@ -266,19 +266,17 @@
         <string-array
             name="cradle_first_action">
             <item>Please remove the device from any charging device in %s second!</item>
-            <item>Please insert the device into the cradle in %s second!</item>
-            <item>Please activate the ignition in %s second!</item>
+            <item>Please power on the cradle, and insert the Device into the cradle in %s second!</item>
+            <item>Please change the IGN to on in %s second!</item>
         </string-array>
         <string-array
             name="cradle_second_action">
-            <item>Please remove the device from any charging device!</item>
-            <item>Please insert the device into the cradle!</item>
-            <item>Please activate the ignition!</item>
+            <item>Please verify that the device is not in the cradle, and the USB charging is not connected.</item>
+            <item>Please verify that the device in the cradle and the cradle is powered.</item>
+            <item>Please verify that ignition switch is on.</item>
         </string-array>
 
-           <!-- Rs232 -->
-           <string
-                name="rs232_name">RS232</string>
+           <!-- Rs232
            <string
                 name="rs232_Done">Done</string>
             <string
@@ -290,7 +288,7 @@
              <string
                 name="rs232_ignition_on">Please set the ignition on."</string>
              <string
-                name="rs232_when_done">"when done, click  Done.</string> 
+                name="rs232_when_done">"when done, click  Done.</string>  -->
 
     
     <!-- Bluetooth -->
@@ -577,9 +575,12 @@
     <string name="calibrate_ok">Calibration success</string>
     <string name="keypad_scrshot">Scrshot</string>
     <!-- RS232 -->
+    <string name="rs232_name">RS232</string>
     <string name="rs232_please_wait">Please Wait...</string>
     <string name="rs232_continue">Continue</string>
     <string name="rs232_disconnect">Please verify that RS232 plug is not connected. Press continue when done</string>
     <string name="rs232_connect_countdown">Please Insert RS232 plug in %d Seconds</string>
     <string name="rs232_connect">Please verify that RS232 plug is connected. Press continue when done</string>
+
+    <string name="test_done">To finish the test, go to the PC and connect the ADB cable to the PC. From the MT5 folder run the MT5_TEST_MAIN.bat batch file</string>
 </resources>

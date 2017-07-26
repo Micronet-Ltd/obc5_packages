@@ -1,8 +1,10 @@
 package com.qrt.factory.util;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.wifi.WifiInfo;
@@ -44,7 +46,7 @@ public class ResultActivity extends Activity {
 
     private LinearLayout mLinearLayout = null;
 
-    private static final int VER=9;
+    private static final int VER=10;
 
     private List<TestItem> mItemList;
 
@@ -62,6 +64,12 @@ public class ResultActivity extends Activity {
         setContentView(R.layout.result);
         mLinearLayout = (LinearLayout) findViewById(R.id.resault_linear_layout);
         allPass = true;
+        if (null == savedInstanceState) new AlertDialog.Builder(this).setMessage(R.string.test_done).setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        }).show();
     }
 
     @Override
@@ -96,7 +104,6 @@ public class ResultActivity extends Activity {
                 }
             }
         }
-
     }
 
     private void initPanel() {
@@ -215,13 +222,6 @@ public class ResultActivity extends Activity {
         results.append(Build.DISPLAY + ",");
         results.append(wInfo.getMacAddress() + ",");
 
-//        for (TestItem i :
-//                mItemList) {
-        if (mItemList.size() < 27) { // Must update if number of tests changes!
-            for (int i=0;i<27;i++){
-                results.append(NULL);
-            }
-        }
         for (int i = 1; i < mItemList.size()-1; i++) {
             TestItem k = mItemList.get(i);
             if (k.getPass() == null) {

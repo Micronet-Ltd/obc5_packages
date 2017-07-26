@@ -53,25 +53,29 @@ public class iZatEnableService extends Service {
           		   new Thread(new Runnable() {
           			   public void run() {
           			   try {
-          				   for(int i = 0; i < 10; ++i){
-          					   Thread.sleep(1000);
-          					   int xcd = Resources.getSystem().getDisplayMetrics().widthPixels;
-          					   int ycd = Resources.getSystem().getDisplayMetrics().heightPixels;
-          					   //Log.d(TAG, "auto tap izat " + (xcd * 7 / 8) + " " + (ycd * 2 / 3) + " display x=" + xcd + " y=" + ycd);
-          					   //ShellUtils.execCommand("input tap " + (xcd * 7 / 8) + " " + (ycd * 2 / 3), false); 
-          					   //Thread.sleep(120 * 1000);
+      					   int xcd = Resources.getSystem().getDisplayMetrics().widthPixels;
+      					   int ycd = Resources.getSystem().getDisplayMetrics().heightPixels;
+      					   
+      					   Log.d(TAG, "TTFF tap izat " + (xcd * 7 / 8) + " " + (ycd * 2 / 3) + " display x=" + xcd + " y=" + ycd);
+      					   
+      					   ActivityManager AcivityManager = (ActivityManager)getSystemService(Context.ACTIVITY_SERVICE);
+						   Instrumentation inst = new Instrumentation();
+
+						   for(int i = 0; i < 30; ++i){
 							
-          					   ActivityManager AcivityManager = (ActivityManager)getSystemService(Context.ACTIVITY_SERVICE);
           					   String currentPackageName = AcivityManager.getRunningTasks(1).get(0).topActivity.getPackageName();
-          					   Log.d(TAG, "TTFFstart top " + currentPackageName);// + " class " + cn.getClassName());
+          							 
+          					   Log.d(TAG, "TTFF " + currentPackageName);
+          					   Thread.sleep(1000);
+
           					   if(currentPackageName.equals("com.qualcomm.location.XT")){
           						   try {
-          							   Instrumentation inst = new Instrumentation();
           							   //inst.sendKeyDownUpSync(KeyEvent.KEYCODE_ENTER);
           							   inst.sendPointerSync(MotionEvent.obtain(SystemClock.uptimeMillis(),
 		                            		SystemClock.uptimeMillis(), MotionEvent.ACTION_DOWN, (xcd * 7 / 8), (ycd * 2 / 3), 0));
           							   inst.sendPointerSync(MotionEvent.obtain(SystemClock.uptimeMillis(),
 		                            		SystemClock.uptimeMillis(), MotionEvent.ACTION_UP, (xcd * 7 / 8), (ycd * 2 / 3), 0));
+          							   break;
           						   } catch (Exception e) {
 		                            Log.e("Exception when sendKeyDownUpSync", e.toString());
           						   }

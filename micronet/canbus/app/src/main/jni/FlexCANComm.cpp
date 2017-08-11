@@ -456,7 +456,8 @@ int serial_deinit_thread_port1() {
         /*retvalp = &retval;*/
         LOGD("Begin cancelling the threads");
         pthread_join(thread__port1,NULL/* (void **) &retvalp*/);
-        LOGD("cancel out the threads");
+        LOGD("cancelled out the threads");
+        close(fd_CAN1);
         return retval;
     }
     LOGD("Failed to enter the if(thread__port1)");
@@ -484,6 +485,7 @@ int serial_deinit_thread_port2() {
         LOGD("Begin cancelling the threads");
         pthread_join(thread__port2,NULL/* (void **) &retvalp*/);
         LOGD("cancel out the threads");
+        close(fd_CAN2);
         return retval;
     }
     LOGD("Failed to enter the if(thread__port1)");
@@ -721,7 +723,8 @@ static void *monitor_data_thread_port1(void *param) {
             uint8_t *pend = NULL;
 
             //Returns the number of bytes readPort1
-            readData = read(fd_CAN1, pdata, sizeof(data) - (pdata - data));
+            //readData = read(fd_CAN1, pdata, sizeof(data) - (pdata - data));
+            readData = read(fd_CAN1, pdata, 31);
 
             if (0 == readData) {
                 quit_port1 = true;
@@ -764,7 +767,7 @@ static void *monitor_data_thread_port1(void *param) {
                             packetLength=carriageReturn-start +1;
                             LOGD("CAN1 Message: One complete extended packet received! DataLength=%d, Start=%d CarriageReturn=%d", dataLength, start, carriageReturn);
                             // Extract one packet and convert into a byte array
-//                            parseCANFrame(start, packetLength, pdata, CAN1_TTY_NUMBER);
+                            //parseCANFrame(start, packetLength, pdata, CAN1_TTY_NUMBER);
                             if(0== parseCANFrame(start, packetLength, pdata, CAN1_TTY_NUMBER)){
                                 LOGD("CAN1 Packet count =%d", packetCount);
                             }
@@ -772,7 +775,8 @@ static void *monitor_data_thread_port1(void *param) {
                             i = carriageReturn;
                             continue;
                         }
-                        else LOGD("CAN1 Error:Incomplete packet!");
+                        else
+                            LOGD("CAN1 Error:Incomplete packet!");
                     }
                     else LOGE("CAN1 Error: Recived frame with an Invalid Data Length! DataLength = %d", dataLength);
                 }

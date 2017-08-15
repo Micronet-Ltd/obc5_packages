@@ -3,6 +3,9 @@ package com.micronet.alwaysonwifihotspot;
 import android.content.ContentResolver;
 import android.provider.Settings;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * Created by eemaan.siddiqi on 1/19/2017.
  */
@@ -33,6 +36,21 @@ public class Utils {
             default:
                 return "WIFI_AP_STATE_ UNKNOWN!";
         }
+    }
+    public static String formatDate(Date date) {
+        return new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").format(date);
+    }
+
+    public static String formatDateShort(Date date) {
+        return new SimpleDateFormat("yyyy-MM-dd").format(date);
+    }
+
+    public static String formatDateShort(long time) {
+        return formatDateShort(new Date(time));
+    }
+
+    public static String formatDate(long time) {
+        return formatDate(new Date(time));
     }
 }
 

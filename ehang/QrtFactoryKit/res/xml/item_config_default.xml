@@ -3,11 +3,12 @@
 <FactoryTest>
 
     <Auto>
+        <!--
         <TestItem name="Sim1" enable="true">
             <Intent
                     packageName="com.qrt.factory"
                     className="com.qrt.factory.activity.Sim1"/>
-        </TestItem>
+        </TestItem>-->
 
         <!--<TestItem name="Sim2" enable="true">-->
             <!--<Intent-->
@@ -25,6 +26,12 @@
             <Intent
                     packageName="com.qrt.factory"
                     className="com.qrt.factory.activity.Bluetooth"/>
+        </TestItem>
+
+        <TestItem name="Cradle" enable="true">
+            <Intent
+                    packageName="com.qrt.factory"
+                    className="com.qrt.factory.activity.Cradle"/>
         </TestItem>
 
         <TestItem name="WiFi" enable="true">

@@ -67,6 +67,8 @@ public class SpecialCharSequenceMgr {
 
     /*added by xuegang for factory test 20150817 begin*/
 	private static final String FACTORY_TEST_APP = "*937*70#";
+	private static final String FACTORY_TEST_APP_MICRONET = "*937*77#";
+	private static final String FACTORY_TEST_APP_MICRONET_ONLY = "*937*79#";
 	private static final String APLOG_APP = "####7878#";	
 	private static final String QXDMLOG_APP = "####8787#";	
 	/*added by xuegang for factory test 20150817 end*/
@@ -133,7 +135,11 @@ public class SpecialCharSequenceMgr {
             {
                 /*added by xuegang for factory test 20150817 begin*/
                 if(dialString.equals(FACTORY_TEST_APP)) {
-                    return handleFactoryTestDisplay(context);
+                    return handleFactoryTestDisplay(context, 1);
+		} else if(dialString.equals(FACTORY_TEST_APP_MICRONET)) {
+                    return handleFactoryTestDisplay(context, 2);
+		} else if(dialString.equals(FACTORY_TEST_APP_MICRONET_ONLY)) {
+                    return handleFactoryTestDisplay(context, 3);
                 } else if(dialString.equals(APLOG_APP)) {
                     return handleSetPropDisplay(context,dialString);
                 } else if(dialString.equals(QXDMLOG_APP)) {
@@ -358,14 +364,15 @@ private static boolean isArrayContains(Object[] array, Object obj) {
 	return false;
 }
 
-private static void startFactoryTestActivity(Context context, boolean isAttchment) {
+private static void startFactoryTestActivity(Context context, boolean isAttchment, int runCode) {
 	Intent mIntent = new Intent(Intent.ACTION_MAIN);
 	mIntent.addCategory("android.category.factory.kit");
 	mIntent.setClassName("com.qrt.factory", "com.qrt.factory.ControlCenter");
 	mIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-	if (isAttchment) {
+	if (isAttchment) { // alwais false
 		mIntent.putExtra("attachment", true);
 	}
+		mIntent.putExtra("runcode", runCode);
 	try {
 		context.startActivity(mIntent);
 	} catch (ActivityNotFoundException e) {
@@ -373,8 +380,8 @@ private static void startFactoryTestActivity(Context context, boolean isAttchmen
 	}
 }
 
-private static boolean handleFactoryTestDisplay(Context context) {
-	startFactoryTestActivity(context, false);
+private static boolean handleFactoryTestDisplay(Context context, int runCode) {
+	startFactoryTestActivity(context, false, runCode);
 	return true;
 }
 

@@ -10,8 +10,8 @@
 <manifest
         xmlns:android="http://schemas.android.com/apk/res/android"
         package="com.qrt.factory"
-        android:versionCode="2"
-        android:versionName="2.3"
+        android:versionCode="10"
+        android:versionName="2.3.10"
         android:installLocation="internalOnly"
         android:sharedUserId="android.uid.system"
         >
@@ -372,6 +372,33 @@
         </activity>
 
         <activity
+                android:name=".activity.Cradle"
+                android:configChanges="orientation|keyboardHidden|mcc|mnc"
+                android:label="@string/cradle_name"
+                android:screenOrientation="portrait">
+            <intent-filter>
+                <action
+                        android:name="android.intent.action.MAIN"/>
+                <category
+                        android:name="android.category.factory.kit"/>
+            </intent-filter>
+        </activity>
+
+        <activity
+                android:name=".activity.Rs232"
+                android:configChanges="orientation|keyboardHidden|mcc|mnc"
+                android:label="@string/rs232_name"
+                android:screenOrientation="portrait">
+            <intent-filter>
+                <action
+                        android:name="android.intent.action.MAIN"/>
+                <category
+                        android:name="android.category.factory.kit"/>
+            </intent-filter>
+        </activity>
+
+
+        <activity
                 android:name=".activity.WiFi"
                 android:label="@string/wifi_name"
 				android:configChanges="orientation|keyboardHidden|mcc|mnc"
@@ -656,10 +683,20 @@
                         android:name="android.category.factory.kit"/>
             </intent-filter>
         </activity>
- <!-- Add by zhangkaikai for TouchPanelForGoodix QW810 2014-10-17 end -->
 
-        <!--<uses-feature android:name="android.hardware.nfc" android:required="true" />-->
+        <receiver
+            android:name=".getTestResultsReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.qrt.factory.GET_TEST_RESULTS"/>
+                <action android:name="com.qrt.factory.GET_TEST_HEADERS"/>
+            </intent-filter>
 
+        </receiver>
+ 
+
+        
     </application>
 
     <uses-permission android:name="android.permission.DEVICE_POWER"/>

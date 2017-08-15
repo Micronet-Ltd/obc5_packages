@@ -76,7 +76,7 @@ public class Battery extends AbstractActivity {
         return message;
     }
 
-    private void testBattery() {
+    private void testBattery() { //end the test
 /*begin :modified by tianfangzhou for battery test ,2013.10.14*/     	
 //        String powerUsbValue = Utilities.getFileInfo(POWER_USB_FILE);
 //        String powerAcValue = Utilities.getFileInfo(POWER_AC_FILE);
@@ -108,7 +108,7 @@ public class Battery extends AbstractActivity {
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            if (msg.what == 0) {
+            if (msg.what == 0) { //re-test
             	/*begin :modified by tianfangzhou for battery test ,2013.10.14*/
                 if (!isFinishing()) {
                     String powerUsbValue = Utilities.getFileInfo(POWER_USB_FILE);
@@ -120,19 +120,17 @@ public class Battery extends AbstractActivity {
                     }
                 }
                 
-            } else if (msg.what == 1) {
+            } else if (msg.what == 1) {  //show countdown
                 if (!isFinishing()) {
-                    mTextView.setText(getString(R.string.battery_insert,
-                            msg.getData().getInt("countdown")));
+                    mTextView.setText(getString(R.string.battery_insert,msg.getData().getInt("countdown")));
                     if (mCountdown == 0) {
                         mResultBuffer.append(getString(R.string.time_out));
                         fail();
                     } else {
-                        mHandler.sendMessageDelayed(createMessage(--mCountdown),
-                                1000);
+                        mHandler.sendMessageDelayed(createMessage(--mCountdown), 1000);
                     }
                 }
-            }else if(msg.what == 2){
+            }else if(msg.what == 2){ 
             	testBattery();
             } 
             /*end :modified by tianfangzhou for battery test ,2013.10.14*/ 

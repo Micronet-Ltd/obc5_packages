@@ -95,8 +95,8 @@
             android:clearTaskOnLaunch="true"
             android:stateNotNeeded="true"
             android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan"
-            android:screenOrientation="fullSensor">
+            android:windowSoftInputMode="adjustPan">
+            <!--android:screenOrientation="fullSensor" -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.HOME" />

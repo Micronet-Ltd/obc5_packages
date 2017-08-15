@@ -2,8 +2,8 @@ package com.micronet.alwaysonwifihotspot;
 
 import android.app.Service;
 import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
@@ -15,12 +15,9 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.util.Log;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
+
+import static com.micronet.alwaysonwifihotspot.ReadWriteFile.Dir;
 
 /**
  * Created by brigham.diaz on 12/12/2016.
@@ -32,10 +29,20 @@ import java.io.IOException;
  * to enable hotspot or it didn't receive change.
  */
 public class AlwaysOnWiFiHotspotService extends Service {
+
+    private Handler wifiApHandler;
+    private int wifiApvalue;
+    private final long SIXTY_SECONDS = 60000;
+    private final long TEN_SECONDS = 10000;
+    private Context context;
+    private static int handlerCount;
+    private String handlerValue;
+
     private static String TAG = "AOWHS - Service";
     private final BroadcastReceiver wifiApStatusReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+
             String action = intent.getAction();
             // first make sure that action received is wifi ap
             if (WiFiApManager.WIFI_AP_STATE_CHANGED_ACTION.equals(action)) {
@@ -62,94 +69,42 @@ public class AlwaysOnWiFiHotspotService extends Service {
      *  do nothing
      *  set post for 10 seconds
      */
-    private Handler wifiApHandler;
-    private int wifiApvalue;
-    private final long SIXTY_SECONDS = 60000;
-    private final long TEN_SECONDS = 10000;
-    private Context context;
-    private static int handlerCount;
-    private String handlerValue;
-    private File Dir;
 
     private void enableWiFi() {
         // re-enable Wifi AP
-        if (Utils.isAirplaneMode(getContentResolver()) == false) {
+        if (Utils.isAirplaneMode(getContentResolver()) == false){
             WiFiApManager.setWiFiApState(context, true);
             try {
-                Thread.sleep(5000);
+                Thread.sleep(10000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            int state = WiFiApManager.getWifiApState(context);
+            int state = WiFiApManager.getWifiApState(context,handlerValue);
             Log.d(TAG, String.format("State after attempting to enable hotspot %s(%d)", Utils.getWifiApStateName(state), state));
-            if (WiFiApManager.getWifiApState(context) == WiFiApManager.WIFI_AP_STATE_ENABLED
-                    || WiFiApManager.getWifiApState(context) == WiFiApManager.WIFI_AP_STATE_ENABLING) {
+            if (WiFiApManager.getWifiApState(context,handlerValue) == WiFiApManager.WIFI_AP_STATE_ENABLED
+                    || WiFiApManager.getWifiApState(context,handlerValue) == WiFiApManager.WIFI_AP_STATE_ENABLING) {
                 increaseHC();
-                Log.d(TAG, "enable wifi count=" + handlerValue);
+                ReadWriteFile.LogToFile(context, handlerValue,"Enabled Wi-Fi AP successfully! ");
+                Log.d(TAG, "Enable wifi count=" + handlerValue);
             }
-        } else {
-            Log.d(TAG, "Airplane mode is On, Cant disable");
-        }
-        Log.d(this.toString(), "getWiFiApState=" + WiFiApManager.getWifiApState(context));
-        if(WiFiApManager.getWifiApState(context)==WiFiApManager.WIFI_AP_STATE_ENABLED
-                ||WiFiApManager.getWifiApState(context)==WiFiApManager.WIFI_AP_STATE_ENABLING )
-        {
-            increaseHC();
-            Log.d(TAG, "enableWififunc:" +handlerValue);
         }
         else {
-            Log.d(TAG, "Airplane mode is On, Cant enable");
+            Log.d(TAG, "Airplane mode is On, Cant disable");
         }
+        Log.d(this.toString(), "getWiFiApState()=" + WiFiApManager.getWifiApState(context,handlerValue));
     }
-    //Function that increases th handler count
+
+    //Function that increases the handler count
     private void increaseHC(){
+        Log.d(TAG, "Increasing HC!! Current handlerCount=" +handlerCount );
         handlerCount++;
         handlerValue=Integer.toString(handlerCount);
-        writeToFile(handlerValue,context);
+        ReadWriteFile.writeToFile(handlerValue,context);
         Log.d(TAG, "increaseHC:" +handlerValue);
     }
-    //Write function
-    public void writeToFile(String handlerValue, Context context){
 
-        File file = new File(Dir, "HotspotEnabledCount.txt"); //Created a Text File
-             if(!file.exists()) {
-                 handlerValue = "0";
-             }
-        try {
-                FileOutputStream fileOutputStream = new FileOutputStream(file);
-                fileOutputStream.write(handlerValue.getBytes());
-                fileOutputStream.close();
-            }
-            catch (IOException e) {
-                Log.e("Exception", "File write failed: " + e.toString());
-            }
-        }
-    //Read Function
-    private String readFromFile(Context context) {
 
-        String ret = "";
-        File file = new File(Dir, "HotspotEnableCount.txt"); //Created a Text File
-        if(!file.exists()) { return ret;}
-        try {
-            FileReader fileReader = new FileReader(file);
-            BufferedReader bufferedReader = new BufferedReader(fileReader);
-            String receiveString = "";
-            StringBuilder stringBuilder = new StringBuilder();
 
-            while ((receiveString = bufferedReader.readLine()) != null) {
-                stringBuilder.append(receiveString);
-            }
-
-            fileReader.close();
-            ret = stringBuilder.toString();
-
-        } catch (FileNotFoundException e) {
-            Log.e(TAG, "File not found: " + e.toString());
-        } catch (Exception e) {
-            Log.e(TAG, "Can not read file: " + e.toString());
-        }
-        return ret;
-    }
     @Override
     public void onCreate() {
         try {
@@ -159,6 +114,7 @@ public class AlwaysOnWiFiHotspotService extends Service {
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
+
         // The service is being created
         IntentFilter intentFilter = new IntentFilter(WiFiApManager.WIFI_AP_STATE_CHANGED_ACTION);
         registerReceiver(wifiApStatusReceiver, intentFilter);
@@ -175,26 +131,30 @@ public class AlwaysOnWiFiHotspotService extends Service {
                 Dir.mkdir();
             }
         }
+
         //readFromFile(context);
-        if (this.readFromFile(context)==""){
+        if (ReadWriteFile.readFromFile(context)==""){
             //Initializing handler Count to 0 (When the service restarts)
             handlerCount=0;
             handlerValue = Integer.toString(handlerCount);
-            writeToFile(handlerValue, context);
+            ReadWriteFile.writeToFile(handlerValue, context);
         }
         else {
-            handlerValue=this.readFromFile(context);
+            handlerValue=ReadWriteFile.readFromFile(context);
             handlerCount=Integer.parseInt(handlerValue);
         }
-		PackageManager p = getPackageManager();
+
+        PackageManager p = getPackageManager();
         ComponentName componentName = new ComponentName(this, com.micronet.alwaysonwifihotspot.MainActivity.class); // activity which is first time open in manifiest file which is declare as <category android:name="android.intent.category.LAUNCHER" />
         p.setComponentEnabledSetting(componentName,PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
     }
 
+
+
     final Runnable wifiApCheck = new Runnable() {
         @Override
         public void run() {
-            wifiApvalue = WiFiApManager.getWifiApState(context);
+            wifiApvalue = WiFiApManager.getWifiApState(context, handlerValue);
             Log.d(TAG, String.format("Current AP State=%s(%d)", Utils.getWifiApStateName(wifiApvalue), wifiApvalue));
 
             try {

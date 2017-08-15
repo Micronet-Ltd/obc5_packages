@@ -17,3 +17,13 @@ LOCAL_ADDITIONAL_DEPENDENCIES := $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr
 endif
 LOCAL_CERTIFICATE := platform
 include $(BUILD_SHARED_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_SRC_FILES := SerialPort.c
+
+LOCAL_MODULE := libSerial_port
+LOCAL_MODULE_TAGS := optional
+LOCAL_CFLAGS := -Wall
+
+LOCAL_STATIC_LIBRARIES := libcutils libc liblog libutils
+include $(BUILD_SHARED_LIBRARY)

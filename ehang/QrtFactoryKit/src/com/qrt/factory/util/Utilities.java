@@ -13,6 +13,7 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import android.content.Context;
+import android.os.Environment;;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -43,6 +44,11 @@ public class Utilities {
 
     public static final String FILE_PATH = File.separator + "persist"
             + File.separator +  CURRENT_FILE_NAME;                           //modiy by bwq for 810 log path change 20141014
+
+	private static final String MICRONET_FILE_NAME = "S_MMI.log";
+
+    public static final String MICRONET_FILE_PATH = File.separator + "persist"
+            + File.separator +  CURRENT_FILE_NAME;  
 /*modified by bwq for 810 add log 2014.10.06 end*/
     public synchronized static void writeCurMessage(String Tag, String result,
             String info) {
@@ -95,6 +101,38 @@ public class Utilities {
             file.delete();
         }
     }
+
+	public static File getNewMicronetFile(String suffix) throws IOException {
+		File sdCard = Environment.getExternalStorageDirectory();
+		File dir = new File (sdCard.getAbsolutePath() + MICRONET_FILE_PATH);
+		dir.mkdirs();
+		File file = new File(dir, MICRONET_FILE_NAME + suffix);
+		if (file.exists()) {
+            file.delete();
+        }
+		file.createNewFile();
+        return file;
+    }
+
+	public static File getExistingMicronetFile(String suffix) throws IOException {
+		File sdCard = Environment.getExternalStorageDirectory();
+		File dir = new File (sdCard.getAbsolutePath() + MICRONET_FILE_PATH);
+		File file = new File(dir, MICRONET_FILE_NAME + suffix);
+		if (!file.exists()) {
+            return null;
+        } else {
+			return file;
+		}
+    }
+
+ /*
+	File sdCard = Environment.getExternalStorageDirectory();
+File dir = new File (sdCard.getAbsolutePath() + "/dir1/dir2");
+dir.mkdirs();
+File file = new File(dir, "filename");
+
+FileOutputStream f = new FileOutputStream(file);
+	*/
 
     public static void logd(String tag, Object d) {
 

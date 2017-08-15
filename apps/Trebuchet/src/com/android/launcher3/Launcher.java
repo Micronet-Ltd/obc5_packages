@@ -556,7 +556,7 @@ public class Launcher extends Activity
         updateGlobalIcons();
 
         // On large interfaces, we want the screen to auto-rotate based on the current orientation
-        unlockScreenOrientation(true);
+        //unlockScreenOrientation(true);
 
         if (shouldShowIntroScreen()) {
             showIntroScreen();

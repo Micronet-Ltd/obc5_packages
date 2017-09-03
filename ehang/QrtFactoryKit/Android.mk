@@ -13,6 +13,7 @@ LOCAL_JAVA_LIBRARIES := qcom.fmradio
 # telephony-msim
 
 LOCAL_JNI_SHARED_LIBRARIES := libqcomfm_jni
+LOCAL_JNI_SHARED_LIBRARIES += libSerial_port
 
 LOCAL_PACKAGE_NAME := QrtFactoryKit
 LOCAL_CERTIFICATE := platform

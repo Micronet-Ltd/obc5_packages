@@ -26,8 +26,5 @@ public class CanbusSettingsFragment extends Fragment {
         super.onStart();
         View rootView = getView();
         swStartOnBoot = (Switch)rootView.findViewById(R.id.swStartOnBoot);
-
-
-
     }
 }

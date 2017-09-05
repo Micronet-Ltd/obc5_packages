@@ -776,7 +776,7 @@ static void *monitor_data_thread_port1(void *param) {
                             continue;
                         }
                         else
-                            LOGD("CAN1 Error:Incomplete packet!");
+                            LOGE("CAN1 Error:Incomplete packet!");
                     }
                     else LOGE("CAN1 Error: Recived frame with an Invalid Data Length! DataLength = %d", dataLength);
                 }

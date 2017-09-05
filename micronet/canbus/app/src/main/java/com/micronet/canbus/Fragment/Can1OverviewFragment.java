@@ -107,7 +107,7 @@ public class Can1OverviewFragment extends Fragment {
         super.onStart();
 
         // Set title bar
-        ((MainActivity) getActivity()).setActionBarTitle(String.format("CanTest: %s (API %s)", getAppVersion(), Info.VERSION));
+        ((MainActivity) getActivity()).setActionBarTitle(String.format("Canbus: %s (API %s)", getAppVersion(), Info.VERSION));
 
         View rootView = getView();
 

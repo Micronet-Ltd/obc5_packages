@@ -35,18 +35,20 @@
         android:layout_height="wrap_content"
         android:text="@string/baud_rate"
         android:textColor="@android:color/black"
-        android:layout_above="@+id/xAxis"
-        android:layout_alignParentStart="true" />
+        android:layout_alignBaseline="@+id/btnGetBaudrate"
+        android:layout_alignBottom="@+id/btnGetBaudrate"
+        android:layout_alignStart="@+id/swCycleTransmitJ1939" />
 
 
     <Button
         android:id="@+id/baud500"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
         android:text="@string/_500k"
-        android:layout_marginTop="38dp"
+        android:textAppearance="@style/TextAppearance.AppCompat"
         android:layout_below="@+id/textView"
-        android:layout_toEndOf="@+id/baud250" />
+        android:layout_toEndOf="@+id/btnGetBaudrate" />
 
     <TextView
         android:id="@+id/lblCanSpeed"
@@ -54,8 +56,8 @@
         android:layout_height="wrap_content"
         android:text="@string/j1939_send_interval"
         android:textColor="@android:color/black"
-        android:layout_alignTop="@+id/seekBarSendSpeed"
-        android:layout_alignStart="@+id/textView" />
+        android:layout_alignBottom="@+id/seekBarSendSpeed"
+        android:layout_alignStart="@+id/btnSendJ1939" />
 
     <SeekBar
         android:layout_height="wrap_content"
@@ -64,10 +66,10 @@
         android:minHeight="5dip"
         android:maxHeight="5dip"
         android:max="1000"
-        android:layout_marginTop="43dp"
-        android:layout_below="@+id/xAxis"
+        android:layout_marginTop="16dp"
+        android:layout_below="@+id/btnGetBaudrate"
         android:layout_alignParentEnd="true"
-        android:layout_toEndOf="@+id/yAxis" />
+        android:layout_alignStart="@+id/swCycleTransmitJ1939" />
 
     <TextView
         android:id="@+id/txtCanSpeed"
@@ -83,10 +85,10 @@
         android:id="@+id/btnSendJ1939"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="13dp"
         android:text="@string/transmit_can"
-        android:layout_marginTop="21dp"
+        android:textAppearance="@style/TextAppearance.AppCompat"
         android:layout_below="@+id/seekBarSendSpeed"
-        android:layout_alignParentStart="true"
         android:layout_toStartOf="@+id/yAxis" />
 
     <Switch
@@ -96,7 +98,7 @@
         android:text="@string/cycle_transmit"
         android:layout_alignBaseline="@+id/btnSendJ1939"
         android:layout_alignBottom="@+id/btnSendJ1939"
-        android:layout_alignParentEnd="true" />
+        android:layout_toEndOf="@+id/baud500" />
     <!--
         <TextView
             android:id="@+id/txtJ1708Speed"
@@ -149,27 +151,29 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/get_baudrate"
-        android:textColor="@color/colorPrimaryDark"
-        android:layout_centerVertical="true"
-        android:layout_toEndOf="@+id/yAxis" />
+        android:textAppearance="@style/TextAppearance.AppCompat"
+        android:layout_alignTop="@+id/xAxis"
+        android:layout_alignStart="@+id/lblCanSpeed" />
 
     <Button
         android:id="@+id/baud250"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/_250k"
+        android:textAppearance="@style/TextAppearance.AppCompat"
         android:layout_alignBaseline="@+id/baud500"
         android:layout_alignBottom="@+id/baud500"
-        android:layout_alignParentStart="true" />
+        android:layout_alignStart="@+id/lblCanSpeed" />
 
     <Button
         android:id="@+id/btnCloseCan1Interface"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/close_interface"
+        android:textAppearance="@style/TextAppearance.AppCompat"
         android:layout_alignBaseline="@+id/baud500"
         android:layout_alignBottom="@+id/baud500"
-        android:layout_alignEnd="@+id/txtCanSpeed" />
+        android:layout_alignParentEnd="true" />
 
 
 </RelativeLayout>

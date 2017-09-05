@@ -30,7 +30,8 @@
         android:layout_alignRight="@id/yAxis"
         android:gravity="center"
         android:text="@string/can1"
-        android:textStyle="normal|bold"/>
+        android:textColor="@android:color/holo_orange_dark"
+        android:textStyle="normal|bold" />
 
     <TextView
         android:id="@+id/lblCan1Packets"
@@ -43,9 +44,9 @@
         android:layout_below="@id/lblCan1"
         android:layout_marginLeft="5dp"
         android:layout_marginStart="5dp"
-        android:textColor="@color/colorAccent"
+        android:text="@string/can2"
         android:textAllCaps="true"
-        android:text="@string/can2"/>
+        android:textColor="@color/colorPrimary" />
 
     <TextView
         android:id="@+id/lvJ1939FramesPort1"
@@ -75,6 +76,7 @@
         android:layout_alignStart="@id/yAxis"
         android:gravity="center"
         android:text="CAN2 "
+        android:textColor="@android:color/holo_orange_dark"
         android:textSize="14sp"
         android:textStyle="normal|bold" />
 
@@ -82,12 +84,12 @@
         android:id="@+id/lblCan2Packets"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/lblCan2"
         android:layout_marginLeft="5dp"
+        android:layout_toEndOf="@+id/yAxis"
         android:text="@string/can2"
         android:textAllCaps="true"
-        android:textColor="@color/colorAccent"
-        android:layout_below="@+id/lblCan2"
-        android:layout_toEndOf="@+id/yAxis" />
+        android:textColor="@color/colorPrimary" />
 
     <TextView
         android:id="@+id/lvJ1939FramesPort2"

@@ -307,9 +307,9 @@ public class CanTest {
         ArrayList<CanbusHardwareFilter> filterList = new ArrayList<CanbusHardwareFilter>();
         CanbusHardwareFilter[] filters;
         // Up to 24 filters
-        int[] ids = new int[]{0x18FEE000, 0x1CECFF00 , 0x1CEBFF00, 0x18FEE500 , 0x18FEF100, J1939_ENGINE_CONTROLLER2 << 8, J1939_ENGINE_CONTROLLER1 << 8 /*, J1939_PGN_DASH_DISP << 8, J1939_PGN_GEAR << 8, J1939_ENGINE_TEMPERATURE_1 << 8 , J1939_FUEL_ECONOMY << 8*/};
-        int[] mask = {0x1FFFFFFF, 0x1FFF00FF, 0x1FFF00FF, 0x1FFFFFFF, 0x1FFFFFFF, 0x00FFFF00, 0x00FFFF00/*, 0x00FFFF00, 0x00FFFF00, 0x00FFFF00, 0x00FFFF00*/};
-        int[] type={CanbusHardwareFilter.EXTENDED, CanbusHardwareFilter.EXTENDED, CanbusHardwareFilter.EXTENDED,CanbusHardwareFilter.EXTENDED, CanbusHardwareFilter.EXTENDED, CanbusHardwareFilter.EXTENDED,CanbusHardwareFilter.EXTENDED/*, CanbusHardwareFilter.EXTENDED, CanbusHardwareFilter.EXTENDED, CanbusHardwareFilter.EXTENDED, CanbusHardwareFilter.EXTENDED*/};
+        int[] ids = new int[]{0x18FEE000, 0x1CECFF00 , 0x1CEBFF00, 0x18FEE500 , 0x18FEF100, J1939_ENGINE_CONTROLLER2 << 8, J1939_ENGINE_CONTROLLER1 << 8 , J1939_PGN_DASH_DISP << 8, J1939_PGN_GEAR << 8, J1939_ENGINE_TEMPERATURE_1 << 8 , J1939_FUEL_ECONOMY << 8};
+        int[] mask = {0x1FFFFFFF, 0x1FFF00FF, 0x1FFF00FF, 0x1FFFFFFF, 0x1FFFFFFF, 0x00FFFF00, 0x00FFFF00, 0x00FFFF00, 0x00FFFF00, 0x00FFFF00, 0x00FFFF00};
+        int[] type={CanbusHardwareFilter.EXTENDED, CanbusHardwareFilter.EXTENDED, CanbusHardwareFilter.EXTENDED,CanbusHardwareFilter.EXTENDED, CanbusHardwareFilter.EXTENDED, CanbusHardwareFilter.EXTENDED,CanbusHardwareFilter.EXTENDED, CanbusHardwareFilter.EXTENDED, CanbusHardwareFilter.EXTENDED, CanbusHardwareFilter.EXTENDED, CanbusHardwareFilter.EXTENDED};
         filterList.add(new CanbusHardwareFilter(ids,mask, type));
         filters = filterList.toArray(new CanbusHardwareFilter[0]);
         return filters;

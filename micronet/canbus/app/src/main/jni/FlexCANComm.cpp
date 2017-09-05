@@ -126,7 +126,7 @@ int closeCAN(int close_fd) {
     char buf[256];
     sprintf(buf, "C\r");
     if (-1 == write(close_fd, buf, strlen(buf))) {
-        ERR("Error write1939Port1 %s command\n", buf);
+        ERR("Error write %s command\n", buf);
         return -1;
     }
     LOGD("Closed can channel ");
@@ -145,9 +145,8 @@ int setFd(int portNumber){
     }
 }
 
-int closePort(int portNumber){
-    int closeFd;
-    closeFd=setFd(portNumber);
+int closeCanPort(int portNumber){
+    int closeFd=setFd(portNumber);
     if(portNumber==2 || portNumber==3){
         if (closeCAN(closeFd) == -1) {
             return -1;
@@ -456,8 +455,7 @@ int serial_deinit_thread_port1() {
         /*retvalp = &retval;*/
         LOGD("Begin cancelling the threads");
         pthread_join(thread__port1,NULL/* (void **) &retvalp*/);
-        LOGD("cancelled out the threads");
-        close(fd_CAN1);
+        LOGD("Cancelled out the read thread for CAN1");
         return retval;
     }
     LOGD("Failed to enter the if(thread__port1)");
@@ -484,8 +482,7 @@ int serial_deinit_thread_port2() {
         /*retvalp = &retval;*/
         LOGD("Begin cancelling the threads");
         pthread_join(thread__port2,NULL/* (void **) &retvalp*/);
-        LOGD("cancel out the threads");
-        close(fd_CAN2);
+        LOGD("Cancelled out the read thread for CAN2");
         return retval;
     }
     LOGD("Failed to enter the if(thread__port1)");
@@ -702,6 +699,7 @@ static void *monitor_data_thread_port1(void *param) {
 	unsigned char * thread_char = (unsigned char *)(void *)(&thread__port1);
     int i, packetCount = 0,j = 0, start = 0, packetLength=0, carriageReturn = 0;
     int errorResponseCount=0;
+    int readCount=0;
 
     prctl(PR_SET_NAME, "monitor_thread_port1", 0, 0, 0);
     LOGD("monitor_thread_port1 started");
@@ -722,9 +720,11 @@ static void *monitor_data_thread_port1(void *param) {
             int readData;
             uint8_t *pend = NULL;
 
-            //Returns the number of bytes readPort1
-            //readData = read(fd_CAN1, pdata, sizeof(data) - (pdata - data));
-            readData = read(fd_CAN1, pdata, 31);
+            //Returns the number of bytes read on CAN1
+            readData = read(fd_CAN1, pdata, sizeof(data) - (pdata - data));
+            //readData = read(fd_CAN1, pdata, 31);
+            readCount++;
+            if(readData>0){LOGD("READ COUNT ON PORT1 %d Number of characters=%d", readCount, readData);}
 
             if (0 == readData) {
                 quit_port1 = true;
@@ -751,7 +751,7 @@ static void *monitor_data_thread_port1(void *param) {
 
                 else if (data[i] == CAN_ERROR_RESPONSE) {
                     errorResponseCount++;
-                    LOGD("CAN1 Message: CAN ERROR RESPONSE Recieved!!", errorResponseCount);
+                    LOGE("CAN1 Message: CAN ERROR RESPONSE Received!!", errorResponseCount);
                     continue;
                 }
 
@@ -800,9 +800,9 @@ static void *monitor_data_thread_port1(void *param) {
                             i = carriageReturn;
                             continue;
                         }
-                        else LOGD("CAN1 Error:Incomplete packet  ");
+                        else LOGE("CAN1 Error:Incomplete packet  ");
                     }
-                    else LOGE("CAN1 Error: Recived frame with an Invalid Data Length! DataLength=%d", dataLength);
+                    else LOGE("CAN1 Error: Received frame with an Invalid Data Length! DataLength=%d", dataLength);
                 }
             }
         }
@@ -885,7 +885,7 @@ static void *monitor_data_thread_can_port2(void *param) {
                             i = carriageReturn;
                             continue;
                         }
-                        else LOGD("CAN2 Error: Incomplete packet! data[carriage return]=%s", data[carriageReturn]);
+                        else LOGE("CAN2 Error: Incomplete packet! data[carriage return]=%s", data[carriageReturn]);
                     }
                     else LOGE("CAN2 Error: Recived frame with an Invalid data length! DataLength=%d", dataLength);
                 }
@@ -909,7 +909,7 @@ static void *monitor_data_thread_can_port2(void *param) {
                             continue;
                         }
                         else {
-                            LOGD("CAN2 Error: Incomplete packet");
+                            LOGE("CAN2 Error: Incomplete packet");
                         }
                     }
                     else LOGE("CAN2 Error: Recived frame with an Invalid data length! DataLength=%d", dataLength);

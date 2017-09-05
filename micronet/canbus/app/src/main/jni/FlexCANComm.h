@@ -14,7 +14,7 @@ int serial_init(char *name);
 
 int initTerminalInterface(int fd);
 int closeTerminalInterface(int port);
-int closePort(int portNumber);
+int closeCanPort(int portNumber);
 int closeCAN(int close_fd);
 int setBitrate(int fd, int speed);
 int openCANandSetTermination(int fd, bool term);

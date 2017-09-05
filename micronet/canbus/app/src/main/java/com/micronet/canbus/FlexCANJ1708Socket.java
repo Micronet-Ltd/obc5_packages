@@ -9,7 +9,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * Handles the read/write operations for J1708 communication via J1708Socket
  * FlexCANJ1708 can be created when a J1708 interface is available.
  */
-public class FlexCANJ1708Socket extends J1708Socket implements J1708Listener {
+class FlexCANJ1708Socket extends J1708Socket implements J1708Listener {
 
     private int mSocket;
     private static final String TAG = "FlexCANJ1708Socket";

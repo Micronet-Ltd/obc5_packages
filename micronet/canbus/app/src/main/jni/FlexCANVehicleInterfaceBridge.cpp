@@ -319,7 +319,7 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANVehicleInterfaceBridge_cr
 JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANVehicleInterfaceBridge_removeCAN1Interface(JNIEnv *env, jobject instance) {
 
     closeInterfaceCAN1();
-    if (closePort(CAN1_TTY_NUMBER) == -1) {
+    if (closeCanPort(CAN1_TTY_NUMBER) == -1) {
         return -1;
         LOGD("Couldn't close CAN1 successfully ");
     }
@@ -332,7 +332,7 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANVehicleInterfaceBridge_re
 JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANVehicleInterfaceBridge_removeCAN2Interface(JNIEnv *env, jobject instance) {
 
     closeInterfaceCAN2();
-    if(closePort(CAN2_TTY_NUMBER) == -1) {
+    if(closeCanPort(CAN2_TTY_NUMBER) == -1) {
         return -1;
         LOGD("Couldn't close CAN2 successfully ");
     }

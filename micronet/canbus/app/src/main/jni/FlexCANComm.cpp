@@ -266,7 +266,7 @@ void setFlowControlMessage(char type,char *searchID,char *responseID, int dataLe
         }
         LOGD("Flow message SET: FlowMessage- %s", flowControlMessage);
     }
-    else LOGD("Error: Flow control  message not set successfully!!! Message: %s, Extended Message size=%d or StandardMessageSize=%d", flowControlMessage, extendedMessageLength,standardMessageLength);
+    else LOGE("Error: Flow control  message not set successfully!!! Message: %s, Extended Message size=%d or StandardMessageSize=%d", flowControlMessage, extendedMessageLength,standardMessageLength);
 }
 
 
@@ -659,7 +659,8 @@ void j1939rxd(BYTE *rxd, int portNumber) {
             parseHex(canData,dLength*2,hexData);
     }
 
-    length = dLength; // save data length into an integer called 'length'
+    // save data length into an integer called 'length'
+    length = dLength;
 
     if(portNumber==CAN1_TTY_NUMBER){
             sendCanbusFramePort1(frameId, type, length, hexData);
@@ -670,7 +671,8 @@ void j1939rxd(BYTE *rxd, int portNumber) {
 }
 
 int parseCANFrame(int start, int packetLength, uint8_t *pdata, int portNumber){
-    uint8_t frame[31];//31 is the maximum size of an extended packet
+    //31 is the maximum size of an extended packet
+    uint8_t frame[31];
     memcpy(frame, (const void *) (pdata+start), packetLength);
     LOGD("CAN Frame on ttyACM%d = %s", portNumber,frame);
     if ((frame[0] == 't' && frame[packetLength-1] == CAN_OK_RESPONSE) || (frame[0] == 'T' && frame[packetLength-1] == CAN_OK_RESPONSE)) {
@@ -680,16 +682,6 @@ int parseCANFrame(int start, int packetLength, uint8_t *pdata, int portNumber){
     else
         return -1;
         LOGD("CAN PORT 1 ERROR: Incomplete packet received - Frame not sent to j1939rxd()");
-}
-
-void parseCAN2Frame(int start, int packetLength, uint8_t *pdata, int portNumber){
-    uint8_t frame[31];//31 is the maximum size of an extended packet
-    memcpy(frame, (const void *) (pdata+start), packetLength);
-    LOGD("CAN Frame on ttyACM%d = %s", portNumber,frame);
-    if ((frame[0] == 't' && frame[packetLength-1] == CAN_OK_RESPONSE) || (frame[0] == 'T' && frame[packetLength-1] == CAN_OK_RESPONSE)) {
-        j1939rxd(frame, portNumber);
-    }
-    else LOGD("CAN PORT 1 ERROR: Incomplete packet received - Frame not sent to j1939rxd()");
 }
 
 static void *monitor_data_thread_port1(void *param) {

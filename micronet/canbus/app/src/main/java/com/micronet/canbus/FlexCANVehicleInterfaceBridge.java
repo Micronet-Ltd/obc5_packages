@@ -108,7 +108,6 @@ final class FlexCANVehicleInterfaceBridge implements IVehicleInterfaceBridge {
      * Removes Canbus interface for port 1 (down).
      */
     public void removeCAN1() {
-        //TODO: Works?
         removeCAN1Interface();
     }
 
@@ -116,7 +115,6 @@ final class FlexCANVehicleInterfaceBridge implements IVehicleInterfaceBridge {
      * Removes Canbus interface for port 2 (down).
      */
     public void removeCAN2() {
-        //TODO: Check, Does this work?
         removeCAN2Interface();
     }
 

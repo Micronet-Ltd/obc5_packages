@@ -619,8 +619,8 @@ public class CanTest {
     public void setAutoSendJ1939Port2(boolean autoSendJ1939Port2) {
         this.autoSendJ1939Port2 = autoSendJ1939Port2;
     }
-/*
-    public boolean isAutoSendJ1708() {
+
+    /*public boolean isAutoSendJ1708() {
         return autoSendJ1708;
     }
 

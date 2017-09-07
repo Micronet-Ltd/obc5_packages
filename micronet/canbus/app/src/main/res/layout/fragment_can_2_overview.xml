@@ -37,7 +37,7 @@
         android:textColor="@android:color/black"
         android:layout_alignBaseline="@+id/btnGetBaudrate"
         android:layout_alignBottom="@+id/btnGetBaudrate"
-        android:layout_alignStart="@+id/swCycleTransmitJ1939" />
+        android:layout_alignStart="@+id/yAxis" />
 
 
     <Button
@@ -45,10 +45,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
+        android:background="@color/colorButtons"
         android:text="@string/_500k"
         android:textAppearance="@style/TextAppearance.AppCompat"
+        android:textSize="13sp"
         android:layout_below="@+id/textView"
-        android:layout_toEndOf="@+id/btnGetBaudrate" />
+        android:layout_toEndOf="@+id/baud250"
+        android:layout_marginStart="13dp" />
 
     <TextView
         android:id="@+id/lblCanSpeed"
@@ -66,10 +69,9 @@
         android:minHeight="5dip"
         android:maxHeight="5dip"
         android:max="1000"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="17dp"
         android:layout_below="@+id/btnGetBaudrate"
-        android:layout_alignParentEnd="true"
-        android:layout_alignStart="@+id/swCycleTransmitJ1939" />
+        android:layout_alignStart="@+id/yAxis" />
 
     <TextView
         android:id="@+id/txtCanSpeed"
@@ -85,11 +87,13 @@
         android:id="@+id/btnSendJ1939"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="13dp"
+        android:layout_marginTop="14dp"
+        android:background="@color/colorButtons"
         android:text="@string/transmit_can"
         android:textAppearance="@style/TextAppearance.AppCompat"
-        android:layout_below="@+id/seekBarSendSpeed"
-        android:layout_toStartOf="@+id/yAxis" />
+        android:textSize="13sp"
+        android:layout_below="@+id/lblCanSpeed"
+        android:layout_alignStart="@+id/btnGetBaudrate" />
 
     <Switch
         android:id="@+id/swCycleTransmitJ1939"
@@ -98,7 +102,8 @@
         android:text="@string/cycle_transmit"
         android:layout_alignBaseline="@+id/btnSendJ1939"
         android:layout_alignBottom="@+id/btnSendJ1939"
-        android:layout_toEndOf="@+id/baud500" />
+        android:layout_alignParentEnd="true"
+        android:layout_toEndOf="@+id/yAxis" />
     <!--
         <TextView
             android:id="@+id/txtJ1708Speed"
@@ -150,30 +155,38 @@
         android:id="@+id/btnGetBaudrate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:background="@color/colorButtons"
         android:text="@string/get_baudrate"
         android:textAppearance="@style/TextAppearance.AppCompat"
-        android:layout_alignTop="@+id/xAxis"
-        android:layout_alignStart="@+id/lblCanSpeed" />
+        android:textSize="13sp"
+        android:layout_centerVertical="true"
+        android:layout_alignParentStart="true" />
 
     <Button
         android:id="@+id/baud250"
+        style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:background="@color/colorButtons"
         android:text="@string/_250k"
         android:textAppearance="@style/TextAppearance.AppCompat"
-        android:layout_alignBaseline="@+id/baud500"
-        android:layout_alignBottom="@+id/baud500"
-        android:layout_alignStart="@+id/lblCanSpeed" />
+        android:textSize="13sp"
+        android:layout_alignBottom="@+id/baud500" />
 
     <Button
         android:id="@+id/btnCloseCan1Interface"
+        style="@style/Widget.AppCompat.Button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:background="@color/colorButtons"
+        android:lineSpacingExtra="8sp"
         android:text="@string/close_interface"
         android:textAppearance="@style/TextAppearance.AppCompat"
+        android:textSize="13sp"
         android:layout_alignBaseline="@+id/baud500"
         android:layout_alignBottom="@+id/baud500"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        android:layout_toEndOf="@+id/txtSocketStatus" />
 
 
 </RelativeLayout>

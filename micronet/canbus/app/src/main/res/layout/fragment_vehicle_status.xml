@@ -23,33 +23,34 @@
         android:id="@+id/btnRequestVin"
         android:layout_width="127dp"
         android:layout_height="35dp"
-        android:background="?attr/colorButtonNormal"
+        android:layout_alignEnd="@+id/btnRequestEngineHours"
+        android:layout_alignParentStart="true"
+        android:layout_alignTop="@+id/txtVin"
+        android:background="@color/colorButtons"
+        android:fontFamily="sans-serif"
         android:maxLength="30"
         android:maxLines="30"
         android:minHeight="35dp"
         android:text="Request VIN "
         android:textAppearance="@style/TextAppearance.AppCompat"
-        android:textColor="@android:color/background_dark"
-        android:textSize="14sp"
-        android:layout_alignTop="@+id/txtVin"
-        android:layout_alignParentStart="true"
-        android:layout_alignEnd="@+id/btnRequestEngineHours" />
+        android:textSize="13sp" />
 
     <Button
         android:id="@+id/btnRequestEngineHours"
         android:layout_width="wrap_content"
         android:layout_height="35dp"
+        android:layout_alignEnd="@+id/btnTransmissionGear"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/btnRequestVin"
         android:layout_marginTop="29dp"
-        android:background="?attr/colorButtonNormal"
+        android:background="@color/colorButtons"
         android:maxLength="30"
         android:maxLines="30"
         android:minHeight="35dp"
         android:text="Request Engine Hours"
         android:textAppearance="@style/TextAppearance.AppCompat"
         android:textColor="@android:color/black"
-        android:layout_alignEnd="@+id/btnTransmissionGear" />
+        android:textSize="13sp" />
 
     <TextView
         android:id="@+id/txtEngineHours"
@@ -68,14 +69,15 @@
         android:layout_alignParentStart="true"
         android:layout_below="@+id/btnRequestEngineHours"
         android:layout_marginTop="27dp"
-        android:background="?attr/colorButtonNormal"
+        android:background="@color/colorButtons"
         android:maxHeight="35dp"
         android:maxLength="30"
         android:maxLines="30"
         android:minHeight="35dp"
         android:text="Get Odometer"
         android:textAppearance="@style/TextAppearance.AppCompat"
-        android:textColor="@android:color/black" />
+        android:textColor="@android:color/black"
+        android:textSize="13sp" />
 
     <TextView
         android:id="@+id/txtOdometer"
@@ -93,18 +95,19 @@
         android:layout_alignParentStart="true"
         android:layout_below="@+id/btnGetOdometer "
         android:layout_marginTop="30dp"
-        android:background="?attr/colorButtonNormal"
+        android:background="@color/colorButtons"
         android:maxHeight="35dp"
         android:maxLength="40"
         android:minHeight="35dp"
         android:text="Get Transmission Gear"
         android:textAppearance="@style/TextAppearance.AppCompat"
-        android:textColor="@android:color/black" />
+        android:textColor="@android:color/background_dark"
+        android:textSize="13sp" />
 
     <TextView
         android:id="@+id/txtTransmissionGear"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_alignStart="@+id/txtOdometer"
         android:layout_alignTop="@+id/btnTransmissionGear"
         android:text="-"
@@ -118,11 +121,12 @@
         android:layout_alignParentStart="true"
         android:layout_below="@+id/btnTransmissionGear"
         android:layout_marginTop="22dp"
-        android:background="?attr/colorButtonNormal"
+        android:background="@color/colorButtons"
         android:minHeight="35dp"
         android:text="Get Vehicle Speed "
         android:textAppearance="@style/TextAppearance.AppCompat"
-        android:textColor="@android:color/black" />
+        android:textColor="@android:color/black"
+        android:textSize="13sp" />
 
     <TextView
         android:id="@+id/txtVehicleSpeed"

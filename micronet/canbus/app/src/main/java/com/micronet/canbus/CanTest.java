@@ -1042,8 +1042,8 @@ public class CanTest {
                             can1Data.append(Integer.toHexString(canbusFrame1.getId()));
                             can1Data.append(",");
                             can1Data.append(canFrameType);
-                            can1Data.append(",");
-                            can1Data.append(Integer.toHexString(pgn));
+                          /*  can1Data.append(",");
+                            can1Data.append(Integer.toHexString(pgn));*/
                             can1Data.append(",[");
                             can1Data.append(bytesToHex(canbusFrame1.getData()));
                             can1Data.append("] (");
@@ -1176,8 +1176,8 @@ public class CanTest {
                             can2Data.append(Integer.toHexString(canbusFrame2.getId()));
                             can2Data.append(",");
                             can2Data.append(canFrameType);
-                            can2Data.append(",");
-                            can2Data.append(Integer.toHexString(pgn));
+                            //can2Data.append(",");
+                            //can2Data.append(Integer.toHexString(pgn));
                             can2Data.append(",[");
                             can2Data.append(bytesToHex(canbusFrame2.getData()));
                             can2Data.append("] (");

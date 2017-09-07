@@ -34,10 +34,10 @@
         android:id="@+id/txtBaud"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/xAxis"
-        android:layout_toEndOf="@+id/yAxis"
         android:text="@string/baud_rate"
-        android:textColor="@android:color/black" />
+        android:textColor="@android:color/black"
+        android:layout_centerVertical="true"
+        android:layout_toEndOf="@+id/yAxis" />
 
     <Button
         android:id="@+id/btnGetBaudrate"
@@ -46,17 +46,22 @@
         android:layout_alignBaseline="@+id/txtBaud"
         android:layout_alignBottom="@+id/txtBaud"
         android:layout_alignParentStart="true"
+        android:background="@color/colorButtons"
         android:text="@string/get_baudrate"
-        android:textAppearance="@style/TextAppearance.AppCompat" />
+        android:textAppearance="@style/TextAppearance.AppCompat"
+        android:layout_toStartOf="@+id/baud500"
+        android:layout_alignEnd="@+id/baud250" />
 
 
     <Button
         android:id="@+id/baud250"
+        style="@style/Widget.AppCompat.Button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/textView"
         android:layout_marginTop="15dp"
+        android:background="@color/colorButtons"
         android:text="@string/_250k"
         android:textAppearance="@style/TextAppearance.AppCompat" />
 
@@ -64,20 +69,25 @@
         android:id="@+id/baud500"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:background="@color/colorButtons"
+        android:text="@string/_500k"
+        android:textAppearance="@style/TextAppearance.AppCompat"
         android:layout_alignBaseline="@+id/baud250"
         android:layout_alignBottom="@+id/baud250"
-        android:layout_toEndOf="@+id/btnGetBaudrate"
-        android:text="@string/_500k"
-        android:textAppearance="@style/TextAppearance.AppCompat" />
+        android:layout_toEndOf="@+id/baud250"
+        android:layout_marginStart="13dp" />
 
     <Button
         android:id="@+id/btnCloseCan1Interface"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignTop="@+id/baud500"
+        android:background="@color/colorButtons"
         android:text="@string/close_interface"
-        android:textAppearance="@style/TextAppearance.AppCompat" />
+        android:textAppearance="@style/TextAppearance.AppCompat"
+        android:layout_alignBaseline="@+id/baud500"
+        android:layout_alignBottom="@+id/baud500"
+        android:layout_alignParentEnd="true"
+        android:layout_toEndOf="@+id/txtInterfaceStatus" />
 
     <TextView
         android:id="@+id/lblCanSpeed"
@@ -97,7 +107,8 @@
         android:layout_marginTop="34dp"
         android:max="1000"
         android:maxHeight="5dip"
-        android:minHeight="5dip" />
+        android:minHeight="5dip"
+        android:layout_alignParentEnd="true" />
 
     <TextView
         android:id="@+id/txtCanSpeed"
@@ -113,20 +124,23 @@
         android:id="@+id/btnSendJ1939"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:background="@color/colorButtons"
+        android:text="@string/transmit_can"
+        android:textAppearance="@style/TextAppearance.AppCompat"
         android:layout_alignBaseline="@+id/swCycleTransmitJ1939"
         android:layout_alignBottom="@+id/swCycleTransmitJ1939"
         android:layout_alignParentStart="true"
-        android:text="@string/transmit_can"
-        android:textAppearance="@style/TextAppearance.AppCompat" />
+        android:layout_alignEnd="@+id/yAxis" />
 
     <Switch
         android:id="@+id/swCycleTransmitJ1939"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="34dp"
+        android:text="@string/cycle_transmit"
         android:layout_below="@+id/seekBarSendSpeed"
-        android:layout_marginTop="36dp"
-        android:layout_toEndOf="@+id/baud500"
-        android:text="@string/cycle_transmit" />
+        android:layout_alignParentEnd="true"
+        android:layout_toEndOf="@+id/baud500" />
     <!--
         <TextView
             android:id="@+id/txtJ1708Speed"
@@ -151,10 +165,10 @@
         android:id="@+id/txtInterfaceStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="@string/closed"
         android:layout_alignBaseline="@+id/lblSocketStatus"
         android:layout_alignBottom="@+id/lblSocketStatus"
-        android:layout_toEndOf="@+id/yAxis"
-        android:text="@string/closed" />
+        android:layout_alignStart="@+id/yAxis" />
 
 
     <TextView

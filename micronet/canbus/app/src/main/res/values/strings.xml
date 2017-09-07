@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">canbus</string>
+    <string name="app_name">VehicleBusTest</string>
     <string name="close_interface">Close Interface</string>
     <string name="api_ver">API VER</string>
     <string name="interface_status">Interface:</string>
@@ -16,7 +16,7 @@
     <string name="filters">Filters</string>
     <string name="discard">Discard incoming packets on baud switch</string>
     <string name="get_baudrate">Get Baudrate</string>
-    <string name="j1939_send_interval">J1939 Cycle Time</string>
+    <string name="j1939_send_interval">J1939 Cycle Time (0-500ms)</string>
     <string name="open">Open</string>
     <string name="closed">Closed</string>
     <string name="cycle_transmit">Cycle Transmit</string>

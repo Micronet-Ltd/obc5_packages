@@ -1042,12 +1042,12 @@ public class CanTest {
                             can1Data.append(Integer.toHexString(canbusFrame1.getId()));
                             can1Data.append(",");
                             can1Data.append(canFrameType);
-                          /*  can1Data.append(",");
-                            can1Data.append(Integer.toHexString(pgn));*/
+                            can1Data.append(",");
+                            can1Data.append(Integer.toHexString(pgn));
                             can1Data.append(",[");
                             can1Data.append(bytesToHex(canbusFrame1.getData()));
                             can1Data.append("] (");
-                            can1Data.append(new String(canbusFrame1.getData()));
+                            /*can1Data.append(new String(canbusFrame1.getData()));*/
                             can1Data.append("),");
                             can1Data.append(canbusFrame1.getData().length);
                             can1Data.append("\n");
@@ -1176,12 +1176,12 @@ public class CanTest {
                             can2Data.append(Integer.toHexString(canbusFrame2.getId()));
                             can2Data.append(",");
                             can2Data.append(canFrameType);
-                            //can2Data.append(",");
-                            //can2Data.append(Integer.toHexString(pgn));
+                            can2Data.append(",");
+                            can2Data.append(Integer.toHexString(pgn));
                             can2Data.append(",[");
                             can2Data.append(bytesToHex(canbusFrame2.getData()));
                             can2Data.append("] (");
-                            can2Data.append(new String(canbusFrame2.getData()));
+                            //can2Data.append(new String(canbusFrame2.getData()));
                             can2Data.append("),");
                             can2Data.append(canbusFrame2.getData().length);
                             can2Data.append("\n");
@@ -1298,7 +1298,7 @@ public class CanTest {
                 MessageData=a;
 
                 if(canbusSocket1 != null) {
-                    canbusSocket1.write1939Port1(new CanbusFramePort1(MessageId, MessageData,CanbusFrameType.EXTENDED));
+                    canbusSocket1.write1939Port1(new CanbusFramePort1(MessageId, MessageData,MessageType));
                 }
                 try {
                     sleep(j1939IntervalDelay);

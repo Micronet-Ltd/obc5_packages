@@ -4,7 +4,7 @@
 #define LOG_TAG "Canbus"
 #include <jni.h>
 #include <pthread.h>
-
+#include <JNIHelp.h>
 #ifndef CAN_BUS_H
 #define CAN_BUS_H
 

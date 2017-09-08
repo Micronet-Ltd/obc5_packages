@@ -7,10 +7,12 @@ LOCAL_MODULE:= libcanbus
 LOCAL_SRC_FILES := \
 				canbus.cpp \
 				CanbusInterface.cpp \
-				FlexCANCanbusInterfaceBridge.cpp \
+				FlexCANVehicleInterfaceBridge.cpp \
 				FlexCANCanbusSocket.cpp \
 				FlexCANCommand.cpp \
 				FlexCANComm.cpp \
+				FlexCANJ1708Socket.cpp\
+				J1708Interface.cpp\
 
 LOCAL_SHARED_LIBRARIES := \
 	        libnativehelper \

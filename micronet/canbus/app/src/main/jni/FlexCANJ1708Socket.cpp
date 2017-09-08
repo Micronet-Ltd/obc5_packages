@@ -27,6 +27,7 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANJ1708Socket_registerCallb
     if (g_canbus.g_onPacketReceiveJ1708 == NULL) {
         LOGE("!!!!!!!!!!!!!!!! g_onPacketReceiveJ1708 error !!!!!!!!!!!!!!!!");
     }
+	return 0; 
 
 }
 

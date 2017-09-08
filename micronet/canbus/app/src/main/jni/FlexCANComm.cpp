@@ -75,8 +75,9 @@ int serial_init(char *portName)
         initTerminalInterface(fd_J1708);
         return fd_J1708;
     }
+	else return -1;
+} 
 
-}
 
 int initTerminalInterface(int fd) {
     if (isatty(fd)) {
@@ -110,14 +111,20 @@ int closeTerminalInterface(int port){
     if (port==2){
         close(fd_CAN1);
         fd_CAN1=-1;
+		return  0; 
     }
     else if(port==3){
         close(fd_CAN2);
         fd_CAN2=-1;
+		return 0; 
     }
-    else
+    else if(port==1){
         close(fd_J1708);
         fd_J1708=-1;
+		return 0; 
+	}
+	else return -1; 
+	
 }
 
 int closeCAN(int close_fd) {
@@ -143,6 +150,7 @@ int setFd(int portNumber){
     else if(portNumber==J1708_TTY_NUMBER){
             return fd_J1708;
     }
+	else return -1; 
 }
 
 int closeCanPort(int portNumber){
@@ -695,7 +703,7 @@ static void *monitor_data_thread_port1(void *param) {
 
     prctl(PR_SET_NAME, "monitor_thread_port1", 0, 0, 0);
     LOGD("monitor_thread_port1 started");
-    LOGD("thread_port1=%02x",thread__port1);
+   	LOGD("thread_port1=%02x",(unsigned char)*thread_char);
 
     while (!quit_port1){
         // sanity check to kill stale readPort1 thread__port1
@@ -743,7 +751,7 @@ static void *monitor_data_thread_port1(void *param) {
 
                 else if (data[i] == CAN_ERROR_RESPONSE) {
                     errorResponseCount++;
-                    LOGE("CAN1 Message: CAN ERROR RESPONSE Received!!", errorResponseCount);
+                    LOGE("CAN1 Message: CAN ERROR RESPONSE Received!! Count-%d", errorResponseCount);
                     continue;
                 }
 
@@ -854,7 +862,7 @@ static void *monitor_data_thread_can_port2(void *param) {
                 }
                 else if (data[i] == CAN_ERROR_RESPONSE) {
                     errorResponseCount++;
-                    LOGD("CAN2 Message: CAN ERROR RESPONSE Recieved!!", errorResponseCount);
+                    LOGD("CAN2 Message: CAN ERROR RESPONSE Recieved!! Count=%d" , errorResponseCount);
                     continue;
                 }
 
@@ -877,7 +885,7 @@ static void *monitor_data_thread_can_port2(void *param) {
                             i = carriageReturn;
                             continue;
                         }
-                        else LOGE("CAN2 Error: Incomplete packet! data[carriage return]=%s", data[carriageReturn]);
+                        else LOGE("CAN2 Error: Incomplete packet! data[carriage return]=%d", data[carriageReturn]);
                     }
                     else LOGE("CAN2 Error: Recived frame with an Invalid data length! DataLength=%d", dataLength);
                 }

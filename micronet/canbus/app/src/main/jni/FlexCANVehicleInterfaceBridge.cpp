@@ -364,6 +364,7 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANVehicleInterfaceBridge_cr
 JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANVehicleInterfaceBridge_removeJ1708Interface(JNIEnv *env, jobject instance){
     //TODO: Cancel out the read threads (Deinit)
     //
+	return 0; 
 }
 
 

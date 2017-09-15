@@ -337,6 +337,7 @@ public class CanTest {
         }
 
         if(j1708Socket == null){
+            j1708Socket = new J1708Socket();
             j1708Socket = j1708Interface.createSocketJ1708();
             j1708Socket.openJ1708();
         }

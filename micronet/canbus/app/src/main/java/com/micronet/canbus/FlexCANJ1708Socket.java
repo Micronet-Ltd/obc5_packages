@@ -4,6 +4,7 @@ import android.util.Log;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Handles the read/write operations for J1708 communication via J1708Socket
@@ -23,6 +24,49 @@ class FlexCANJ1708Socket extends J1708Socket implements J1708Listener {
     protected FlexCANJ1708Socket(int fd, int port){
         mSocket=fd;
     }
+
+
+    /**
+     * Reads J1708 frame. Will block the calling thread until data
+     * is received from J1708 bus.
+     */
+    public J1708Frame readJ1708Port()
+    {
+        J1708Frame frame = null;
+        try {
+            frame = mQueueJ1708.take();
+        } catch (InterruptedException e)
+        {
+            Log.e(TAG, "read j1708 queue error");
+            e.printStackTrace();
+        }
+
+        return frame;
+    }
+
+    /**
+     * Reads J1708 frame. Will block the calling thread until data
+     * is written to Canbus socket or timeout has elapsed.
+     *
+     * @param timeout how long to wait before giving up, in units of milliseconds
+     *
+     * @return the head J1708 frame, or null if th specified waiting time elapses before J1708 frame is available
+     */
+    public J1708Frame readJ1708Port(long timeout)
+    {
+        J1708Frame frame = null;
+        try {
+            frame = mQueueJ1708.poll(timeout, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e)
+        {
+            Log.e(TAG, "read j1708 queue error");
+            e.printStackTrace();
+        }
+
+        return frame;
+    }
+
+
 
     /**
      * Sends J1708 frame through socket.

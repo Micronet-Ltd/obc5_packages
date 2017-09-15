@@ -319,7 +319,7 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANVehicleInterfaceBridge_cr
 JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANVehicleInterfaceBridge_removeCAN1Interface(JNIEnv *env, jobject instance) {
 
     closeInterfaceCAN1();
-    if (closeCanPort(CAN1_TTY_NUMBER) == -1) {
+    if (closePort(CAN1_TTY_NUMBER) == -1) {
         return -1;
         LOGD("Couldn't close CAN1 successfully ");
     }
@@ -332,9 +332,9 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANVehicleInterfaceBridge_re
 JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANVehicleInterfaceBridge_removeCAN2Interface(JNIEnv *env, jobject instance) {
 
     closeInterfaceCAN2();
-    if(closeCanPort(CAN2_TTY_NUMBER) == -1) {
+    if(closePort(CAN2_TTY_NUMBER) == -1) {
         return -1;
-        LOGD("Couldn't close CAN2 successfully ");
+        LOGD("Couldn't close CAN2 fd successfully ");
     }
 
     return 0;
@@ -348,7 +348,8 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANVehicleInterfaceBridge_cr
      * TODO: Create Interface (Set bitrate for serial port communication), Push the fd to the java layer
      * */
 
-    jint fdJ1708 = FlexCAN_j1708_startup();
+    LOGD("Creating a J1708 Interface");
+    jint fdJ1708 = FlexCAN_j1708_startup(J1708_TTY);
     jfieldID fd_id;
 
     jclass clazz = env->FindClass("com/micronet/canbus/FlexCANVehicleInterfaceBridge");
@@ -362,8 +363,18 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANVehicleInterfaceBridge_cr
     return SYSTEM_ERROR;
 }
 JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANVehicleInterfaceBridge_removeJ1708Interface(JNIEnv *env, jobject instance){
-    //TODO: Cancel out the read threads (Deinit)
-    //
+
+    LOGD("Entered removeInterface: Begin deinit()!!");
+    serial_deinit_thread_j1708();
+    LOGD("Removing J1708 Interface");
+    if (closePort(J1708_TTY_NUMBER) == -1) {
+        return -1;
+        LOGD("Couldn't close J1708 successfully ");
+    }
+    return 0;
+    error:
+    return SYSTEM_ERROR;
+
 	return 0; 
 }
 

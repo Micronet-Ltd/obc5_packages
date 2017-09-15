@@ -21,6 +21,22 @@ public class J1708Interface {
     //TODO: CreateInterface()
 
     /**
+     * Creates an Interface for J1708 Communication
+     * */
+    public int createJ1708() {
+        return impl.createJ1708();
+    }
+
+    /**
+     * Removes the Interface for J1708 Communication
+     * NOTE: Removing the J1708 interface will also disable CAN1.
+     * */
+    public int removeJ1708() {
+       return impl.removeJ1708();
+    }
+
+
+    /**
      *	Creates new socket on J1708 interface.
      */
     public J1708Socket createSocketJ1708(){

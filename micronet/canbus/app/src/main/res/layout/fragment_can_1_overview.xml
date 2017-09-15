@@ -26,9 +26,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignStart="@+id/lblSocketStatus"
-        android:layout_below="@+id/txtInterfaceStatus"
+        android:layout_below="@+id/txtJ1708InterfaceStatus"
         android:layout_marginTop="28dp"
-        android:text="@string/lbl_j1939_1708"
+        android:text="@string/lbl_j1939"
         android:textSize="13sp" />
 
     <TextView
@@ -88,7 +88,7 @@
         android:layout_alignBaseline="@+id/baud500"
         android:layout_alignBottom="@+id/baud500"
         android:layout_alignParentEnd="true"
-        android:layout_toEndOf="@+id/txtInterfaceStatus" />
+        android:layout_toEndOf="@+id/txtJ1708InterfaceStatus" />
 
     <TextView
         android:id="@+id/lblCanSpeed"
@@ -143,17 +143,6 @@
         android:layout_below="@+id/seekBarSendSpeed"
         android:layout_alignParentEnd="true"
         android:layout_toEndOf="@+id/baud500" />
-    <!--
-        <TextView
-            android:id="@+id/txtJ1708Speed"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/txtBaud"
-            android:layout_marginTop="@dimen/label_vertical_margin"
-            android:layout_toRightOf="@id/seekBarSendJ1708Speed"
-            android:layout_toEndOf="@id/seekBarSendJ1708Speed"
-            android:layout_alignBaseline="@id/lblJ1708Speed"
-            android:textColor="@android:color/black"/>-->
 
     <TextView
         android:id="@+id/lblInterfaceStatus"
@@ -164,7 +153,7 @@
         android:text="@string/interface_status" />
 
     <TextView
-        android:id="@+id/txtInterfaceStatus"
+        android:id="@+id/txtJ1708InterfaceStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/closed"
@@ -183,7 +172,7 @@
         android:text="@string/socket_status" />
 
     <TextView
-        android:id="@+id/txtSocketStatus"
+        android:id="@+id/txtJ1708SocketStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"

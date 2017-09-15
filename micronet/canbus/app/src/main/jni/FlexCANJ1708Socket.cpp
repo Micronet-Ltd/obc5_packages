@@ -17,17 +17,19 @@ static void throwException(JNIEnv *env, const char *message, const char* add)
 
 JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANJ1708Socket_registerCallbackJ1708Port(JNIEnv *env, jobject obj, jobject listenerObj){
 
+    LOGD("Entered registerCallback1708");
     g_canbus.g_listenerObject_J1708 = (jobject) env->NewGlobalRef(listenerObj);
-    jclass canbusListenerClass = env->GetObjectClass(listenerObj);
-    if (canbusListenerClass == NULL) {
-        LOGE("!!!!!!!!!!!!!!!! canbusSocketClass error - J708 Port !!!!!!!!!!!!!!!!");
+    jclass j1708ListenerClass = env->GetObjectClass(listenerObj);
+    if (j1708ListenerClass == NULL) {
+        LOGE("!!!!!!!!!!!!!!!! FlexCANJ1708Socket error - J1708 Port !!!!!!!!!!!!!!!!");
     }
 
-    g_canbus.g_onPacketReceiveJ1708 = env->GetMethodID(canbusListenerClass, "onPacketReceiveJ1708Port", "(Lcom/micronet/canbus/J1708Frame;)V");
+    g_canbus.g_onPacketReceiveJ1708 = env->GetMethodID(j1708ListenerClass, "onPacketReceiveJ1708Port", "(Lcom/micronet/canbus/J1708Frame;)V");
     if (g_canbus.g_onPacketReceiveJ1708 == NULL) {
-        LOGE("!!!!!!!!!!!!!!!! g_onPacketReceiveJ1708 error !!!!!!!!!!!!!!!!");
+        LOGE("!!!!!!!!!!!!!!!! g_onPacketReceive J1708 error !!!!!!!!!!!!!!!!");
     }
-	return 0; 
+    LOGD("Leaving registerCallback1708");
+    return 0;
 
 }
 
@@ -57,10 +59,9 @@ JNIEXPORT jint Java_com_micronet_canbus_FlexCANCanbusSocket_sendJ1708(JNIEnv *en
 
     return 0;
 }
-
-JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusSocket_closeSocketJ1708(JNIEnv *env, jobject instance) {
+JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANJ1708Socket_closeSocketJ1708(JNIEnv *env, jobject instance){
     ///TODO : Any check?
-
+    LOGD("Closing the J1708 Socket !! ");
     env->DeleteGlobalRef(g_canbus.g_listenerObject_J1708);
     g_canbus.g_listenerObject_J1708 = NULL;
     g_canbus.g_onPacketReceiveJ1708 = NULL;

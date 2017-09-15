@@ -25,7 +25,7 @@
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/lbl_j1939_1708"
+        android:text="@string/lbl_j1939"
         android:layout_marginTop="33dp"
         android:layout_below="@+id/lblSocketStatus"
         android:layout_alignParentStart="true" />
@@ -125,7 +125,7 @@
         android:layout_alignParentStart="true" />
 
     <TextView
-        android:id="@+id/txtInterfaceStatus"
+        android:id="@+id/txtJ1708InterfaceStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/closed"
@@ -143,7 +143,7 @@
         android:layout_marginTop="13dp" />
 
     <TextView
-        android:id="@+id/txtSocketStatus"
+        android:id="@+id/txtJ1708SocketStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/closed"
@@ -171,7 +171,9 @@
         android:text="@string/_250k"
         android:textAppearance="@style/TextAppearance.AppCompat"
         android:textSize="13sp"
-        android:layout_alignBottom="@+id/baud500" />
+        android:layout_alignBaseline="@+id/baud500"
+        android:layout_alignBottom="@+id/baud500"
+        android:layout_alignParentStart="true" />
 
     <Button
         android:id="@+id/btnCloseCan1Interface"
@@ -186,7 +188,7 @@
         android:layout_alignBaseline="@+id/baud500"
         android:layout_alignBottom="@+id/baud500"
         android:layout_alignParentEnd="true"
-        android:layout_toEndOf="@+id/txtSocketStatus" />
+        android:layout_toEndOf="@+id/txtJ1708SocketStatus" />
 
 
 </RelativeLayout>

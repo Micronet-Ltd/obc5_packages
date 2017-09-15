@@ -187,9 +187,22 @@ final class FlexCANVehicleInterfaceBridge implements IVehicleInterfaceBridge {
     }
 
     /**
+     *	Creates a new interface for J1708 communication
+     */
+    public int createJ1708(){
+       return createJ1708Interface();
+    }
+
+    /**
+     *	Removes the interface for J1708 communication
+     */
+    public int removeJ1708(){
+        return removeJ1708Interface();
+    }
+
+    /**
      *  Creates new socket on J1708 interface
     */
-
     public J1708Socket createSocketJ1708(){
         return new FlexCANJ1708Socket(fdJ1708,j708PortNumber);
     }

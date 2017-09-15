@@ -4,7 +4,7 @@
 #define LOG_TAG "Canbus"
 #include <jni.h>
 #include <pthread.h>
-#include <JNIHelp.h>
+//#include <JNIHelp.h>
 #ifndef CAN_BUS_H
 #define CAN_BUS_H
 
@@ -25,7 +25,8 @@
 
 #define CAN1_TTY    "/dev/ttyACM2"
 #define CAN2_TTY    "/dev/ttyACM3"
-#define J1708_TTY   "/dev/mcu_j1708"
+//#define J1708_TTY   "/dev/mcu_j1708"
+#define J1708_TTY   "/dev/ttyACM4"
 
 #define DWORD uint32_t
 #define BYTE uint8_t
@@ -39,6 +40,9 @@
 #define FLOW_CONTROL_INVALID_POS 0xFF
 #define FLOW_CONTROL_INVALID_ID 0x0
 #define CAN_MSG_ID_SIZE_STD 3
+
+#define J1708_MESSAGE_SEPERATOR 0x7E
+
 #define CAN_MSG_ID_SIZE_EXT 8
 
 #define MAX_FLEXCAN_CAN_FILTERS 24

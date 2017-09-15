@@ -73,7 +73,7 @@ public class Can1OverviewFragment extends Fragment {
     }
 
     private void updateInterfaceStatusUI(String status) {
-        final TextView txtInterfaceStatus = (TextView) getView().findViewById(R.id.txtInterfaceStatus);
+        final TextView txtInterfaceStatus = (TextView) getView().findViewById(R.id.txtJ1708InterfaceStatus);
         if(status != null) {
             txtInterfaceStatus.setText(status);
             txtInterfaceStatus.setBackgroundColor(Color.YELLOW);
@@ -85,7 +85,7 @@ public class Can1OverviewFragment extends Fragment {
             txtInterfaceStatus.setBackgroundColor(Color.RED);
         }
 
-        final TextView txtSocketStatus = (TextView) getView().findViewById(R.id.txtSocketStatus);
+        final TextView txtSocketStatus = (TextView) getView().findViewById(R.id.txtJ1708SocketStatus);
         if(status != null) {
             txtSocketStatus.setText(status);
             txtSocketStatus.setBackgroundColor(Color.YELLOW);
@@ -150,7 +150,7 @@ public class Can1OverviewFragment extends Fragment {
                 canTest.setBaudrate(BITRATE_250K);
                 canTest.setPortNumber(2);
                 canTest.setSilentMode(false);
-                canTest.setRemoveCan1State(false);
+                canTest.setRemoveCan1InterfaceState(false);
                 executeChangeBaudrate();
             }
         });
@@ -161,7 +161,7 @@ public class Can1OverviewFragment extends Fragment {
                 canTest.setBaudrate(BITRATE_500K);
                 canTest.setPortNumber(2);
                 canTest.setSilentMode(false);
-                canTest.setRemoveCan1State(false);
+                canTest.setRemoveCan1InterfaceState(false);
                 executeChangeBaudrate();
             }
         });
@@ -169,7 +169,7 @@ public class Can1OverviewFragment extends Fragment {
         btnCloseCan1Interface.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                canTest.setRemoveCan1State(true);
+                canTest.setRemoveCan1InterfaceState(true);
                 executeChangeBaudrate();
 
             }

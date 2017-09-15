@@ -12,15 +12,15 @@ static int J1708_TTY_NUMBER= 4;
 
 int serial_init(char *name);
 
-int initTerminalInterface(int fd);
+int initTerminalInterface(int fd, speed_t interfaceBaud);
 int closeTerminalInterface(int port);
-int closeCanPort(int portNumber);
+int closePort(int portNumber);
 int closeCAN(int close_fd);
 int setBitrate(int fd, int speed);
 int openCANandSetTermination(int fd, bool term);
 int setListeningMode(int fd, bool term);
 int sendReadStatusCommand(int fd);
-int setFd(int portNumber);
+int getFd(int portNumber);
 
 int setMasks(char *mask, char type, int fd);
 int setFilters( char *filter, char type, int fd);
@@ -33,9 +33,13 @@ int sendMessage(int fd_port, const char * message);
 
 int serial_start_monitor_thread_can_port1();
 int serial_start_monitor_thread_can_port2();
+int serial_start_monitor_thread_j1708();
 
 static void *monitor_data_thread_port1(void *param);
 static void *monitor_data_thread_can_port2(void *param);
+static void *monitor_data_thread_port1708(void *param);
+int serial_deinit_thread_j1708();
+
 
 int waitForData(int port_fd);
 int parseHex(uint8_t * asciiString, int len, uint8_t * hexValue);
@@ -45,8 +49,10 @@ void sendCanbusFramePort2(uint32_t frameId, int type, int length, BYTE* data);
 
 int closeInterfaceCAN1();
 int closeInterfaceCAN2();
+int closeInterfaceJ1708();
 int serial_deinit_thread_port1();
 int serial_deinit_thread_port2();
+int serial_deinit_thread_j1708();
 int serial_set_nonblocking(int fd);
 
 

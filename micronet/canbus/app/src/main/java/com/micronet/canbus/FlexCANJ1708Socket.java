@@ -33,7 +33,7 @@ class FlexCANJ1708Socket extends J1708Socket implements J1708Listener {
 
     @Override
     public void onPacketReceiveJ1708Port(J1708Frame frame) {
-        Log.e(TAG, "Received a frame from J1708 Port in the Queue!");
+        Log.d(TAG, "Received a frame from J1708 Port in the Queue!");
         if(!mQueueJ1708.offer(frame))
             Log.e(TAG, "Unable to push frame from J1708 Port, frame dropping.");
     }

@@ -28,7 +28,7 @@
         android:layout_height="wrap_content"
         android:layout_alignStart="@+id/yAxis"
         android:layout_alignTop="@+id/baud500"
-        android:text="@string/lbl_j1939_1708"
+        android:text="@string/lbl_j1939"
         android:textSize="12sp" />
 
     <TextView
@@ -145,7 +145,7 @@
         android:textSize="12sp" />
 
     <TextView
-        android:id="@+id/txtInterfaceStatus"
+        android:id="@+id/txtJ1708InterfaceStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
@@ -165,12 +165,12 @@
         android:textSize="12sp" />
 
     <TextView
-        android:id="@+id/txtSocketStatus"
+        android:id="@+id/txtJ1708SocketStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/lblSocketStatus"
         android:layout_alignBottom="@+id/lblSocketStatus"
-        android:layout_alignStart="@+id/txtInterfaceStatus"
+        android:layout_alignStart="@+id/txtJ1708InterfaceStatus"
         android:text="@string/closed"
         android:textSize="12sp" />
 

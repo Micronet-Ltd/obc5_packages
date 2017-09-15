@@ -212,10 +212,33 @@ void configureFlowControl(FLEXCAN_Flow_Control *configuration_array, int numfilt
     }
 }
 
-int FlexCAN_j1708_startup(){
-    //TODO: Check if CAN 1 is enabled, it isn't then enable power to the GPIO pin
+int FlexCAN_j1708_startup(char *portName){
 
-    return -1;
+    int i=0, ret=-1;
+    char *port = portName;
+    int fd=-1;
+
+    fd = ret = serial_init(port);
+
+    if (initTerminalInterface(fd, B9600) == -1) {
+        return -1;
+    }
+
+    //TODO: Check if CAN 1 is enabled, it isn't then enable power to the GPIO pin
+    //If CAN1 is open, don't close the port continue reading. If its closed, open it.
+    //system("mctl api 0213020001");
+
+    /*
+     *The firmware has a 20ms delay after closing the port.
+     */
+    usleep(20000);
+
+    if(serial_start_monitor_thread_j1708()){
+        LOGE("Unable to start serial monitor thread__port1708\n");
+        return -1;
+    }
+
+    return ret;
 }
 
 
@@ -227,7 +250,7 @@ int FlexCAN_startup(bool listeningModeEnable, int bitrate, int termination, FLEX
 
     fd = ret = serial_init(port);
 
-    if (initTerminalInterface(fd) == -1) {
+    if (initTerminalInterface(fd, B115200) == -1) {
         return -1;
     }
 
@@ -360,7 +383,7 @@ void FlexCAN_send_can_packet(BYTE type, DWORD id, int data_len, BYTE *data, int 
     int fd=-1;
     uint8_t canPacketToTx[MAX_PACKET_SIZE] = {0};
     int msgLength = 0;
-    fd=setFd(portNumber);
+    fd= getFd(portNumber);
 
     msgLength = ParseCanMessToString(type, id, data_len, data, canPacketToTx);
 

@@ -12,6 +12,8 @@ import android.support.v7.widget.Toolbar;
 import com.micronet.canbus.Fragment.Can1OverviewFragment;
 import com.micronet.canbus.Fragment.Can2OverviewFragment;
 import com.micronet.canbus.Fragment.CanbusFramesFragment;
+import com.micronet.canbus.Fragment.J1708FramesFragment;
+import com.micronet.canbus.Fragment.J1708OverviewFragment;
 import com.micronet.canbus.Fragment.VehicleStatusFragment;
 
 import java.util.ArrayList;
@@ -56,7 +58,9 @@ public class MainActivity extends AppCompatActivity {
         adapter.addFrag(new CanbusFramesFragment(), "CAN Frames");
         adapter.addFrag(new Can2OverviewFragment(), "CAN 2");
         adapter.addFrag(new VehicleStatusFragment(), "Vehicle Status");
-   /*     adapter.addFrag(new CanbusFramesPort2Fragment(), "CAN2 Frames");*/
+        adapter.addFrag(new J1708OverviewFragment(), "J1708");
+        adapter.addFrag(new J1708FramesFragment(), "J1708 Frames");
+
         /*adapter.addFrag(new CanbusMessageTypeFragment(), "Transmit Message");*/
         viewPager.setAdapter(adapter);
     }

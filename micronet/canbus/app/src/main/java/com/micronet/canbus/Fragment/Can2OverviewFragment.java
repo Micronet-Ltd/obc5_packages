@@ -75,7 +75,7 @@ public class Can2OverviewFragment extends Fragment {
     }
 
     private void updateInterfaceStatusUI(String status) {
-        final TextView txtInterfaceStatus = (TextView) getView().findViewById(R.id.txtInterfaceStatus);
+        final TextView txtInterfaceStatus = (TextView) getView().findViewById(R.id.txtJ1708InterfaceStatus);
         if(status != null) {
             txtInterfaceStatus.setText(status);
             txtInterfaceStatus.setBackgroundColor(Color.YELLOW);
@@ -87,7 +87,7 @@ public class Can2OverviewFragment extends Fragment {
             txtInterfaceStatus.setBackgroundColor(Color.RED);
         }
 
-        final TextView txtSocketStatus = (TextView) getView().findViewById(R.id.txtSocketStatus);
+        final TextView txtSocketStatus = (TextView) getView().findViewById(R.id.txtJ1708SocketStatus);
         if(status != null) {
             txtSocketStatus.setText(status);
             txtSocketStatus.setBackgroundColor(Color.YELLOW);
@@ -114,7 +114,7 @@ public class Can2OverviewFragment extends Fragment {
         View rootView = getView();
 
         final Button btnCloseInterface = (Button) rootView.findViewById(R.id.btnCloseCan1Interface);
-        final Switch swBlockOnRead = (Switch) rootView.findViewById(R.id.swBlockOnRead);
+        //final Switch swBlockOnRead = (Switch) rootView.findViewById(R.id.swBlockOnRead);
 
         btn250K = (Button) rootView.findViewById(R.id.baud250);
         btn500K = (Button) rootView.findViewById(R.id.baud500);
@@ -153,7 +153,7 @@ public class Can2OverviewFragment extends Fragment {
                 canTest.setBaudrate(BITRATE_250K);
                 canTest.setPortNumber(3);
                 canTest.setSilentMode(false);
-                canTest.setRemoveCan2State(false);
+                canTest.setRemoveCan2InterfaceState(false);
                 executeChangeBaudrate();
             }
         });
@@ -164,7 +164,7 @@ public class Can2OverviewFragment extends Fragment {
                 canTest.setBaudrate(BITRATE_500K);
                 canTest.setPortNumber(3);
                 canTest.setSilentMode(false);
-                canTest.setRemoveCan2State(false);
+                canTest.setRemoveCan2InterfaceState(false);
                 executeChangeBaudrate();
             }
         });
@@ -180,7 +180,7 @@ public class Can2OverviewFragment extends Fragment {
         btnCloseInterface.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                canTest.setRemoveCan2State(true);
+                canTest.setRemoveCan2InterfaceState(true);
                 executeChangeBaudrate();
 
             }

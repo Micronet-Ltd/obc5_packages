@@ -15,9 +15,11 @@ static int fd_J1708;
 
 static pthread_t thread__port1;
 static pthread_t thread__port2;
+static pthread_t thread__port1708;
 
 static bool quit_port1 = false;
 static bool quit_port2 = false;
+static bool quit_port1708 = false;
 
 int serial_set_nonblocking(int fd)
 {
@@ -48,7 +50,7 @@ int serial_init(char *portName)
         }
             serial_set_nonblocking(fd_CAN1);
             DD("opened port: '%s', fd=%d", CAN1_TTY, fd_CAN1);
-            initTerminalInterface(fd_CAN1);
+            initTerminalInterface(fd_CAN1, B115200);
             return fd_CAN1;
         }
 
@@ -60,7 +62,7 @@ int serial_init(char *portName)
         }
             serial_set_nonblocking(fd_CAN2);
             DD("opened port: '%s', fd=%d", CAN2_TTY, fd_CAN2);
-            initTerminalInterface(fd_CAN2);
+            initTerminalInterface(fd_CAN2, B115200);
         return fd_CAN2;
     }
 
@@ -71,15 +73,15 @@ int serial_init(char *portName)
             exit(EXIT_FAILURE);
         }
         serial_set_nonblocking(fd_J1708);
-        DD("opened port: '%s', fd=%d", CAN1_TTY, fd_J1708);
-        initTerminalInterface(fd_J1708);
+        DD("opened port: '%s', fd=%d", J1708_TTY, fd_J1708);
+        initTerminalInterface(fd_J1708, B9600);
         return fd_J1708;
     }
 	else return -1;
 } 
 
 
-int initTerminalInterface(int fd) {
+int initTerminalInterface(int fd, speed_t interfaceBaud) {
     if (isatty(fd)) {
         struct termios ios;
 
@@ -87,9 +89,9 @@ int initTerminalInterface(int fd) {
         bzero(&ios, sizeof(ios));
 
         cfmakeraw(&ios);
-        cfsetospeed(&ios, B115200);
-        cfsetispeed(&ios, B115200);
-        ios.c_cflag = (B115200 | CS8 | CLOCAL | CREAD) & ~(CRTSCTS | CSTOPB | PARENB);
+        cfsetospeed(&ios, interfaceBaud);
+        cfsetispeed(&ios, interfaceBaud);
+        ios.c_cflag = (interfaceBaud | CS8 | CLOCAL | CREAD) & ~(CRTSCTS | CSTOPB | PARENB);
         ios.c_iflag = 0;
         ios.c_oflag = 0;
         ios.c_lflag = 0;        /* disable ECHO, ICANON, etc... */
@@ -98,7 +100,8 @@ int initTerminalInterface(int fd) {
 
         tcsetattr(fd, TCSANOW, &ios);
         tcflush(fd, TCIOFLUSH);
-    } else {
+    }
+    else {
         ERR("Error isatty(fd): invalid terminal %s\n", strerror(errno));
         close(fd);
         exit(EXIT_FAILURE);
@@ -108,17 +111,18 @@ int initTerminalInterface(int fd) {
 }
 
 int closeTerminalInterface(int port){
-    if (port==2){
+    LOGD("Entered closeTerminalInterface!!");
+    if (port == 2){
         close(fd_CAN1);
         fd_CAN1=-1;
 		return  0; 
     }
-    else if(port==3){
+    else if(port == 3){
         close(fd_CAN2);
         fd_CAN2=-1;
 		return 0; 
     }
-    else if(port==1){
+    else if(port == 4){
         close(fd_J1708);
         fd_J1708=-1;
 		return 0; 
@@ -136,35 +140,59 @@ int closeCAN(int close_fd) {
         ERR("Error write %s command\n", buf);
         return -1;
     }
-    LOGD("Closed can channel ");
+    LOGD("Closed CAN channel ");
     return 0;
 }
 
-int setFd(int portNumber){
-    if(portNumber==CAN1_TTY_NUMBER){
+/**
+ * Returns the file descriptor associated with the tty port
+ **/
+int getFd(int portNumber){
+    if(portNumber == CAN1_TTY_NUMBER){
             return fd_CAN1;
     }
-    else if(portNumber==CAN2_TTY_NUMBER){
+    else if(portNumber == CAN2_TTY_NUMBER){
             return fd_CAN2;
     }
-    else if(portNumber==J1708_TTY_NUMBER){
+    else if(portNumber == J1708_TTY_NUMBER){
             return fd_J1708;
     }
 	else return -1; 
 }
-
-int closeCanPort(int portNumber){
-    int closeFd=setFd(portNumber);
-    if(portNumber==2 || portNumber==3){
+/**
+ * closePort()
+ * Disables the tty port and deallocates the file descriptor associated with it.
+ **/
+int closePort(int portNumber){
+    LOGD("Entered closePort!!");
+    int closeFd = getFd(portNumber);
+    if(portNumber == 2 || portNumber == 3){
         if (closeCAN(closeFd) == -1) {
+            //Couldn't close CAN channel
             return -1;
         }
     }
+    else if(portNumber == 4){
+       if(getFd(2) <= 0){
+           //set CAN1_1708 power enabled to 0
+           //Temp solution below for closing CAN1
+           LOGD("Entered closePort!! 1708 condition! ");
+           if (closeCAN(closeFd) == -1) {
+               //Couldn't close CAN channel
+               return -1;
+           }
+       }
+    }
+
     closeTerminalInterface(portNumber);
+    LOGD("Leaving closePort!!");
     return 0;
 }
 
-//Can send the entire message including the CAN OK RESPONSE
+/**
+ * sendMessage(fileDescriptorToSendTo, Message)
+ * This function writes the entire message to the port associated with the file descriptor.
+ * */
 int sendMessage(int fd_port, const char * message) {
     char buf[256]={0};
     sprintf(buf, "%s", message);
@@ -172,19 +200,22 @@ int sendMessage(int fd_port, const char * message) {
     int check=strlen(buf);
     LOGD("Check value of the string - %d",check);
     if (-1 == write(fd_port, buf, strlen(buf))) {
-        ERR("Error write1939Port1 %s command\n", buf );
+        ERR("Error: %s command coudln't be written! \n", buf );
         return -1;
     }
     return 0;
 }
-
+/**
+ * setFlowControlMessage(FlowMessageType, RequestId, ResponseId, NumberOfResponseDataBytes, ResponseDataBytes, fd)
+ * Constructs a Flow control message and sends teh flow control command to the CAN_TTY ports.
+ * The user can set up to 8 flow codes for each can instance.
+ * */
 void setFlowControlMessage(char type,char *searchID,char *responseID, int dataLength, BYTE* dataBytes, int port_fd){
 
     char *flowControlMessage = new char[36];
     memset(flowControlMessage,'\0',sizeof(char));
     int i = 0, j = 0, k=0, l=0;
-    int standardMessageLength=0;
-    int extendedMessageLength=0;
+    int standardMessageLength=0, extendedMessageLength=0;
     uint8_t tmp1=0;
 
     flowControlMessage[i++]='M';
@@ -270,14 +301,19 @@ void setFlowControlMessage(char type,char *searchID,char *responseID, int dataLe
     //Check for valid extended and standard flow command based on its length
     if((flowControlMessage[1]=='F' &&  flowControlMessage[extendedMessageLength-1]==CAN_OK_RESPONSE) || (flowControlMessage[1]=='f' &&  flowControlMessage[standardMessageLength-1]==CAN_OK_RESPONSE)){
         if (-1 == sendMessage(port_fd, flowControlMessage)) {
-            LOGE("!!!!Error sending flow message: %s for Flow code: !!!!", searchID);
+            LOGE("!!!!Error configuring flow message: %s for Flow code: !!!!", searchID);
         }
-        LOGD("Flow message SET: FlowMessage- %s", flowControlMessage);
+        LOGD("Flow message SET: %s", flowControlMessage);
     }
-    else LOGE("Error: Flow control  message not set successfully!!! Message: %s, Extended Message size=%d or StandardMessageSize=%d", flowControlMessage, extendedMessageLength,standardMessageLength);
+    else LOGE("Error: Flow control command coundn't be sent! Message: %s, Extended Message size=%d or StandardMessageSize=%d", flowControlMessage, extendedMessageLength,standardMessageLength);
 }
 
-
+/**
+ * setMasks(mask, maskType, fd)
+ * Builds a mask command to set acceptable masks for receive.
+ * The masks are stated as global per CAN instance.
+ * A user can set up to 16 Masks per can instance.
+ * */
 int setMasks(char *mask, char type, int port_fd) {
     char maskString[16];
     char maskCommand[16];
@@ -319,6 +355,12 @@ int setMasks(char *mask, char type, int port_fd) {
 	return 0;
 }
 
+/**
+ * setFilters(filter, filterType, fd)
+ * Builds a filter command to set acceptable filters/codes for receive.
+ * The filters are stated as global per CAN instance.
+ * A user can set up to 24 Filters per can instance.
+ * */
 int setFilters(char *filter, char type, int port_fd) {
     char filterCommand[16]={0};
     char filterString[16]={0};
@@ -400,7 +442,7 @@ int setBitrate(int fd, int speed) {
     char buf[256];
     sprintf(buf, "S%d\r", baud);
     if (-1 == write(fd, buf, strlen(buf))) {
-        ERR("Error write1939Port1 %s command\n", buf);
+        ERR("Error: Write Failed! Command - %s \n", buf);
         return -1;
     }
     return 0;
@@ -412,7 +454,7 @@ int openCANandSetTermination(int fd, bool term) {
     char buf[256];
     sprintf(buf, "O%d\r", termination);
     if (-1 == write(fd, buf, strlen(buf))) {
-        ERR("Error write1939Port1 %s command\n", buf);
+        ERR("Error: Write Failed! Command - %s \n", buf);
         return -1;
     }
     LOGD("Opened can channel");
@@ -425,7 +467,7 @@ int setListeningMode(int fd, bool term) {
     char buf[256];
     sprintf(buf, "L%d\r", termination);
     if (-1 == write(fd, buf, strlen(buf))) {
-        ERR("Error write1939Port1 %s command\n", buf);
+        ERR("Error: Write Failed! Command - %s \n", buf);
         return -1;
     }
     return 0;
@@ -435,7 +477,7 @@ int sendReadStatusCommand(int fd) {
     char buf[256];
     sprintf(buf, "F\r");
     if (-1 == write(fd, buf, strlen(buf))) {
-        ERR("Error write1939Port1 %s command\n", buf);
+        ERR("Error: Write Failed! Command - %s \n", buf);
         return -1;
     }
     return 0;
@@ -482,18 +524,37 @@ int serial_start_monitor_thread_can_port2() {
 }
 
 int serial_deinit_thread_port2() {
-    LOGD("Entered serial_deinit_thread_port1()");
     if (thread__port2) {
-        int retval, *retvalp;
-        // cancel out readPort1 threads
+        int retval;
         quit_port2 = 1;
-        /*retvalp = &retval;*/
-        LOGD("Begin cancelling the threads");
-        pthread_join(thread__port2,NULL/* (void **) &retvalp*/);
-        LOGD("Cancelled out the read thread for CAN2");
+        pthread_join(thread__port2,NULL);
         return retval;
     }
     LOGD("Failed to enter the if(thread__port1)");
+    return 0;
+}
+
+int serial_start_monitor_thread_j1708()
+{
+    quit_port1708 = false;
+    int r = pthread_create(&thread__port1708, NULL, monitor_data_thread_port1708, 0);
+    if( r != 0 ){
+        error_message("thread__port1708 has failed to be created");
+        thread__port1708 = 0;
+        return -1;
+    }
+    return 0;
+}
+
+int serial_deinit_thread_j1708() {
+    LOGD("Entered serial_deinit_thread_port1708()");
+    if (thread__port1708) {
+        int retval;
+        quit_port1708 = 1;
+        pthread_join(thread__port1708,NULL);
+        return retval;
+    }
+    LOGD("Failed to enter the if(thread__port1708)");
     return 0;
 }
 
@@ -537,20 +598,20 @@ int waitForData(int port_fd)
 
     if(-1 == r)
     {
-        LOGE("%s:%d select: %s\n", __FILE__, __LINE__, strerror(errno));
+        LOGE("%s:%d Select: %s\n", __FILE__, __LINE__, strerror(errno));
         return -1;
     }
     else if(r > 0)
     {
         if(r != 1)
-            LOGE("select did not return 1, returned %d\n", r);
+            LOGE("Select did not return 1, returned %d\n", r);
 
         if(FD_ISSET(port_fd, &fds))
         {
             return 0;
         }
         else
-            LOGE("select returned, bu no fd, r = %d\n", r);
+            LOGE("Select returned, bu no fd, r = %d\n", r);
 
     }
     else {
@@ -678,6 +739,45 @@ void j1939rxd(BYTE *rxd, int portNumber) {
     }
 }
 
+void
+j1708rxd( BYTE *rxd, BYTE length )
+{
+    int mid;
+
+    if(length < 1)
+    {
+        error_message("Debugging Info - Error: Bad 1708 command, too short");
+        return;
+    }
+
+    mid = rxd[0]; // Note: 111 is factory test mid
+
+    //TODO: Validate checksum then send the frame!
+
+    JNIEnv *env;
+    jint rs = g_canbus.g_vm->AttachCurrentThread(&env, &g_canbus.args);
+    if(rs != JNI_OK) {
+        error_message("Debugging Info - Error: j1708rxd failed to attach!");
+    }
+    jclass j1708FrameClass = g_canbus.j1708FrameClass;
+    jmethodID j1708FrameConstructor = env->GetMethodID(j1708FrameClass, "<init>", "(II[B)V");
+    // if length-1 == 0, this will be empty byte array. Must not be NULL.
+    jbyteArray data_l = env->NewByteArray(length - 1);
+    env->SetByteArrayRegion(data_l, 0, length-1, (jbyte*)rxd + 1);
+    jobject frameObj = env->NewObject(j1708FrameClass, j1708FrameConstructor, 0, mid, data_l);
+    // on rare occasion, frame is received before socket is initialized
+    if(g_canbus.g_listenerObject_J1708 != NULL && g_canbus.g_onPacketReceiveJ1708 != NULL) {
+        env->CallVoidMethod(g_canbus.g_listenerObject_J1708, g_canbus.g_onPacketReceiveJ1708, frameObj);
+    }
+
+    env->DeleteLocalRef(frameObj);
+    env->DeleteLocalRef(data_l);
+
+    g_canbus.g_vm->DetachCurrentThread();
+}
+
+
+
 int parseCANFrame(int start, int packetLength, uint8_t *pdata, int portNumber){
     //31 is the maximum size of an extended packet
     uint8_t frame[31];
@@ -691,6 +791,24 @@ int parseCANFrame(int start, int packetLength, uint8_t *pdata, int portNumber){
         return -1;
         LOGD("CAN PORT 1 ERROR: Incomplete packet received - Frame not sent to j1939rxd()");
 }
+
+int parseJ1708Frame(int start, int packetLength, uint8_t *pdata){
+
+    uint8_t frame[128]={'\0'};
+    uint8_t hexFrame[128]={'\0'};
+    memcpy(frame, (const void *) (pdata+start), packetLength-1);
+    LOGD("J1708 Frame on ttyACM4 = %d, packetLength = %d",frame[0], packetLength);
+    if ((frame[0] == J1708_MESSAGE_SEPERATOR && frame[packetLength-1] == J1708_MESSAGE_SEPERATOR)) {
+        parseHex(frame,packetLength,hexFrame);
+        j1708rxd(hexFrame, packetLength);
+        return 0;
+    }
+    else
+        return -1;
+    LOGD("J1708 ERROR: Incomplete packet received - Frame not sent to j1708rxd()");
+}
+
+
 
 static void *monitor_data_thread_port1(void *param) {
 
@@ -920,6 +1038,99 @@ static void *monitor_data_thread_can_port2(void *param) {
     return 0;
 }
 
+static void *monitor_data_thread_port1708(void *param) {
+
+    uint8_t data[8 * 1024];
+    uint8_t *pdata = data;
+    unsigned char * thread_char = (unsigned char *)(void *)(&thread__port1708);
+    int i, packetCount = 0,j = 0, startOfPacket = 0, packetLength=0, endOfPacket = 0;
+    int errorResponseCount=0;
+    int readCount=0;
+
+    prctl(PR_SET_NAME, "monitor_thread_port1708", 0, 0, 0);
+    LOGD("monitor_thread_port1708 started");
+    LOGD("thread_port1708=%02x",(unsigned char)*thread_char);
+
+    while (!quit_port1708){
+
+        // sanity check to kill stale readPort1708 thread__port1708
+        if(thread__port1708 != pthread_self()) {
+            LOGD("readPort1 thread__port1708 stale, thread__port1708 = %02x", (unsigned char)*thread_char);
+            break;
+        }
+
+        if(fd_J1708 < 0){
+            break;
+        }
+
+        if (!waitForData(fd_J1708)) {
+
+            int readData;
+            uint8_t *pend = NULL;
+
+            //Returns the number of bytes read on J1708
+            readData = read(fd_J1708, pdata, sizeof(data) - (pdata - data));
+            readCount++;
+
+            if(readData > 0){
+                LOGD("Read Count on J1708 Port = %d, Number of characters = %d", readCount, readData);
+            }
+
+            if (0 == readData) {
+                quit_port1708 = true;
+                LOGD(" quit1708 = %d", quit_port1708);
+                break;
+            }
+
+            if (-1 == readData) {
+                if (EAGAIN == errno)
+                    LOGD(" Data Read = -1");
+                    continue;
+                LOGE("%s:%d readPort1708: %s\n", __func__, __LINE__, strerror(errno));
+                abort();
+            }
+
+            //To identify the message type and store each valid message in the process buffer in data[]
+            for (i = 0; i <= readData; i++) {
+                //TODO: Process the data read
+                startOfPacket=0;
+                endOfPacket=0;
+                packetLength=0;
+
+                if ((data[i] == J1708_MESSAGE_SEPERATOR) && (data[i+1] == J1708_MESSAGE_SEPERATOR)) {
+                    continue;
+                }
+                else if (data[i] == J1708_MESSAGE_SEPERATOR){
+                    if(data[i+1]!= J1708_MESSAGE_SEPERATOR){
+                        startOfPacket = i;
+                        i++;
+                        LOGD("Start of packet =%d, data[i] = %d", startOfPacket,data[startOfPacket]);
+
+                        for(int j = i; j < readData; j++){
+                            if(data[j]== J1708_MESSAGE_SEPERATOR){
+                                endOfPacket=j;
+                                LOGD("End of packet =%d", endOfPacket);
+                                break;
+                            }
+                            //else continue;
+                        }
+                        //TODO: Parse 1708 frame
+                        packetLength = (endOfPacket - startOfPacket - 2) + 1;
+                        LOGD("Packet Length= %d", packetLength);
+                        parseJ1708Frame(startOfPacket+1, packetLength, pdata );
+                        i=endOfPacket;
+                    }
+                    //else continue;
+                    else LOGD("NO NO");
+
+                }
+                continue ;
+            }
+        }
+    }
+    return 0 ;
+}
+
 
 int closeInterfaceCAN1() {
     LOGD("Entered the close1939Port1()! ");
@@ -933,7 +1144,7 @@ int closeInterfaceCAN2() {
 
 int closeInterfaceJ1708() {
     LOGD("Entered the close1708()! ");
-    return serial_deinit_thread_port2();
+    return serial_deinit_thread_j1708();
 }
 
 int serial_send_data(BYTE *mydata, DWORD bytes_to_write, int fd) {

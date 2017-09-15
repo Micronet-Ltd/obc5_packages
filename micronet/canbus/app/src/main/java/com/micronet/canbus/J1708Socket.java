@@ -19,7 +19,7 @@ public class J1708Socket implements J1708Listener {
      * Reads J1708 frame. Will block the calling thread__port1 until data
      * is written to Canbus socket.
      */
-    public J1708Frame readJ1708Port2(){
+    public J1708Frame readJ1708Port(){
         throw new IllegalArgumentException("Not implemented");
     }
 
@@ -31,7 +31,7 @@ public class J1708Socket implements J1708Listener {
      *
      * @return the head J1708 frame, or null if th specified waiting time elapses before J1708 frame is available
      */
-    public J1708Frame readJ1708Port2(long timeout){
+    public J1708Frame readJ1708Port(long timeout){
         throw new IllegalArgumentException("Not implemented");
     }
 
@@ -48,7 +48,7 @@ public class J1708Socket implements J1708Listener {
     }
 
     /**
-     * Closes Canbus socket for Port 1.
+     * Closes J1708 Socket for J1708 information
      */
     public void close1708Port(){
     }

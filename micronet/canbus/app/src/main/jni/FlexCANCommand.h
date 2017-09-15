@@ -7,7 +7,7 @@ int FlexCAN_startup(bool listeningModeEnable, int bitrate, int termination, FLEX
 void qb_send_j1708_packet(BYTE j1708,DWORD id, int data_len, BYTE* data);
 void FlexCAN_send_message(BYTE type, uint8_t *data,/* unsigned char command,*/ int len);
 void FlexCAN_send_can_packet(BYTE type,DWORD id, int data_len, BYTE* data, int portNumber);
-int FlexCAN_j1708_startup();
+int FlexCAN_j1708_startup(char *portName);
 
 
 

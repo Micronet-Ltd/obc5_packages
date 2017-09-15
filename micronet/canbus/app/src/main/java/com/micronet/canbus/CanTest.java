@@ -47,8 +47,10 @@ public class CanTest {
 
     private CanbusInterface canbusInterface1;
     private CanbusInterface canbusInterface2;
+    private J1708Interface j1708Interface;
     private CanbusSocket canbusSocket1;
     private CanbusSocket canbusSocket2;
+    private J1708Socket j1708Socket;
     CanbusHardwareFilter[] canbusFilter;
     CanbusFlowControl[] canbusFlowControls;
 
@@ -61,6 +63,7 @@ public class CanTest {
 
     public StringBuilder can1Data = new StringBuilder(1000);
     public StringBuilder can2Data = new StringBuilder(1000);
+    public StringBuilder j1708Data = new StringBuilder(1000);
 
     //1939 Parameter Group Numbers
     public static final int J1939_ENGINE_CONTROLLER2 = 0x00F003;
@@ -113,30 +116,41 @@ public class CanTest {
     CanbusFrameType canMessageTypePort2;
 
     private int j1939IntervalDelay = 500; // ms
+    private int j1708IntervalDelay = 500; // ms
+
     private Thread j1939Port1ReaderThread = null;
     private Thread j1939Port1SendThread = null;
 
     private Thread j1939Port2ReaderThread = null;
     private Thread j1939Port2SendThread = null;
 
+    private Thread j1708ReaderThread = null;
+    private Thread j1708SendThread = null;
+
+
     private J1939Port1Reader j1939Port1Reader = null;
     private J1939Port2Reader j1939Port2Reader = null;
-    //private J1708Reader j1708Reader = null;
+    private J1708Reader j1708Reader = null;
+
     private volatile boolean blockOnReadPort1 = false;
+    private volatile boolean blockOnReadJ1708 = false;
     private final int READ_TIMEOUT = 500; // readPort1 timeout (in milliseconds)
 
     private int baudrate;
     private boolean removeCan1;
     private boolean removeCan2;
+    private boolean removeJ1708=false;
     private boolean silentMode;
     private int portNumber;
     private boolean termination;
     private volatile boolean autoSendJ1939Port1;
     private volatile boolean autoSendJ1939Port2;
+    private volatile boolean autoSendJ1708;
     private boolean enableFilters = false;
     private boolean enableFlowControl = false;
     private boolean isCan1InterfaceOpen = false;
     private boolean isCan2InterfaceOpen = false;
+    private boolean isJ1708InterfaceOpen = false;
     private boolean discardInBuffer;
 
     public static String txtRequestVin ="None";
@@ -160,6 +174,13 @@ public class CanTest {
         return canbusSocket1 != null;
     }
 
+    public boolean isj1708SocketOpen() {
+        // there's actually no api call to check status of j1708 socket but
+        // this app will open the socket as soon as object is initialized.
+        // also socket doesn't actually close1939Port1 even with call to QBridgeCanbusSocket.close1939Port1()
+        return j1708Socket != null;
+    }
+
     public boolean isPort2SocketOpen() {
         // there's actually no api call to check status of canbus socket but
         // this app will open the socket as soon as object is initialized.
@@ -172,6 +193,8 @@ public class CanTest {
     }
 
     public boolean isCAN2InterfaceOpen() {return isCan2InterfaceOpen;}
+
+    public boolean isJ1708InterfaceOpen() {return isJ1708InterfaceOpen;}
 
     public int getBaudrate() {
         return baudrate;
@@ -189,6 +212,10 @@ public class CanTest {
         return removeCan2;
     }
 
+    public boolean getRemove1708InterfaceState() {
+        return removeJ1708;
+    }
+
     public void setBaudrate(int baudrate) {
         this.baudrate = baudrate;
     }
@@ -197,12 +224,16 @@ public class CanTest {
         this.silentMode = isSilent;
     }
 
-    public void setRemoveCan1State(boolean removeCan1) {
+    public void setRemoveCan1InterfaceState(boolean removeCan1) {
         this.removeCan1 = removeCan1;
     }
 
-    public void setRemoveCan2State(boolean removeCan2) {
+    public void setRemoveCan2InterfaceState(boolean removeCan2) {
         this.removeCan2 = removeCan2;
+    }
+
+    public void setRemoveJ1708InterfaceState(boolean removej1708) {
+        this.removeJ1708 = removej1708;
     }
 
     public boolean getTermination() {
@@ -296,6 +327,22 @@ public class CanTest {
         }
         isCan2InterfaceOpen = true;
         startPort2Threads();
+    }
+
+    public int create1708Interface(){
+        Log.d(TAG, "Creating a 1708 Interface - Java");
+        if(j1708Interface == null){
+            j1708Interface = new J1708Interface();
+            j1708Interface.createJ1708();
+        }
+
+        if(j1708Socket == null){
+            j1708Socket = j1708Interface.createSocketJ1708();
+            j1708Socket.openJ1708();
+        }
+        isJ1708InterfaceOpen = true;
+        startJ1708Threads();
+        return 0;
     }
 
     public void silentMode(boolean silentMode) {
@@ -525,6 +572,22 @@ public class CanTest {
         j1939Port2ReaderThread.start();
     }
 
+    private void startJ1708Threads() {
+
+        if (j1708Reader == null) {
+            j1708Reader = new J1708Reader();
+        }
+
+        j1708Reader.clearValues();
+
+        if (j1708ReaderThread == null) {
+            if (j1708ReaderThread == null || j1708ReaderThread.getState() != Thread.State.NEW) {
+                j1708ReaderThread = new Thread(j1708Reader);
+            }
+            j1708ReaderThread.start();
+        }
+    }
+
     public void closeCan1Interface() {
         if (canbusInterface1 != null) {
             canbusInterface1.removeCAN1();
@@ -541,6 +604,19 @@ public class CanTest {
         }
         isCan2InterfaceOpen = false;
     }
+
+    public int closeJ1708Interface() {
+        int code=-1;
+        if (j1708Interface != null) {
+            code = j1708Interface.removeJ1708();
+            j1708Interface = null;
+            isJ1708InterfaceOpen = false;
+            return code;
+        }
+        isJ1708InterfaceOpen = false;
+        return code;
+    }
+
 
     public void closeCan1Socket() {
         if (isPort1SocketOpen()) {
@@ -573,6 +649,24 @@ public class CanTest {
                 }
             }
         }
+    }
+
+
+    public void closeJ1708Socket() {
+        if (isj1708SocketOpen()) {
+            j1708Socket.close1708Port();
+            j1708Socket = null;
+
+            if (j1708ReaderThread != null && j1708ReaderThread.isAlive()) {
+                j1708ReaderThread.interrupt();
+                try {
+                    j1708ReaderThread.join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
     }
 
     /// J1939 Canbus Reader
@@ -620,13 +714,13 @@ public class CanTest {
         this.autoSendJ1939Port2 = autoSendJ1939Port2;
     }
 
-    /*public boolean isAutoSendJ1708() {
+    public boolean isAutoSendJ1708() {
         return autoSendJ1708;
     }
 
     public void setAutoSendJ1708(boolean autoSendJ1708) {
         this.autoSendJ1708 = autoSendJ1708;
-    }*/
+    }
 
     public void setBlockOnReadPort1(boolean blockOnReadPort1) {
         this.blockOnReadPort1 = blockOnReadPort1;
@@ -1076,7 +1170,7 @@ public class CanTest {
                         canbusByteCount += canbusFrame1.getData().length;
                     }
                     else {
-                        Log.d(TAG, "Read timeout");
+                       // Log.d(TAG, "Read timeout");
                     }
                 }catch (NullPointerException ex) {
                     // socket is null
@@ -1209,7 +1303,7 @@ public class CanTest {
                         ++canbusFrameCount;
                         canbusByteCount += canbusFrame2.getData().length;
                     } else {
-                        Log.d(TAG, "Read timeout for Port 2");
+                        //Log.d(TAG, "Read timeout for Port 2");
                     }
                 } catch (NullPointerException ex) {
                     // socket is null
@@ -1222,13 +1316,13 @@ public class CanTest {
         }
     }
 
-    /*public int getJ1708IntervalDelay() {
+    public int getJ1708IntervalDelay() {
         return j1708IntervalDelay;
     }
 
     public void setJ1708IntervalDelay(int j1708IntervalDelay) {
         this.j1708IntervalDelay = j1708IntervalDelay;
-    } */
+    }
 
     /* Convert a byte array to a hex friendly string */
     public static String bytesToHex(byte[] bytes) {
@@ -1405,21 +1499,18 @@ public class CanTest {
         }
     };
     /// End J1939 methods
+
     
-  /*  /// J1708 Reader Thread
+    /// J1708 Reader Thread
     public int getJ1708FrameCount() {
         return j1708Reader.getJ1708FrameCount();
     }
 
-    public boolean isJ1708Supported() {
-        return canbusInterface1.isJ1708Supported();
-    }
-
     public int getJ1708ByteCount() {
         return j1708Reader.getJ1708ByteCount();
-    }*/
+    }
 
-    /*private class J1708Reader implements Runnable {
+    private class J1708Reader implements Runnable {
         private volatile int j1708FrameCount = 0;
         private volatile int j1708ByteCount = 0;
 
@@ -1442,10 +1533,10 @@ public class CanTest {
             while (true) {
                 J1708Frame j1708Frame = null;
                 try {
-                    if (blockOnReadPort1) {
-                        j1708Frame = canbusSocket1.readJ1708Port2();
+                    if (blockOnReadJ1708) {
+                        j1708Frame = j1708Socket.readJ1708Port();
                     } else {
-                        j1708Frame = canbusSocket1.readJ1708Port2(READ_TIMEOUT);
+                        j1708Frame = j1708Socket.readJ1708Port(READ_TIMEOUT);
                     }
 
                     if (j1708Frame != null) {
@@ -1468,7 +1559,9 @@ public class CanTest {
                         }
                         ++j1708FrameCount;
                         j1708ByteCount += j1708Frame.getData().length;
-
+                    }
+                    else {
+                        Log.d(TAG, "Read timeout for J1708");
                     }
                 } catch (NullPointerException ex){
                     // socket is null
@@ -1478,16 +1571,35 @@ public class CanTest {
                 }
             }
         }
-    }*/
+    }
 
-/*
     public void sendJ1708() {
-        if (canbusInterface1.isJ1708Supported()) {
             if (j1708SendThread == null || !j1708SendThread.isAlive()) {
                 j1708SendThread = new Thread(sendJ1708Runnable);
                 j1708SendThread.start();
             }
-        }
     }
-*/
+
+    private Runnable sendJ1708Runnable = new Runnable() {
+        @Override
+        public void run() {
+            int data = 0;
+            do {
+                ByteBuffer dbuf = ByteBuffer.allocate(8);
+                dbuf.order(ByteOrder.LITTLE_ENDIAN);
+                dbuf.putInt(data++);
+                byte[] a = dbuf.array();
+                J1708Frame frame = new J1708Frame(8, 111, a);
+                try {
+                    if (j1708Socket != null) {
+                        j1708Socket.writeJ1708Port(frame);
+                    }
+                    Thread.sleep(j1708IntervalDelay);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            } while (autoSendJ1708);
+        }
+    };
+    /// End J1708 functions
 }

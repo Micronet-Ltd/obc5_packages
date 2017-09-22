@@ -1603,12 +1603,12 @@ public class CanTest {
                 dbuf.putInt(data++);
                 byte[] a = dbuf.array();*/
                byte[] a = new byte[5];
-                a[0] = 106;
-                a[1] = 49;
-                a[2] = 55;
-                a[3] = 48;
-                a[4] = 56;
-                J1708Frame frame = new J1708Frame(8, 111, a);
+                a[0] = 0x6A;
+                a[1] = 0x31;
+                a[2] = 0x37;
+                a[3] = 0x30;
+                a[4] = 0x38;
+                J1708Frame frame = new J1708Frame(8, 0x31, a);
                 try {
                     if (j1708Socket != null) {
                         j1708Socket.writeJ1708Port(frame);

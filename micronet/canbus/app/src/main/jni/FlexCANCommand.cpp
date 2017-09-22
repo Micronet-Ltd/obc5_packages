@@ -474,11 +474,13 @@ void FlexCAN_send_can_packet(BYTE type, DWORD id, int data_len, BYTE *data, int 
 int computeJ1708Checksum(int id, int priority, BYTE *dataBytes, int dataLength){
     int  sum = 0, checksum = 0;
 
-    sum = id + priority;
+    sum = sum + id + priority;
     for (int i = 0; i < dataLength; i++){
         sum = sum + dataBytes[i];
     }
-    checksum = (256 - (sum % 256)) + 1;
+
+    checksum = (255 - (sum % 256)) + 1 ;
+
     LOGD("Returned Checksum = % d", checksum);
 
     return checksum;

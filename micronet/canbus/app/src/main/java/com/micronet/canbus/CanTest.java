@@ -70,6 +70,7 @@ public class CanTest {
     public static final int J1939_ENGINE_CONTROLLER1 = 0x00F004;
     public static final int J1939_PGN_GEAR = 0x00F005; // ECM2
     public static final int J1939_PGN_ODOMETER_LOW = 0x00FEE0;
+    public static final int J1939_PGN_ODOMETER_HIGH = 0x00FEC1;
     public static final int J1939_PGN_ENGINE_HOURS_REVOLUTIONS = 0x00FEE5;
     public static final int J1939_PGN_FUEL_CONSUMPTION = 0x00FEE9;
     public static final int J1939_PGN_VIN_NUMBER = 0x00FEEC;
@@ -155,7 +156,8 @@ public class CanTest {
 
     public static String txtRequestVin ="None";
     public static String txtRequestEngineHours= "-1";
-    public static int txtGetOdometer= -1;
+    public static int txtGetLowOdometer = -1;
+    public static int txtGetHighOdometer= -1;
     public static int txtGetVehicleSpeed= -1;
     public static int txtTransmissionGear = -1;
 
@@ -269,7 +271,7 @@ public class CanTest {
     }
 
     public int getTxtOdometer(){
-        return txtGetOdometer;
+        return txtGetLowOdometer;
     }
 
     public int getTxtVehicleSpeed(){
@@ -581,12 +583,11 @@ public class CanTest {
 
         j1708Reader.clearValues();
 
-        if (j1708ReaderThread == null) {
-            if (j1708ReaderThread == null || j1708ReaderThread.getState() != Thread.State.NEW) {
-                j1708ReaderThread = new Thread(j1708Reader);
-            }
-            j1708ReaderThread.start();
+
+        if (j1708ReaderThread == null || j1708ReaderThread.getState() != Thread.State.NEW) {
+            j1708ReaderThread = new Thread(j1708Reader);
         }
+        j1708ReaderThread.start();
     }
 
     public void closeCan1Interface() {
@@ -907,8 +908,22 @@ public class CanTest {
                 ByteBuffer odometerValue = ByteBuffer.wrap(data, 4, 4);
                 odometerValue.order(ByteOrder.LITTLE_ENDIAN);
                 int odometer = (int) ((odometerValue.getInt() & 0xffffffff)*0.125);
-                txtGetOdometer = odometer;
+                txtGetLowOdometer = odometer;
                 Log.d(TAG, "Odometer: " + odometer + " km");
+                break;
+
+            case J1939_PGN_ODOMETER_HIGH:
+                // Vehicle Distance
+                // Bytes [1-4] = Trip Distance
+                // Bytes [5-8] = Total Vehicle Distance [Odometer]
+                // Trip Distance range: 0 to 21,055,406 km [5 m/bit] [Unit = m]
+                // Total Vehicle Distance range: 0 to 21,055,406 km [5 m/bit] [Unit = m]
+
+                ByteBuffer highOdometerValue = ByteBuffer.wrap(data, 4, 4);
+                highOdometerValue.order(ByteOrder.LITTLE_ENDIAN);
+                int highOdometer = (int) (((highOdometerValue.getInt() & 0xffffffff)*5)/0.000621371);
+                txtGetHighOdometer = highOdometer;
+                Log.d(TAG, "Odometer: " + highOdometer + " miles");
                 break;
 
             case J1939_PGN_VIN_NUMBER:
@@ -1542,7 +1557,6 @@ public class CanTest {
 
                     if (j1708Frame != null) {
                         long time = SystemClock.elapsedRealtime();
-                        // done to prevent adding too much text to UI at once
                         if (j1708Data.length() < 500) {
                             j1708Data.append(time);
                             j1708Data.append(", ");
@@ -1551,9 +1565,7 @@ public class CanTest {
                             j1708Data.append(Integer.toHexString(j1708Frame.getPriority()));
                             j1708Data.append(", [");
                             j1708Data.append(bytesToHex(j1708Frame.getData()));
-                            j1708Data.append("] (");
-                            j1708Data.append(new String(j1708Frame.getData()));
-                            j1708Data.append("), ");
+                            j1708Data.append("], ");
                             j1708Data.append(j1708Frame.getData().length);
                             j1708Data.append("\n");
 

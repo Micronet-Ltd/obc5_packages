@@ -11,7 +11,8 @@
 
 static int fd_CAN1;
 static int fd_CAN2;
-static int fd_J1708;
+static int fd_J1708_READ;
+static int fd_J1708_WRITE;
 
 static pthread_t thread__port1;
 static pthread_t thread__port2;
@@ -66,18 +67,31 @@ int serial_init(char *portName)
         return fd_CAN2;
     }
 
-    //Initialising J1708
-    else if(strcmp(portName,J1708_TTY)== 0){
-        if ((fd_J1708 = open(portName, O_RDWR | O_NOCTTY | O_NONBLOCK)) < 0) {
+    //Initialising J1708_READ
+    else if(strcmp(portName,J1708_TTY_READ)== 0){
+        if ((fd_J1708_READ = open(portName, O_RDWR | O_NOCTTY | O_NONBLOCK)) < 0) {
             perror(portName);
             exit(EXIT_FAILURE);
         }
-        serial_set_nonblocking(fd_J1708);
-        DD("opened port: '%s', fd=%d", J1708_TTY, fd_J1708);
-        initTerminalInterface(fd_J1708, B9600);
-        return fd_J1708;
+        serial_set_nonblocking(fd_J1708_READ);
+        DD("opened port: '%s', fd=%d", J1708_TTY_READ, fd_J1708_READ);
+        //initTerminalInterface(fd_J1708_READ, B9600);
+        return fd_J1708_READ;
     }
-	else return -1;
+        //Initialising J1708_WRITE
+    else if(strcmp(portName,J1708_TTY_WRITE)== 0){
+        if ((fd_J1708_WRITE = open(portName, O_RDWR | O_NOCTTY | O_NONBLOCK)) < 0) {
+            perror(portName);
+            exit(EXIT_FAILURE);
+        }
+        serial_set_nonblocking(fd_J1708_WRITE);
+        DD("opened port: '%s', fd=%d", J1708_TTY_WRITE, fd_J1708_WRITE);
+        //
+        // initTerminalInterface(fd_J1708_WRITE, B9600);
+        return fd_J1708_WRITE;
+    }
+
+    else return -1;
 } 
 
 
@@ -112,21 +126,26 @@ int initTerminalInterface(int fd, speed_t interfaceBaud) {
 
 int closeTerminalInterface(int port){
     LOGD("Entered closeTerminalInterface!!");
-    if (port == 2){
+    if (port == CAN1_TTY_NUMBER){
         close(fd_CAN1);
         fd_CAN1=-1;
 		return  0; 
     }
-    else if(port == 3){
+    else if(port == CAN2_TTY_NUMBER){
         close(fd_CAN2);
         fd_CAN2=-1;
 		return 0; 
     }
-    else if(port == 4){
-        close(fd_J1708);
-        fd_J1708=-1;
+    else if(port == J1708_TTY_READ_NUMBER){
+        close(fd_J1708_READ);
+        fd_J1708_READ =- 1;
 		return 0; 
 	}
+    else if(port == J1708_TTY_WRITE_NUMBER){
+        close(fd_J1708_WRITE);
+        fd_J1708_WRITE = -1;
+        return 0;
+    }
 	else return -1; 
 	
 }
@@ -154,8 +173,11 @@ int getFd(int portNumber){
     else if(portNumber == CAN2_TTY_NUMBER){
             return fd_CAN2;
     }
-    else if(portNumber == J1708_TTY_NUMBER){
-            return fd_J1708;
+    else if(portNumber == J1708_TTY_READ_NUMBER){
+            return fd_J1708_READ;
+    }
+    else if(portNumber == J1708_TTY_WRITE_NUMBER){
+        return fd_J1708_WRITE;
     }
 	else return -1; 
 }
@@ -166,14 +188,14 @@ int getFd(int portNumber){
 int closePort(int portNumber){
     LOGD("Entered closePort!!");
     int closeFd = getFd(portNumber);
-    if(portNumber == 2 || portNumber == 3){
+    if(portNumber == CAN1_TTY_NUMBER || portNumber == CAN2_TTY_NUMBER){
         if (closeCAN(closeFd) == -1) {
             //Couldn't close CAN channel
             return -1;
         }
     }
-    else if(portNumber == 4){
-       if(getFd(2) <= 0){
+    else if(portNumber == J1708_TTY_READ_NUMBER){
+       if(getFd(CAN1_TTY_NUMBER) <= 0){
            //set CAN1_1708 power enabled to 0
            //Temp solution below for closing CAN1
            LOGD("Entered closePort!! 1708 condition! ");
@@ -739,8 +761,7 @@ void j1939rxd(BYTE *rxd, int portNumber) {
     }
 }
 
-void
-j1708rxd( BYTE *rxd, BYTE length )
+void j1708rxd( BYTE *rxd, BYTE length )
 {
     int mid;
 
@@ -769,7 +790,7 @@ j1708rxd( BYTE *rxd, BYTE length )
     if(g_canbus.g_listenerObject_J1708 != NULL && g_canbus.g_onPacketReceiveJ1708 != NULL) {
         env->CallVoidMethod(g_canbus.g_listenerObject_J1708, g_canbus.g_onPacketReceiveJ1708, frameObj);
     }
-
+    LOGD("1708 Message: Successfully pushed the frame to the Java queue!");
     env->DeleteLocalRef(frameObj);
     env->DeleteLocalRef(data_l);
 
@@ -794,18 +815,16 @@ int parseCANFrame(int start, int packetLength, uint8_t *pdata, int portNumber){
 
 int parseJ1708Frame(int start, int packetLength, uint8_t *pdata){
 
-    uint8_t frame[128]={'\0'};
-    uint8_t hexFrame[128]={'\0'};
+    uint8_t frame[packetLength]={'\0'};
     memcpy(frame, (const void *) (pdata+start), packetLength-1);
     LOGD("J1708 Frame on ttyACM4 = %d, packetLength = %d",frame[0], packetLength);
-    if ((frame[0] == J1708_MESSAGE_SEPERATOR && frame[packetLength-1] == J1708_MESSAGE_SEPERATOR)) {
-        parseHex(frame,packetLength,hexFrame);
-        j1708rxd(hexFrame, packetLength);
-        return 0;
+    if(packetLength>2){
+        j1708rxd(frame, packetLength);
     }
-    else
+    else{
+        LOGD("J1708 ERROR: Incomplete packet received - Frame not sent to j1708rxd()");
         return -1;
-    LOGD("J1708 ERROR: Incomplete packet received - Frame not sent to j1708rxd()");
+    }
 }
 
 
@@ -1059,17 +1078,17 @@ static void *monitor_data_thread_port1708(void *param) {
             break;
         }
 
-        if(fd_J1708 < 0){
+        if(fd_J1708_READ < 0){
             break;
         }
 
-        if (!waitForData(fd_J1708)) {
+        if (!waitForData(fd_J1708_READ)) {
 
             int readData;
             uint8_t *pend = NULL;
 
             //Returns the number of bytes read on J1708
-            readData = read(fd_J1708, pdata, sizeof(data) - (pdata - data));
+            readData = read(fd_J1708_READ, pdata, sizeof(data) - (pdata - data));
             readCount++;
 
             if(readData > 0){
@@ -1117,8 +1136,11 @@ static void *monitor_data_thread_port1708(void *param) {
                         //TODO: Parse 1708 frame
                         packetLength = (endOfPacket - startOfPacket - 2) + 1;
                         LOGD("Packet Length= %d", packetLength);
-                        parseJ1708Frame(startOfPacket+1, packetLength, pdata );
-                        i=endOfPacket;
+                        if(packetLength > 2) {
+                            parseJ1708Frame(startOfPacket + 1, packetLength, pdata);
+                            i = endOfPacket;
+                        }
+
                     }
                     //else continue;
                     else LOGD("NO NO");
@@ -1151,7 +1173,7 @@ int serial_send_data(BYTE *mydata, DWORD bytes_to_write, int fd) {
     DWORD numwr = 0;
     if(fd!=-1){
         numwr = write(fd, mydata, bytes_to_write);
-        LOGD("Frame sent sucessfully!! frame =%s fd=%d", mydata,fd);
+        LOGD("Frame sent successfully!! Number of bytes=%d, frame=%s, fd=%d",bytes_to_write, mydata,fd);
         //TODO: this may not be an error
         if(numwr != bytes_to_write ){
             return -1;

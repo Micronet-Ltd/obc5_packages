@@ -344,18 +344,20 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANVehicleInterfaceBridge_re
 
 JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANVehicleInterfaceBridge_createJ1708Interface(JNIEnv *env, jobject instance){
 
-    /*
-     * TODO: Create Interface (Set bitrate for serial port communication), Push the fd to the java layer
-     * */
-
     LOGD("Creating a J1708 Interface");
-    jint fdJ1708 = FlexCAN_j1708_startup(J1708_TTY);
-    jfieldID fd_id;
+    jfieldID fd_read_id;
+    jfieldID fd_write_id;
+
+    jint fdJ1708Read = FlexCAN_j1708_startup(J1708_TTY_READ);
+    jint fdJ1708Write = getFd(J1708_TTY_WRITE_NUMBER);
 
     jclass clazz = env->FindClass("com/micronet/canbus/FlexCANVehicleInterfaceBridge");
 
-    fd_id = env->GetFieldID(clazz, "fdJ1708", "I");
-    env->SetIntField(instance, fd_id, fdJ1708);
+    fd_read_id = env->GetFieldID(clazz, "fdJ1708Read", "I");
+    env->SetIntField(instance, fd_read_id, fdJ1708Read);
+
+    fd_write_id = env->GetFieldID(clazz, "fdJ1708Write", "I");
+    env->SetIntField(instance, fd_write_id, fdJ1708Write);
 
     return 0;
 
@@ -365,11 +367,15 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANVehicleInterfaceBridge_cr
 JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANVehicleInterfaceBridge_removeJ1708Interface(JNIEnv *env, jobject instance){
 
     LOGD("Entered removeInterface: Begin deinit()!!");
-    serial_deinit_thread_j1708();
+    closeInterfaceJ1708();
     LOGD("Removing J1708 Interface");
-    if (closePort(J1708_TTY_NUMBER) == -1) {
+    if (closePort(J1708_TTY_READ_NUMBER) == -1) {
         return -1;
-        LOGD("Couldn't close J1708 successfully ");
+        LOGD("Couldn't close J1708_READ successfully ");
+    }
+    if (closePort(J1708_TTY_WRITE_NUMBER) == -1) {
+        return -1;
+        LOGD("Couldn't close J1708_READ successfully ");
     }
     return 0;
     error:

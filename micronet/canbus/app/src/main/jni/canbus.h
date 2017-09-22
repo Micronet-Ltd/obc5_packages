@@ -25,8 +25,10 @@
 
 #define CAN1_TTY    "/dev/ttyACM2"
 #define CAN2_TTY    "/dev/ttyACM3"
-//#define J1708_TTY   "/dev/mcu_j1708"
-#define J1708_TTY   "/dev/ttyACM4"
+//#define J1708_TTY_READ   "/dev/ttyACM4"
+#define J1708_TTY_READ   "/dev/j1708"
+#define J1708_TTY_WRITE   "/dev/ttyMICRONET_J1708"
+
 
 #define DWORD uint32_t
 #define BYTE uint8_t

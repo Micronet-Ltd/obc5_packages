@@ -191,6 +191,39 @@ public class J1708OverviewFragment extends Fragment {
         }
     }
 
+    private void updateCountUI() {
+        String s = "\nJ1708 Frames/Bytes: " + canTest.getJ1708FrameCount() + "/" + canTest.getJ1708ByteCount();
+        swCycleTransmitJ1708.setChecked(canTest.isAutoSendJ1708());
+        textView.setText(s);
+    }
+
+
+    private void startUpdateUIThread() {
+        if (updateUIThread == null) {
+            updateUIThread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    while (true) {
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                updateCountUI();
+                            }
+                        });
+                        try {
+                            Thread.sleep(500);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            });
+        }
+
+        if (updateUIThread != null && !updateUIThread.isAlive()) {
+            updateUIThread.start();
+        }
+    }
 
     private class ConfigureInterface extends AsyncTask<Void, String, Void> {
         boolean removeJ1708;
@@ -224,7 +257,7 @@ public class J1708OverviewFragment extends Fragment {
         }
 
         protected void onPostExecute(Void result) {
-           // startUpdateUIThread();
+            startUpdateUIThread();
             updateInterfaceStatusUI();
             setStateInterfaceDependentUI();
             setStateSocketDependentUI();

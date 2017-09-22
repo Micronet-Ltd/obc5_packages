@@ -36,7 +36,7 @@ public class J1708Socket implements J1708Listener {
     }
 
     /**
-     * Sends Canbus frame through socket.
+     * Sends J1708 frame through socket.
      */
     public void writeJ1708Port(J1708Frame frame){
     }

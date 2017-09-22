@@ -7,7 +7,8 @@
 #define CANBUS_FLEXCANCOMM_H
 static int CAN1_TTY_NUMBER= 2;
 static int CAN2_TTY_NUMBER= 3;
-static int J1708_TTY_NUMBER= 4;
+static int J1708_TTY_READ_NUMBER= 4;
+static int J1708_TTY_WRITE_NUMBER= 5;
 #define MAX_MASK_FILTER_SIZE 11
 
 int serial_init(char *name);

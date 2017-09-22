@@ -12,7 +12,8 @@ import java.util.concurrent.TimeUnit;
  */
 class FlexCANJ1708Socket extends J1708Socket implements J1708Listener {
 
-    private int mSocket;
+    private int mSocket_write;
+    private int mSocket_read;
     private static final String TAG = "FlexCANJ1708Socket";
 
     // Needs enough to prevent blocking insertion.
@@ -21,8 +22,9 @@ class FlexCANJ1708Socket extends J1708Socket implements J1708Listener {
     /**
      * Creates Canbus socket.
      */
-    protected FlexCANJ1708Socket(int fd, int port){
-        mSocket=fd;
+    protected FlexCANJ1708Socket(int fd_read, int fd_write){
+        mSocket_read = fd_read;
+        mSocket_write = fd_write;
     }
 
 
@@ -67,12 +69,11 @@ class FlexCANJ1708Socket extends J1708Socket implements J1708Listener {
     }
 
 
-
     /**
      * Sends J1708 frame through socket.
      */
     public void writeJ1708Port(J1708Frame frame){
-        sendJ1708(mSocket, frame);
+        sendJ1708(mSocket_write, frame);
     }
 
     @Override
@@ -98,7 +99,7 @@ class FlexCANJ1708Socket extends J1708Socket implements J1708Listener {
      * Returns Canbus socket id for J1708 port
      */
     public int getJ708PortId(){
-        return mSocket;
+        return mSocket_write;
     }
 
     private void setPacketListenerJ1708Port(J1708Listener listener) {registerCallbackJ1708Port(listener);}

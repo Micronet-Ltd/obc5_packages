@@ -364,6 +364,7 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANVehicleInterfaceBridge_cr
     error:
     return SYSTEM_ERROR;
 }
+
 JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANVehicleInterfaceBridge_removeJ1708Interface(JNIEnv *env, jobject instance){
 
     LOGD("Entered removeInterface: Begin deinit()!!");
@@ -380,8 +381,6 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANVehicleInterfaceBridge_re
     return 0;
     error:
     return SYSTEM_ERROR;
-
-	return 0; 
 }
 
 

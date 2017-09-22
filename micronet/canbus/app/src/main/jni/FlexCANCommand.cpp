@@ -283,7 +283,7 @@ int FlexCAN_startup(bool listeningModeEnable, int bitrate, int termination, FLEX
 {
     int i=0, ret=-1;
     char *port = portName;
-    int fd=-1;
+    int fd= -1;
 
     fd = ret = serial_init(port);
 
@@ -471,26 +471,42 @@ void FlexCAN_send_can_packet(BYTE type, DWORD id, int data_len, BYTE *data, int 
     }
 }
 
+int computeJ1708Checksum(int id, int priority, BYTE *dataBytes, int dataLength){
+    int  sum = 0, checksum = 0;
+
+    sum = id + priority;
+    for (int i = 0; i < dataLength; i++){
+        sum = sum + dataBytes[i];
+    }
+    checksum = (256 - (sum % 256)) + 1;
+    LOGD("Returned Checksum = % d", checksum);
+
+    return checksum;
+}
+
 /**
  * Sends a J1708 frame to the 1708 port
  * */
-void qb_send_j1708_packet(DWORD id, BYTE* data, BYTE priority, int data_len)
+void FlexCAN_send_j1708_packet(DWORD id, BYTE *data, BYTE priority, int dataLength)
 {
     int index = 0, i = 0, fd_write = -1;
-    unsigned char packet[data_len+2];
+    unsigned char packet[dataLength+5]={'\0'};
 
     fd_write = getFd(J1708_TTY_WRITE_NUMBER);
-    packet[index++]=0x7E;
+
+    packet[index++] = 0x7E;
     packet[index++] = priority;
     packet[index++] = (BYTE)(id);
 
-    for (i = 0; i < data_len; i++){
+    for (i = 0; i < dataLength; i++){
         packet[index + i] = data[i];
     }
-    packet[index++]=0x7E;
-    //index += i;
+    index += i;
 
-    if( serial_send_data(packet, data_len+2, fd_write)){
+    packet[index++] = computeJ1708Checksum((BYTE) (id), priority, data, dataLength);
+    packet[index++]=0x7E;
+
+    if( serial_send_data(packet, dataLength + 5, fd_write)){
         error_message("!!!!!!!!!!!!!!! Couldn't send FLEXCAN CAN message !!!!!!!!!!!!!!!!!");
         return;
     }

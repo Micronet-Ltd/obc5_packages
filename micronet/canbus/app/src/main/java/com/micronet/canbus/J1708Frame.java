@@ -2,11 +2,11 @@ package com.micronet.canbus;
 
 /**
  * J1708 frame encapsulator.
- * Includes byte array that representes the payload data within Canbus packet, 
+ * Includes byte array that represents the payload data within Canbus packet,
  * id that holds both Standard & Extended identifiers and packet type indicator (Standard/Extended).  
  */
-public class J1708Frame
-{
+public class J1708Frame{
+
 	private static final String TAG = "Canbus";
 	private int mPri;
 	private int mId;

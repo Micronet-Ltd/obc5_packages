@@ -86,8 +86,7 @@ int serial_init(char *portName)
         }
         serial_set_nonblocking(fd_J1708_WRITE);
         DD("opened port: '%s', fd=%d", J1708_TTY_WRITE, fd_J1708_WRITE);
-        //
-        // initTerminalInterface(fd_J1708_WRITE, B9600);
+        initTerminalInterface(fd_J1708_WRITE, B9600);
         return fd_J1708_WRITE;
     }
 

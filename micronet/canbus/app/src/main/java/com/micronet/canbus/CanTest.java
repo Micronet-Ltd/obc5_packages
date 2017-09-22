@@ -1598,10 +1598,16 @@ public class CanTest {
         public void run() {
             int data = 0;
             do {
-                ByteBuffer dbuf = ByteBuffer.allocate(8);
+              /*  ByteBuffer dbuf = ByteBuffer.allocate(8);
                 dbuf.order(ByteOrder.LITTLE_ENDIAN);
                 dbuf.putInt(data++);
-                byte[] a = dbuf.array();
+                byte[] a = dbuf.array();*/
+               byte[] a = new byte[5];
+                a[0] = 106;
+                a[1] = 49;
+                a[2] = 55;
+                a[3] = 48;
+                a[4] = 56;
                 J1708Frame frame = new J1708Frame(8, 111, a);
                 try {
                     if (j1708Socket != null) {

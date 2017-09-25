@@ -75,7 +75,7 @@ int serial_init(char *portName)
         }
         serial_set_nonblocking(fd_J1708_READ);
         DD("opened port: '%s', fd=%d", J1708_TTY_READ, fd_J1708_READ);
-        //initTerminalInterface(fd_J1708_READ, B9600);
+        initTerminalInterface(fd_J1708_READ, B9600);
         return fd_J1708_READ;
     }
         //Initialising J1708_WRITE
@@ -817,7 +817,7 @@ int parseJ1708Frame(int start, int packetLength, uint8_t *pdata){
     uint8_t frame[packetLength]={'\0'};
     memcpy(frame, (const void *) (pdata+start), packetLength-1);
     LOGD("J1708 Frame on ttyACM4 = %d, packetLength = %d",frame[0], packetLength);
-    if(packetLength>2){
+    if(packetLength > 3){
         j1708rxd(frame, packetLength);
     }
     else{

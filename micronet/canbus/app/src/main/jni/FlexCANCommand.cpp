@@ -509,7 +509,7 @@ void FlexCAN_send_j1708_packet(DWORD id, BYTE *data, BYTE priority, int dataLeng
     packet[index++]=0x7E;
 
     if( serial_send_data(packet, dataLength + 5, fd_write)){
-        error_message("!!!!!!!!!!!!!!! Couldn't send FLEXCAN CAN message !!!!!!!!!!!!!!!!!");
+        error_message("!!!!!!!!!!!!!!! Couldn't transmit 1708 message !!!!!!!!!!!!!!!!!");
         return;
     }
 }

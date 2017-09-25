@@ -49,7 +49,7 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANJ1708Socket_sendJ1708(JNI
 
     jbyte* bufferPtr = env->GetByteArrayElements(data, NULL);
     jsize lengthOfDataArray = env->GetArrayLength(data);
-    
+
     FlexCAN_send_j1708_packet(id, (BYTE *) bufferPtr, (BYTE) priority, lengthOfDataArray);
 
     env->ReleaseByteArrayElements(data, bufferPtr, JNI_ABORT);

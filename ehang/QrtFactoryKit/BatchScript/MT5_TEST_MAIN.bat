@@ -1,4 +1,4 @@
-@rem echo off
+@echo off
 rem ******
 rem change the following line to select a different language!
 rem ******
@@ -12,13 +12,14 @@ if not exist Results\summary.csv copy Input\template.csv Results\summary.csv >nu
 echo ************************************
 echo %messageIntro% %scriptversion%
 echo ************************************
-echo %messageConnectUSB%
-adb wait-for-device
-adb pull /storage/sdcard0/test_results.csv temp.csv 1>nul 2>nul
-if not exist temp.csv goto :testnotrun
 set /p param1=%messageEnterSN%
 set /p param2=%messageEnterIMEI%
 set /p param4=%messageEnterCSN%
+echo %messageConnectUSB%
+pause
+adb wait-for-device
+adb pull /storage/sdcard0/test_results.csv temp.csv 1>nul 2>nul
+if not exist temp.csv goto :testnotrun
 for /F "tokens=1 delims=," %%a in (Input\OS_VERSION.dat) do (set param3=%%a)
 for /F "tokens=1,2,3 delims=," %%a in (temp.csv) do @(
 if %%a == %param1% (set param1=Pass) else (set param1=Fail) || set param1=Fail

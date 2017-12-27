@@ -291,12 +291,30 @@ public class CameraBack extends AbstractActivity
                 parameters.setPictureFormat(PixelFormat.JPEG);
                 //parameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
 				parameters.setFocusMode(parameters.FOCUS_MODE_AUTO);
-                parameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
                 setPreviewSize(parameters);
+                parameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
                 mCamera.setParameters(parameters);
 //                mCamera.setDisplayOrientation(180);//deleted by tianfangzhou for preview ,SW00015286,2013.10.11
                 mCamera.startPreview();
 		     	mCamera.autoFocus(new AutoFocusCallback());
+
+
+
+				Thread.sleep(500);
+				parameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+				mCamera.setParameters(parameters);
+				Thread.sleep(500);
+				parameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
+				mCamera.setParameters(parameters);
+				Thread.sleep(500);
+				parameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+				mCamera.setParameters(parameters);
+				Thread.sleep(500);
+				parameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
+				mCamera.setParameters(parameters);
+				Thread.sleep(500);
+				parameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+				mCamera.setParameters(parameters);
 
             } catch (Exception e) {
                 loge(e);

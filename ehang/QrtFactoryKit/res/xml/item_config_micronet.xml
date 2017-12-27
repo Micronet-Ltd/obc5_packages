@@ -16,6 +16,24 @@
 
     <Single>
 
+        <TestItem name="Imei" enable="true">
+            <Intent
+                    packageName="com.qrt.factory"
+                    className="com.qrt.factory.activity.Imei"/>
+        </TestItem>
+
+        <TestItem name="CameraFront" enable="true">
+            <Intent
+                    packageName="com.qrt.factory"
+                    className="com.qrt.factory.activity.CameraFront"/>
+        </TestItem>
+
+        <TestItem name="CameraBack" enable="true">
+            <Intent
+                    packageName="com.qrt.factory"
+                    className="com.qrt.factory.activity.CameraBack"/>
+        </TestItem>
+
         <TestItem name="Cradle" enable="true">
             <Intent
                     packageName="com.qrt.factory"

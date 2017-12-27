@@ -290,7 +290,8 @@
              <string
                 name="rs232_when_done">"when done, click  Done.</string>  -->
 
-    
+    <!-- Imei -->
+    <string name="imei_name">IMEI</string>
     <!-- Bluetooth -->
     <string
         name="bluetooth_name">Bluetooth</string>

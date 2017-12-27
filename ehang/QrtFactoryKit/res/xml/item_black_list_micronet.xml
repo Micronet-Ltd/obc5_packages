@@ -2,4 +2,6 @@
 
 <BlackList>
     <TestItem name = "HightSensor"/>
+    <TestItem name = "CameraBack"/>
+    <TestItem name = "CameraFront"/>
 </BlackList>

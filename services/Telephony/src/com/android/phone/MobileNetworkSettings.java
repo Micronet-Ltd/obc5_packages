@@ -338,9 +338,9 @@ public class MobileNetworkSettings extends PreferenceActivity
                 }
                 break;
 			 /*yihang hanxiaoming 2017.2.10 add for MT5 begin*/	
-			 case Constants.NETWORK_MODE_DEFAULT:
+//			 case Constants.NETWORK_MODE_DEFAULT:
 
-		      prefSet.removePreference(mButtonPreferredNetworkMode);
+//		      prefSet.removePreference(mButtonPreferredNetworkMode);
 			 /*yihang hanxiaoming 2017.2.10 add for MT5 end*/		
 			 case Constants.NETWORK_MODE_ALL_RAT:
                 /*lihui @20150928 added for all RAT network preferred setting according to the sim begin */

@@ -492,7 +492,7 @@ int computeJ1708Checksum(int id, int priority, BYTE *dataBytes, int dataLength){
 void FlexCAN_send_j1708_packet(DWORD id, BYTE *data, BYTE priority, int dataLength)
 {
     int index = 0, i = 0, fd_write = -1;
-    unsigned char packet[dataLength+5]={'\0'};
+    unsigned char packet[dataLength+5]; //={'\0'};
 
     fd_write = getFd(J1708_TTY_WRITE_NUMBER);
 

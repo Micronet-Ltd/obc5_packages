@@ -1,3 +1,4 @@
+
 //
 // Created by eemaan.siddiqi on 3/3/2017.
 //
@@ -814,12 +815,13 @@ int parseCANFrame(int start, int packetLength, uint8_t *pdata, int portNumber){
 
 int parseJ1708Frame(int start, int packetLength, uint8_t *pdata){
 
-    uint8_t frame[packetLength]={'\0'};
+    uint8_t frame[packetLength];// ={'\0'};
     memcpy(frame, (const void *) (pdata+start), packetLength-1);
     LOGD("J1708 Frame on ttyACM4 = %d, packetLength = %d",frame[0], packetLength);
     if(packetLength > 3){
         j1708rxd(frame, packetLength);
-    }
+        return 0; 
+	}
     else{
         LOGD("J1708 ERROR: Incomplete packet received - Frame not sent to j1708rxd()");
         return -1;

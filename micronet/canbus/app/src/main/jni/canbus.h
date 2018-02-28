@@ -9,7 +9,7 @@
 #define CAN_BUS_H
 
 #define invalid_arg "Invalid_Argument"
-#define CANBUS_JNI_VER "20170908.000"
+#define CANBUS_JNI_VER "20180228.000"
 
 #define STANDARD 0
 #define EXTENDED 1

@@ -463,7 +463,10 @@
         <![CDATA[Please Press\n<]]>
         <xliff:g id="KEY">%1$s</xliff:g>
         <![CDATA[ KEY>]]></string>
-
+    <string name="touch_panel_key_app_switch_message">
+        <![CDATA[Please Long Press\n<]]>
+        <xliff:g id="KEY">%1$s</xliff:g>
+        <![CDATA[ KEY>]]></string>
     <string name="set_nv_menu_text">Set the full power mode</string>
     <string name="set_nv_menu_password">Please enter password</string>
     <string name="set_nv_menu_password_bad">Passwords don\'t match</string>

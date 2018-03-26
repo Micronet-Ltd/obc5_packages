@@ -38,7 +38,7 @@ public class Battery extends AbstractActivity {
     private static final String POWER_AC_FILE
             = "/sys/class/power_supply/ac/online";
 
-    private static final PASSING_CAPACITY = 60;
+    private static final int PASSING_CAPACITY = 60;
 
     private TextView mTextView = null;
 
@@ -165,13 +165,13 @@ public class Battery extends AbstractActivity {
         }
     }
 
-    private void initBatteryCapacityInfo() {
+    private boolean initBatteryCapacityInfo() {
         String tmp = Utilities.getFileInfo(CAPACITY);
         if(tmp != null) {
             mResultBuffer.append("\n" + formatCapacity(tmp));
         }
 
-        return Integer.parseInt(tmp) >= PASSING_CAPACITY;
+        return (Integer.parseInt(tmp) >= PASSING_CAPACITY);
     }
 
     private String formatVoltage(String tmp) {

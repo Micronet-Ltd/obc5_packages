@@ -39,6 +39,7 @@ public class Battery extends AbstractActivity {
             = "/sys/class/power_supply/ac/online";
 
     private static final int PASSING_CAPACITY = 60;
+    private static final int MAX_PASSING_CAPACITY = 80;
 
     private TextView mTextView = null;
 
@@ -170,8 +171,8 @@ public class Battery extends AbstractActivity {
         if(tmp != null) {
             mResultBuffer.append("\n" + formatCapacity(tmp));
         }
-
-        return (Integer.parseInt(tmp) >= PASSING_CAPACITY);
+        int currentCapacity = Integer.parseInt(tmp);
+        return currentCapacity >= PASSING_CAPACITY && currentCapacity <= MAX_PASSING_CAPACITY;
     }
 
     private String formatVoltage(String tmp) {

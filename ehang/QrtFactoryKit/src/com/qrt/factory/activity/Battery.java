@@ -38,6 +38,8 @@ public class Battery extends AbstractActivity {
     private static final String POWER_AC_FILE
             = "/sys/class/power_supply/ac/online";
 
+    private static final PASSING_CAPACITY = 60;
+
     private TextView mTextView = null;
 
     private int mCountdown = 30;
@@ -77,18 +79,24 @@ public class Battery extends AbstractActivity {
     }
 
     private void testBattery() { //end the test
-/*begin :modified by tianfangzhou for battery test ,2013.10.14*/     	
+/*begin :modified by tianfangzhou for battery test ,2013.10.14*/
 //        String powerUsbValue = Utilities.getFileInfo(POWER_USB_FILE);
 //        String powerAcValue = Utilities.getFileInfo(POWER_AC_FILE);
 //
 //        if ("1".equals(powerAcValue) || "1".equals(powerUsbValue)) {
-        	
+
             boolean ret = batteryStatusInfo();
             initBartteryVoltageInfo();
             initBatteryTemperatureInfo();
+            boolean sufficientBatteryCapacity = initBatteryCapacityInfo(); // Order is important because we don't want to have short circuiting.
 
             if (ret) {
-                pass();
+                if(sufficientBatteryCapacity) {
+                    pass();
+                }
+                else {
+                    fail();
+                }
             } else {
                 if (testCount < 30) {
                     mHandler.sendEmptyMessageDelayed(2, 500);
@@ -102,7 +110,7 @@ public class Battery extends AbstractActivity {
 //                mHandler.sendEmptyMessageDelayed(0, 3000);
 //            }
 //        }
-/*end :modified by tianfangzhou for battery test ,2013.10.14*/             
+/*end :modified by tianfangzhou for battery test ,2013.10.14*/
     }
 
     private Handler mHandler = new Handler() {
@@ -115,11 +123,11 @@ public class Battery extends AbstractActivity {
                     String powerAcValue = Utilities.getFileInfo(POWER_AC_FILE);
                     if ("1".equals(powerAcValue) || "1".equals(powerUsbValue)) {
                         mHandler.sendEmptyMessageDelayed(2, 500);
-                    }else{                  
+                    }else{
                         mHandler.sendEmptyMessageDelayed(0, 500);
                     }
                 }
-                
+
             } else if (msg.what == 1) {  //show countdown
                 if (!isFinishing()) {
                     mTextView.setText(getString(R.string.battery_insert,msg.getData().getInt("countdown")));
@@ -157,6 +165,15 @@ public class Battery extends AbstractActivity {
         }
     }
 
+    private void initBatteryCapacityInfo() {
+        String tmp = Utilities.getFileInfo(CAPACITY);
+        if(tmp != null) {
+            mResultBuffer.append("\n" + formatCapacity(tmp));
+        }
+
+        return Integer.parseInt(tmp) >= PASSING_CAPACITY;
+    }
+
     private String formatVoltage(String tmp) {
         float voltage = Float.valueOf(tmp);
         if (voltage > 1000000) {
@@ -165,6 +182,10 @@ public class Battery extends AbstractActivity {
             voltage = voltage / 1000;
         }
         return getString(R.string.battery_voltage) + voltage + "V";
+    }
+
+    private String formatCapacity(String tmp) {
+        return getString(R.string.battery_capacity) + tmp + "%";
     }
 
     private boolean batteryStatusInfo() {

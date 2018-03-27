@@ -428,6 +428,7 @@
         name="battery_name">Battery and Charge</string>
     <string
         name="battery_voltage">Battery Voltage = </string>
+    <string name="battery_capacity">Battery Capacity = </string>
     <string name="battery_status">Battery Status  =  </string>
     <string name="battery_temperature">Battery Temperature  =  </string>
 

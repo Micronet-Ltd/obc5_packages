@@ -195,7 +195,7 @@
     <string
         name="psensor_name">Proximity Sensor</string>
     <string
-        name="psensor_hint">Please cover the Psensor.</string>
+        name="psensor_hint">Please cover the Psensor (next to LED).</string>
     <!-- Hall Sensor -->
     <string
         name="hallsensor_hint">Please use magnet close to the Hall switch.</string>

@@ -1,4 +1,4 @@
-@echo off
+@echo on
 rem ******
 rem change the following line to select a different language!
 rem ******
@@ -8,6 +8,7 @@ cd /d %~dp0
 set scriptversion=1.0.0
 del /F /Q temp.csv 1>nul 2>nul
 del /F /Q temp2.csv 1>nul 2>nul
+if not exist Results mkdir Results
 if not exist Results\summary.csv copy Input\template.csv Results\summary.csv >nul
 echo ************************************
 echo %messageIntro% %scriptversion%

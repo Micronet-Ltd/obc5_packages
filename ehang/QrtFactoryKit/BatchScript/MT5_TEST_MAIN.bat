@@ -63,8 +63,8 @@ color 47
 for /F "tokens=* delims=," %%a in (temp2.csv) do echo %%a,Pass >>Results\summary.csv
 color 27
 )
-rem del /F /Q temp.csv 1>nul 2>nul
-rem del /F /Q temp2.csv 1>nul 2>nul
+del /F /Q temp.csv 1>nul 2>nul
+del /F /Q temp2.csv 1>nul 2>nul
 waitfor /T 1 a 2>nul
 color 07
 goto :eof

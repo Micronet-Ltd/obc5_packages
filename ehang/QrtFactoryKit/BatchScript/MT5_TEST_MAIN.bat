@@ -15,7 +15,6 @@ echo %messageIntro% %scriptversion%
 echo ************************************
 set /p param1=%messageEnterSN%
 set /p param2=%messageEnterIMEI%
-set /p param4=%messageEnterCSN%
 echo %messageConnectUSB%
 pause
 adb wait-for-device
@@ -33,7 +32,7 @@ echo %tempfile:~2% >temp.csv
 if %tempfile:~0,1% EQU 3 (
     goto :cradleonly
 )
-for /F "tokens=1,2,3* delims=," %%a in (temp.csv) do echo %DATE%,%TIME%,%%a,%param1%,%%b,%param2%,%%c,%param3%,%param4%,%%d,%scriptversion% >temp2.csv
+for /F "tokens=1,2,3* delims=," %%a in (temp.csv) do echo %DATE%,%TIME%,%%a,%param1%,%%b,%param2%,%%c,%param3%,%%d,%scriptversion% >temp2.csv
 findstr Fail temp2.csv 1>nul 2>nul
 if %ERRORLEVEL%==0 @(
   for /F "tokens=* delims=," %%a in (temp2.csv) do echo %%a,Fail >>Results\summary.csv

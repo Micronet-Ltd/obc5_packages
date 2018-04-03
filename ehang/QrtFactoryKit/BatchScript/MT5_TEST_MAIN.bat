@@ -5,7 +5,7 @@ rem ******
 call Input\English.bat
 setlocal
 cd /d %~dp0
-set scriptversion=1.0.0
+set scriptversion=2.0.0
 del /F /Q temp.csv 1>nul 2>nul
 del /F /Q temp2.csv 1>nul 2>nul
 if not exist Results mkdir Results

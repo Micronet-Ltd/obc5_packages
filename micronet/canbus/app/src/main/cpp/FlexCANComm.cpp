@@ -151,7 +151,7 @@ int closeTerminalInterface(int port){
 }
 
 int closeCAN(int close_fd) {
-    // first always close1939Port1 the CAN module (bug #250)
+    // first always close the CAN module (bug #250)
     // http://192.168.1.234/redmine/issues/250
     char buf[256];
     sprintf(buf, "C\r");
@@ -183,29 +183,32 @@ int getFd(int portNumber){
 }
 /**
  * closePort()
- * Disables the tty port and deallocates the file descriptor associated with it.
+ * Disables the tty port and de-allocates the file descriptor associated with it.
  **/
 int closePort(int portNumber){
     LOGD("Entered closePort!!");
     int closeFd = getFd(portNumber);
+
     if(portNumber == CAN1_TTY_NUMBER || portNumber == CAN2_TTY_NUMBER){
         if (closeCAN(closeFd) == -1) {
             //Couldn't close CAN channel
             return -1;
         }
     }
-    else if(portNumber == J1708_TTY_READ_NUMBER){
-       if(getFd(CAN1_TTY_NUMBER) <= 0){
-           //set CAN1_1708 power enabled to 0
-           //Temp solution below for closing CAN1
-           LOGD("Entered closePort!! 1708 condition! ");
-           if (closeCAN(closeFd) == -1) {
-               //Couldn't close CAN channel
-               return -1;
-           }
-       }
+    else if(portNumber == J1708_TTY_READ_NUMBER || portNumber == J1708_TTY_WRITE_NUMBER){
+        if(getFd(CAN1_TTY_NUMBER) <= 0){
+            //Set CAN1_1708 power enabled to 0
+            //Temp solution below for closing CAN1
+            LOGD("Entered closePort!! 1708 condition!");
+            if (closeCAN(closeFd) == -1) {
+                //Couldn't close CAN channel
+                return -1;
+            }
+        }
+        else{
+            LOGE("Cannot close J1708, CAN1 is being used");
+        }
     }
-
     closeTerminalInterface(portNumber);
     LOGD("Leaving closePort!!");
     return 0;
@@ -485,7 +488,6 @@ int openCANandSetTermination(int fd, bool term) {
 
 int setListeningMode(int fd, bool term) {
     int termination = term ? 1 : 0;
-
     char buf[256];
     sprintf(buf, "L%d\r", termination);
     if (-1 == write(fd, buf, strlen(buf))) {
@@ -1155,18 +1157,18 @@ static void *monitor_data_thread_port1708(void *param) {
 }
 
 
-int closeInterfaceCAN1() {
-    LOGD("Entered the close1939Port1()! ");
+int closeCAN1Thread() {
+    LOGD("Entered the closeCAN1Thread()! ");
     return serial_deinit_thread_port1();
 }
 
-int closeInterfaceCAN2() {
-    LOGD("Entered the close1939Port2()! ");
+int closeCAN2Thread() {
+    LOGD("Entered the closeCAN2Thread()! ");
     return serial_deinit_thread_port2();
 }
 
-int closeInterfaceJ1708() {
-    LOGD("Entered the close1708()! ");
+int closeJ1708Thread() {
+    LOGD("Entered the closeJ1708Thread()! ");
     return serial_deinit_thread_j1708();
 }
 

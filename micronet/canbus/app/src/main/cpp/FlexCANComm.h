@@ -49,9 +49,9 @@ int computeJ1708Checksum(int id, int priority, BYTE *dataBytes, int dataLength);
 void sendCanbusFramePort1(uint32_t frameId, int type, int length, BYTE* data );
 void sendCanbusFramePort2(uint32_t frameId, int type, int length, BYTE* data);
 
-int closeInterfaceCAN1();
-int closeInterfaceCAN2();
-int closeInterfaceJ1708();
+int closeCAN1Thread();
+int closeCAN2Thread();
+int closeJ1708Thread();
 int serial_deinit_thread_port1();
 int serial_deinit_thread_port2();
 int serial_deinit_thread_j1708();

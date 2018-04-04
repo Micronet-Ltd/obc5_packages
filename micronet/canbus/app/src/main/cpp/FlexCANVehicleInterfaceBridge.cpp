@@ -318,12 +318,13 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANVehicleInterfaceBridge_cr
 
 JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANVehicleInterfaceBridge_removeCAN1Interface(JNIEnv *env, jobject instance) {
 
-    closeInterfaceCAN1();
+    closeCAN1Thread();
     if (closePort(CAN1_TTY_NUMBER) == -1) {
         return -1;
         LOGD("Couldn't close CAN1 successfully ");
     }
-        return 0;
+
+    return 0;
     error:
     return SYSTEM_ERROR;
 
@@ -331,10 +332,10 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANVehicleInterfaceBridge_re
 
 JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANVehicleInterfaceBridge_removeCAN2Interface(JNIEnv *env, jobject instance) {
 
-    closeInterfaceCAN2();
+    closeCAN2Thread();
     if(closePort(CAN2_TTY_NUMBER) == -1) {
         return -1;
-        LOGD("Couldn't close CAN2 fd successfully ");
+        LOGD("Couldn't close CAN2 successfully ");
     }
 
     return 0;
@@ -367,9 +368,9 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANVehicleInterfaceBridge_cr
 
 JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANVehicleInterfaceBridge_removeJ1708Interface(JNIEnv *env, jobject instance){
 
-    LOGD("Entered removeInterface: Begin deinit()!!");
-    closeInterfaceJ1708();
-    LOGD("Removing J1708 Interface");
+    LOGD("Entered removeJ1708Interface: Begin deinit()!!");
+    closeJ1708Thread();
+    LOGD("Closing J1708 file descriptors");
     if (closePort(J1708_TTY_READ_NUMBER) == -1) {
         return -1;
         LOGD("Couldn't close J1708_READ successfully ");
@@ -378,6 +379,7 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANVehicleInterfaceBridge_re
         return -1;
         LOGD("Couldn't close J1708_READ successfully ");
     }
+    LOGD("Removing J1708 Interface");
     return 0;
     error:
     return SYSTEM_ERROR;

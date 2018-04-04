@@ -35,12 +35,12 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusSocket_registerCall
     g_canbus.g_listenerObject_Can1 = (jobject) env->NewGlobalRef(listenerObj);
     jclass canbusListenerClass = env->GetObjectClass(listenerObj);
     if (canbusListenerClass == NULL) {
-       // LOGE("!!!!!!!!!!!!!!!! canbusSocketClass error !!!!!!!!!!!!!!!!");
+       LOGE("!!!!!!!!!!!!!!!! canbusSocketClass error !!!!!!!!!!!!!!!!");
     }
 
     g_canbus.g_onPacketReceive1939Port1 = env->GetMethodID(canbusListenerClass, "onPacketReceive1939Port1", "(Lcom/micronet/canbus/CanbusFramePort1;)V");
     if (g_canbus.g_onPacketReceive1939Port1 == NULL) {
-        //LOGE("!!!!!!!!!!!!!!!! g_onPacketReceive1939Port1 error !!!!!!!!!!!!!!!!");
+        LOGE("!!!!!!!!!!!!!!!! g_onPacketReceive1939Port1 error !!!!!!!!!!!!!!!!");
     }
 
     return 0;
@@ -51,12 +51,12 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANCanbusSocket_registerCall
     g_canbus.g_listenerObject_Can2 = (jobject) env->NewGlobalRef(listenerObj);
     jclass canbusListenerClass = env->GetObjectClass(listenerObj);
     if (canbusListenerClass == NULL) {
-        //LOGE("!!!!!!!!!!!!!!!! canbusSocketClass error - CAN Port 1 !!!!!!!!!!!!!!!!");
+        LOGE("!!!!!!!!!!!!!!!! canbusSocketClass error - CAN Port 1 !!!!!!!!!!!!!!!!");
     }
 
        g_canbus.g_onPacketReceive1939Port2 = env->GetMethodID(canbusListenerClass, "onPacketReceive1939Port2", "(Lcom/micronet/canbus/CanbusFramePort2;)V");
        if (g_canbus.g_onPacketReceive1939Port2 == NULL) {
-           //LOGE("!!!!!!!!!!!!!!!! g_onPacketReceive1939Port1 error - CAN Port 2 !!!!!!!!!!!!!!!!");
+           LOGE("!!!!!!!!!!!!!!!! g_onPacketReceive1939Port1 error - CAN Port 2 !!!!!!!!!!!!!!!!");
        }
 
     return 0;

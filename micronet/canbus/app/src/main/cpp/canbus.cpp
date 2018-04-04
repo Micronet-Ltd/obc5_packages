@@ -30,7 +30,7 @@ jint JNI_OnLoad(JavaVM* vm, void* reserved)
         jclass infoClass = env->FindClass("com/micronet/canbus/Info");
         if(!infoClass)
         {
-//            LOGE("Canbus Library mismatch, JNI '%s'\n", CANBUS_JNI_VER);
+            LOGE("Canbus Library mismatch, JNI '%s'\n", CANBUS_JNI_VER);
             throwRuntimeException(env, "Canbus Library mismatch. Unable to load class com.micronet.canbus.Info");
             return -1;
 
@@ -41,7 +41,7 @@ jint JNI_OnLoad(JavaVM* vm, void* reserved)
 
         if(strcmp(versionCString, CANBUS_JNI_VER))
         {
-//            LOGE("Canbus Library mismatch, JNI '%s' != JAR '%s'\n", CANBUS_JNI_VER, versionCString);
+            LOGE("Canbus Library mismatch, JNI '%s' != JAR '%s'\n", CANBUS_JNI_VER, versionCString);
             throwRuntimeException(env, "Canbus Library mismatch. canbus_api.jar does not match libcanbus.so");
             env->ReleaseStringUTFChars(versionString, versionCString);
             return -1;

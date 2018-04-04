@@ -16,14 +16,14 @@ add_library( # Sets the name of the library.
              SHARED
 
              # Provides a relative path to your source file(s).
-             src/main/cpp/canbus.cpp
-             src/main/cpp/CanbusInterface.cpp
-             src/main/cpp/FlexCANCanbusSocket.cpp
-             src/main/cpp/FlexCANComm.cpp
-             src/main/cpp/FlexCANCommand.cpp
-             src/main/cpp/FlexCANJ1708Socket.cpp
-             src/main/cpp/FlexCANVehicleInterfaceBridge.cpp
-             src/main/cpp/J1708Interface.cpp )
+             src/main/jni/canbus.cpp
+             src/main/jni/CanbusInterface.cpp
+             src/main/jni/FlexCANCanbusSocket.cpp
+             src/main/jni/FlexCANComm.cpp
+             src/main/jni/FlexCANCommand.cpp
+             src/main/jni/FlexCANJ1708Socket.cpp
+             src/main/jni/FlexCANVehicleInterfaceBridge.cpp
+             src/main/jni/J1708Interface.cpp )
 
 # Searches for a specified prebuilt library and stores the path as a
 # variable. Because CMake includes system libraries in the search path by

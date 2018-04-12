@@ -25,7 +25,7 @@ set /p param2=%messageEnterIMEI%
 
 if not exist temp.csv goto :testnotrun
 for /F "tokens=1 delims=," %%a in (Input\OS_VERSION.dat) do (set param3=%%a)
-for /F "tokens=1,2,3 delims=," %%a in (temp.csv) do @(
+for /F "tokens=1,2,3 delims=," %%a in ("%tempfile:~2%") do @(
 if !param1! NEQ !nt! @(
     if %%a == %param1% (set param1=Pass) else (set param1=Fail) || set param1=Fail 
 ) else set param1=!nt!
@@ -34,11 +34,11 @@ if %%c == %param3% (set param3=Pass) else (set param3=Fail) || set param3=Fail
 )
 
 
-echo %tempfile:~2% >temp.csv
+rem echo %tempfile:~2% >temp.csv
 if %tempfile:~0,1% EQU 3 (
     goto :cradleonly
 )
-for /F "tokens=1,2,3* delims=," %%a in (temp.csv) do echo %DATE%,%TIME%,%%a,%param1%,%%b,%param2%,%%c,%param3%,%param4%,%%d,%scriptversion% >temp2.csv
+for /F "tokens=1,2,3* delims=," %%a in ("%tempfile:~2%") do echo %DATE%,%TIME%,%%a,%param1%,%%b,%param2%,%%c,%param3%,%param4%,%%d,%scriptversion% >temp2.csv
 findstr Fail temp2.csv 1>nul 2>nul
 if %ERRORLEVEL%==0 @(
   for /F "tokens=* delims=," %%a in (temp2.csv) do echo %%a,Fail >>Results\summary.csv
@@ -57,7 +57,7 @@ echo %messageTestNotFound%
 pause
 goto :eof
 :cradleonly
-for /F "tokens=1,2,3,4,5,6,7,8 delims=," %%a in (temp.csv) do (
+for /F "tokens=1,2,3,4,5,6,7,8 delims=," %%a in ("%tempfile:~2%") do (
   echo %DATE%,%TIME%,%%a,Not Tested,%%b,%param2%,%%c,%param3%,%param4%,%%d,Not Tested,Not Tested,Not Tested,Not Tested,Not Tested,Not Tested,Not Tested,Not Tested,Not Tested,Not Tested,Not Tested,Not Tested,Not Tested,Not Tested,Not Tested,Not Tested,Not Tested,Not Tested,Not Tested,Not Tested,Not Tested,Not Tested,Not Tested,%%e,Not Tested,Not Tested,%%f,%%g,%%h,%scriptversion% >temp2.csv
 )
 findstr Fail temp2.csv 1>nul 2>nul

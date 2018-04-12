@@ -57,7 +57,7 @@ pause
 goto :eof
 :cradleonly
 for /F "tokens=1,2,3,4,5,6,7,8 delims=," %%a in ("%tempfile:~2%") do (
-  echo %DATE%,%TIME%,N/A,Not Tested,%%b,%param2%,%%c,%param3%,%param4%,%%d,Not Tested,Not Tested,Not Tested,Not Tested,Not Tested,Not Tested,Not Tested,Not Tested,Not Tested,Not Tested,Not Tested,Not Tested,Not Tested,Not Tested,Not Tested,Not Tested,Not Tested,Not Tested,Not Tested,Not Tested,Not Tested,Not Tested,Not Tested,%%e,Not Tested,Not Tested,%%f,%%g,%%h,%scriptversion% >temp2.csv
+  echo %DATE%,%TIME%,N/A,Not Tested,%%b,%param2%,%%c,N/A,%param4%,%%d,Not Tested,Not Tested,Not Tested,Not Tested,Not Tested,Not Tested,Not Tested,Not Tested,Not Tested,Not Tested,Not Tested,Not Tested,Not Tested,Not Tested,Not Tested,Not Tested,Not Tested,Not Tested,Not Tested,Not Tested,Not Tested,Not Tested,Not Tested,%%e,Not Tested,Not Tested,%%f,%%g,%%h,%scriptversion% >temp2.csv
 )
 findstr Fail temp2.csv 1>nul 2>nul
 if %ERRORLEVEL%==0 @(

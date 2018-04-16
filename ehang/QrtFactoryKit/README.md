@@ -1,7 +1,6 @@
 # Build instructions for testing
 
-Build instructions can be found on [the TeamBook.](https://micronet1023744.sharepoint.com/:o:/r/_layouts/15/WopiFrame.aspx?sourcedoc={0122c127-efe4-4a62-acdd-2b1bed3eeeb8}&action=edit&wd=target%28%2F%2FOBC5.one%7C2e2d56f6-faef-4026-8438-a150ca8e239c%2FOS%20Build%20Instructions%7C1f483dbe-5d80-4e1a-9a54-6f48014582a6%2F%29)
-Run `mm WITH_DEXPREOPT=false -B` to just build the APK.
+Build instructions can be found on [the TeamBook.](https://micronet1023744.sharepoint.com/:o:/r/_layouts/15/WopiFrame.aspx?sourcedoc={0122c127-efe4-4a62-acdd-2b1bed3eeeb8}&action=edit&wd=target%28%2F%2FOBC5.one%7C2e2d56f6-faef-4026-8438-a150ca8e239c%2FOS%20Build%20Instructions%7C1f483dbe-5d80-4e1a-9a54-6f48014582a6%2F%29)  Run `mm WITH_DEXPREOPT=false -B` to just build the APK.
 
 # Installation instructions
 

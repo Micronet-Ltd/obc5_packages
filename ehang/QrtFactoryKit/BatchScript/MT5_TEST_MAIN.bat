@@ -20,7 +20,7 @@ set nt="N/A"
 set /p tempfile=<temp.csv
 if %tempfile:~0,1% NEQ 3 (set /p param1=%messageEnterSN%) else (set param1=%nt%)
 if %tempfile:~0,1% EQU 3 (set /p param4=%messageEnterCSN%) else (set param4=%nt%)
-set /p param2=%messageEnterIMEI%
+if %tempfile:~0,1% NEQ 3 (set /p param2=%messageEnterIMEI%) else (set param2=%nt%) 
 
 if not exist temp.csv goto :testnotrun
 for /F "tokens=1 delims=," %%a in (Input\OS_VERSION.dat) do (set param3=%%a)
@@ -58,7 +58,7 @@ goto :eof
 :cradleonly
 if not exist Results\cradle_only_summary.csv copy Input\cradle_only_template.csv Results\cradle_only_summary.csv >nul
 for /F "tokens=1,2,3,4,5,6,7,8 delims=," %%a in ("%tempfile:~2%") do (
-  echo %DATE%,%TIME%,%%b,%param2%,%%c,%param4%,%%d,%%e,%%f,%%g,%%h,%scriptversion% >temp2.csv
+  echo %DATE%,%TIME%,%%c,%param4%,%%d,%%e,%%f,%%g,%%h,%scriptversion% >temp2.csv
 )
 findstr Fail temp2.csv 1>nul 2>nul
 if %ERRORLEVEL%==0 @(

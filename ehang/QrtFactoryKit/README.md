@@ -4,8 +4,7 @@ Build instructions can be found on [the TeamBook.](https://micronet1023744.share
 
 # Installation instructions
 
-Because QrtFactoryKit is a system app that is not intended to be used by users, the standard install commands with adb do not work.
-In order to install the app on your MT5 device, you will need to run the following commands:
+Because QrtFactoryKit is a system app that is not intended to be used by users, the standard install commands with adb do not work. In order to install the app on your MT5 device, you will need to run the following commands:
 
 ```
 adb root
@@ -20,5 +19,4 @@ Configuration files for the test order are stored under product_config in croot 
 
 # Note on battery capacity test
 
-In order to configure the acceptable battery range, create a file called `battery_levels.csv` in the root directory of the SD card.
-The contents of the file will be `<min_battery_level_>,<max_battery_level>`.
+In order to configure the acceptable battery range, create a file called `battery_levels.csv` in the root directory of the SD card. The contents of the file will be `<min_battery_level_>,<max_battery_level>`.  Push the file to `/storage/sdcard1/battery_levels.csv`.

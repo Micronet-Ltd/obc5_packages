@@ -2,7 +2,7 @@
 
 <FactoryTest>
     <TestKey
-            name="MENU"
+            name="APP_SWITCH"
             keyCode="KEYCODE_MENU"/>
     <TestKey
             name="HOME"

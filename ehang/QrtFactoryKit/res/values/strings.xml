@@ -195,7 +195,7 @@
     <string
         name="psensor_name">Proximity Sensor</string>
     <string
-        name="psensor_hint">Please cover the Psensor.</string>
+        name="psensor_hint">Please cover the Psensor (next to LED).</string>
     <!-- Hall Sensor -->
     <string
         name="hallsensor_hint">Please use magnet close to the Hall switch.</string>
@@ -428,6 +428,7 @@
         name="battery_name">Battery and Charge</string>
     <string
         name="battery_voltage">Battery Voltage = </string>
+    <string name="battery_capacity">Battery Capacity = </string>
     <string name="battery_status">Battery Status  =  </string>
     <string name="battery_temperature">Battery Temperature  =  </string>
 
@@ -463,7 +464,10 @@
         <![CDATA[Please Press\n<]]>
         <xliff:g id="KEY">%1$s</xliff:g>
         <![CDATA[ KEY>]]></string>
-
+    <string name="touch_panel_key_app_switch_message">
+        <![CDATA[Please Long Press\n<]]>
+        <xliff:g id="KEY">%1$s</xliff:g>
+        <![CDATA[ KEY>]]></string>
     <string name="set_nv_menu_text">Set the full power mode</string>
     <string name="set_nv_menu_password">Please enter password</string>
     <string name="set_nv_menu_password_bad">Passwords don\'t match</string>

@@ -74,6 +74,7 @@ public class TouchPanel extends AbstractActivity {
     public void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+        Log.d("AUSTIN", "In onCrate for TouchPanel");
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setType(WindowManager.LayoutParams.TYPE_KEYGUARD);
 
@@ -129,6 +130,9 @@ public class TouchPanel extends AbstractActivity {
 
     private String getKeyName() {
         if (key < mTestKeys.size()) {
+            if("APP_SWITCH".equals(mTestKeys.get(key).getName()))
+                return getString(R.string.touch_panel_key_app_switch_message,
+                    mTestKeys.get(key).getName());
             return getString(R.string.touch_panel_key_message,
                     mTestKeys.get(key).getName());
         }

@@ -56,7 +56,7 @@ void * j1708_proc(void * cntx)
 
 	do {
 		while(!file_exists(context->name)) {
-			//DINFO("Waiting for '%s'", context->name);
+			DINFO("Waiting for '%s'", context->name);
 			if (-1 != fd_mcu) {
 				close (fd_mcu);
 				fd_mcu = -1;
@@ -145,7 +145,7 @@ void * j1708_proc(void * cntx)
 				abort();
 			}
 
-#if J1708_DEBUG
+#ifdef J1708_DEBUG
 			//Print message
 			{
 				int count;
@@ -158,7 +158,7 @@ void * j1708_proc(void * cntx)
 
 			ready = frame_process_buffer(&frame, readbuffer, ready);
 
-#if J1708_DEBUG
+#ifdef J1708_DEBUG
 			//Print message
 			{
 				int count;
@@ -214,7 +214,7 @@ void * j1708_proc(void * cntx)
 
 			ready = frame_encode (readbuffer, databuffer, ready );
 			if (0 < ready) {
-				tmp = write(fd_dev, databuffer, ready);
+				tmp = write(fd_mcu, databuffer, ready);
 				if(-1 == tmp)
 				{
 					DERR("write encoded: %s", strerror(errno));

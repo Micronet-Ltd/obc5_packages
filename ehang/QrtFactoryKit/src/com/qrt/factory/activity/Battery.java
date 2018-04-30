@@ -38,8 +38,8 @@ public class Battery extends AbstractActivity {
     private static final String POWER_AC_FILE
             = "/sys/class/power_supply/ac/online";
 
-    private static final int PASSING_CAPACITY = 60;
-    private static final int MAX_PASSING_CAPACITY = 80;
+    private static int PASSING_CAPACITY = 60;
+    private static int MAX_PASSING_CAPACITY = 80;
 
     private TextView mTextView = null;
 
@@ -68,6 +68,18 @@ public class Battery extends AbstractActivity {
 
         mHandler.sendMessage(createMessage(mCountdown));
         mHandler.sendEmptyMessage(0);
+
+        try {
+            String levelString = Utilities.getFileInfo("/storage/sdcard1/battery_levels.csv");
+            String[] levelArray = levelString.split(",");
+            if(levelArray.length == 2) {
+                PASSING_CAPACITY = Integer.parseInt(levelArray[0]);
+                MAX_PASSING_CAPACITY = Integer.parseInt(levelArray[1]);
+            }
+        }
+        catch(Exception e) {
+            // swallowing any exception and letting default values stay
+        }
     }
 
     private Message createMessage(int countdown) {

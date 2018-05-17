@@ -378,3 +378,26 @@ int set_accel_reg_dbg(int * fd, uint8_t address, uint8_t data)
 					address, data};
 	return set_command(fd, req, sizeof(req));
 }
+
+/* This functions gets an array of [month,days,hours,minutes] in BCD format and
+ * sends a message to the other device to activate the alarm at this time.
+*/
+int set_rtc_alarm1_time(int * fd, const uint8_t *dt_num)
+{
+    #define TURN_DEC_DATE_TO_BCD_MACRO(decimal_date) ((decimal_date%10) + ((decimal_date/10)<<4))
+
+    uint8_t req[] = { MCTRL_MAPI, MAPI_WRITE_RQ, MAPI_SET_RTC_ALARM1_TIME,
+					(uint8_t)TURN_DEC_DATE_TO_BCD_MACRO(dt_num[0]),
+                    (uint8_t)TURN_DEC_DATE_TO_BCD_MACRO(dt_num[1]), 
+                    (uint8_t)TURN_DEC_DATE_TO_BCD_MACRO(dt_num[2]),
+                    (uint8_t)TURN_DEC_DATE_TO_BCD_MACRO(dt_num[3]),
+                    0//seconds should be zeroed for now
+                    };
+
+    printf("%u\n",TURN_DEC_DATE_TO_BCD_MACRO(dt_num[0]);
+    printf("sizeof(req) =%u\n",sizeof(req));
+
+    return set_command(fd, req, sizeof(req));
+}
+
+

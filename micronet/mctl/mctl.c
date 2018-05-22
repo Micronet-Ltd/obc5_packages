@@ -118,54 +118,6 @@ ssize_t format_timeval(struct timeval *tv, char *buf, size_t sz)
   return written;
 }
 
-/* returns true if the given time is in legal format 
- * false otherwise.
- * Expected time format: two digits for each: monthdayhourmin
- * note that seconds and miliseconds aren't being considered as the device 
- * is not that accurate. 
- *                        Ex : 16032919
- *                        16/03 29:19
- *                              
-  */
-bool is_date_legal(const uint8_t *date)
-{
-    uint8_t max_num_of_days_per_month[] = {31,29,31,30,31,30,31,31,30,31,30,31};
-    uint8_t month = date[0];
-
-    if(month > 12)
-    {
-        printf("ERROR: month can't be larger than 12\n");
-        return false;
-    }
-    if(month == 0)
-    {
-        printf("ERROR: month can't be zero\n");
-        return false;
-    }
-    if(date[1] > max_num_of_days_per_month[month-1])
-    {
-        printf("ERROR: there are no more than %d days in this month\n", max_num_of_days_per_month[month-1]);
-        return false;
-    }
-    if(0 == date[1])
-    {
-        printf("ERROR: day can't be zero\n");
-        return false;
-    }
-    if(date[2] > 23)
-    {
-        printf("ERROR: hour can't be larger than 23\n");
-        return false;
-    }
-    if(date[3] > 59)
-    {
-        printf("ERROR: minutes can't be larger than 59\n");
-        return false;
-    }
-
-    return true;
-}
-
 int send_api_hex2(int * fd, char * hexdata)
 {
 	uint8_t data[4096];
@@ -362,14 +314,9 @@ int send_api_hex2(int * fd, char * hexdata)
                 printf( "date length is illegal\n");
                 break;
             }
-            if(!is_date_legal(&data[2]))
-            {
-                 printf("date format is illegal\n");
-                 break;
-            }
      
             ret = set_rtc_alarm1_time(fd, &data[2]);
-            printf("setting up alarm date at :month = %u day = %u hour = %u minute = %u ret = %d\n",data[2],data[3],data[4],data[5], ret);
+            printf("Trying to set up alarm date at :month = %u day = %u hour = %u minute = %u ret = %d\n",data[2],data[3],data[4],data[5], ret);
 			break;
 
 		default:

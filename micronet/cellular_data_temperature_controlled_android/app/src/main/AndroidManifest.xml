@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="micronet.com.cellular_data_temperature_controlled"
     android:versionCode="2"
-    android:versionName="2.1"
+    android:versionName="2.2"
     android:sharedUserId="android.uid.system">
 
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>
@@ -43,6 +43,7 @@
             <intent-filter>
                 <action android:name="micronet.com.cellular_data_temperature_controlled.PAUSE_SERVICE"/>
                 <action android:name="micronet.com.cellular_data_temperature_controlled.START_SERVICE"/>
+                <action android:name="micronet.com.cellular_data_temperature_controlled.OVERRIDE_CELL_DATA_STATE"/>
             </intent-filter>
         </receiver>
     </application>

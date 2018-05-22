@@ -20,15 +20,20 @@ public class Read_Write_File {
 
     public static final String TAG = "Read_Write_File";
     //Declaring the Directory
-    public static File logDir;
+    public static File micronetServiceDir;
+    public static File serviceDir;
     public static BufferedWriter bufferedWriter = null;
     public static FileWriter fileWriter = null;
+    //private static String configHeader = "Configuration File Created at " + SystemClock.currentThreadTimeMillis() + " ;";
+    //private static String serviceConfigHeader = configHeader + "Initiated by Service Itself";
+    private static String configDisabled = "Override_Cellular_Data_Configuration = false";
+    private static String configEnabled = "Override_Cellular_Data_Configuration = true";
 
 
-    public static void writeStateToFile(String handlerValue, Context context){
-        File file = new File(context.getFilesDir(), "MobileDataState.txt"); //Created a Text File for storing the enabled count
+    public static void writeManagedStateToFile(String handlerValue, Context context){
+        File file = new File(context.getFilesDir(), "Managed-MobileDataState.txt"); //Created a Text File for storing the enabled count
         if(!file.exists()) {
-            //If MobileDataState.txt is not found, reset the state to 0
+            //If Managed-MobileDataState.txt is not found, reset the state to 0
             //If the state is 0 - Service hasn't disabled cellular data else service has disabled it.
             handlerValue = "0";
         }
@@ -38,16 +43,16 @@ public class Read_Write_File {
             fileOutputStream.close();
         }
         catch (IOException e) {
-            Log.e("Exception", "MobileDataState.txt: File write failed: " + e.toString());
+            Log.e("Exception", "Managed-MobileDataState.txt: File write failed: " + e.toString());
         }
     }
 
     //Read Function
-    public static String readStateFromFile(Context context) {
+    public static String readManagedStateFromFile(Context context) {
 
         String ret = "";
         //Creating a Text File to store the state of cellular data if the service managed it at any point.
-        File file = new File(context.getFilesDir(), "MobileDataState.txt");
+        File file = new File(context.getFilesDir(), "Managed-MobileDataState.txt");
         if(!file.exists()) {
             return ret;
         }
@@ -63,10 +68,67 @@ public class Read_Write_File {
             fileReader.close();
             ret = stringBuilder.toString();
         } catch (FileNotFoundException e) {
-            Log.e(TAG, "MobileDataState.txt: File not found: " + e.toString());
+            Log.e(TAG, "Managed-MobileDataState.txt: File not found: " + e.toString());
         } catch (Exception e) {
-            Log.e(TAG, "MobileDataState.txt: Can not read file: " + e.toString());
+            Log.e(TAG, "Managed-MobileDataState.txt: Can not read file: " + e.toString());
         }
+        return ret;
+    }
+
+    public static void writeConfigurationToFile(Boolean override, Context context){
+        // Text file that stores the settings configuration parameters
+        String handlerValue = override ? configEnabled : configDisabled;
+        File file = new File(serviceDir, "CellularDataServiceConfig.txt");
+        if(!file.exists()) {
+            handlerValue = configDisabled;
+            Log.d(TAG, "CellularDataServiceConfig.txt not found, write the default setting: " + configDisabled);
+        }
+        try {
+            FileOutputStream fileOutputStream = new FileOutputStream(file);
+            fileOutputStream.write(handlerValue.getBytes());
+            fileOutputStream.close();
+        }
+        catch (IOException e) {
+            Log.e("Exception", "CellularDataServiceConfig.txt: File write failed: " + e.toString());
+        }
+    }
+
+    //Read Function
+    public static String readConfigurationFromFile(Context context) {
+        //Creating a Text File to store the settings configuration
+        String rawData = "";
+        String ret = "";
+        File file = new File(serviceDir, "CellularDataServiceConfig.txt");
+        if(!file.exists()) {
+            Log.e(TAG, "Read Failed: CellularDataServiceConfig.txt doesn't exist!");
+            return ret;
+        }
+        try {
+            FileReader fileReader = new FileReader(file);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            String receiveString = "";
+            StringBuilder stringBuilder = new StringBuilder();
+            while ((receiveString = bufferedReader.readLine()) != null) {
+                stringBuilder.append(receiveString);
+            }
+            fileReader.close();
+            rawData = stringBuilder.toString();
+            String data[] = rawData.split("\r\n");
+            if(data[0] == configDisabled){
+                ret = "false";
+            }
+            else if (data[0] == configEnabled){
+                ret = "true";
+            }
+            else{
+                ret = "Invalid Value";
+            }
+        } catch (FileNotFoundException e) {
+            Log.e(TAG, "CellularDataServiceConfig.txt: File not found: " + e.toString());
+        } catch (Exception e) {
+            Log.e(TAG, "CellularDataServiceConfig.txt: Can not read file: " + e.toString());
+        }
+        Log.d(TAG, "Read Config: " + ret);
         return ret;
     }
 
@@ -163,9 +225,11 @@ public class Read_Write_File {
     public static void LogToFile(String handlerValue2, String handlerValue1 , Context context, String additionalMessage){
         String timestamp=("Timestamp: ")+Utils.formatDate(System.currentTimeMillis())+("   "); //Getting current time stamp
         String infoMessage="Message Info:   ";
+        String overrideCellState = "    Override Cell State:    ";
+        String currentMobileDataState = "   Current Mobile Data State:   ";
         String ec= "    EnabledCount:   ";
         String dc= "    DisabledCount:   ";
-        File file = new File(logDir, "ServiceLog.txt");//Created a Text File to maintain the service activity log
+        File file = new File(serviceDir, "ServiceLog.txt");//Created a Text File to maintain the service activity log
         if(!file.exists()) {
             Log.d(TAG, "ServiceLog.txt: File Doesn't exist");
         }
@@ -173,6 +237,10 @@ public class Read_Write_File {
             fileWriter = new FileWriter(file.getAbsoluteFile(), true);
             bufferedWriter = new BufferedWriter(fileWriter);
             bufferedWriter.write(timestamp);
+            bufferedWriter.write(overrideCellState);
+            bufferedWriter.write(String.valueOf(Utils.getCellularDataConfig(context)));
+            bufferedWriter.write(currentMobileDataState);
+            bufferedWriter.write(String.valueOf(MobileDataManager.getMobileDataState(context)));
             bufferedWriter.write(infoMessage);
             bufferedWriter.write(additionalMessage);
             bufferedWriter.write(TemperatureValues.temperaturevalues);
@@ -201,7 +269,7 @@ public class Read_Write_File {
         String String_pauseStatus=String.valueOf(pauseStatus);
         String timestamp=("Timestamp:   ")+Utils.formatDate(System.currentTimeMillis())+("   "); //Getting current time stamp
         String paused="     Paused Status:  ";
-        File file = new File(logDir, "ServiceActivityLog.txt");//Created a Text File to maintain the service activity log
+        File file = new File(serviceDir, "ServiceActivityLog.txt");//Created a Text File to maintain the service activity log
         if(!file.exists()) {
             Log.d(TAG, "ServiceActivityLog.txt: File Doesn't exist");
         }

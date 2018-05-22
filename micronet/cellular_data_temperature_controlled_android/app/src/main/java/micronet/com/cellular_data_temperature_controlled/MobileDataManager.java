@@ -80,11 +80,11 @@ public class MobileDataManager {
         boolean state=true;
         String stateValueRead;
         int stateRead;
-        stateValueRead=Read_Write_File.readStateFromFile(context);
+        stateValueRead=Read_Write_File.readManagedStateFromFile(context);
             if(stateValueRead==""){
                 //If the file corrupts due to some reason while the service is running, Enable cell data (Might override user's settings) if all the cores are below 80.
                 Log.e(TAG, "Error: MobileDataState.txt didn't exist! Enabling cell data and setting disabled state to false!");
-                Read_Write_File.writeStateToFile(Integer.toString(0),context);
+                Read_Write_File.writeManagedStateToFile(Integer.toString(0),context);
                 state= false;
                 return state;
             }

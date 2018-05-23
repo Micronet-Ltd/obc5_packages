@@ -21,13 +21,13 @@ public class TemperatureValues {
     private static String thermalZone3 = "";
     private static String thermalZone4 = "";
     private static String[] thermalZoneVal = new String[5];
-    public static String temperaturevalues="";
+    public static String temperaturevalues = "";
     private static float zone0;
     private static float zone1;
     private static float zone2;
     private static float zone3;
     private static float zone4;
-    private static final float High_Temp =90; //Temperature at which the data is disabled
+    private static final float High_Temp = 90; //Temperature at which the data is disabled
     private static final float Normal_Temp = 80; //Temperature at which the data is re-enabled
 
     //Getting core temperatures
@@ -47,25 +47,26 @@ public class TemperatureValues {
             thermalZone4 = br.readLine();
             br.close();
             //populating the string array:
-            thermalZoneVal[0]=thermalZone0;
-            thermalZoneVal[1]=thermalZone1;
-            thermalZoneVal[2]=thermalZone2;
-            thermalZoneVal[3]=thermalZone3;
-            thermalZoneVal[4]=thermalZone4;
+            thermalZoneVal[0] = thermalZone0;
+            thermalZoneVal[1] = thermalZone1;
+            thermalZoneVal[2] = thermalZone2;
+            thermalZoneVal[3] = thermalZone3;
+            thermalZoneVal[4] = thermalZone4;
 
-            for (int index = 0; index < length; index++){
-                if(index > 0)
+            for (int index = 0; index < length; index++) {
+                if (index > 0)
                     buffer.append(" - ");
                 buffer.append(thermalZoneVal[index]);
             }
-            temperaturevalues =("Temp values: ")+buffer.toString();
+            temperaturevalues = ("Temp values: ") + buffer.toString();
             //manipulateString();
-            Log.d(TAG, "getThermalZoneTemp: (Zone0-Zone4)   " +temperaturevalues);
+            Log.d(TAG, "getThermalZoneTemp: (Zone0-Zone4)   " + temperaturevalues);
 
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
     //Converting string values into integer
     public static void ConvertVal() {
         try {
@@ -81,6 +82,7 @@ public class TemperatureValues {
         }
 
     }
+
     //Function which finds if any of the temperature zones are equal to or above 90
     public static Boolean HigherTemp(Context context) {
         //The variable Hresult returns true if any of thermal zone values are above 90 else false
@@ -95,19 +97,19 @@ public class TemperatureValues {
             return HighTempResult;
         }
     }
+
     //Function which finds if all the temperature zones are below 85
     public static boolean NormalTemp(Context context) {
         ConvertVal();
         //The variable Hresult returns true if all the thermal zone values are below 85
         NormalTempResult = false;
-            if ((zone0 < Normal_Temp) && (zone1 < Normal_Temp) && (zone2 < Normal_Temp) && (zone3 < Normal_Temp) && (zone4 < Normal_Temp)) {
-                NormalTempResult = true;
-                Log.d(TAG, "NormalTemp() values Nresult:    " + NormalTempResult);
-                return NormalTempResult;
-            }
-            else {
-                Log.d(TAG, "NormalTemp() values Zone values 0-4:    " + zone0 + zone1 + zone2 + zone3 + zone4);
-                return NormalTempResult;
-            }
+        if ((zone0 < Normal_Temp) && (zone1 < Normal_Temp) && (zone2 < Normal_Temp) && (zone3 < Normal_Temp) && (zone4 < Normal_Temp)) {
+            NormalTempResult = true;
+            Log.d(TAG, "NormalTemp() values Nresult:    " + NormalTempResult);
+            return NormalTempResult;
+        } else {
+            Log.d(TAG, "NormalTemp() values Zone values 0-4:    " + zone0 + zone1 + zone2 + zone3 + zone4);
+            return NormalTempResult;
+        }
     }
 }

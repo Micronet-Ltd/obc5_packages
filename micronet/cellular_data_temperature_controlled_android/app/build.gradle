@@ -13,7 +13,7 @@ android {
         versionCode 2
         versionName "@string/version_name"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        archivesBaseName = "Micronet-CellularDataService-$versionName"
+        //archivesBaseName = "Micronet-CellularDataService-$versionName"
     }
     buildTypes {
         release {

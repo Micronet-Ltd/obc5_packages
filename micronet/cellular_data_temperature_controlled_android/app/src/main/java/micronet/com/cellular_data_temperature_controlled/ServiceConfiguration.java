@@ -6,19 +6,17 @@ import android.util.Log;
 public class ServiceConfiguration {
     private static final String TAG = "CellDataService-Config";
 
-    public static boolean getCellularDataConfig(Context context){
-        if(Read_Write_File.readConfigurationFromFile(context) == "true"){
+    public static boolean getCellularDataConfig(Context context) {
+        if (ReadWriteOperations.readConfigurationFromFile(context).equalsIgnoreCase("true")) {
             return true;
-        }
-        else if(Read_Write_File.readConfigurationFromFile(context) == "false"){
+        } else if (ReadWriteOperations.readConfigurationFromFile(context).equalsIgnoreCase("false")) {
             return false;
-        }
-        else if(Read_Write_File.readConfigurationFromFile(context) == ""){
-            Log.d(TAG, " Override Configuration File did not exist! Setting the default to false! ");
-            Read_Write_File.writeConfigurationToFile(false, context);
+        } else if (ReadWriteOperations.readConfigurationFromFile(context).equals("")) {
+            Log.d(TAG, " Override Configuration File did not exist! Setting the default to true! ");
+            //TODO: Change me back to false; This change was specific for Orbcomm
+            ReadWriteOperations.writeConfigurationToFile(true, context);
             return false;
-        }
-        else{
+        } else {
             Log.d(TAG, " Invalid Values! ");
             return false;
         }
@@ -28,11 +26,11 @@ public class ServiceConfiguration {
         boolean state = true;
         String stateValueRead;
         int stateRead;
-        stateValueRead = Read_Write_File.readManagedStateFromFile(context);
+        stateValueRead = ReadWriteOperations.readManagedStateFromFile(context);
         if (stateValueRead == "") {
             //If the file corrupts due to some reason while the service is running, Enable cell data (Might override user's settings) if all the cores are below 80.
             Log.e(TAG, "Error: Managed-MobileDataState.txt didn't exist! Enabling cell data and setting disabled state to false!");
-            Read_Write_File.writeManagedStateToFile(Integer.toString(0), context);
+            ReadWriteOperations.writeManagedStateToFile(Integer.toString(0), context);
             state = false;
             return state;
         } else {

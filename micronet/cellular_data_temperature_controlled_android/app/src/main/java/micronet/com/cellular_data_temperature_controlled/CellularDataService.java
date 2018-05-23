@@ -19,25 +19,28 @@ import java.io.IOException;
 /**
  * Created by eemaan.siddiqi on 12/20/2016.
  */
-public class Cellular_Data_Service extends Service {
+public class CellularDataService extends Service {
 
-    public static final String TAG = "Cellular_Data_Service";
+    public static final String TAG = "CellularDataService";
 
     private Context context;
     private Handler mobileDataHandler;
-    private int TEN_SECONDS = 10000;
-    private int TWELVE_SECONDS = 12000;
     private int enabledCount;
     private String enabledCountValue;
     private int disabledCount;
     private String disabledCountValue;
+    private int TEN_SECONDS = 12000;
+    private int TWELVE_SECONDS = 12000;
+    private int THIRTY_SECONDS = 30000; //Default
+    private int postIntervalInSec = THIRTY_SECONDS;
     private boolean cellularDisabled = false;
     private int dataEnabledState = 0;
     private int dataDisabledState = 1;
     private boolean overrideUsersCellDataState;
     private String enabledInfo = "Cellular Data Enabled!";
     private String disabledInfo = "Cellular Data Disabled!";
-    private String fileCorruptionInfo = "The file Managed-MobileDataState.txt did not exist! Service has enabled cell data and set the state to false!";
+    private static String[] managedStateCorrInfo = {"Managed-MobileDataState.txt did not exist!", "STEP1/3: New file with the default state created!", "STEP2/3: Attempt to Enable Cell Data", "STEP2/3: Cell Data Enabled Already", "STEP3/3: Cell Data Enabled"};
+    private static String overideCellConfInfo = "CellularDataServiceConfig.txt did not exist! Created a new file with the default setting(true)";
 
     @Override
     public void onCreate() {
@@ -55,82 +58,115 @@ public class Cellular_Data_Service extends Service {
         //Creating a Directory if it isn't available
         if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
             File Root = Environment.getExternalStorageDirectory(); //Creating File Storage
-            Read_Write_File.micronetServiceDir = new File(Root.getAbsolutePath() + "/MicronetService");
-            Read_Write_File.serviceDir = new File(Read_Write_File.micronetServiceDir + "/CellularTemperatureService");
-            if (!Read_Write_File.micronetServiceDir.exists()) {
-                Read_Write_File.micronetServiceDir.mkdir();
+            ReadWriteOperations.micronetServiceDir = new File(Root.getAbsolutePath() + "/MicronetService");
+            ReadWriteOperations.serviceDir = new File(ReadWriteOperations.micronetServiceDir + "/CellularTemperatureService");
+            if (!ReadWriteOperations.micronetServiceDir.exists()) {
+                ReadWriteOperations.micronetServiceDir.mkdir();
             }
-            if (!Read_Write_File.serviceDir.exists()) {
-                Read_Write_File.serviceDir.mkdir();
+            if (!ReadWriteOperations.serviceDir.exists()) {
+                ReadWriteOperations.serviceDir.mkdir();
             }
         }
 
         //File does not exist
-        if (Read_Write_File.readFromFile(context).equals("")) {
+        if (ReadWriteOperations.readFromFile(context).equals("")) {
             //Initializing enabledCount to 0 (When the service restarts)
             enabledCount = 0;
             enabledCountValue = Integer.toString(enabledCount);
-            Read_Write_File.writeToFile(enabledCountValue, context);
+            ReadWriteOperations.writeToFile(enabledCountValue, context);
         }
         //File exists
         else {
-            enabledCountValue = Read_Write_File.readFromFile(context);
+            enabledCountValue = ReadWriteOperations.readFromFile(context);
             enabledCount = Integer.parseInt(enabledCountValue);
         }
         //File does not exist
-        if (Read_Write_File.readConfigurationFromFile(context).equals("")) {
-            Read_Write_File.writeConfigurationToFile(false, context);
+        if (ReadWriteOperations.readConfigurationFromFile(context).equals("")) {
+            Log.d(TAG, "Since the config file doesn't exist, by DEFAULT set the OverrideCellStateConfig Flag to TRUE!");
+            //TODO: The default should change back to false; This change was done specifically for inthinc because Amos confirmed that we cannot push configuration files via Redbend on an OBC5
+            ReadWriteOperations.writeConfigurationToFile(true, context);
+            try {
+                ReadWriteOperations.LogToFile(disabledCountValue, enabledCountValue, context, overideCellConfInfo, getContentResolver());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         //File Exists
         else {
             overrideUsersCellDataState = ServiceConfiguration.getCellularDataConfig(context);
         }
         //File does not exist
-        if (Read_Write_File.readDisabledCountFromFile(context).equals("")) {
+        if (ReadWriteOperations.readDisabledCountFromFile(context).equals("")) {
             //Initializing disabledCount to 0 (When the service restarts)
             disabledCount = 0;
             disabledCountValue = Integer.toString(disabledCount);
-            Read_Write_File.writeDisabledCountToFile(disabledCountValue, context);
+            ReadWriteOperations.writeDisabledCountToFile(disabledCountValue, context);
         }
         //File exists
         else {
-            disabledCountValue = Read_Write_File.readDisabledCountFromFile(context);
+            disabledCountValue = ReadWriteOperations.readDisabledCountFromFile(context);
             disabledCount = Integer.parseInt(disabledCountValue);
         }
         //File does not exist
-        if (Read_Write_File.readManagedStateFromFile(context).equals("")) {
-            /*
-             * Enable cellular data when the file MobileDataDisabled.txt doesn't exist
-             * */
-            if (!MobileDataManager.isAirplaneMode(getContentResolver())) {
-                MobileDataManager.setDataEnabled(context, true); //Enabling Mobile data
-                Log.d(TAG, "Enabling mobile data state, State= " + true);
+        if (ReadWriteOperations.readManagedStateFromFile(context).equals("")) {
+            //Enable cellular data when the file MobileDataDisabled.txt doesn't exist
+            Log.e(TAG, "MobileDataDisabled.txt doesn't exist! Proceed with creating a new file with the default(false) state!");
+            try {
+                ReadWriteOperations.LogToFile(disabledCountValue, enabledCountValue, context, managedStateCorrInfo[0], getContentResolver());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            //Create a new file after with the default (false) and enable cell data
+            ReadWriteOperations.writeManagedStateToFile(Integer.toString(0), context);
+            try {
+                ReadWriteOperations.LogToFile(disabledCountValue, enabledCountValue, context, managedStateCorrInfo[1], getContentResolver());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            if (!MobileDataManager.getMobileDataState(context)) {
                 try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
+                    ReadWriteOperations.LogToFile(disabledCountValue, enabledCountValue, context, managedStateCorrInfo[1], getContentResolver());
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
-                if (MobileDataManager.getMobileDataState(context)) {
-                    //Write 0 to the file after enabling cell data when the doesn't exist
-                    Log.e(TAG, "Error: MobileDataDisabled.txt doesn't exist! Created a new file, enabled cell data and the disabled state is set to false!!");
-                    Read_Write_File.writeManagedStateToFile(Integer.toString(dataEnabledState), context);
+
+                if (!MobileDataManager.isAirplaneMode(getContentResolver())) {
+                    Log.d(TAG, "Enabling mobile data state, State= " + true);
+                    MobileDataManager.setDataEnabled(context, true); //Enabling Mobile data
                     try {
-                        Read_Write_File.LogToFile(disabledCountValue, enabledCountValue, context, fileCorruptionInfo, getContentResolver());
-                    } catch (IOException e) {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
+                    if (MobileDataManager.getMobileDataState(context)) {
+                        ReadWriteOperations.writeManagedStateToFile(Integer.toString(dataEnabledState), context);
+                        try {
+                            ReadWriteOperations.LogToFile(disabledCountValue, enabledCountValue, context, managedStateCorrInfo[4], getContentResolver());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                } else {
+                    Log.e(TAG, "Airplane mode enabled, Can't enable cellular data!");
                 }
-            } else
-                Log.d(TAG, "Airplane mode enabled, Can't enable cellular data!");
-            cellularDisabled = true;
+            } else {
+                //Cell Data Enabled by default!
+                try {
+                    ReadWriteOperations.LogToFile(disabledCountValue, enabledCountValue, context, managedStateCorrInfo[3], getContentResolver());
+                    ReadWriteOperations.LogToFile(disabledCountValue, enabledCountValue, context, managedStateCorrInfo[4], getContentResolver());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                Log.d(TAG, "Cell Data Enabled By Default");
+            }
         }
         //File exists
         else cellularDisabled = ServiceConfiguration.getModifiedCellularDataState(context);
 
-        //Post a runnable that monitors the core temperatures every 10 seconds
+        //Post a runnable that monitors the core temperatures every 30 seconds
         if (mobileDataHandler == null) {
             mobileDataHandler = new Handler(Looper.myLooper());
-            mobileDataHandler.post(Temperature_Check);
+            mobileDataHandler.post(temperatureCheck);
         }
 
         PackageManager p = getPackageManager();
@@ -144,18 +180,18 @@ public class Cellular_Data_Service extends Service {
     private void increaseEnabledCount() throws IOException {
         enabledCount++;
         enabledCountValue = Integer.toString(enabledCount);
-        Read_Write_File.writeToFile(enabledCountValue, context);
+        ReadWriteOperations.writeToFile(enabledCountValue, context);
         Log.d(TAG, "Increased Enabled Count :" + enabledCountValue);
-        Read_Write_File.LogToFile(disabledCountValue, enabledCountValue, context, enabledInfo, getContentResolver());
+        ReadWriteOperations.LogToFile(disabledCountValue, enabledCountValue, context, enabledInfo, getContentResolver());
     }
 
     //Function to increase the disabling count and write to a file
     private void increaseDisabledCount() throws IOException {
         disabledCount++;
         disabledCountValue = Integer.toString(disabledCount);
-        Read_Write_File.writeDisabledCountToFile(disabledCountValue, context);
+        ReadWriteOperations.writeDisabledCountToFile(disabledCountValue, context);
         Log.d(TAG, "Increased Disable Count : " + disabledCountValue);
-        Read_Write_File.LogToFile(disabledCountValue, enabledCountValue, context, disabledInfo, getContentResolver());
+        ReadWriteOperations.LogToFile(disabledCountValue, enabledCountValue, context, disabledInfo, getContentResolver());
     }
 
     private void enableCellularData(boolean overrideSetting) throws IOException {
@@ -176,7 +212,7 @@ public class Cellular_Data_Service extends Service {
                 //Printing and Managing configuration files
                 if (!overrideSetting) {
                     cellularDisabled = false;
-                    Read_Write_File.writeManagedStateToFile(Integer.toString(dataEnabledState), context);
+                    ReadWriteOperations.writeManagedStateToFile(Integer.toString(dataEnabledState), context);
 
                 }
             }
@@ -184,14 +220,13 @@ public class Cellular_Data_Service extends Service {
             Log.d(TAG, "Airplane mode is On, Can't enable cellular data");
     }
 
-    final Runnable Temperature_Check = new Runnable() {
+    final Runnable temperatureCheck = new Runnable() {
         @Override
         public void run() {
             overrideUsersCellDataState = ServiceConfiguration.getCellularDataConfig(context);
             boolean mobileDataState = MobileDataManager.getMobileDataState(context);
             boolean airplaneModeState = MobileDataManager.isAirplaneMode(getContentResolver());
-            Log.d(TAG, "*********************CHECK*******************");
-           // Log.d(TAG, "mobileDataState =" + String.valueOf(mobileDataState) + ", airplaneMode =" + String.valueOf(airplaneModeState) + ", overrideCellDataState =" + String.valueOf(overrideUsersCellDataState));
+            Log.d(TAG, "mobileDataState =" + String.valueOf(mobileDataState) + ", airplaneMode =" + String.valueOf(airplaneModeState) + ", overrideCellDataState =" + String.valueOf(overrideUsersCellDataState));
             try {
                 TemperatureValues.HigherTemp(context);
                 TemperatureValues.NormalTemp(context);
@@ -203,7 +238,8 @@ public class Cellular_Data_Service extends Service {
                 if (TemperatureValues.HighTempResult) {
                     if (!MobileDataManager.getMobileDataState(context)) {
                         Log.d(TAG, "High Temperatures observed! Mobile Data is disabled!");
-                        mobileDataHandler.postDelayed(this, TWELVE_SECONDS);
+                        Log.d(TAG, "Post a recheck after 30 seconds");
+                        mobileDataHandler.postDelayed(this, postIntervalInSec);
                         return;
                     } else {
                         Log.d(TAG, "High Temperatures observed! Mobile Data is enabled --> Disabling Cell Data!");
@@ -214,12 +250,13 @@ public class Cellular_Data_Service extends Service {
                             e.printStackTrace();
                         }
                         if (!MobileDataManager.getMobileDataState(context)) {
-                            Read_Write_File.writeManagedStateToFile(Integer.toString(dataDisabledState), context);
+                            ReadWriteOperations.writeManagedStateToFile(Integer.toString(dataDisabledState), context);
                             Log.d(TAG, "High Temperatures observed! Mobile Data disabled successfully!");
                             cellularDisabled = true;
                             increaseDisabledCount();
                         }
-                        mobileDataHandler.postDelayed(this, TEN_SECONDS);//setting post to thirty seconds
+                        Log.d(TAG, "Post a recheck after 30 seconds");
+                        mobileDataHandler.postDelayed(this, postIntervalInSec);//setting post to thirty seconds
                         return;
                     }
                 } else if (TemperatureValues.NormalTempResult) {
@@ -228,29 +265,31 @@ public class Cellular_Data_Service extends Service {
                     if (!MobileDataManager.getMobileDataState(context)) {
                         if (cellularDisabled) {
                             //The service disabled cellular data due to high temperatures and since the cores fell below 80, enable cellular data.
-                            Log.d(TAG, "Service - Managed Cell Data State: " + Read_Write_File.readManagedStateFromFile(context) + "; Enabling Cellular Data, Reason: Service Initiated");
+                            Log.d(TAG, "Service - Managed Cell Data State: " + ReadWriteOperations.readManagedStateFromFile(context) + "; Enabling Cellular Data, Reason: Service Initiated");
                             enableCellularData(false);
-                            mobileDataHandler.postDelayed(this, TEN_SECONDS);//Setting post to ten seconds
+                            Log.d(TAG, "Post a recheck after 30 seconds");
+                            mobileDataHandler.postDelayed(this, postIntervalInSec);//Setting post to ten seconds
                             return;
                         } else if (overrideUsersCellDataState) {
                             Log.d(TAG, "Override Cell Data State Configuration: " + ServiceConfiguration.getCellularDataConfig(context) + "; Enabling Cell Data, Reason: Always Data On Configured by User.");
                             enableCellularData(true);
-                            mobileDataHandler.postDelayed(this, TEN_SECONDS);//Setting post to ten seconds
+                            Log.d(TAG, "Post a recheck after 30 seconds");
+                            mobileDataHandler.postDelayed(this, postIntervalInSec);//Setting post to ten seconds
                             return;
-                        }
-                        else{
+                        } else {
                             Log.d(TAG, "Cellular Data is Disabled, No condition satisified to enable cell data in normal range!");
                         }
                     }
                     //If mobile data is enabled then do nothing
                     else {
-                        Log.d(TAG, "Mobile Data is enabled and the cores are in the acceptable range! Do nothing!");
-                        mobileDataHandler.postDelayed(this, TWELVE_SECONDS);//Do Nothing and set post to 10 seconds
+                        Log.d(TAG, "Mobile Data is enabled and the cores are in the acceptable range! Do nothing! Post a recheck after 30 seconds");
+                        Log.d(TAG, "Post a recheck after 30 seconds");
+                        mobileDataHandler.postDelayed(this, TWELVE_SECONDS);//Do Nothing and set post to 30 seconds
                         return;
                     }
                 }
-                Log.d(TAG, "mobileDataHandler.postDelayed(this, TEN_SECONDS)");
-                mobileDataHandler.postDelayed(this, TEN_SECONDS);
+                Log.d(TAG, "Post a recheck after 30 seconds");
+                mobileDataHandler.postDelayed(this, postIntervalInSec);
             } catch (Exception e) {
                 e.printStackTrace();
                 Log.d(TAG, "run: bh");
@@ -267,7 +306,7 @@ public class Cellular_Data_Service extends Service {
     public void onDestroy() {
         super.onDestroy();
         Log.e(TAG, "STOP");
-        mobileDataHandler.removeCallbacks(Temperature_Check);
+        mobileDataHandler.removeCallbacks(temperatureCheck);
         Toast.makeText(this, "Service Stopped", Toast.LENGTH_LONG).show();
     }
 

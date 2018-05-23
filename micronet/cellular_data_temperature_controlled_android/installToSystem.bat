@@ -1,6 +1,6 @@
 REM CHANGE THESE
 SET app_package=micronet.com.cellular_data_temperature_controlled
-SET dir_app_name=Cellular_Data_Temperature_Controlled
+SET dir_app_name=CellularDataTemperatureControlled
 SET main_activity=MainActivity
 
 SET "adb_sh=adb shell"

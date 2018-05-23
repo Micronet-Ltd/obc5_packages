@@ -52,12 +52,13 @@ public class TemperatureValues {
             thermalZoneVal[2]=thermalZone2;
             thermalZoneVal[3]=thermalZone3;
             thermalZoneVal[4]=thermalZone4;
+
             for (int index = 0; index < length; index++){
                 if(index > 0)
                     buffer.append(" - ");
                 buffer.append(thermalZoneVal[index]);
             }
-            temperaturevalues=("Temp values: ")+buffer.toString();
+            temperaturevalues =("Temp values: ")+buffer.toString();
             //manipulateString();
             Log.d(TAG, "getThermalZoneTemp: (Zone0-Zone4)   " +temperaturevalues);
 
@@ -74,7 +75,7 @@ public class TemperatureValues {
             zone2 = Float.valueOf(thermalZone2);
             zone3 = Float.valueOf(thermalZone3);
             zone4 = Float.valueOf(thermalZone4);
-            Log.d(TAG, "getThermalZoneTemp result:    " + zone0 + zone1 + zone2 + zone3 + zone4);
+            //Log.d(TAG, "getThermalZoneTemp result:    " + zone0 + zone1 + zone2 + zone3 + zone4);
         } catch (Exception e) {
             e.printStackTrace();
         }

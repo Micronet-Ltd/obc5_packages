@@ -1,5 +1,6 @@
 package micronet.com.cellular_data_temperature_controlled;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.util.Log;
 
@@ -24,8 +25,6 @@ public class Read_Write_File {
     public static File serviceDir;
     public static BufferedWriter bufferedWriter = null;
     public static FileWriter fileWriter = null;
-    //private static String configHeader = "Configuration File Created at " + SystemClock.currentThreadTimeMillis() + " ;";
-    //private static String serviceConfigHeader = configHeader + "Initiated by Service Itself";
     private static String configDisabled = "Override_Cellular_Data_Configuration = false";
     private static String configEnabled = "Override_Cellular_Data_Configuration = true";
 
@@ -113,11 +112,12 @@ public class Read_Write_File {
             }
             fileReader.close();
             rawData = stringBuilder.toString();
-            String data[] = rawData.split("\r\n");
-            if(data[0] == configDisabled){
+           // Log.d(TAG, "Configuration Returned = " + rawData);
+
+            if(rawData.equalsIgnoreCase(configDisabled)){
                 ret = "false";
             }
-            else if (data[0] == configEnabled){
+            else if (rawData.equalsIgnoreCase(configEnabled)){
                 ret = "true";
             }
             else{
@@ -174,6 +174,7 @@ public class Read_Write_File {
         }
         return ret;
     }
+
     //Write function for disabled count
     public static void writeDisabledCountToFile(String DisabledValue, Context context){
         //Created a Text File for storing the disabled count
@@ -221,33 +222,40 @@ public class Read_Write_File {
         }
         return ret;
     }
+
     //Logging the Service activity
-    public static void LogToFile(String handlerValue2, String handlerValue1 , Context context, String additionalMessage){
-        String timestamp=("Timestamp: ")+Utils.formatDate(System.currentTimeMillis())+("   "); //Getting current time stamp
-        String infoMessage="Message Info:   ";
-        String overrideCellState = "    Override Cell State:    ";
-        String currentMobileDataState = "   Current Mobile Data State:   ";
-        String ec= "    EnabledCount:   ";
-        String dc= "    DisabledCount:   ";
-        File file = new File(serviceDir, "ServiceLog.txt");//Created a Text File to maintain the service activity log
+    public static void LogToFile(String disabledCount, String enabledCount , Context context, String additionalMessage, ContentResolver contentResolver) throws IOException {
+        Boolean isNewFile = false;
+        String serviceActivityHeader = "Time Stamp, Message Information, Temperature Zones, Override Cell State Configuration, isMobileDataEnabled, isAirplaneModeEnabled, Enabled Count, Disabled Count,";
+        String timestamp=Utils.formatDate(System.currentTimeMillis()); //Getting current time stamp
+        TemperatureValues.getThermalZoneTemp();
+        String coreTemps = TemperatureValues.temperaturevalues;
+        String delim = ",";
+
+        File file = new File(serviceDir, "CellularServiceLog.csv");//Created a Text File to maintain the service activity log
         if(!file.exists()) {
-            Log.d(TAG, "ServiceLog.txt: File Doesn't exist");
+            isNewFile = true;
+            Log.d(TAG, "CellularServiceLog.csv: File Doesn't exist");
+            file.createNewFile();
+        }
+        else{
+            isNewFile = false;
         }
         try {
             fileWriter = new FileWriter(file.getAbsoluteFile(), true);
             bufferedWriter = new BufferedWriter(fileWriter);
-            bufferedWriter.write(timestamp);
-            bufferedWriter.write(overrideCellState);
-            bufferedWriter.write(String.valueOf(Utils.getCellularDataConfig(context)));
-            bufferedWriter.write(currentMobileDataState);
-            bufferedWriter.write(String.valueOf(MobileDataManager.getMobileDataState(context)));
-            bufferedWriter.write(infoMessage);
-            bufferedWriter.write(additionalMessage);
-            bufferedWriter.write(TemperatureValues.temperaturevalues);
-            bufferedWriter.write(ec);
-            bufferedWriter.write(handlerValue1);
-            bufferedWriter.write(dc);
-            bufferedWriter.write(handlerValue2);
+            if(isNewFile){
+                bufferedWriter.write(serviceActivityHeader);
+                bufferedWriter.newLine();
+            }
+            bufferedWriter.write(timestamp + delim);
+            bufferedWriter.write(additionalMessage + delim);
+            bufferedWriter.write(coreTemps + delim);
+            bufferedWriter.write(String.valueOf(ServiceConfiguration.getCellularDataConfig(context)) + delim);
+            bufferedWriter.write(String.valueOf(MobileDataManager.getMobileDataState(context)) + delim);
+            bufferedWriter.write(String.valueOf(MobileDataManager.isAirplaneMode(contentResolver)) + delim);
+            bufferedWriter.write(enabledCount + delim);
+            bufferedWriter.write(disabledCount + delim);
             bufferedWriter.newLine();
         }
         catch (IOException e) {
@@ -265,6 +273,7 @@ public class Read_Write_File {
             }
         }
     }
+
     public static void serviceActivityLog(Boolean pauseStatus, Context context){
         String String_pauseStatus=String.valueOf(pauseStatus);
         String timestamp=("Timestamp:   ")+Utils.formatDate(System.currentTimeMillis())+("   "); //Getting current time stamp

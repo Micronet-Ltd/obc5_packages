@@ -26,22 +26,10 @@ public class Utils {
             return formatDate(new Date(time));
         }
 
-        public static boolean getCellularDataConfig(Context context){
-            if(Read_Write_File.readConfigurationFromFile(context) == "true"){
-               return true;
-            }
-            else if(Read_Write_File.readConfigurationFromFile(context) == "false"){
-                return false;
-            }
-            else{
-                return false;
-            }
-        }
-
     /**
      * Returns true if the service is running, false otherwise. Useful if launching the app manually.
      */
-    public static boolean isMyServiceRunning(Context context, Class<?> serviceClass) {
+        public static boolean isMyServiceRunning(Context context, Class<?> serviceClass) {
         ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
             if (serviceClass.getName().equals(service.service.getClassName())) {
@@ -49,5 +37,5 @@ public class Utils {
             }
         }
         return false;
-    }
+        }
     }

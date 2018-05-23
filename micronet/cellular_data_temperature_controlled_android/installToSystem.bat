@@ -5,6 +5,7 @@ SET main_activity=MainActivity
 
 SET "adb_sh=adb shell"
 SET "path_sysapp=/system/priv-app"
+REM SET "apk_host=.app\build\outputs\apk\debug\Micronet-CellularDataService-@string\version_name-debug.apk
 SET "apk_host=.\app\build\outputs\apk\app-debug.apk"
 SET "apk_name=%dir_app_name%.apk"
 SET "apk_target_dir=%path_sysapp%/%dir_app_name%"

@@ -578,6 +578,19 @@
                         android:name="android.category.factory.kit"/>
             </intent-filter>
         </activity>
+ 	
+	<activity
+                android:name=".activity.BatteryDetach"
+                android:label="@string/battery_detach_name"
+				android:configChanges="orientation|keyboardHidden|mcc|mnc"
+                android:screenOrientation="portrait">
+            <intent-filter>
+                <action
+                        android:name="android.intent.action.MAIN"/>
+                <category
+                        android:name="android.category.factory.kit"/>
+            </intent-filter>
+        </activity>
 
         <activity android:name=".util.ResultActivity"
 				  android:configChanges="orientation|keyboardHidden|mcc|mnc"

@@ -133,6 +133,10 @@ int send_api_hex2(int * fd, char * hexdata)
 	char dt_str[RTC_STRING_SIZE] = "2016-03-29 19:09:06.58\0";
 	struct timeval tv;
 
+    uint8_t flags_data[4] = {0};
+    uint32_t flags = 0;
+    bool halt_bit = false;
+
 	if(strlen(hexdata) > (sizeof(data)>>1))
 	{
 		fprintf(stderr, "too much data\n");
@@ -316,7 +320,21 @@ int send_api_hex2(int * fd, char * hexdata)
             }
      
             ret = set_rtc_alarm1_time(fd, &data[2]);
-            printf("Trying to set up alarm date at :month = %u day = %u hour = %u minute = %u ret = %d\n",data[2],data[3],data[4],data[5], ret);
+            printf("Trying to set up alarm date as :month = %u day = %u hour = %u minute = %u ret = %d\n",data[2],data[3],data[4],data[5], ret);
+			break;
+        case MAPI_GET_RTC_ALARM1_INIT_FLAGS:
+            get_rtc_flags(fd, &flags);
+            //0xc is the hours register on the rtc where the halt-bit is;
+			get_rtc_reg_dbg(fd, 0xc, &rtc_reg_data);
+
+            flags_data[0] = !!(flags&(1u<<7));
+            flags_data[1] = !!(flags&(1u<<4));
+            flags_data[2] = !!(flags&(1u<<2));
+            flags_data[3] = !!((rtc_reg_data)&(1u<<5));         
+
+            printf("watchdog bit= %d\nbattery low bit = %d\nocilator fail bit = %d\nhalt bit = %d\n",
+                   (flags_data[0]),(flags_data[1]),(flags_data[2]),(flags_data[3]));
+
 			break;
 
 		default:

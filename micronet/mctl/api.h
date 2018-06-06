@@ -37,3 +37,4 @@ int set_accel_standby_active_dbg(int * fd, uint8_t standbye_active);
 int get_accel_reg_dbg(int * fd, uint8_t address, uint8_t * data);
 int set_accel_reg_dbg(int * fd, uint8_t address, uint8_t data);
 int set_rtc_alarm1_time(int * fd, const uint8_t *dt_num);
+int get_rtc_flags(int * fd, uint32_t * flags);

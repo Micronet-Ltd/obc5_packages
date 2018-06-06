@@ -8,15 +8,25 @@ package com.qrt.factory.activity;
 
 import com.qrt.factory.R;
 import com.qrt.factory.util.Utilities;
-
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.widget.TextView;
 
 import java.io.IOException;
 
 public class BatteryDetach extends AbstractActivity {
+    private int diff = 0;
+    private int i;
+    private String s = "";
+    private static int average = 0;
+
+    private TextView textViewNoBat = null;
+    private TextView textViewWithBat = null;
+    private TextView textViewHeaderText = null;
+    private TextView textView = null;
+    private TextView mTextView = null;
 
     private static final String TAG = "Battery Detach Test";
 
@@ -25,9 +35,6 @@ public class BatteryDetach extends AbstractActivity {
 
     private static final String LBC_VBAT_NOW
             = "/sys/kernel/debug/qpnp_lbc/lbc_vbat_now";
-
-    private TextView mTextView = null;
-    static int average = 0;
 
     @Override
     protected String getTag() {
@@ -44,6 +51,9 @@ public class BatteryDetach extends AbstractActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.battery_detach);
+        textViewNoBat = (TextView) findViewById(R.id.withoutBatteryNumberOfTest);
+        textViewWithBat = (TextView) findViewById(R.id.withBatteryNumderOfTest);
+        textViewHeaderText = (TextView) findViewById(R.id.batteryDetachText);
         mTextView = (TextView) findViewById(R.id.batteryDetachText);
         mTextView.setText(getString(R.string.battery_detach_text));
 
@@ -55,14 +65,18 @@ public class BatteryDetach extends AbstractActivity {
     }
 
     private boolean testBatteryDetach() {
-        TextView textView = null;
-        int diff = 0;
-        String[] cmdEcho0 = {"/system/bin/sh", "-c", "echo 0 > /sys/kernel/debug/qpnp_lbc/lbc_vbat2vph_debug"};
-        String[] cmdEcho1 = {"/system/bin/sh", "-c", "echo 1 > /sys/kernel/debug/qpnp_lbc/lbc_vbat2vph_debug"};
-        textView = (TextView) findViewById(R.id.withoutBatteryNumberOfTest);
-        textView.setText(getString(R.string.battery_detach_number_of_test));
-        textView = (TextView) findViewById(R.id.withBatteryNumderOfTest);
-        textView.setText(getString(R.string.battery_detach_number_of_test));
+
+         String[] cmdEcho0 = {"/system/bin/sh", "-c", "echo 0 > /sys/kernel/debug/qpnp_lbc/lbc_vbat2vph_debug"};
+         String[] cmdEcho1 = {"/system/bin/sh", "-c", "echo 1 > /sys/kernel/debug/qpnp_lbc/lbc_vbat2vph_debug"};
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                textViewNoBat.setText("Without battery: " + getString(R.string.battery_detach_number_of_test));
+                textViewWithBat.setText("With battery: " + getString(R.string.battery_detach_number_of_test));
+            }
+        });
+
         try {
             // Be sure that lbc_vbat2vph_debug is zero
             if (getLbcVbat2VphDebug() != false) {
@@ -72,28 +86,30 @@ public class BatteryDetach extends AbstractActivity {
             //If diff is negative repeat test
             while (diff <= 0) {
                 if (diff < 0) {
-                    textView = (TextView) findViewById(R.id.batteryDetachText);
-                    textView.setText(getString(R.string.battery_detach_text_fail));
-                    textView = (TextView) findViewById(R.id.withoutBatteryNumberOfTest);
-                    textView.setText(getString(R.string.battery_detach_number_of_test));
-                    textView = (TextView) findViewById(R.id.withBatteryNumderOfTest);
-                    textView.setText(getString(R.string.battery_detach_number_of_test));
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            textViewHeaderText.setText(getString(R.string.battery_detach_text_fail));
+                            textViewNoBat.setText("Without battery: " + getString(R.string.battery_detach_number_of_test));
+                            textViewWithBat.setText("With battery: " + getString(R.string.battery_detach_number_of_test));
+                        }
+                    });
                 }
                 //Enter to debug mode by lbc_vbat2vph_debug = 1
                 Process p = Runtime.getRuntime().exec(cmdEcho1);
                 p.waitFor();
-                System.out.println("BatteryDetach : getLbcVbat2VphDebug - changed to 1 (true): " + getLbcVbat2VphDebug());
+                Log.d(TAG, "BatteryDetach : getLbcVbat2VphDebug - changed to 1 (true): " + getLbcVbat2VphDebug());
                 //Make average voltage from 10 measurement serious lbc_vbat_now
                 int debAv = getAverageMeasurement(true);
                 //Leave debug mode by lbc_vbat2vph_debug = 0
                 p = Runtime.getRuntime().exec(cmdEcho0);
                 p.waitFor();
-                System.out.println("BatteryDetach : getLbcVbat2VphDebug - changed to 0 (false): " + getLbcVbat2VphDebug());
+                Log.d(TAG, "BatteryDetach : getLbcVbat2VphDebug - changed to 0 (false): " + getLbcVbat2VphDebug());
                 //Make average voltage from 10 measurement serious lbc_vbat_now
                 int notDebAv = getAverageMeasurement(false);
                 //Compare two averages if diff is more 100 mAmps the test is passed
                 diff = debAv - notDebAv;
-                System.out.println("BatteryDetach : getAverageMeasurement - diff" + diff);
+                Log.d(TAG, "BatteryDetach : getAverageMeasurement - diff" + diff);
             }
 
             //If diff close to zero, the test is failed
@@ -112,15 +128,32 @@ public class BatteryDetach extends AbstractActivity {
     }
 
     private int getAverageMeasurement(boolean b) {
-        TextView textView;
         if (b == true) {
-            textView = (TextView) findViewById(R.id.withoutBatteryNumberOfTest);
+            s = "Without battery: ";
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    textView = (TextView) findViewById(R.id.withoutBatteryNumberOfTest);
+                }
+            });
         } else {
-            textView = (TextView) findViewById(R.id.withBatteryNumderOfTest);
+            s = "With battery: ";
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    textView = (TextView) findViewById(R.id.withBatteryNumderOfTest);
+                }
+            });
         }
         average = 0;
-        for (int i = 0; i < 10; i++) {
-            textView.setText("Done: " + i + "/10");
+        for ( i = 0; i < 10; i++) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    int j = i+1;
+                    textView.setText(s + "Done: " + j + "/10");
+                }
+            });
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
@@ -180,7 +213,7 @@ public class BatteryDetach extends AbstractActivity {
                     message.sendToTarget();
                 }
             }
+
         }.start();
     }
 }
-

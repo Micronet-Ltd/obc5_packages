@@ -66,12 +66,6 @@
 
     <Single>
 
-	<TestItem name="BatteryDetach" enable="true">
-            <Intent
-                    packageName="com.qrt.factory"
-                    className="com.qrt.factory.activity.BatteryDetach"/>
-        </TestItem>
-
         <TestItem name = "TouchPanelKey" enable = "true">
             <Intent
                     packageName = "com.qrt.factory"

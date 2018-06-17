@@ -174,11 +174,7 @@
                     className = "com.qrt.factory.activity.Receiver" />
         </TestItem>  
 
-	<TestItem name="BatteryDetach" enable="true">
-            <Intent
-                    packageName="com.qrt.factory"
-                    className="com.qrt.factory.activity.BatteryDetach"/>
-        </TestItem>   
+	
     </Single>
 
     <!-- <FunctionItem

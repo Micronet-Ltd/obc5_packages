@@ -73,12 +73,6 @@
                     className="com.qrt.factory.activity.PanelKeyLight"/>
         </TestItem>
 
-	<TestItem name="BatteryDetach" enable="true">
-            <Intent
-                    packageName="com.qrt.factory"
-                    className="com.qrt.factory.activity.BatteryDetach"/>
-        </TestItem>
-
         <TestItem name="KeypadAndVibrate" enable="true">
             <Intent
                     packageName="com.qrt.factory"

@@ -22,12 +22,6 @@
                     className="com.qrt.factory.activity.Imei"/>
         </TestItem>
 
-	<TestItem name="BatteryDetach" enable="true">
-            <Intent
-                    packageName="com.qrt.factory"
-                    className="com.qrt.factory.activity.BatteryDetach"/>
-        </TestItem>
-
         <TestItem name="CameraFront" enable="true">
             <Intent
                     packageName="com.qrt.factory"
@@ -44,6 +38,11 @@
             <Intent
                     packageName="com.qrt.factory"
                     className="com.qrt.factory.activity.Cradle"/>
+        </TestItem>
+        <TestItem name="BatteryDetach" enable="true">
+            <Intent
+                    packageName="com.qrt.factory"
+                    className="com.qrt.factory.activity.BatteryDetach"/>
         </TestItem>
 
         <TestItem name="Rs232" enable="true">

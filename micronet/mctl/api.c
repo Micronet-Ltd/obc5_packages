@@ -456,19 +456,18 @@ bool is_date_legal(int * fd,const uint8_t *date)
     //in the special case of leap year the api needs to poll and check the year in the RTC 
     if(29 == day && 2 == month)
     {
-        uint8_t rtc_year_data = 0u;
+        uint8_t rtc_year_data[] = {0};
         uint8_t req[] = { MCTRL_MAPI, MAPI_READ_RQ, MAPI_GET_RTC_REG_DBG, 0x7/*the year register*/};
        
-        if (1 != get_command(fd, req, sizeof(req), &rtc_year_data, sizeof(rtc_year_data)))
+        if (0 != get_command(fd, req, sizeof(req), &rtc_year_data, sizeof(rtc_year_data)))
         {
-            printf("ERROR: can't check if the year is a leap year as there is no connection to the MCU, trying to set the date regardless...\n");
+          //printf("ERROR: can't check if the year is a leap year as there is no connection to the MCU, trying to set the date regardless...\n");
             return true;
         }
-        printf("%d\n", rtc_year_data);
         /*no need to pluck the tens of years as it won't matter for this specific 
          calculation, being a multi of 4 means that there are two trailing zeroes in the
          start of the BCD representation of the number...*/
-        if(!(rtc_year_data%4))
+        if(!(rtc_year_data[0]%4))
         {
             return true;
         }

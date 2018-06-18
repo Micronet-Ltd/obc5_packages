@@ -122,8 +122,8 @@ int send_api_hex2(int * fd, char * hexdata)
 {
 	uint8_t data[4096];
 	uint32_t fpga_ver = 0;
-	uint32_t gpi_voltage = 0;
-	uint8_t led_num, brightness, red, green, blue, gpi_num, power_on_reason, wait_time;
+	uint32_t gpi_voltage = 0, board_adc_voltage = 0;
+	uint8_t led_num, brightness, red, green, blue, gpi_num, power_on_reason, wait_time, info_type;
 	uint8_t rtc_dig_cal, rtc_analog_cal, rtc_reg_addr, rtc_reg_data, gpio_val, wig_en;
 	uint8_t accel_standby_active, accel_reg_addr, accel_reg_data;
 	uint16_t wiggle_count, wig_cnt_sample_period, ignition_threshold, gpio_num;
@@ -150,6 +150,19 @@ int send_api_hex2(int * fd, char * hexdata)
 
 	switch (data[1])
 	{
+		case MAPI_GET_BRD_INFO:
+			ret = get_board_info(fd, data, 4);
+			printf("Board Info: boardVersion = %d boardConfig = %c ret = %d \n", data[0], data[1], ret);
+			break;
+		case MAPI_GET_BRD_INFO_ADC_DBG:
+			info_type = data[2];
+			if (info_type == 0 || info_type == 1){
+				ret = get_board_info_adc_dbg(fd, info_type, &board_adc_voltage, sizeof(board_adc_voltage));
+				printf("Board Info: %s voltage = %d ret = %d \n", (info_type == 0) ? "boardVersion" : "boardConfig", board_adc_voltage, ret);
+			}else{
+				printf("Board Info request invalid, input 0 or 1\n");
+			}
+			break;
 		case MAPI_GET_MCU_FW_VERSION:
 			ret = get_mcu_version(fd, data, 4);
 			printf("MCU firmware version in hex %x.%x.%x.%x ret = %d \n", data[0], data[1], data[2], data[3], ret);

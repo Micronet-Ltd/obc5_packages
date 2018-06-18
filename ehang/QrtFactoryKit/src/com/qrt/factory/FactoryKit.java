@@ -16,11 +16,12 @@ public class FactoryKit extends Application{
 
    private static final String TAG = "Control Center";
     public static boolean isAutoTesting = false;
-	public static  List<TestItem> mItemList = new ArrayList<TestItem>();
-	public static List<TestItem> mAutoTestItemList;
+    public static  List<TestItem> mItemList = new ArrayList<TestItem>();
+    public static List<TestItem> mAutoTestItemList;
     public static List<TestItem> mUserTestItemList;
-	public static int testMode = -1;
-	private static Context mContext;
+    public static int testMode = -1;
+    private static Context mContext;
+    private static int runCode;
 
     static {
         Log.d(TAG,"Loading FM-JNI Library");
@@ -50,13 +51,13 @@ public class FactoryKit extends Application{
     		return;
     	}
     	
-    	List<TestItem>[] testItems = null;
-		int gps_en = 0;
-		int bd_en = 0;
+        List<TestItem>[] testItems = null;
+        int gps_en = 0;
+        int bd_en = 0;
 
-	    gps_en=Settings.Secure.getInt(mContext.getContentResolver(),Settings.Secure.TEXT_GPS_ENABLE,0);
-	    bd_en=Settings.Secure.getInt(mContext.getContentResolver(),Settings.Secure.TEXT_BD_ENABLE,0);    
-		int runCode = intent.getIntExtra("runcode", 1);
+        gps_en=Settings.Secure.getInt(mContext.getContentResolver(),Settings.Secure.TEXT_GPS_ENABLE,0);
+        bd_en=Settings.Secure.getInt(mContext.getContentResolver(),Settings.Secure.TEXT_BD_ENABLE,0);    
+        runCode = intent.getIntExtra("runcode", 1);
         try {
             int bootMode = 0;
             if (intent.getBooleanExtra("attachment", false)) {
@@ -121,5 +122,9 @@ public class FactoryKit extends Application{
             mItemList.addAll(mUserTestItemList);
             mItemList.add(createVersionTestItem());
         }		
+    }
+
+    public static int getRunCode() {
+        return runCode;
     }
 } 

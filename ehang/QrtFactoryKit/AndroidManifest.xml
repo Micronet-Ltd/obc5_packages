@@ -11,7 +11,7 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         package="com.qrt.factory"
         android:versionCode="11"
-        android:versionName="2.3.11"
+        android:versionName="2.4.0"
         android:installLocation="internalOnly"
         android:sharedUserId="android.uid.system"
         >
@@ -569,6 +569,19 @@
         <activity
                 android:name=".activity.Battery"
                 android:label="@string/battery_name"
+				android:configChanges="orientation|keyboardHidden|mcc|mnc"
+                android:screenOrientation="portrait">
+            <intent-filter>
+                <action
+                        android:name="android.intent.action.MAIN"/>
+                <category
+                        android:name="android.category.factory.kit"/>
+            </intent-filter>
+        </activity>
+ 	
+	<activity
+                android:name=".activity.BatteryDetach"
+                android:label="@string/battery_detach_name"
 				android:configChanges="orientation|keyboardHidden|mcc|mnc"
                 android:screenOrientation="portrait">
             <intent-filter>

@@ -444,8 +444,10 @@ bool is_date_legal(int * fd,const uint8_t *date)
     if(29 == day && 2 == month)
     {
         uint8_t rtc_year_data = 0u;
-        //0x7 is the years register on the rtc
-        if (0 != get_rtc_reg_dbg(fd, 0x7, &rtc_year_data)) 
+        char rtc_date[20] = {0};
+        
+       
+        if (0 != get_rtc_date_time(fd, rtc_date))
         {
             printf("ERROR: can't check if the year is a leap year as there is no connection to the MCU, trying to set the date regardless...\n");
             return true;

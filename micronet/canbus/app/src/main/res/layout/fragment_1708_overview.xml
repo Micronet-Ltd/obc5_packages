@@ -57,10 +57,10 @@
         android:id="@+id/txtJ1708SocketStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/closed"
         android:layout_alignBaseline="@+id/lblSocketStatus"
         android:layout_alignBottom="@+id/lblSocketStatus"
-        android:layout_alignStart="@+id/txtJ1708InterfaceStatus" />
+        android:layout_alignStart="@+id/txtJ1708InterfaceStatus"
+        android:text="@string/closed" />
 
     <TextView
         android:id="@+id/txtJ1708InterfaceStatus"

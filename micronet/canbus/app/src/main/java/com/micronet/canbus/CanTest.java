@@ -242,6 +242,10 @@ public class CanTest {
         return termination;
     }
 
+    public void setTermination(boolean term) {
+         termination = term ;
+    }
+
     public int getPortNumber() {
         return portNumber;
     }
@@ -368,20 +372,19 @@ public class CanTest {
     public CanbusFlowControl[] setFlowControlMessages(){
 
         enableFlowControl = true;
-        ArrayList<CanbusFlowControl> flowControlMessagesList = new ArrayList<CanbusFlowControl>();
-        CanbusFlowControl[] flowControlMessages;
 
-        int[] ids = new int[]{12011, 12345, 124};
-        int[] responseIds = new int[]{ 12345, 12011, 001};
-        int[] dataLength = {8,4,6};
-        int[] type={CanbusFlowControl.EXTENDED, CanbusFlowControl.EXTENDED, CanbusFlowControl.STANDARD};
-        byte[] data1=new byte[]{0x7f,0x34,0x56,0x78,0x1f,0x2f,0x3f,0x4f};
-        byte[] data2=new byte[]{0x1f,0x2f,0x3f,0x4f};
-        byte[] data3=new byte[]{0x12,0x34,0x56,0x78,0x1f,0x2f};
-        byte[][] databytes=new byte[][]{data1, data2,data3};
+        CanbusFlowControl[] flowControlMessages = new CanbusFlowControl[8];
 
-        flowControlMessagesList.add(new CanbusFlowControl(ids,responseIds,type,dataLength,databytes));
-        flowControlMessages = flowControlMessagesList.toArray(new CanbusFlowControl[0]);
+        byte[] data1=new byte[]{0x10,0x34,0x56,0x78,0x1f,0x2f,0x3f,0x4f};
+
+        flowControlMessages[0] = new CanbusFlowControl(0x18FEE000,0x18FEE018,CanbusFlowControl.EXTENDED,8,data1);
+        flowControlMessages[1] = new CanbusFlowControl(0x1CECFF00,0x1CECFF1C,CanbusFlowControl.EXTENDED,8,data1);
+        flowControlMessages[2] = new CanbusFlowControl(0x18FEE300,0x18FEE318,CanbusFlowControl.EXTENDED,8,data1);
+        flowControlMessages[3] = new CanbusFlowControl(0x18FEE400,0x18FEE418,CanbusFlowControl.EXTENDED,8,data1);
+        flowControlMessages[4] = new CanbusFlowControl(0x18FEE500,0x18FEE518,CanbusFlowControl.EXTENDED,8,data1);
+        flowControlMessages[5] = new CanbusFlowControl(0x1CECEE00,0x1CECEE1C,CanbusFlowControl.EXTENDED,8,data1);
+        flowControlMessages[6] = new CanbusFlowControl(0x1CECCC00,0x1CECCC00,CanbusFlowControl.EXTENDED,8,data1);
+        flowControlMessages[7] = new CanbusFlowControl(0x1CECAA00,0x1CECAA00,CanbusFlowControl.EXTENDED,8,data1);
         return flowControlMessages;
     }
 
@@ -485,7 +488,7 @@ public class CanTest {
         dataBytes[0]= J1939_TP_CM_EOM;
         dataBytes[1]= (byte) (totalBytes & 0xFF);
         dataBytes[2]= (byte) ((totalBytes >> 8) & 0xFF);
-        dataBytes[3]= (byte) totalPackets;;
+        dataBytes[3]= (byte) totalPackets;
         dataBytes[4]= (byte) 0xFF;
         dataBytes[5]= requestedPgn[0];
         dataBytes[6]= requestedPgn[1];
@@ -866,8 +869,7 @@ public class CanTest {
     }
 
     boolean isConnectionIdAvailable(int connectionID) {
-        if(connections[connectionID].expectedPacketsNum == 0) return true;
-        return false;
+        return connections[connectionID].expectedPacketsNum == 0;
     }
 
     void removeConnection(int connectionID) {
@@ -991,7 +993,7 @@ public class CanTest {
 
                 ByteBuffer vehicleSpeed = ByteBuffer.wrap(data, 1, 2);
                 vehicleSpeed.order(ByteOrder.LITTLE_ENDIAN);
-                int wheelBasedVehicleSpeed = (vehicleSpeed.getShort() & 0xffff)* (1/256);;
+                int wheelBasedVehicleSpeed = (vehicleSpeed.getShort() & 0xffff)* (1/256);
                 txtGetVehicleSpeed = wheelBasedVehicleSpeed;
                 Log.d(TAG, "Vehicle Speed: " + wheelBasedVehicleSpeed + " km/h");
                 break;

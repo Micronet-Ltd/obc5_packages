@@ -1,3 +1,4 @@
+
 package com.micronet.canbus.Fragment;
 
 import android.graphics.Color;
@@ -15,9 +16,12 @@ import android.widget.TextView;
 import com.micronet.canbus.CanTest;
 import com.micronet.canbus.R;
 
+
 /**
  * Created by eemaan.siddiqi on 9/11/2017.
  */
+
+
 
 public class J1708OverviewFragment extends Fragment {
 
@@ -30,16 +34,19 @@ public class J1708OverviewFragment extends Fragment {
     private TextView txtJ1708Speed;
     private TextView textView;
 
-  /*
+/*
   *  Socket dependent UI
   * */
+
     private Button btnTransmitJ1708;
     private Switch swCycleTransmitJ1708;
     private SeekBar seekBarJ1708Send;
 
-    /*
+/*
     * Interface dependent UI
-    * */
+    * *//*
+*/
+
     private Button btnCreateInterface;
 
     //private ChangeBaudRateTask changeBaudRateTask;
@@ -67,7 +74,7 @@ public class J1708OverviewFragment extends Fragment {
     }
 
     private void updateInterfaceStatusUI(String status) {
-        final TextView txtInterfaceStatus = (TextView) getView().findViewById(R.id.txtJ1708InterfaceStatus);
+        final TextView txtInterfaceStatus = getView().findViewById(R.id.txtJ1708InterfaceStatus);
         if(status != null) {
             txtInterfaceStatus.setText(status);
             txtInterfaceStatus.setBackgroundColor(Color.YELLOW);
@@ -79,7 +86,7 @@ public class J1708OverviewFragment extends Fragment {
             txtInterfaceStatus.setBackgroundColor(Color.RED);
         }
 
-        final TextView txtSocketStatus = (TextView) getView().findViewById(R.id.txtJ1708SocketStatus);
+        final TextView txtSocketStatus = getView().findViewById(R.id.txtJ1708SocketStatus);
         if(status != null) {
             txtSocketStatus.setText(status);
             txtSocketStatus.setBackgroundColor(Color.YELLOW);
@@ -106,14 +113,14 @@ public class J1708OverviewFragment extends Fragment {
 
         View rootView = getView();
 
-        final Button btnCloseInterface = (Button) rootView.findViewById(R.id.btnCloseInterface);
-        btnCreateInterface = (Button) rootView.findViewById(R.id.btnInterface1708);
-        btnTransmitJ1708 = (Button) rootView.findViewById(R.id.btnSendJ1708);
-        seekBarJ1708Send = (SeekBar) rootView.findViewById(R.id.seekBarSendJ1708Speed);
-        textView = (TextView) rootView.findViewById(R.id.txt1708Frames);
-        swCycleTransmitJ1708 = (Switch) rootView.findViewById(R.id.swCycleTransmitJ1708);
+        final Button btnCloseInterface = rootView.findViewById(R.id.btnCloseInterface);
+        btnCreateInterface = rootView.findViewById(R.id.btnInterface1708);
+        btnTransmitJ1708 = rootView.findViewById(R.id.btnSendJ1708);
+        seekBarJ1708Send = rootView.findViewById(R.id.seekBarSendJ1708Speed);
+        textView = rootView.findViewById(R.id.txt1708Frames);
+        swCycleTransmitJ1708 = rootView.findViewById(R.id.swCycleTransmitJ1708);
 
-        /* for J1708 library */
+
         btnTransmitJ1708.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

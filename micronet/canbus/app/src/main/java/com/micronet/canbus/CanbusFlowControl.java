@@ -9,18 +9,11 @@ package com.micronet.canbus;
 
 public class CanbusFlowControl {
 
-    private int[] searchIds;
-    private int[] responseIds;
-    private int[] flowDataLength;
-    private byte[] dataBytes1=new byte[8];
-    private byte[] dataBytes2=new byte[8];
-    private byte[] dataBytes3=new byte[8];
-    private byte[] dataBytes4=new byte[8];
-    private byte[] dataBytes5=new byte[8];
-    private byte[] dataBytes6=new byte[8];
-    private byte[] dataBytes7=new byte[8];
-    private byte[] dataBytes8=new byte[8];
-    private int[] idType={EXTENDED};
+    private int searchId;
+    private int responseId;
+    private int flowDataLength;
+    private byte[] dataBytes=new byte[8];
+    private int idType = EXTENDED;
 
     private int n = 0;
     int length=0;
@@ -32,115 +25,55 @@ public class CanbusFlowControl {
      * Sets Canbus Flow Control module to respond to certain IDS with specific response ids and data bytes.
      * Supports Upto 8 Flow codes per can instance
      *
-     * @param searchIdArray Register search ids (Ids the Firmware will respond immediately to).
-     * @param responseIdArray Register response ids which will be used by the firmware to respond to messages with registered searchIdArray.
+     * @param searchIdCode Search Id of the flow code
+     * @param responseIdCode Response ID that will be used respond to a message with a search id.
      * @param type An array of Standard / Extended frames.
-     * @param dataLengthArray The data length of the data bytes.
+     * @param dataLength The number of data byte pairs that will be used to respond
      * @param responseDataBytes The firmware responds with these data bytes with its respective response ID.
      */
-    public CanbusFlowControl(int[] searchIdArray, int[] responseIdArray, int[] type, int[] dataLengthArray, byte[][] responseDataBytes) {
+    public CanbusFlowControl(int searchIdCode, int responseIdCode, int type, int dataLength, byte[] responseDataBytes) {
 
-        searchIds = searchIdArray;
-        responseIds = responseIdArray;
+        searchId = searchIdCode;
+        responseId = responseIdCode;
         idType = type;
-        flowDataLength = dataLengthArray;
+        flowDataLength = dataLength;
         length = responseDataBytes.length;
-        for (n = length - 1; n > -1; n--) {
-            if(n == 0) {dataBytes1 = responseDataBytes[n];}
-            else if(n == 1){dataBytes2 = responseDataBytes[n];}
-            else if(n == 2){dataBytes3 = responseDataBytes[n];}
-            else if(n == 3){dataBytes4 = responseDataBytes[n];}
-            else if(n == 4){dataBytes5=responseDataBytes[n];}
-            else if(n == 5){dataBytes6=responseDataBytes[n];}
-            else if(n == 6){dataBytes7=responseDataBytes[n];}
-            else if(n == 7){dataBytes8=responseDataBytes[n];}
-            else break;
-        }
+        dataBytes = responseDataBytes;
     }
 
     /**
      * Returns searchIds
      */
-    public int[] getSearchIds() {
-        return searchIds;
+    public int getSearchId() {
+        return searchId;
     }
 
     /**
      * Returns responseIds
      */
-    public int[] getResponseIds() {
-        return responseIds;
+    public int getResponseId() {
+        return responseId;
     }
 
     /**
      * Returns dataLength
      */
-    public int[] getFlowDataLength() {
+    public int getFlowDataLength() {
         return flowDataLength;
     }
 
     /**
      * Returns getIdType
      */
-    public int[] getIdType() {
+    public int getFlowMessageType() {
         return idType;
     }
 
     /**
      * Returns an array of data bytes for the first pair of search and response ids
      */
-    public byte[] getDataBytes1() {
-        return dataBytes1;
+    public byte[] getDataBytes() {
+        return dataBytes;
     }
-
-    /**
-     * Returns an array of data bytes for the second pair of search and response ids
-     */
-    public byte[] getDataBytes2() {
-        return dataBytes2;
-    }
-
-    /**
-     * Returns an array of data bytes for the third pair of search and response ids
-     */
-    public byte[] getDataBytes3() {
-        return dataBytes3;
-    }
-
-    /**
-     * Returns an array of data bytes for the fourth pair of search and response ids
-     */
-    public byte[] getDataBytes4() {
-        return dataBytes4;
-    }
-
-    /**
-     * Returns an array of data bytes for the fifth pair of search and response ids
-     */
-    public byte[] getDataBytes5() {
-        return dataBytes5;
-    }
-
-    /**
-     * Returns an array of data bytes for the sixth pair of search and response ids
-     */
-    public byte[] getDataBytes6() {
-        return dataBytes6;
-    }
-
-    /**
-     * Returns an array of data bytes for the seventh pair of search and response ids
-     */
-    public byte[] getDataBytes7() {
-        return dataBytes7;
-    }
-
-    /**
-     * Returns an array of data bytes for the eight pair of search and response ids
-     */
-    public byte[] getDataBytes8() {
-        return dataBytes8;
-    }
-
 
 }

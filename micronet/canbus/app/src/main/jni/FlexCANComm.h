@@ -13,13 +13,14 @@ static int J1708_TTY_WRITE_NUMBER= 5;
 
 int serial_init(char *name);
 
+char* getPortName(int portNumber);
 int initTerminalInterface(int fd, speed_t interfaceBaud);
 int closeTerminalInterface(int port);
 int closePort(int portNumber);
 int closeCAN(int close_fd);
 int setBitrate(int fd, int speed);
-int openCANandSetTermination(int fd, bool term);
-int setListeningMode(int fd, bool term);
+int openCANandSetTerm(int fd, bool term);
+int setListeningModeandTerm(int fd, bool term);
 int sendReadStatusCommand(int fd);
 int getFd(int portNumber);
 

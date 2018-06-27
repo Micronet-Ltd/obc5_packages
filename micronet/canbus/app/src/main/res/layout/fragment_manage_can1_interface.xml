@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="160dp">
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:visibility="visible">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="160dp">
+
+            <TextView
+                android:id="@+id/textViewManageInterface"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:isScrollContainer="true"
+                android:text="Manage Interface"
+                android:textColor="@color/colorPrimary"
+                android:textSize="14sp" />
+
+            <View
+                android:id="@+id/xAxis"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true" />
+
+            <View
+                android:id="@+id/yAxis"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true" />
+
+
+            <TextView
+                android:id="@+id/textViewBaud"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:text="Current Baud Rate: "
+                android:textSize="10sp" />
+
+            <TextView
+                android:id="@+id/textViewInterfaceCreated"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginTop="106dp"
+                android:text="Last Interface Created At: "
+                android:textSize="10sp" />
+
+            <TextView
+                android:id="@+id/textViewCanCloseInterface"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginTop="145dp"
+                android:text="Last Interface Closed At:"
+                android:textSize="10sp" />
+
+            <Button
+                android:id="@+id/buttonOpenCan1"
+                android:layout_width="wrap_content"
+                android:layout_height="22dp"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginStart="62dp"
+                android:layout_marginTop="34dp"
+                android:background="@color/colorButtons"
+                android:text="Create CAN I/F"
+                android:textSize="8sp" />
+
+            <Button
+                android:id="@+id/buttonCloseCan1"
+                android:layout_width="wrap_content"
+                android:layout_height="24dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignTop="@+id/buttonOpenCan1"
+                android:layout_marginEnd="62dp"
+                android:background="@color/colorButtons"
+                android:text="Close CAN I/F"
+                android:textSize="8sp" />
+
+            <TextView
+                android:id="@+id/textViewCan1CurrBaudRate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignStart="@+id/yAxis"
+                android:layout_centerVertical="true"
+                android:text="@string/_000k_desc"
+                android:textSize="10sp" />
+
+            <TextView
+                android:id="@+id/textViewCreatedTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignStart="@+id/yAxis"
+                android:layout_alignTop="@+id/textViewInterfaceCreated"
+                android:text="Date"
+                android:textSize="10sp" />
+
+            <TextView
+                android:id="@+id/textViewClosedTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignStart="@+id/yAxis"
+                android:layout_alignTop="@+id/textViewCanCloseInterface"
+                android:text="Date"
+                android:textSize="10sp" />
+
+
+        </RelativeLayout>
+
+    </ScrollView>
+
+
+</RelativeLayout>

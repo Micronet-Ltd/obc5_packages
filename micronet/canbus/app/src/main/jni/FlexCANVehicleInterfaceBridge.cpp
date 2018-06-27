@@ -1,7 +1,3 @@
-//
-// Created by eemaan.siddiqi on 3/6/2017.
-//
-
 #include <jni.h>
 #define LOG_TAG "Canbus"
 
@@ -21,21 +17,34 @@ static void throwException(JNIEnv *env, const char *message, const char* add) {
     env->ThrowNew(cls, msg);
 }
 
-JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANVehicleInterfaceBridge_createCanInterface(JNIEnv *env, jobject instance, jboolean listeningModeEnable, jint bitrate, jboolean termination, jobjectArray  hardwarefilter, int port_number,jobjectArray flowControl) {
-
-    char *port=NULL;
+/**
+ * Configure CAN Interface
+ * Begin with initialising everything
+ * 1. Start working with hardware filters. Get Filter, Mask and Ids and store them in a structure
+ * 2. Derive the TTY port that needs to be configured
+ * 3. Get the flow control codes
+ * 4. Create a new interface based on the port number
+ * 5. Set the right variables - file descriptors
+ * */
+JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANVehicleInterfaceBridge_configureCanInterface(JNIEnv *env, jobject instance, jboolean listeningModeEnable, jint bitrate, jboolean termination,jobjectArray  hardwarefilter, jint port_number,jobjectArray flowControl){
+    // /Initialisation
+    static char *port=NULL;
     int ttyport_number=0;
 
     struct FLEXCAN_filter_mask filter_array[24];
     int numfilter = env->GetArrayLength (hardwarefilter);
+
     int i=0,f=0,m=0,fmt=0;
-    int total_masks=0;
-    int total_filters = 0;
-    int total_filter_mask_types=0;
+    int total_masks = 0, total_filters = 0, total_filter_mask_types=0;
 
     struct FLEXCAN_Flow_Control flowControlMessageArray[8];
-    int numFlowControlMessages;
+    int numFlowControlMessages = env->GetArrayLength (flowControl);
+    LOGD("Flow Control Messages in JNI = %d", numFlowControlMessages);
+    int x =0 , flowMesgCount = 0;
 
+    jclass clazz = env->FindClass("com/micronet/canbus/FlexCANVehicleInterfaceBridge");
+
+    //Get Filters and Masks from the Object
     for (i = 0; i < numfilter; i++){
 
         jobject element = env->GetObjectArrayElement(hardwarefilter, i);
@@ -76,233 +85,94 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANVehicleInterfaceBridge_cr
         //Saving Filter and Mask types
         filter_array[i].filter_mask_type_count = lengthOfFilterMaskTypeArray;
         for (fmt= 0; fmt < lengthOfFilterMaskTypeArray; fmt++) {
-			if (fmt < MAX_FLEXCAN_CAN_FILTERS)
-			{
-            	filter_array[i].filter_mask_type[fmt] = filterMaskTypeInts[fmt];
-            	total_filter_mask_types++;
-			}
-			else
-			{
-        		throwException(env, "Hardware Filter: %s tried to pass array index of filter_mask_type", "err");
-			}
+            if (fmt < MAX_FLEXCAN_CAN_FILTERS)
+            {
+                filter_array[i].filter_mask_type[fmt] = filterMaskTypeInts[fmt];
+                total_filter_mask_types++;
+            }
+            else
+            {
+                //throwException(env, "Hardware Filter: %s tried to pass array index of filter_mask_type", "err");
+            }
             filter_array[i].filter_mask_type[fmt] = filterMaskTypeInts[fmt];
             total_filter_mask_types++;
         }
     }
 
+    //The maximum number of filters that can be added are 24; Otherwise the MCU overwrites the existing filters.
     if (total_filters > 24){
         char str_filters [20];
         snprintf(str_filters, sizeof(str_filters), "%d", i);
         throwException(env, "Hardware Filter: Too many filter ids (%s). Max allowed - 24", str_filters);
     }
 
+    //The maximum number of masks that can be set are 16.
     if (total_masks > 16){
         char str_masks [20];
         snprintf(str_masks, sizeof(str_masks), "%d", total_masks);
         throwException(env, "Hardware Filter: Too many mask ids (%s). Max allowed - 16", str_masks);
     }
-    ttyport_number= port_number;
 
-    if (ttyport_number==2){port= CAN1_TTY;}
-    else if (ttyport_number==3){port= CAN2_TTY;}
-    else throwException(env, "Entered an incorrect port number: %d ", (const char *) ttyport_number);
+    //Set the correct port number
+    if(port_number == 2 || port_number == 4){
+        port = getPortName(port_number);
+    } else{
+        throwException(env, "Entered an incorrect port number: %d ", (const char *) ttyport_number);
 
+    }
+    //Get Flow control codes
+    if(flowControl != NULL){
 
-    if(flowControl!=NULL) {
-        struct FLEXCAN_Flow_Control flowControlMessageArray[8];
-        int numFlowControlMessages = env->GetArrayLength(flowControl);
-        int totalSearchIds = 0;
-        int totalResponseIds = 0;
-        int totalIdTypes = 0;
-        int totalIdDataLengths = 0;
-        int totalResponseDatabytes1 = 0;
-        int totalResponseDatabytes2 = 0;
-        int totalResponseDatabytes3 = 0;
-        int totalResponseDatabytes4 = 0;
-        int totalResponseDatabytes5 = 0;
-        int totalResponseDatabytes6 = 0;
-        int totalResponseDatabytes7 = 0;
-        int totalResponseDatabytes8 = 0;
+        for(x = 0; x < numFlowControlMessages; x++){
 
-
-        int j = 0;
-        int sids, rids, idtypes, datalengths, databytes1, databytes2,databytes3,databytes4,databytes5,databytes6,databytes7,databytes8;
-
-        for (j = 0; j < numFlowControlMessages; j++) {
-
-            jobject flowElement = env->GetObjectArrayElement(flowControl, j);
-
+            jobject  flowElement = env->GetObjectArrayElement(flowControl, x);
             jclass flowClass = env->GetObjectClass(flowElement);
 
-            //get search ids array
-            jmethodID methodSearchId = env->GetMethodID(flowClass, "getSearchIds", "()[I");
-            jintArray searchIds = (jintArray) env->CallObjectMethod(flowElement, methodSearchId);
-            jint *intsSearchIds = env->GetIntArrayElements(searchIds, NULL);
-            jsize lengthOfSearchIdArray = env->GetArrayLength(searchIds);
+            jmethodID methodSearchId = env->GetMethodID(flowClass, "getSearchId", "()I");
+            uint32_t searchId = (uint32_t) env->CallIntMethod(flowElement,methodSearchId);
+            flowControlMessageArray[x].search_id = searchId;
 
-            //get response ids array
-            jmethodID methodResponseId = env->GetMethodID(flowClass, "getResponseIds", "()[I");
-            jintArray responseIds = (jintArray) env->CallObjectMethod(flowElement,methodResponseId);
-            jint *intsResponseIds = env->GetIntArrayElements(responseIds, NULL);
-            jsize lengthOfResponseIdArray = env->GetArrayLength(responseIds);
+            jmethodID methodResponseId = env->GetMethodID(flowClass, "getResponseId", "()I");
+            uint32_t responseId = (uint32_t) env->CallIntMethod(flowElement,methodResponseId);
+            flowControlMessageArray[x].response_id = responseId;
 
-            //Get search and response Ids type array
-            jmethodID methodIdType = env->GetMethodID(flowClass, "getIdType", "()[I");
-            jintArray idType = (jintArray) env->CallObjectMethod(flowElement, methodIdType);
-            jint *idTypeInts = env->GetIntArrayElements(idType, NULL);
-            jsize lengthOfIdTypeArray = env->GetArrayLength(idType);
+            jmethodID methodMesgType = env->GetMethodID(flowClass, "getFlowMessageType", "()I");
+            uint8_t mesgType = (uint8_t) env->CallIntMethod(flowElement,methodMesgType);
+            flowControlMessageArray[x].flow_msg_type = mesgType;
 
-            //Get response Ids data length array
-            jmethodID methodIdDataLength = env->GetMethodID(flowClass, "getFlowDataLength", "()[I");
-            jintArray idDataLength = (jintArray) env->CallObjectMethod(flowElement, methodIdDataLength);
-            jint *idDataLengthInts = env->GetIntArrayElements(idDataLength, NULL);
-            jsize lengthOfIdDataLengthArray = env->GetArrayLength(idDataLength);
+            jmethodID methodDataResponseLength = env->GetMethodID(flowClass, "getFlowDataLength", "()I");
+            uint8_t mesgLength = (uint8_t) env->CallIntMethod(flowElement,methodDataResponseLength);
+            flowControlMessageArray[x].flow_msg_data_length = mesgLength;
 
+            jmethodID methodResponseDataBytes=env->GetMethodID(flowClass,"getDataBytes","()[B");
+            jbyteArray responseDataBytes=(jbyteArray)env->CallObjectMethod(flowElement, methodResponseDataBytes);
+            jbyte *bufferPtr = env->GetByteArrayElements(responseDataBytes,NULL);
+            jsize lengthOfR=env->GetArrayLength(responseDataBytes);
 
-            jmethodID methodResponseDataBytes1=env->GetMethodID(flowClass,"getDataBytes1","()[B");
-            jbyteArray responseDataBytes1=(jbyteArray)env->CallObjectMethod(flowElement, methodResponseDataBytes1);
-            jbyte *bufferPtr1=env->GetByteArrayElements(responseDataBytes1,NULL);
-            jsize lengthOfResponseArray1=env->GetArrayLength(responseDataBytes1);
-
-            jmethodID methodResponseDataBytes2=env->GetMethodID(flowClass,"getDataBytes2","()[B");
-            jbyteArray responseDataBytes2=(jbyteArray)env->CallObjectMethod(flowElement, methodResponseDataBytes2);
-            jbyte *bufferPtr2=env->GetByteArrayElements(responseDataBytes2,NULL);
-            jsize lengthOfResponseArray2=env->GetArrayLength(responseDataBytes2);
-
-            jmethodID methodResponseDataBytes3=env->GetMethodID(flowClass,"getDataBytes3","()[B");
-            jbyteArray responseDataBytes3=(jbyteArray)env->CallObjectMethod(flowElement, methodResponseDataBytes3);
-            jbyte *bufferPtr3=env->GetByteArrayElements(responseDataBytes3,NULL);
-            jsize lengthOfResponseArray3=env->GetArrayLength(responseDataBytes3);
-
-            jmethodID methodResponseDataBytes4=env->GetMethodID(flowClass,"getDataBytes4","()[B");
-            jbyteArray responseDataBytes4=(jbyteArray)env->CallObjectMethod(flowElement, methodResponseDataBytes4);
-            jbyte *bufferPtr4=env->GetByteArrayElements(responseDataBytes4,NULL);
-            jsize lengthOfResponseArray4=env->GetArrayLength(responseDataBytes4);
-
-            jmethodID methodResponseDataBytes5=env->GetMethodID(flowClass,"getDataBytes5","()[B");
-            jbyteArray responseDataBytes5=(jbyteArray)env->CallObjectMethod(flowElement, methodResponseDataBytes5);
-            jbyte *bufferPtr5=env->GetByteArrayElements(responseDataBytes5,NULL);
-            jsize lengthOfResponseArray5=env->GetArrayLength(responseDataBytes5);
-
-            jmethodID methodResponseDataBytes6=env->GetMethodID(flowClass,"getDataBytes6","()[B");
-            jbyteArray responseDataBytes6=(jbyteArray)env->CallObjectMethod(flowElement, methodResponseDataBytes6);
-            jbyte *bufferPtr6=env->GetByteArrayElements(responseDataBytes6,NULL);
-            jsize lengthOfResponseArray6=env->GetArrayLength(responseDataBytes6);
-
-            jmethodID methodResponseDataBytes7=env->GetMethodID(flowClass,"getDataBytes7","()[B");
-            jbyteArray responseDataBytes7=(jbyteArray)env->CallObjectMethod(flowElement, methodResponseDataBytes7);
-            jbyte *bufferPtr7=env->GetByteArrayElements(responseDataBytes7,NULL);
-            jsize lengthOfResponseArray7=env->GetArrayLength(responseDataBytes7);
-
-            jmethodID methodResponseDataBytes8=env->GetMethodID(flowClass,"getDataBytes8","()[B");
-            jbyteArray responseDataBytes8=(jbyteArray)env->CallObjectMethod(flowElement, methodResponseDataBytes8);
-            jbyte *bufferPtr8=env->GetByteArrayElements(responseDataBytes8,NULL);
-            jsize lengthOfResponseArray8=env->GetArrayLength(responseDataBytes8);
-
-            //Saving search ids
-            flowControlMessageArray[j].search_id_count = lengthOfSearchIdArray;
-            for (sids = 0; sids < lengthOfSearchIdArray; sids++) {
-                flowControlMessageArray[j].search_id[sids] = intsSearchIds[sids];
-                totalSearchIds++;
-                LOGD("Search id stored: %d and total search ids set=%d", intsSearchIds[sids], totalSearchIds);
-            }
-            // Saving response ids
-            flowControlMessageArray[j].response_id_count = lengthOfResponseIdArray;
-            for (rids = 0; rids < lengthOfResponseIdArray; rids++) {
-                flowControlMessageArray[j].response_id[rids] = intsResponseIds[rids];
-                totalResponseIds++;
-                LOGD("Response id stored: %d and total Response ids set=%d", intsResponseIds[rids], totalResponseIds);
-            }
-            //Saving Id types
-            flowControlMessageArray[j].flow_msg_type_count = lengthOfIdTypeArray;
-            for (idtypes = 0; idtypes < lengthOfIdTypeArray; idtypes++) {
-                flowControlMessageArray[j].flow_msg_type[idtypes] = idTypeInts[idtypes];
-                totalIdTypes++;
-                LOGD("ID type stored: %d and total id types set=%d", idTypeInts[idtypes], totalIdTypes);
-            }
-            //Saving Id data lengths
-            flowControlMessageArray[j].flow_msg_data_length_count = lengthOfIdDataLengthArray;
-            for (datalengths = 0; datalengths < lengthOfIdDataLengthArray; datalengths++) {
-                flowControlMessageArray[j].flow_msg_data_length[datalengths] = idDataLengthInts[datalengths];
-                totalIdDataLengths++;
-                LOGD("ID Data lengths stored: %d and total datalengths saved=%d", idDataLengthInts[datalengths], totalIdDataLengths);
-            }
-            //Saving response data bytes
-            flowControlMessageArray[j].response_databytes1_count = lengthOfResponseArray1;
-            for (databytes1 = 0; databytes1 < lengthOfResponseArray1; databytes1++) {
-                flowControlMessageArray[j].response_data_bytes1[databytes1]= (uint8_t) bufferPtr1[databytes1];
-                totalResponseDatabytes1++;
-                LOGD("Response data bytes stored: %d and total databytes1 saved=%d", (uint8_t) bufferPtr1[databytes1], totalResponseDatabytes1);
+            for(int i = 0; i < flowControlMessageArray[x].flow_msg_data_length; i ++){
+                flowControlMessageArray[i].response_data_bytes[i]= (uint8_t) bufferPtr[i];
+                LOGD("Response data bytes from Java: %d ----> Response data bytes stored: %d", (uint8_t) bufferPtr[i],flowControlMessageArray[i].response_data_bytes[i]);
             }
 
-            flowControlMessageArray[j].response_databytes2_count = lengthOfResponseArray2;
-            for (databytes2 = 0; databytes2 < lengthOfResponseArray2; databytes2++) {
-                flowControlMessageArray[j].response_data_bytes2[databytes2]= (uint8_t) bufferPtr2[databytes2];
-                totalResponseDatabytes2++;
-                LOGD("Response data bytes stored: %d and total databytes2 saved=%d", (uint8_t) bufferPtr2[databytes2], totalResponseDatabytes2);
-            }
-
-            flowControlMessageArray[j].response_databytes3_count = lengthOfResponseArray3;
-            for (databytes3 = 0; databytes3 < lengthOfResponseArray3; databytes3++) {
-                flowControlMessageArray[j].response_data_bytes3[databytes3]= (uint8_t) bufferPtr3[databytes3];
-                totalResponseDatabytes3++;
-                LOGD("Response data bytes stored: %d and total databytes3 saved=%d", (uint8_t) bufferPtr3[databytes3], totalResponseDatabytes3);
-                LOGD("response_databytes_3 array: %d", flowControlMessageArray[j].response_data_bytes3[databytes3]);
-            }
-
-            flowControlMessageArray[j].response_databytes4_count = lengthOfResponseArray4;
-            for (databytes4 = 0; databytes4 < lengthOfResponseArray4; databytes4++) {
-                flowControlMessageArray[j].response_data_bytes4[databytes4]= (uint8_t) bufferPtr4[databytes4];
-                totalResponseDatabytes4++;
-                LOGD("Response data bytes stored: %d and total databytes4 saved=%d", (uint8_t) bufferPtr4[databytes4], totalResponseDatabytes4);
-            }
-
-            flowControlMessageArray[j].response_databytes5_count = lengthOfResponseArray5;
-            for (databytes5 = 0; databytes5 < lengthOfResponseArray5; databytes5++) {
-                flowControlMessageArray[j].response_data_bytes5[databytes5]= (uint8_t) bufferPtr5[databytes5];
-                totalResponseDatabytes5++;
-                LOGD("Response data bytes stored: %d and total databytes5 saved=%d", (uint8_t) bufferPtr5[databytes5], totalResponseDatabytes5);
-            }
-
-            flowControlMessageArray[j].response_databytes6_count = lengthOfResponseArray6;
-            for (databytes6 = 0; databytes6 < lengthOfResponseArray6; databytes6++) {
-                flowControlMessageArray[j].response_data_bytes6[databytes6]= (uint8_t) bufferPtr6[databytes6];
-                totalResponseDatabytes6++;
-                LOGD("Response data bytes stored: %d and total databytes6 saved=%d", (uint8_t) bufferPtr6[databytes6], totalResponseDatabytes6);
-            }
-
-            flowControlMessageArray[j].response_databytes7_count = lengthOfResponseArray7;
-            for (databytes7 = 0; databytes7 < lengthOfResponseArray7; databytes7++) {
-                flowControlMessageArray[j].response_data_bytes7[databytes7]= (uint8_t) bufferPtr7[databytes7];
-                totalResponseDatabytes7++;
-                LOGD("Response data bytes stored: %d and total databytes7 saved=%d", (uint8_t) bufferPtr7[databytes7], totalResponseDatabytes7);
-            }
-
-            flowControlMessageArray[j].response_databytes8_count = lengthOfResponseArray8;
-            for (databytes8 = 0; databytes8 < lengthOfResponseArray8; databytes8++) {
-                flowControlMessageArray[j].response_data_bytes8[databytes8]= (uint8_t) bufferPtr8[databytes8];
-                totalResponseDatabytes8++;
-                LOGD("Response data bytes stored: %d and total databytes8 saved=%d", (uint8_t) bufferPtr8[databytes8], totalResponseDatabytes8);
-            }
+            //TODO: Set Codes
+            flowMesgCount ++;
+            LOGD("Flow Message %d stored", flowMesgCount);
         }
 
-        if (totalSearchIds > 8 || totalResponseIds > 8 || totalIdTypes > 8 || totalIdDataLengths > 8) {
-            char str_flow_message[60];
-
-            snprintf(str_flow_message, sizeof(str_flow_message),"[SearchIds:%d, ResponseIds:%d, TotalIdTypes:%d, TotalIdDataLength:%d]", totalSearchIds, totalResponseIds, totalIdTypes, totalIdDataLengths);
-            throwException(env, "FlowControlMessage Error: Received too many arguments (%s). Max allowed - 8", str_flow_message);
+        if(flowMesgCount > 8){
+            char str [20];
+            snprintf(str, sizeof(str), "%d", i);
+            throwException(env, "Flow Messages: Too many flow codes (%s) set. Max allowed - 8", str);
         }
     }
 
-    jclass clazz = env->FindClass("com/micronet/canbus/FlexCANVehicleInterfaceBridge");
-
+    //Create a interface
     if (port_number==2) {
         jint fdCanPort1 = FlexCAN_startup(listeningModeEnable, bitrate, termination, filter_array, numfilter, port, flowControlMessageArray, numFlowControlMessages);
         jfieldID fd_id;
         fd_id = env->GetFieldID(clazz, "fdCanPort1", "I");
         env->SetIntField(instance, fd_id, fdCanPort1);
     }
-
     else if (port_number==3){
         jint fdCanPort2 = FlexCAN_startup(listeningModeEnable, bitrate, termination, filter_array, numfilter, port, flowControlMessageArray, numFlowControlMessages);
         jfieldID fd_id;
@@ -311,7 +181,6 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANVehicleInterfaceBridge_cr
     }
 
     return 0;
-
     error:
     return SYSTEM_ERROR;
 }

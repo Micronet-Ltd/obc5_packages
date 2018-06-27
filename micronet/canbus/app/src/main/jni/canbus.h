@@ -10,7 +10,7 @@
 #define CAN_BUS_H
 
 #define invalid_arg "Invalid_Argument"
-#define CANBUS_JNI_VER "20180228.000"
+#define CANBUS_JNI_VER "20180627.001"
 
 #define STANDARD 0
 #define EXTENDED 1
@@ -53,42 +53,22 @@
 
 struct FLEXCAN_filter_mask {
     __u32 mask_id[MAX_FLEXCAN_CAN_FILTERS];
-    __u8 mask_count;
+    __u32 mask_count;
 
     __u8 filter_mask_type[MAX_FLEXCAN_CAN_FILTERS];
     __u8 filter_mask_type_count;
 
     __u32 filter_id[MAX_FLEXCAN_CAN_FILTERS];
-    __u8 filter_count;
+    __u32 filter_count;
 
 };
 
 struct FLEXCAN_Flow_Control{
-    __u32 search_id[MAX_FlexCAN_Flowcontrol_CAN];
-    __u8 search_id_count;
-    __u32 response_id[MAX_FlexCAN_Flowcontrol_CAN];
-    __u8 response_id_count;
-    __u8 flow_msg_type[MAX_FlexCAN_Flowcontrol_CAN];
-    __u8 flow_msg_type_count;
-    __u8 flow_msg_data_length[MAX_FlexCAN_Flowcontrol_CAN];
-    __u8 flow_msg_data_length_count;
-    BYTE response_data_bytes1[MAX_FlexCAN_Flowcontrol_CAN];
-    BYTE response_data_bytes2[MAX_FlexCAN_Flowcontrol_CAN];
-    BYTE response_data_bytes3[MAX_FlexCAN_Flowcontrol_CAN];
-    BYTE response_data_bytes4[MAX_FlexCAN_Flowcontrol_CAN];
-    BYTE response_data_bytes5[MAX_FlexCAN_Flowcontrol_CAN];
-    BYTE response_data_bytes6[MAX_FlexCAN_Flowcontrol_CAN];
-    BYTE response_data_bytes7[MAX_FlexCAN_Flowcontrol_CAN];
-    BYTE response_data_bytes8[MAX_FlexCAN_Flowcontrol_CAN];
-    __u8 response_databytes1_count;
-    __u8 response_databytes2_count;
-    __u8 response_databytes3_count;
-    __u8 response_databytes4_count;
-    __u8 response_databytes5_count;
-    __u8 response_databytes6_count;
-    __u8 response_databytes7_count;
-    __u8 response_databytes8_count;
-
+    __u32 search_id;
+    __u32 response_id;
+    __u8 flow_msg_type;
+    __u8 flow_msg_data_length;
+    BYTE response_data_bytes[MAX_FlexCAN_Flowcontrol_CAN];
 };
 
 struct canbus_globals
@@ -126,7 +106,12 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_CanbusInterface_getImplId(JNIEnv
 JNIEXPORT jint JNICALL Java_com_micronet_canbus_J1708Interface_getImplId(JNIEnv * env, jclass cls);//added
 
 
-JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANVehicleInterfaceBridge_createCanInterface(JNIEnv *env, jobject instance, jboolean listeningModeEnable, jint bitrate, jboolean termination, jobjectArray  hardwarefilter, int port_number,jobjectArray flowControl);
+//JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANVehicleInterfaceBridge_createCanInterface(JNIEnv *env, jobject instance, jboolean listeningModeEnable, jint bitrate, jboolean termination, jobjectArray  hardwarefilter, int port_number,jobjectArray flowControl);
+JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANVehicleInterfaceBridge_create(JNIEnv *env, jobject instance, jboolean listeningModeEnable, jint bitrate, jboolean termination, jobjectArray  hardwarefilter, int port_number,jobjectArray flowControl);
+JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANVehicleInterfaceBridge_configureCanInterface(JNIEnv *env, jobject instance, jboolean listeningModeEnable, jint bitrate, jboolean termination,jobjectArray  hardwarefilter, jint port_number,jobjectArray flowControl);
+
+
+
 JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANVehicleInterfaceBridge_removeCAN1Interface(JNIEnv *env, jobject instance);
 JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANVehicleInterfaceBridge_removeCAN2Interface(JNIEnv *env, jobject instance);
 JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANVehicleInterfaceBridge_createJ1708Interface(JNIEnv *env, jobject instance);

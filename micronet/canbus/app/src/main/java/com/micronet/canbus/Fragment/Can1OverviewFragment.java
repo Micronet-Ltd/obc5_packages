@@ -10,40 +10,53 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import com.micronet.canbus.CanTest;
 import com.micronet.canbus.Info;
-import com.micronet.canbus.R;
 import com.micronet.canbus.MainActivity;
+import com.micronet.canbus.R;
+
+import java.util.Calendar;
+import java.util.Date;
 
 public class Can1OverviewFragment extends Fragment {
+
+    private Date LastCreated;
+    private Date LastClosed;
+
     private int BITRATE_250K = 250000;
     private int BITRATE_500K = 500000;
+    private boolean silentMode = false;
+    private boolean termination = false;
+    private int baudRateSelected = BITRATE_250K;
 
     private Thread updateUIThread;
 
     private CanTest canTest;
-    private TextView txtBaud;
+    private TextView txtInterfaceClsTime;
+    private TextView txtInterfaceOpenTime;
     private TextView txtCanSpeed;
-    private TextView textView;
 
-    /*
-        Socket dependent UI
-     */
+    private TextView textViewFrames;
+
+    // Socket dependent UI
     private Button btnTransmitCAN;
     private Switch swCycleTransmitJ1939;
     private SeekBar seekBarJ1939Send;
-    /*  private SeekBar seekBarJ1708Send;*/
 
-    /*
-        Interface dependent UI
-     */
-    private Button btnGetBaudrate;
-    private Button btn250K;
-    private Button btn500K;
+    //Interface dependent UI
+    private ToggleButton toggleButtonTerm;
+    private ToggleButton toggleButtonListen;
+    private RadioGroup baudRateCan1;
+
+    private Button openCan1;
+    private Button closeCan1;
 
     private ChangeBaudRateTask changeBaudRateTask;
 
@@ -60,20 +73,18 @@ public class Can1OverviewFragment extends Fragment {
     private void setStateSocketDependentUI() {
         boolean open = canTest.isPort1SocketOpen();
         btnTransmitCAN.setEnabled(open);
-      /*  btnTransmitJ1708.setEnabled(openCan1);*/
         swCycleTransmitJ1939.setEnabled(open);
-/*        swCycleTransmitJ1708.setEnabled(openCan1);*/
         seekBarJ1939Send.setEnabled(open);
-       /* seekBarJ1708Send.setEnabled(openCan1);*/
     }
 
     private void setStateInterfaceDependentUI() {
-        boolean open = canTest.isCAN1InterfaceOpen();
-        btnGetBaudrate.setEnabled(open);
+    boolean open = canTest.isCAN1InterfaceOpen();
+        //btnGetBaudrateCam.setEnabled(open);
+
     }
 
     private void updateInterfaceStatusUI(String status) {
-        final TextView txtInterfaceStatus = (TextView) getView().findViewById(R.id.txtJ1708InterfaceStatus);
+        final TextView txtInterfaceStatus = getView().findViewById(R.id.textCan1InterfaceStatus);
         if(status != null) {
             txtInterfaceStatus.setText(status);
             txtInterfaceStatus.setBackgroundColor(Color.YELLOW);
@@ -85,7 +96,7 @@ public class Can1OverviewFragment extends Fragment {
             txtInterfaceStatus.setBackgroundColor(Color.RED);
         }
 
-        final TextView txtSocketStatus = (TextView) getView().findViewById(R.id.txtJ1708SocketStatus);
+        final TextView txtSocketStatus = getView().findViewById(R.id.textCan1SocketStatus);
         if(status != null) {
             txtSocketStatus.setText(status);
             txtSocketStatus.setBackgroundColor(Color.YELLOW);
@@ -109,23 +120,23 @@ public class Can1OverviewFragment extends Fragment {
         // Set title bar
         ((MainActivity) getActivity()).setActionBarTitle(String.format("Canbus: %s (API %s)", getAppVersion(), Info.VERSION));
 
-        View rootView = getView();
+        final View rootView = getView();
 
-        final Button btnCloseCan1Interface = (Button) rootView.findViewById(R.id.btnCloseCan1Interface);
+        textViewFrames = rootView.findViewById(R.id.textViewCan1Frames);
 
-        btn250K = (Button) rootView.findViewById(R.id.baud250);
-        btn500K = (Button) rootView.findViewById(R.id.baud500);
-        btnTransmitCAN = (Button) rootView.findViewById(R.id.btnSendJ1939);
-        /*btnTransmitJ1708 = (Button) rootView.findViewById(R.id.btnSendJ1708);*/
-        btnGetBaudrate = (Button) rootView.findViewById(R.id.btnGetBaudrate);
-        seekBarJ1939Send = (SeekBar) rootView.findViewById(R.id.seekBarSendSpeed);
-      /*  seekBarJ1708Send = (SeekBar) rootView.findViewById(R.id.seekBarSendJ1708Speed);*/
-        txtCanSpeed = (TextView) rootView.findViewById(R.id.txtCanSpeed);
-     /*   txtJ1708Speed = (TextView) rootView.findViewById(R.id.txtJ1708Speed);*/
-        textView = (TextView) rootView.findViewById(R.id.textView);
-        txtBaud = (TextView) rootView.findViewById(R.id.txtBaud);
-        swCycleTransmitJ1939 = (Switch) rootView.findViewById(R.id.swCycleTransmitJ1939);
-      /*  swCycleTransmitJ1708 = (Switch) rootView.findViewById(R.id.swCycleTransmitJ1708);*/
+        baudRateCan1 = rootView.findViewById(R.id.radioGrCan1BaudRates);
+        toggleButtonListen = rootView.findViewById(R.id.toggleButtonListenCan1);
+        toggleButtonTerm = rootView.findViewById(R.id.toggleButtonTermCan1);
+
+        openCan1 = rootView.findViewById(R.id.buttonOpenCan1);
+        closeCan1 = rootView.findViewById(R.id.buttonCloseCan1);
+        txtInterfaceClsTime = rootView.findViewById(R.id.textViewClosedTime);
+        txtInterfaceOpenTime = rootView.findViewById(R.id.textViewCreatedTime);
+        txtCanSpeed = rootView.findViewById(R.id.textViewCan1CurrBaudRate);
+
+        btnTransmitCAN = rootView.findViewById(R.id.btnCan1SendJ1939);
+        seekBarJ1939Send = rootView.findViewById(R.id.seekBarSendSpeedCan1);
+        swCycleTransmitJ1939 = rootView.findViewById(R.id.swCan1CycleTransmitJ1939);
 
         seekBarJ1939Send.setProgress(canTest.getJ1939IntervalDelay());
         btnTransmitCAN.setOnClickListener(new View.OnClickListener() {
@@ -135,50 +146,54 @@ public class Can1OverviewFragment extends Fragment {
             }
         });
 
-
-        /* for J1708 library */
-  /*      btnTransmitJ1708.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                canTest.sendJ1708();
+        baudRateCan1.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
+        {
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch(checkedId){
+                    case R.id.radio250K:
+                        baudRateSelected = BITRATE_250K;
+                        break;
+                    case R.id.radio500K:
+                        baudRateSelected = BITRATE_500K;
+                        break;
+                }
             }
-        });*/
+        });
 
-        btn250K.setOnClickListener(new View.OnClickListener() {
+        toggleButtonTerm.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                termination = isChecked;
+            }
+        });
+
+
+        toggleButtonListen.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                silentMode = isChecked;
+            }
+        });
+
+        openCan1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                canTest.setBaudrate(BITRATE_250K);
+                canTest.setRemoveCan1InterfaceState(false);
+                canTest.setBaudrate(baudRateSelected);
                 canTest.setPortNumber(2);
-                canTest.setSilentMode(false);
+                canTest.setSilentMode(silentMode);
+                canTest.setTermination(termination);
                 canTest.setRemoveCan1InterfaceState(false);
                 executeChangeBaudrate();
             }
         });
 
-        btn500K.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                canTest.setBaudrate(BITRATE_500K);
-                canTest.setPortNumber(2);
-                canTest.setSilentMode(false);
-                canTest.setRemoveCan1InterfaceState(false);
-                executeChangeBaudrate();
-            }
-        });
-
-        btnCloseCan1Interface.setOnClickListener(new View.OnClickListener() {
+        closeCan1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 canTest.setRemoveCan1InterfaceState(true);
                 executeChangeBaudrate();
 
-            }
-        });
-
-        btnGetBaudrate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                updateBaudRateUI();
             }
         });
 
@@ -189,14 +204,6 @@ public class Can1OverviewFragment extends Fragment {
                 canTest.sendJ1939Port1();
             }
         });
-
-/*        swCycleTransmitJ1708.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                canTest.setAutoSendJ1708(swCycleTransmitJ1708.isChecked());
-                canTest.sendJ1708();
-            }
-        });*/
 
         seekBarJ1939Send.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -218,33 +225,11 @@ public class Can1OverviewFragment extends Fragment {
             }
         });
 
-/*
-        seekBarJ1708Send.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if (fromUser) {
-                    canTest.setJ1708IntervalDelay(progress);
-                    txtJ1708Speed.setText(progress + "ms");
-                }
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
-*/
-
-        txtCanSpeed.setText(canTest.getJ1939IntervalDelay() + "ms");
-        /*txtJ1708Speed.setText(canTest.getJ1708IntervalDelay() + "ms");*/
+        //txtCanSpeed.setText(canTest.getJ1939IntervalDelay() + "ms");
         updateBaudRateUI();
+        updateInterfaceTime();
         updateInterfaceStatusUI();
-       /* setStateInterfaceDependentUI();*/
+        setStateInterfaceDependentUI();
         setStateSocketDependentUI();
     }
 
@@ -269,16 +254,8 @@ public class Can1OverviewFragment extends Fragment {
 
     private void updateCountUI() {
         String s = "J1939 Frames/Bytes: " + canTest.getPort1CanbusFrameCount() + "/" + canTest.getPort1CanbusByteCount() + "\n";
-//
-//                + "Rollovers/MaxDiff: " + canTest.getPort1CanbusRollovers() + "/" + canTest.getPort1CanbusMaxdiff() + "\n";
-
-      /*  *//* for J1708 library *//*
-        s += "\nJ1708 Frames/Bytes: " + canTest.getJ1708FrameCount() + "/" + canTest.getJ1708ByteCount();
-
-*/
-     //   s += "\nJ1939 Frames/Bytes: " + canTest.getPort2CanbusFrameCount() + "/" + canTest.getPort2CanbusByteCount();
         swCycleTransmitJ1939.setChecked(canTest.isAutoSendJ1939Port1());
-        textView.setText(s);
+        textViewFrames.setText(s);
     }
 
     private void updateBaudRateUI() {
@@ -288,8 +265,23 @@ public class Can1OverviewFragment extends Fragment {
         } else if (canTest.getBaudrate() == BITRATE_500K) {
             baudrateDesc = getString(R.string._500k_desc);
         }
-        txtBaud.setText("Baudrate: " + baudrateDesc);
+        txtCanSpeed.setText("Baudrate: " + baudrateDesc);
     }
+
+    private void updateInterfaceTime() {
+        String closedDate = " None ";
+        String createdDate = " None ";
+        if(LastClosed != null){
+            closedDate = LastClosed.toString();
+        }
+        if(LastCreated != null){
+            createdDate = LastCreated.toString();
+        }
+
+        txtInterfaceOpenTime.setText(createdDate);
+        txtInterfaceClsTime.setText(closedDate);
+    }
+
 
     private void startUpdateUIThread() {
         if (updateUIThread == null) {
@@ -323,7 +315,7 @@ public class Can1OverviewFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_can_1_overview, container, false);
+        return inflater.inflate(R.layout.fragment_can1_overview, container, false);
     }
 
     private class ChangeBaudRateTask extends AsyncTask<Void, String, Void> {
@@ -344,6 +336,7 @@ public class Can1OverviewFragment extends Fragment {
 
         @Override
         protected Void doInBackground(Void... params) {
+            LastClosed = Calendar.getInstance().getTime();
             if(canTest.isCAN1InterfaceOpen() || canTest.isPort1SocketOpen()) {
                 publishProgress("Closing interface, please wait...");
                 canTest.closeCan1Interface();
@@ -356,6 +349,7 @@ public class Can1OverviewFragment extends Fragment {
 
             publishProgress("Opening, please wait...");
             canTest.CreateCanInterface1(silent,baudrate,termination,port);
+            LastCreated = Calendar.getInstance().getTime();
             return null;
         }
 
@@ -367,10 +361,12 @@ public class Can1OverviewFragment extends Fragment {
 
         protected void onPostExecute(Void result) {
             updateBaudRateUI();
+            updateInterfaceTime();
             startUpdateUIThread();
             updateInterfaceStatusUI();
             setStateInterfaceDependentUI();
             setStateSocketDependentUI();
         }
     }
+
 }

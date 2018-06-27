@@ -73,7 +73,7 @@ public class J1708FramesFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_j1708_frames, container, false);
-        lvJ1708Frames = (TextView)  view.findViewById(R.id.lvJ1708Frames);
+        lvJ1708Frames = view.findViewById(R.id.lvJ1708Frames);
         lvJ1708Frames.setMovementMethod(new ScrollingMovementMethod());
         return view;
     }

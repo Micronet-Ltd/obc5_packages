@@ -78,9 +78,9 @@ public class CanbusFramesFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_can_frames, container, false);
-        lvJ1939Port1Frames = (TextView)  view.findViewById(R.id.lvJ1939FramesPort1);
+        lvJ1939Port1Frames = view.findViewById(R.id.lvJ1939FramesPort1);
         lvJ1939Port1Frames.setMovementMethod(new ScrollingMovementMethod());
-        lvJ1939Port2Frames = (TextView)  view.findViewById(R.id.lvJ1939FramesPort2);
+        lvJ1939Port2Frames = view.findViewById(R.id.lvJ1939FramesPort2);
         lvJ1939Port2Frames.setMovementMethod(new ScrollingMovementMethod());
         return view;
     }

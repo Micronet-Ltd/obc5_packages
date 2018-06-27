@@ -50,29 +50,28 @@ public class VehicleStatusFragment extends Fragment {
         super.onStart();
         View rootView = getView();
 
-        txtRequestVin = (TextView) rootView.findViewById(R.id.txtVin);
-        btnRequestVin = (Button) rootView.findViewById(R.id.btnRequestVin);
+        txtRequestVin = rootView.findViewById(R.id.txtVin);
+        btnRequestVin = rootView.findViewById(R.id.btnRequestVin);
 
-        txtRequestEngineHours = (TextView) rootView.findViewById(R.id.txtEngineHours);
-        btnRequestEngineHours = (Button) rootView.findViewById(R.id.btnRequestEngineHours);
+        txtRequestEngineHours = rootView.findViewById(R.id.txtEngineHours);
+        btnRequestEngineHours = rootView.findViewById(R.id.btnRequestEngineHours);
 
-        txtGetOdometer = (TextView) rootView.findViewById(R.id.txtOdometer);
-        btnGetOdometer = (Button) rootView.findViewById(R.id.btnGetOdometer);
+        txtGetOdometer = rootView.findViewById(R.id.txtOdometer);
+        btnGetOdometer = rootView.findViewById(R.id.btnGetOdometer);
 
-        txtGetVehicleSpeed = (TextView) rootView.findViewById(R.id.txtVehicleSpeed);
-        btnGetVehicleSpeed = (Button) rootView.findViewById(R.id.btnGetVehicleSpeed);
+        txtGetVehicleSpeed = rootView.findViewById(R.id.txtVehicleSpeed);
+        btnGetVehicleSpeed = rootView.findViewById(R.id.btnGetVehicleSpeed);
 
-        txtTransmissionGear = (TextView) rootView.findViewById(R.id.txtTransmissionGear);
-        btnTransmissionGear = (Button) rootView.findViewById(R.id.btnTransmissionGear);
+        txtTransmissionGear = rootView.findViewById(R.id.txtTransmissionGear);
+        btnTransmissionGear = rootView.findViewById(R.id.btnTransmissionGear);
 
-        portRadioGroup = (RadioGroup) rootView.findViewById(R.id.radioGrpPort);
-        editTxtDestinationAddress = (EditText) rootView.findViewById(R.id.editTxtDestinationAdd);
+        portRadioGroup = rootView.findViewById(R.id.radioGrpPort);
+        editTxtDestinationAddress = rootView.findViewById(R.id.editTxtDestinationAdd);
 
         btnRequestVin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 requestVinNumber(getPortNumber(),getdAddress());
-                //requestVinNumber(3,255);
             }
         });
 
@@ -80,7 +79,6 @@ public class VehicleStatusFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 requestEngineHours(getPortNumber(),getdAddress());
-                //requestEngineHours(3, 255);
             }
         });
 

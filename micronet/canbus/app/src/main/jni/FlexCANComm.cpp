@@ -40,6 +40,17 @@ int serial_set_nonblocking(int fd)
     return 0;
 }
 
+char* getPortName(int portNumber){
+    if (portNumber==2){
+        return const_cast<char *>(CAN1_TTY);
+    }
+    else if (portNumber ==3){
+        return const_cast<char *>(CAN2_TTY);}
+    else {
+        return const_cast<char *>("-1");
+    }
+}
+
 int serial_init(char *portName)
 {
     DD("opening port: '%s'\n", portName);
@@ -222,8 +233,8 @@ int sendMessage(int fd_port, const char * message) {
     char buf[256]={0};
     sprintf(buf, "%s", message);
     printf("Send %s\n", buf);
-    int check=strlen(buf);
-    LOGD("Check value of the string - %d",check);
+//  int check=strlen(buf);
+//  LOGD("Check value of the string - %d",check);
     if (-1 == write(fd_port, buf, strlen(buf))) {
         ERR("Error: %s command coudln't be written! \n", buf );
         return -1;
@@ -258,11 +269,12 @@ void setFlowControlMessage(char type,char *searchID,char *responseID, int dataLe
             k++;
         }
         //Add data length
+
         flowControlMessage[i++]=dataLength + '0';
 
         //Add response data bytes
         for(i=19;i<((2*dataLength)+18);i++){
-            for (int ind=0; ind <dataLength; ind++){
+            for (int ind=0; ind < dataLength; ind++){
                 tmp1 = (dataBytes[ind] >> 4) & 0xF;
                 if (tmp1 > 9)
                     flowControlMessage[i] = tmp1 - 10 + 'A';
@@ -323,14 +335,26 @@ void setFlowControlMessage(char type,char *searchID,char *responseID, int dataLe
         flowControlMessage[i]= 0;
     }
 
-    //Check for valid extended and standard flow command based on its length
-    if((flowControlMessage[1]=='F' &&  flowControlMessage[extendedMessageLength-1]==CAN_OK_RESPONSE) || (flowControlMessage[1]=='f' &&  flowControlMessage[standardMessageLength-1]==CAN_OK_RESPONSE)){
-        if (-1 == sendMessage(port_fd, flowControlMessage)) {
-            LOGE("!!!!Error configuring flow message: %s for Flow code: !!!!", searchID);
+    if(type == 't'){
+        LOGD("Start printing Message; Length = %d", standardMessageLength );
+        for(i = 0; i < standardMessageLength; i++){
+            LOGD("flowControlMessage[%d] = %c", i, flowControlMessage[i] );
         }
-        LOGD("Flow message SET: %s", flowControlMessage);
     }
-    else LOGE("Error: Flow control command coundn't be sent! Message: %s, Extended Message size=%d or StandardMessageSize=%d", flowControlMessage, extendedMessageLength,standardMessageLength);
+    else {
+        LOGD("Start printing Message; Length = %d", extendedMessageLength );
+        for(i = 0; i < extendedMessageLength; i++){
+            LOGD("flowControlMessage[%d] = %c", i, flowControlMessage[i] );
+        }
+    }
+
+        //Check for valid extended and standard flow command based on its length
+    if((flowControlMessage[1]=='F' &&  flowControlMessage[extendedMessageLength-1]==CAN_OK_RESPONSE) || (flowControlMessage[1]=='f' &&  flowControlMessage[standardMessageLength-1]==CAN_OK_RESPONSE)){
+            if (-1 == sendMessage(port_fd, flowControlMessage)) {
+                LOGE("!!!!Error configuring flow message: %s for Flow code: !!!!", searchID);
+            }
+        LOGD("Flow message SET: %s", flowControlMessage);
+    } else LOGE("Error: Flow control command coundn't be sent! Message: %s, Extended Message size=%d or StandardMessageSize=%d", flowControlMessage, extendedMessageLength,standardMessageLength);
 }
 
 /**
@@ -473,7 +497,7 @@ int setBitrate(int fd, int speed) {
     return 0;
 }
 
-int openCANandSetTermination(int fd, bool term) {
+int openCANandSetTerm(int fd, bool term) {
     int termination = term ? 1 : 0;
 
     char buf[256];
@@ -482,16 +506,16 @@ int openCANandSetTermination(int fd, bool term) {
         ERR("Error: Write Failed! Command - %s \n", buf);
         return -1;
     }
-    LOGD("Opened can channel");
+    LOGD("Opened CAN channel with termination set to = %d ",termination);
     return 0;
 }
 
-int setListeningMode(int fd, bool term) {
+int setListeningModeandTerm(int fd, bool term) {
     int termination = term ? 1 : 0;
     char buf[256];
     sprintf(buf, "L%d\r", termination);
     if (-1 == write(fd, buf, strlen(buf))) {
-        ERR("Error: Write Failed! Command - %s \n", buf);
+        ERR("Error: Couldn't Open Channel in Listening Mode: Write Failed! Command - %s \n", buf);
         return -1;
     }
     return 0;
@@ -501,7 +525,7 @@ int sendReadStatusCommand(int fd) {
     char buf[256];
     sprintf(buf, "F\r");
     if (-1 == write(fd, buf, strlen(buf))) {
-        ERR("Error: Write Failed! Command - %s \n", buf);
+        ERR("Error: Read Status Flag Config Failed: Write Failed! Command - %s \n", buf);
         return -1;
     }
     return 0;
@@ -521,18 +545,11 @@ int serial_start_monitor_thread_can_port1()
 
 //TODO : check this function
 int serial_deinit_thread_port1() {
-    LOGD("Entered serial_deinit_thread_port1()");
     if (thread__port1) {
-        int retval, *retvalp;
-        // cancel out readPort1 threads
         quit_port1 = 1;
-        /*retvalp = &retval;*/
-        LOGD("Begin cancelling the threads");
-        pthread_join(thread__port1,NULL/* (void **) &retvalp*/);
-        LOGD("Cancelled out the read thread for CAN1");
-        return retval;
+        pthread_join(thread__port1,NULL);
+        LOGD("CAN1 Read Thread Joined!");
     }
-    LOGD("Failed to enter the if(thread__port1)");
     return 0;
 }
 
@@ -549,12 +566,10 @@ int serial_start_monitor_thread_can_port2() {
 
 int serial_deinit_thread_port2() {
     if (thread__port2) {
-        int retval;
         quit_port2 = 1;
         pthread_join(thread__port2,NULL);
-        return retval;
+        LOGD("CAN1 Read Thread Joined!");
     }
-    LOGD("Failed to enter the if(thread__port1)");
     return 0;
 }
 
@@ -578,7 +593,6 @@ int serial_deinit_thread_j1708() {
         pthread_join(thread__port1708,NULL);
         return retval;
     }
-    LOGD("Failed to enter the if(thread__port1708)");
     return 0;
 }
 
@@ -670,7 +684,7 @@ void sendCanbusFramePort1(uint32_t frameId, int type, int length, BYTE* data ){
     if (g_canbus.g_listenerObject_Can1 != NULL && g_canbus.g_onPacketReceive1939Port1 != NULL) {
         env->CallVoidMethod(g_canbus.g_listenerObject_Can1, g_canbus.g_onPacketReceive1939Port1, frameObj);
     }
-    LOGD("CAN1 Message: Successfully pushed the frame to the Java queue!");
+    //LOGD("CAN1 Message: Successfully pushed the frame to the Java queue!");
     env->DeleteLocalRef(frameObj);
     env->DeleteLocalRef(data_l);
     g_canbus.g_vm->DetachCurrentThread();
@@ -702,7 +716,7 @@ void sendCanbusFramePort2(uint32_t frameId, int type, int length, BYTE* data){
     if (g_canbus.g_listenerObject_Can2 != NULL && g_canbus.g_onPacketReceive1939Port2 != NULL) {
         env->CallVoidMethod(g_canbus.g_listenerObject_Can2, g_canbus.g_onPacketReceive1939Port2, frameObj);
     }
-    LOGD("CAN2 Message: Successfully pushed the frame to the Java queue!");
+    //LOGD("CAN2 Message: Successfully pushed the frame to the Java queue!");
     env->DeleteLocalRef(frameObj);
     env->DeleteLocalRef(data_l);
     g_canbus.g_vm->DetachCurrentThread();
@@ -763,7 +777,7 @@ void j1939rxd(BYTE *rxd, int portNumber) {
     }
 }
 
-void j1708rxd( BYTE *rxd, BYTE length )
+void j1708rxd( BYTE *rxd, BYTE length)
 {
     int mid;
 
@@ -1143,7 +1157,6 @@ static void *monitor_data_thread_port1708(void *param) {
                             parseJ1708Frame(startOfPacket + 1, packetLength, pdata);
                             i = endOfPacket;
                         }
-
                     }
                     //else continue;
                     else LOGD("NO NO");

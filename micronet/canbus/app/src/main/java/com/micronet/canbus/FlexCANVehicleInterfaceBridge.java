@@ -1,10 +1,12 @@
 package com.micronet.canbus;
 
+import android.util.Log;
+
 final class FlexCANVehicleInterfaceBridge implements IVehicleInterfaceBridge {
     private boolean listeningModeEnable;
     private boolean termination;
     private int bitrate;
-    private static final String TAG = "FlexCANVehicleInterfaceBridge";
+    private static final String TAG = "FlexCAN-VehicleI/FBr";
     private int fdCanPort1 = 0;
     private int fdCanPort2 = 0;
     private int fdJ1708Read = 0;
@@ -22,7 +24,7 @@ final class FlexCANVehicleInterfaceBridge implements IVehicleInterfaceBridge {
      *
      */
     public void create(CanbusHardwareFilter[] hardwareFilters, int portNumber) {
-        createCanInterface(false,250000,true,hardwareFilters,portNumber,null);
+        configureCanInterface(false,250000,true,hardwareFilters,portNumber,null);
     }
 
     /**
@@ -35,7 +37,7 @@ final class FlexCANVehicleInterfaceBridge implements IVehicleInterfaceBridge {
      */
 
     public void create(CanbusHardwareFilter[] hardwareFilters, int portNumber, CanbusFlowControl[] flowControls) {
-        createCanInterface(false,250000,true,hardwareFilters,portNumber,flowControls);
+        configureCanInterface(false,250000,true,hardwareFilters,portNumber,flowControls);
     }
 
 
@@ -50,7 +52,7 @@ final class FlexCANVehicleInterfaceBridge implements IVehicleInterfaceBridge {
      *
      */
     public void create(boolean listeningModeEnable,CanbusHardwareFilter[] hardwareFilters,int portNumber) {
-        createCanInterface(listeningModeEnable, 250000, true,hardwareFilters,portNumber,null);
+        configureCanInterface(listeningModeEnable, 250000, true,hardwareFilters,portNumber,null);
     }
 
 
@@ -66,7 +68,7 @@ final class FlexCANVehicleInterfaceBridge implements IVehicleInterfaceBridge {
      * @param flowControls Search Ids, Response Ids, Response Data lengths, Response Data pairs to set auto respond flow control messages.
      */
     public void create(boolean listeningModeEnable,CanbusHardwareFilter[] hardwareFilters,int portNumber,CanbusFlowControl[] flowControls) {
-        createCanInterface(listeningModeEnable, 250000, true,hardwareFilters,portNumber,flowControls);
+        configureCanInterface(listeningModeEnable, 250000, true,hardwareFilters,portNumber,flowControls);
     }
 
 
@@ -84,8 +86,7 @@ final class FlexCANVehicleInterfaceBridge implements IVehicleInterfaceBridge {
         this.listeningModeEnable = listeningModeEnable;
         this.termination = termination;
         this.bitrate = bitrate;
-        this.
-                createCanInterface(listeningModeEnable, bitrate, termination, hardwareFilters, portNumber, null);
+        configureCanInterface(listeningModeEnable, bitrate, termination, hardwareFilters, portNumber, null);
     }
 
     /**
@@ -103,7 +104,7 @@ final class FlexCANVehicleInterfaceBridge implements IVehicleInterfaceBridge {
         this.listeningModeEnable = listeningModeEnable;
         this.termination = termination;
         this.bitrate = bitrate;
-        createCanInterface(listeningModeEnable, bitrate, termination, hardwareFilters,portNumber,flowControls);
+        configureCanInterface(listeningModeEnable, bitrate, termination, hardwareFilters,portNumber,flowControls);
     }
 
     /**
@@ -130,7 +131,7 @@ final class FlexCANVehicleInterfaceBridge implements IVehicleInterfaceBridge {
      *
      */
     public void setBitrate(int bitrate,CanbusHardwareFilter[] hardwareFilters, int portNumber) {
-        createCanInterface(this.listeningModeEnable, bitrate, this.termination, hardwareFilters, portNumber,null);
+        configureCanInterface(this.listeningModeEnable, bitrate, this.termination, hardwareFilters, portNumber,null);
     }
 
 
@@ -145,7 +146,7 @@ final class FlexCANVehicleInterfaceBridge implements IVehicleInterfaceBridge {
      * @param flowControls Search Ids, Response Ids, Response Data lengths, Response Data pairs to set auto respond flow control messages.
      */
     public void setBitrate(int bitrate,CanbusHardwareFilter[] hardwareFilters, int portNumber,CanbusFlowControl[] flowControls) {
-        createCanInterface(this.listeningModeEnable, bitrate, this.termination, hardwareFilters, portNumber,flowControls);
+        configureCanInterface(this.listeningModeEnable, bitrate, this.termination, hardwareFilters, portNumber,flowControls);
     }
 
     /**
@@ -157,7 +158,7 @@ final class FlexCANVehicleInterfaceBridge implements IVehicleInterfaceBridge {
      *
      */
     public void setCANTermination(boolean termination, CanbusHardwareFilter[] hardwareFilters, int portNumber) {
-        createCanInterface(this.listeningModeEnable, this.bitrate, termination,hardwareFilters, portNumber,null);
+        configureCanInterface(this.listeningModeEnable, this.bitrate, termination,hardwareFilters, portNumber,null);
     }
 
 
@@ -171,7 +172,8 @@ final class FlexCANVehicleInterfaceBridge implements IVehicleInterfaceBridge {
      * @param flowControls Search Ids, Response Ids, Response Data lengths, Response Data pairs to set auto respond flow control messages.
      */
     public void setCANTermination(boolean termination, CanbusHardwareFilter[] hardwareFilters, int portNumber,CanbusFlowControl[] flowControls) {
-        createCanInterface(this.listeningModeEnable, this.bitrate, termination,hardwareFilters, portNumber,flowControls);
+        Log.d(TAG, "Listening Mode: " + listeningModeEnable + ", Termination: " + termination + ", Port Number: " + portNumber);
+        configureCanInterface(this.listeningModeEnable, this.bitrate, termination,hardwareFilters, portNumber,flowControls);
     }
 
     /**
@@ -214,17 +216,17 @@ final class FlexCANVehicleInterfaceBridge implements IVehicleInterfaceBridge {
      * {@inheritDoc}
      */
     public void setListeningMode(boolean listeningModeEnable,CanbusHardwareFilter[] hardwareFilters, int portNumber){
-        createCanInterface(listeningModeEnable, this.bitrate, this.termination,hardwareFilters, portNumber,null);
+        configureCanInterface(listeningModeEnable, this.bitrate, this.termination,hardwareFilters, portNumber,null);
     }
 
     /**
      * {@inheritDoc}
      */
     public void setListeningMode(boolean listeningModeEnable,CanbusHardwareFilter[] hardwareFilters, int portNumber,CanbusFlowControl[] flowControl){
-        createCanInterface(listeningModeEnable, this.bitrate, this.termination,hardwareFilters, portNumber,flowControl);
+        configureCanInterface(listeningModeEnable, this.bitrate, this.termination,hardwareFilters, portNumber,flowControl);
     }
 
-    private native int createCanInterface(boolean listeningModeEnable, int bitrate, boolean termination, CanbusHardwareFilter[] hardwareFilters, int portNumber, CanbusFlowControl[] flowControl);
+    private native int configureCanInterface(boolean listeningModeEnable, int bitrate, boolean termination,CanbusHardwareFilter[] hardwareFilters, int portNumber, CanbusFlowControl[] flowControl);
     private native int removeCAN1Interface();
     private native int removeCAN2Interface();
     private native int createJ1708Interface();

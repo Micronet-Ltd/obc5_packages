@@ -18,6 +18,7 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.micronet.canbus.CanTest;
+import com.micronet.canbus.Info;
 import com.micronet.canbus.MainActivity;
 import com.micronet.canbus.R;
 

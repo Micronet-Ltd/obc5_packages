@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="match_parent" android:layout_height="match_parent">
+  <RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="159dp"
+    android:layout_marginTop="0dp"
+    android:layout_alignParentLeft="true"
+    android:layout_alignParentTop="true">
+    <TextView
+      android:id="@+id/lblInterfaceStateTitle"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_alignParentLeft="true"
+      android:layout_alignParentTop="true"
+      android:text="Interface State"
+      android:textColor="@color/colorPrimary"
+      android:textSize="14sp"/>
+
+    <View
+      android:id="@+id/xAxis"
+      android:layout_width="match_parent"
+      android:layout_height="0dp"
+      android:layout_centerHorizontal="true"
+      android:layout_centerVertical="true"/>
+
+    <View
+      android:id="@+id/yAxis"
+      android:layout_width="0dp"
+      android:layout_height="match_parent"
+      android:layout_alignParentTop="true"
+      android:layout_centerHorizontal="true"/>
+
+    <TextView
+      android:id="@+id/lblInterfaceStatus"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="5dp"
+      android:layout_alignLeft="@+id/xAxis"
+      android:layout_below="@+id/lblInterfaceStateTitle"
+      android:text="@string/interface_status"
+      android:textSize="10sp"/>
+
+    <TextView
+      android:id="@+id/lblSocketStatus"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="3dp"
+      android:layout_alignLeft="@+id/xAxis"
+      android:layout_below="@+id/lblInterfaceStatus"
+      android:text="@string/socket_status"
+      android:textSize="10sp"/>
+    <TextView
+      android:id="@+id/lblViewBaud"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="3dp"
+      android:layout_alignLeft="@+id/xAxis"
+      android:layout_below="@+id/lblSocketStatus"
+      android:text="Current Baud Rate: "
+      android:textSize="10sp"/>
+    <TextView
+      android:id="@+id/lblTransmitInterval"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="3dp"
+      android:layout_alignLeft="@+id/xAxis"
+      android:layout_below="@+id/lblViewBaud"
+      android:text="Current Transmit Interval: "
+      android:textSize="10sp"/>
+    <TextView
+      android:id="@+id/textViewCan1Frames"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="3dp"
+      android:layout_alignLeft="@+id/xAxis"
+      android:layout_below="@+id/lblTransmitInterval"
+      android:text="@string/lbl_j1939"
+      android:textSize="10sp"/>
+    <TextView
+      android:id="@+id/lblViewInterfaceCreated"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="3dp"
+      android:layout_alignLeft="@+id/xAxis"
+      android:layout_below="@+id/textViewCan1Frames"
+      android:text="Last Interface Created At: "
+      android:textSize="10sp"/>
+    <TextView
+      android:id="@+id/lblViewCanCloseInterface"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="3dp"
+      android:layout_alignLeft="@+id/xAxis"
+      android:layout_below="@+id/lblViewInterfaceCreated"
+      android:text="Last Interface Closed At:"
+      android:textSize="10sp"/>
+
+
+    <TextView
+      android:id="@+id/textCan1InterfaceStatus"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="5dp"
+      android:layout_alignLeft="@+id/yAxis"
+      android:layout_alignTop="@+id/lblInterfaceStatus"
+      android:text="@string/closed"
+      android:textSize="10sp"/>
+    <TextView
+      android:id="@+id/textCan1SocketStatus"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="3dp"
+      android:layout_alignLeft="@+id/yAxis"
+      android:layout_alignTop="@+id/lblSocketStatus"
+      android:layout_below="@+id/textCan1InterfaceStatus"
+      android:text="@string/closed"
+      android:textSize="10sp"/>
+
+    <TextView
+      android:id="@+id/textViewCan1CurrBaudRate"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="3dp"
+      android:layout_alignLeft="@+id/yAxis"
+      android:layout_alignTop="@+id/lblViewBaud"
+      android:text="@string/_000k_desc"
+      android:textSize="10sp"/>
+
+    <TextView
+      android:id="@+id/textViewCan1CurrTransmitInterval"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="3dp"
+      android:layout_alignLeft="@+id/yAxis"
+      android:layout_alignTop="@+id/lblTransmitInterval"
+      android:text="disabled"
+      android:textSize="10sp"/>
+
+
+    <TextView
+      android:id="@+id/textViewCreatedTime"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="3dp"
+      android:layout_alignLeft="@+id/yAxis"
+      android:layout_alignTop="@+id/lblViewInterfaceCreated"
+      android:text="Date"
+      android:textSize="10sp"/>
+
+    <TextView
+      android:id="@+id/textViewClosedTime"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="3dp"
+      android:layout_alignLeft="@+id/yAxis"
+      android:layout_alignTop="@+id/lblViewCanCloseInterface"
+      android:text="Date"
+      android:textSize="10sp"/>
+
+  </RelativeLayout>
+
+</RelativeLayout>

@@ -16,7 +16,7 @@
     <string name="filters">Filters</string>
     <string name="discard">Discard incoming packets on baud switch</string>
     <string name="get_baudrate">Get Baudrate</string>
-    <string name="j1939_send_interval">J1939 Cycle Time (0-500ms)</string>
+    <string name="j1939_send_interval">J1939 Cycle Time (0-1000ms)</string>
     <string name="open">Open</string>
     <string name="closed">Closed</string>
     <string name="cycle_transmit">Cycle Transmit</string>

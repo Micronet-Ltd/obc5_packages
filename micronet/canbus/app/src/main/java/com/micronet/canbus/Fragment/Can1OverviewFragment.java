@@ -13,7 +13,6 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
@@ -41,13 +40,14 @@ public class Can1OverviewFragment extends Fragment {
     private CanTest canTest;
     private TextView txtInterfaceClsTime;
     private TextView txtInterfaceOpenTime;
-    private TextView txtCanSpeed;
+    private TextView txtCanTxSpeed;
+    private TextView txtCanBaudRate;
 
     private TextView textViewFrames;
 
     // Socket dependent UI
     private Button btnTransmitCAN;
-    private Switch swCycleTransmitJ1939;
+    private ToggleButton swCycleTransmitJ1939;
     private SeekBar seekBarJ1939Send;
 
     //Interface dependent UI
@@ -132,7 +132,8 @@ public class Can1OverviewFragment extends Fragment {
         closeCan1 = rootView.findViewById(R.id.buttonCloseCan1);
         txtInterfaceClsTime = rootView.findViewById(R.id.textViewClosedTime);
         txtInterfaceOpenTime = rootView.findViewById(R.id.textViewCreatedTime);
-        txtCanSpeed = rootView.findViewById(R.id.textViewCan1CurrBaudRate);
+        txtCanTxSpeed = rootView.findViewById(R.id.textViewCan1CurrTransmitInterval);
+        txtCanBaudRate = rootView.findViewById(R.id.textViewCan1CurrBaudRate);
 
         btnTransmitCAN = rootView.findViewById(R.id.btnCan1SendJ1939);
         seekBarJ1939Send = rootView.findViewById(R.id.seekBarSendSpeedCan1);
@@ -210,7 +211,7 @@ public class Can1OverviewFragment extends Fragment {
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (fromUser) {
                     canTest.setJ1939IntervalDelay(progress);
-                    txtCanSpeed.setText(progress + "ms");
+                    txtCanTxSpeed.setText(progress + "ms");
                 }
             }
 
@@ -225,7 +226,7 @@ public class Can1OverviewFragment extends Fragment {
             }
         });
 
-        //txtCanSpeed.setText(canTest.getJ1939IntervalDelay() + "ms");
+        //txtCanTxSpeed.setText(canTest.getJ1939IntervalDelay() + "ms");
         updateBaudRateUI();
         updateInterfaceTime();
         updateInterfaceStatusUI();
@@ -265,7 +266,7 @@ public class Can1OverviewFragment extends Fragment {
         } else if (canTest.getBaudrate() == BITRATE_500K) {
             baudrateDesc = getString(R.string._500k_desc);
         }
-        txtCanSpeed.setText("Baudrate: " + baudrateDesc);
+        txtCanBaudRate.setText(baudrateDesc);
     }
 
     private void updateInterfaceTime() {

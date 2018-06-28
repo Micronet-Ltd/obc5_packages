@@ -41,7 +41,7 @@
 
 
             <TextView
-                android:id="@+id/textViewBaud"
+                android:id="@+id/lblViewBaud"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
@@ -50,7 +50,7 @@
                 android:textSize="10sp" />
 
             <TextView
-                android:id="@+id/textViewInterfaceCreated"
+                android:id="@+id/lblViewInterfaceCreated"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
@@ -60,7 +60,7 @@
                 android:textSize="10sp" />
 
             <TextView
-                android:id="@+id/textViewCanCloseInterface"
+                android:id="@+id/lblViewCanCloseInterface"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
@@ -106,7 +106,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignStart="@+id/yAxis"
-                android:layout_alignTop="@+id/textViewInterfaceCreated"
+                android:layout_alignTop="@+id/lblViewInterfaceCreated"
                 android:text="Date"
                 android:textSize="10sp" />
 
@@ -115,7 +115,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignStart="@+id/yAxis"
-                android:layout_alignTop="@+id/textViewCanCloseInterface"
+                android:layout_alignTop="@+id/lblViewCanCloseInterface"
                 android:text="Date"
                 android:textSize="10sp" />
 

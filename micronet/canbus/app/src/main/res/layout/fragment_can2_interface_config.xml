@@ -29,7 +29,7 @@
                 android:layout_centerHorizontal="true" />
 
             <TextView
-                android:id="@+id/textViewBaud"
+                android:id="@+id/lblViewBaud"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
@@ -44,7 +44,7 @@
                 android:id="@+id/radioGrCan2BaudRates"
                 android:layout_width="150dp"
                 android:layout_height="wrap_content"
-                android:layout_alignBottom="@+id/textViewBaud"
+                android:layout_alignBottom="@+id/lblViewBaud"
                 android:layout_alignStart="@+id/yAxis"
                 android:layout_marginLeft="200dp"
                 android:orientation="horizontal">

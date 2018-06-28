@@ -23,8 +23,11 @@ final class FlexCANVehicleInterfaceBridge implements IVehicleInterfaceBridge {
      *                   3, CAN2 (Can also be used as single wired CAN if the baud rate is set to 33.33 Kbits per seconds).
      *
      */
-    public void create(CanbusHardwareFilter[] hardwareFilters, int portNumber) {
-        configureCanInterface(false,250000,true,hardwareFilters,portNumber,null);
+    public void create(CanbusHardwareFilter[] hardwareFilters, int portNumber) throws CanbusException{
+        int result = configureCanInterface(false,250000,true,hardwareFilters,portNumber,null);
+        if (result < 0){
+            throw new CanbusException("Error creating Interface", result);
+        }
     }
 
     /**
@@ -36,8 +39,11 @@ final class FlexCANVehicleInterfaceBridge implements IVehicleInterfaceBridge {
      * @param flowControls Search Ids, Response Ids, Response Data lengths, Response Data pairs to set auto respond flow control messages.
      */
 
-    public void create(CanbusHardwareFilter[] hardwareFilters, int portNumber, CanbusFlowControl[] flowControls) {
-        configureCanInterface(false,250000,true,hardwareFilters,portNumber,flowControls);
+    public void create(CanbusHardwareFilter[] hardwareFilters, int portNumber, CanbusFlowControl[] flowControls) throws CanbusException {
+        int result = configureCanInterface(false,250000,true,hardwareFilters,portNumber,flowControls);
+        if (result < 0){
+            throw new CanbusException("Error creating Interface", result);
+        }
     }
 
 
@@ -51,8 +57,11 @@ final class FlexCANVehicleInterfaceBridge implements IVehicleInterfaceBridge {
      *                   3, CAN2 (Can also be used as single wired CAN if the baud rate is set to 33.33 Kbits per seconds).
      *
      */
-    public void create(boolean listeningModeEnable,CanbusHardwareFilter[] hardwareFilters,int portNumber) {
-        configureCanInterface(listeningModeEnable, 250000, true,hardwareFilters,portNumber,null);
+    public void create(boolean listeningModeEnable,CanbusHardwareFilter[] hardwareFilters,int portNumber) throws CanbusException {
+        int result = configureCanInterface(listeningModeEnable, 250000, true,hardwareFilters,portNumber,null);
+        if (result < 0){
+            throw new CanbusException("Error creating Interface", result);
+        }
     }
 
 
@@ -67,8 +76,11 @@ final class FlexCANVehicleInterfaceBridge implements IVehicleInterfaceBridge {
      *                   3, CAN2 (Can also be used as single wired CAN if the baud rate is set to 33.33 Kbits per seconds).
      * @param flowControls Search Ids, Response Ids, Response Data lengths, Response Data pairs to set auto respond flow control messages.
      */
-    public void create(boolean listeningModeEnable,CanbusHardwareFilter[] hardwareFilters,int portNumber,CanbusFlowControl[] flowControls) {
-        configureCanInterface(listeningModeEnable, 250000, true,hardwareFilters,portNumber,flowControls);
+    public void create(boolean listeningModeEnable,CanbusHardwareFilter[] hardwareFilters,int portNumber,CanbusFlowControl[] flowControls) throws CanbusException{
+        int result = configureCanInterface(listeningModeEnable, 250000, true,hardwareFilters,portNumber,flowControls);
+        if (result < 0){
+            throw new CanbusException("Error creating Interface", result);
+        }
     }
 
 
@@ -82,11 +94,14 @@ final class FlexCANVehicleInterfaceBridge implements IVehicleInterfaceBridge {
      *                   3, CAN2 (Can also be used as single wired CAN if the baud rate is set to 33.33 Kbits per seconds).
      *
      */
-    public void create(boolean listeningModeEnable, int bitrate, boolean termination, CanbusHardwareFilter[] hardwareFilters, int portNumber) {
+    public void create(boolean listeningModeEnable, int bitrate, boolean termination, CanbusHardwareFilter[] hardwareFilters, int portNumber) throws CanbusException{
         this.listeningModeEnable = listeningModeEnable;
         this.termination = termination;
         this.bitrate = bitrate;
-        configureCanInterface(listeningModeEnable, bitrate, termination, hardwareFilters, portNumber, null);
+        int result = configureCanInterface(listeningModeEnable, bitrate, termination, hardwareFilters, portNumber, null);
+        if (result < 0){
+            throw new CanbusException("Error creating Interface", result);
+        }
     }
 
     /**
@@ -100,11 +115,14 @@ final class FlexCANVehicleInterfaceBridge implements IVehicleInterfaceBridge {
      *@param flowControls Search Ids, Response Ids, Response Data lengths, Response Data pairs to set auto respond flow control messages.
      *
      */
-    public void create(boolean listeningModeEnable, int bitrate, boolean termination, CanbusHardwareFilter[] hardwareFilters, int portNumber,CanbusFlowControl[] flowControls) {
+    public void create(boolean listeningModeEnable, int bitrate, boolean termination, CanbusHardwareFilter[] hardwareFilters, int portNumber,CanbusFlowControl[] flowControls) throws CanbusException{
         this.listeningModeEnable = listeningModeEnable;
         this.termination = termination;
         this.bitrate = bitrate;
-        configureCanInterface(listeningModeEnable, bitrate, termination, hardwareFilters,portNumber,flowControls);
+        int result = configureCanInterface(listeningModeEnable, bitrate, termination, hardwareFilters,portNumber,flowControls);
+        if (result < 0){
+            throw new CanbusException("Error creating Interface", result);
+        }
     }
 
     /**

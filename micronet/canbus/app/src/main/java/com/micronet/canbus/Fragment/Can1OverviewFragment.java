@@ -254,9 +254,12 @@ public class Can1OverviewFragment extends Fragment {
     }
 
     private void updateCountUI() {
-        String s = "J1939 Frames/Bytes: " + canTest.getPort1CanbusFrameCount() + "/" + canTest.getPort1CanbusByteCount() + "\n";
-        swCycleTransmitJ1939.setChecked(canTest.isAutoSendJ1939Port1());
-        textViewFrames.setText(s);
+        if (canTest != null){
+            String s = "J1939 Frames/Bytes: " + canTest.getPort1CanbusFrameCount() + "/" + canTest.getPort1CanbusByteCount();
+            swCycleTransmitJ1939.setChecked(canTest.isAutoSendJ1939Port1());
+            textViewFrames.setText(s);
+        }
+
     }
 
     private void updateBaudRateUI() {
@@ -349,8 +352,17 @@ public class Can1OverviewFragment extends Fragment {
             }
 
             publishProgress("Opening, please wait...");
-            canTest.CreateCanInterface1(silent,baudrate,termination,port);
-            LastCreated = Calendar.getInstance().getTime();
+            int ret = canTest.CreateCanInterface1(silent,baudrate,termination,port);
+            if (ret == 0) {
+                LastCreated = Calendar.getInstance().getTime();
+            }
+            else{
+                publishProgress("Closing interface, please wait...");
+                canTest.closeCan1Interface();
+                publishProgress("Closing socket, please wait...");
+                canTest.closeCan1Socket();
+                publishProgress("failed");
+            }
             return null;
         }
 

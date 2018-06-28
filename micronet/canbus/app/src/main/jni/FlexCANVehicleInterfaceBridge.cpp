@@ -172,12 +172,18 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANVehicleInterfaceBridge_co
         jfieldID fd_id;
         fd_id = env->GetFieldID(clazz, "fdCanPort1", "I");
         env->SetIntField(instance, fd_id, fdCanPort1);
+        if (fdCanPort1 < 0){
+          return SYSTEM_ERROR;
+        }
     }
     else if (port_number==3){
         jint fdCanPort2 = FlexCAN_startup(listeningModeEnable, bitrate, termination, filter_array, numfilter, port, flowControlMessageArray, numFlowControlMessages);
         jfieldID fd_id;
         fd_id = env->GetFieldID(clazz, "fdCanPort2", "I");
         env->SetIntField(instance, fd_id, fdCanPort2);
+        if (fdCanPort2 < 0){
+          return SYSTEM_ERROR;
+        }
     }
 
     return 0;

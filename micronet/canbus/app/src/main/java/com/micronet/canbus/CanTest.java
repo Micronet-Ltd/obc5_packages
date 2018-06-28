@@ -286,7 +286,7 @@ public class CanTest {
         return txtTransmissionGear;
     }
 
-    public void CreateCanInterface1(boolean silentMode, int baudrate, boolean termination, int port) {
+    public int CreateCanInterface1(boolean silentMode, int baudrate, boolean termination, int port) {
         this.silentMode = silentMode;
         this.baudrate = baudrate;
         this.termination=termination;
@@ -296,7 +296,13 @@ public class CanTest {
             canbusInterface1 = new CanbusInterface();
             canbusFilter=setFilters();
             canbusFlowControls=setFlowControlMessages();
-            canbusInterface1.create(silentMode,baudrate,termination,canbusFilter,2,canbusFlowControls);
+            try {
+                canbusInterface1.create(silentMode,baudrate,termination,canbusFilter,2,canbusFlowControls);
+            } catch (CanbusException e) {
+                Log.e(TAG, e.getMessage() + ", errorCode = " + e.getErrorCode() );
+                e.printStackTrace();
+                return -1;
+            }
         }
 
         if (canbusSocket1 == null) {
@@ -310,9 +316,10 @@ public class CanTest {
         startPort1Threads();
         for (int i=0; i< 5; i++ )
             connections[i] = new TpConnectionFrame();
+        return 0;
     }
 
-    public void CreateCanInterface2(boolean silentMode, int baudrate, boolean termination, int port) {
+    public int CreateCanInterface2(boolean silentMode, int baudrate, boolean termination, int port) {
         this.silentMode = silentMode;
         this.baudrate = baudrate;
         this.termination=termination;
@@ -322,7 +329,13 @@ public class CanTest {
             canbusInterface2 = new CanbusInterface();
             canbusFilter=setFilters();
             canbusFlowControls=setFlowControlMessages();
-            canbusInterface2.create(silentMode,baudrate,termination,canbusFilter,3,canbusFlowControls);
+            try {
+                canbusInterface2.create(silentMode,baudrate,termination,canbusFilter,3,canbusFlowControls);
+            } catch (CanbusException e) {
+                Log.e(TAG, e.getMessage() + ", errorCode = " + e.getErrorCode() );
+                e.printStackTrace();
+                return -1;
+            }
         }
         if (canbusSocket2 == null) {
             canbusSocket2 = canbusInterface2.createSocketCAN2();
@@ -333,6 +346,7 @@ public class CanTest {
         }
         isCan2InterfaceOpen = true;
         startPort2Threads();
+        return 0;
     }
 
     public int create1708Interface(){
@@ -675,13 +689,20 @@ public class CanTest {
     }
 
     /// J1939 Canbus Reader
-    public int getPort1CanbusFrameCount() {return j1939Port1Reader.getCanbusFrameCount();}
+    public int getPort1CanbusFrameCount() {
+        if (j1939Port1Reader == null)
+            return 0;
+        return j1939Port1Reader.getCanbusFrameCount();
+    }
 
     public int getPort1CanbusByteCount() {
+        if (j1939Port1Reader == null)
+            return 0;
         return j1939Port1Reader.getCanbusByteCount();
     }
 
     public int getPort1CanbusRollovers() {
+
         return j1939Port1Reader.getRollovers();
     }
 

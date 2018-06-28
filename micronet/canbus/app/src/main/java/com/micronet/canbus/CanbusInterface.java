@@ -1,5 +1,7 @@
 package com.micronet.canbus;
 
+import android.util.Log;
+
 /**
  * Represents Canbus network interface and exposes operations like
  * create/removeCAN1 interface with filters, configure bitrate &amp which are all related to canbus device driver level.
@@ -25,7 +27,8 @@ public class CanbusInterface {
      *                   3, CAN2 (Can also be used as single wired CAN if the baud rate is set to 33.33 Kbits per seconds).
      *
 	 */
-	public void create(CanbusHardwareFilter[] hardwareFilters,int portNumber) {
+	public void create(CanbusHardwareFilter[] hardwareFilters,int portNumber)
+			throws CanbusException {
 		impl.create(hardwareFilters,portNumber);
 	}
 
@@ -39,7 +42,8 @@ public class CanbusInterface {
 	 *
 	 * @param flowControls Search Ids, Response Ids, Response Data lengths, Response Data pairs to set auto respond flow control messages.
 	 */
-	public void create(CanbusHardwareFilter[] hardwareFilters,int portNumber,CanbusFlowControl[] flowControls) {
+	public void create(CanbusHardwareFilter[] hardwareFilters,int portNumber,CanbusFlowControl[] flowControls)
+			throws CanbusException {
 		impl.create(hardwareFilters,portNumber,flowControls);
 	}
 
@@ -55,7 +59,8 @@ public class CanbusInterface {
      *                   3, CAN2 (Can also be used as single wired CAN if the baud rate is set to 33.33 Kbits per seconds).
      *
 	 */
-	public void create(boolean listeningModeEnable,CanbusHardwareFilter[] hardwareFilters, int portNumber) {
+	public void create(boolean listeningModeEnable,CanbusHardwareFilter[] hardwareFilters, int portNumber)
+			throws CanbusException {
 		impl.create(listeningModeEnable,hardwareFilters,portNumber);
 	}
 
@@ -72,7 +77,8 @@ public class CanbusInterface {
 	 *
 	 * @param flowControls Search Ids, Response Ids, Response Data lengths, Response Data pairs to set auto respond flow control messages.
 	 */
-	public void create(boolean listeningModeEnable,CanbusHardwareFilter[] hardwareFilters, int portNumber,CanbusFlowControl[] flowControls) {
+	public void create(boolean listeningModeEnable,CanbusHardwareFilter[] hardwareFilters, int portNumber,CanbusFlowControl[] flowControls)
+			throws CanbusException {
 		impl.create(listeningModeEnable,hardwareFilters,portNumber,flowControls);
 	}
 
@@ -92,7 +98,8 @@ public class CanbusInterface {
      *                   3, CAN2 (Can also be used as single wired CAN if the baud rate is set to 33.33 Kbits per seconds).
      *
 	 */
-	public void create(boolean listeningModeEnable, int bitrate, boolean termination, CanbusHardwareFilter[] hardwareFilters,int portNumber){
+	public void create(boolean listeningModeEnable, int bitrate, boolean termination, CanbusHardwareFilter[] hardwareFilters,int portNumber)
+			throws CanbusException {
 		impl.create(listeningModeEnable, bitrate,termination,hardwareFilters, portNumber);
 	}
 
@@ -113,7 +120,8 @@ public class CanbusInterface {
 	 *
 	 * @param flowControls Search Ids, Response Ids, Response Data lengths, Response Data pairs to set auto respond flow control messages.
 	 */
-	public void create(boolean listeningModeEnable, int bitrate, boolean termination, CanbusHardwareFilter[] hardwareFilters,int portNumber,CanbusFlowControl[] flowControls){
+	public void create(boolean listeningModeEnable, int bitrate, boolean termination, CanbusHardwareFilter[] hardwareFilters,int portNumber,CanbusFlowControl[] flowControls)
+			throws CanbusException {
 		impl.create(listeningModeEnable, bitrate,termination,hardwareFilters, portNumber,flowControls);
 	}
 
@@ -170,7 +178,8 @@ public class CanbusInterface {
 	 *                   3, CAN2 (Can also be used as single wired CAN if the baud rate is set to 33.33 Kbits per seconds).
 	 *
 	 */
-	public void setCANTermination(boolean termination, CanbusHardwareFilter[] hardwareFilters,int portNumber) {
+	public void setCANTermination(boolean termination, CanbusHardwareFilter[] hardwareFilters,int portNumber)
+			throws CanbusException {
 		impl.create(termination, hardwareFilters,portNumber);
 	}
 
@@ -185,7 +194,8 @@ public class CanbusInterface {
 	 *
 	 * @param flowControls Search Ids, Response Ids, Response Data lengths, Response Data pairs to set auto respond flow control messages.
 	 */
-	public void setCANTermination(boolean termination, CanbusHardwareFilter[] hardwareFilters,int portNumber,CanbusFlowControl[] flowControls) {
+	public void setCANTermination(boolean termination, CanbusHardwareFilter[] hardwareFilters,int portNumber,CanbusFlowControl[] flowControls)
+			throws CanbusException {
 		impl.create(termination, hardwareFilters,portNumber,flowControls);
 	}
 

@@ -59,7 +59,8 @@ int serial_init(char *portName)
     if(strcmp(portName, CAN1_TTY)==0){
         if ((fd_CAN1 = open(portName, O_RDWR | O_NOCTTY | O_NONBLOCK)) < 0) {
             perror(portName);
-            exit(EXIT_FAILURE);
+            return -1;
+            //exit(EXIT_FAILURE);
         }
             serial_set_nonblocking(fd_CAN1);
             DD("opened port: '%s', fd=%d", CAN1_TTY, fd_CAN1);
@@ -71,7 +72,8 @@ int serial_init(char *portName)
     else if(strcmp(portName,CAN2_TTY)== 0){
         if ((fd_CAN2 = open(portName, O_RDWR | O_NOCTTY | O_NONBLOCK)) < 0) {
             perror(portName);
-            exit(EXIT_FAILURE);
+            return -1;
+            //exit(EXIT_FAILURE);
         }
             serial_set_nonblocking(fd_CAN2);
             DD("opened port: '%s', fd=%d", CAN2_TTY, fd_CAN2);
@@ -83,7 +85,8 @@ int serial_init(char *portName)
     else if(strcmp(portName,J1708_TTY_READ)== 0){
         if ((fd_J1708_READ = open(portName, O_RDWR | O_NOCTTY | O_NONBLOCK)) < 0) {
             perror(portName);
-            exit(EXIT_FAILURE);
+            return -1;
+            //exit(EXIT_FAILURE);
         }
         serial_set_nonblocking(fd_J1708_READ);
         DD("opened port: '%s', fd=%d", J1708_TTY_READ, fd_J1708_READ);
@@ -94,7 +97,8 @@ int serial_init(char *portName)
     else if(strcmp(portName,J1708_TTY_WRITE)== 0){
         if ((fd_J1708_WRITE = open(portName, O_RDWR | O_NOCTTY | O_NONBLOCK)) < 0) {
             perror(portName);
-            exit(EXIT_FAILURE);
+            return -1;
+            //exit(EXIT_FAILURE);
         }
         serial_set_nonblocking(fd_J1708_WRITE);
         DD("opened port: '%s', fd=%d", J1708_TTY_WRITE, fd_J1708_WRITE);
@@ -129,7 +133,8 @@ int initTerminalInterface(int fd, speed_t interfaceBaud) {
     else {
         ERR("Error isatty(fd): invalid terminal %s\n", strerror(errno));
         close(fd);
-        exit(EXIT_FAILURE);
+        return -1;
+        //exit(EXIT_FAILURE);
     }
 
     return 0;

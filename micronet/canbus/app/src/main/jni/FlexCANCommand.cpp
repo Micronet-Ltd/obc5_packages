@@ -208,6 +208,10 @@ int FlexCAN_startup(bool listeningModeEnable, int bitrate, int termination, FLEX
 
     fd = ret = serial_init(port);
 
+    if (fd == -1){
+        return -1;
+    }
+
     if (initTerminalInterface(fd, B9600) == -1) {
         return -1;
     }

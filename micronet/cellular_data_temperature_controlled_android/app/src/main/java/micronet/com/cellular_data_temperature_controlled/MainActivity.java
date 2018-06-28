@@ -11,7 +11,7 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //setContentView(R.layout.activity_main);
-        Intent service = new Intent(this, Cellular_Data_Service.class);
+        Intent service = new Intent(this, CellularDataService.class);
         startService(service);
     }
 

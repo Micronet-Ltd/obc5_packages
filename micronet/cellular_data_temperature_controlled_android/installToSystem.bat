@@ -1,10 +1,11 @@
 REM CHANGE THESE
 SET app_package=micronet.com.cellular_data_temperature_controlled
-SET dir_app_name=Cellular_Data_Temperature_Controlled
+SET dir_app_name=CellularDataTemperatureControlled
 SET main_activity=MainActivity
 
 SET "adb_sh=adb shell"
 SET "path_sysapp=/system/priv-app"
+REM SET "apk_host=.app\build\outputs\apk\debug\Micronet-CellularDataService-@string\version_name-debug.apk
 SET "apk_host=.\app\build\outputs\apk\app-debug.apk"
 SET "apk_name=%dir_app_name%.apk"
 SET "apk_target_dir=%path_sysapp%/%dir_app_name%"

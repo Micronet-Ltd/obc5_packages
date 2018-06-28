@@ -12,6 +12,8 @@ typedef enum api_err
 	SUCCESS = 0,
 }api_err_t;
 
+int get_board_info(int * fd, uint8_t * board_info, size_t size);
+int get_board_info_adc_dbg(int * fd, uint8_t info_type, uint32_t * board_adc_voltage, size_t size);
 int get_mcu_version(int * fd, uint8_t * fw_version, size_t size);
 int get_fpga_version(int * fd, uint32_t * fpga_version, size_t size);
 int get_adc_or_gpi_voltage(int * fd, uint8_t gpi_num, uint32_t * gpi_voltage, size_t size);

@@ -89,6 +89,19 @@ static int set_command(int * fd, uint8_t * req, size_t req_size)
 	return SUCCESS;
 }
 
+// byte0 = boardRev , byte1 = boardConfig, byte 2 = 0, byte3 = 0
+int get_board_info(int * fd, uint8_t * board_info, size_t size)
+{
+	uint8_t req[] = { MCTRL_MAPI, MAPI_READ_RQ, MAPI_GET_BRD_INFO };
+	return get_command(fd, req, sizeof(req), board_info, size);
+}
+
+int get_board_info_adc_dbg(int * fd, uint8_t info_type, uint32_t * board_adc_voltage, size_t size)
+{
+	uint8_t req[] = { MCTRL_MAPI, MAPI_READ_RQ, MAPI_GET_BRD_INFO_ADC_DBG, info_type};
+	return get_command(fd, req, sizeof(req), (uint8_t *)board_adc_voltage, size);
+}
+
 // fw version is 4 bytes
 int get_mcu_version(int * fd, uint8_t * fw_version, size_t size)
 {

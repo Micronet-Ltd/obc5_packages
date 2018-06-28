@@ -92,6 +92,7 @@ public class ResultActivity extends Activity {
             File file = new File(filename);
             file.delete();
             bufferedWriter = new BufferedWriter(new FileWriter(file));
+            bufferedWriter.write(((FactoryKit)getApplicationContext()).getRunCode() + ",");
             bufferedWriter.write(data.substring(0, data.length()));
         } catch (IOException e) {
             e.printStackTrace();

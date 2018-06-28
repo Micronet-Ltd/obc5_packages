@@ -12,7 +12,7 @@ public class BootReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         //Start Monitoring the temperature and Mobile Data Service
-        Intent service = new Intent(context,Cellular_Data_Service.class);
+        Intent service = new Intent(context, CellularDataService.class);
         context.startService(service);
 
     }

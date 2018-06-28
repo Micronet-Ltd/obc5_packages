@@ -1165,24 +1165,24 @@ public class CanTest {
                             can1Data.append("\n");
                         }
 
-                        if(pdu_format < 237){
-
-                            switch(pdu_format){
-
-                                case J1939_PDU_FORMAT_MANAGE_CONN:
-                                    //Rxd connection request for requested PGN
-                                    Log.d(TAG, "Check me on Port 1 ! ******** Manage Connection RXD ******** ");
-                                    rxManageConnection(2, sourceAdr, pdu_specific, dataBytes);
-                                    break;
-
-                                case J1939_PDU_FORMAT_DATA_CONN:
-                                    // Data Transfer for the requested PGN
-                                    rxConnectionData(2, sourceAdr, pdu_specific, dataBytes);
-                                    Log.d(TAG, "Check me on Port 2 ! ******** Data Transfer RXD ******** ");
-                                    break;
-                            }
-                        }
-                        else parsePgn(pgn, pdu_format, pdu_specific, sourceAdr, dataBytes, 8);
+//                        if(pdu_format < 237){
+//
+//                            switch(pdu_format){
+//
+//                                case J1939_PDU_FORMAT_MANAGE_CONN:
+//                                    //Rxd connection request for requested PGN
+//                                    Log.d(TAG, "Check me on Port 1 ! ******** Manage Connection RXD ******** ");
+//                                    rxManageConnection(2, sourceAdr, pdu_specific, dataBytes);
+//                                    break;
+//
+//                                case J1939_PDU_FORMAT_DATA_CONN:
+//                                    // Data Transfer for the requested PGN
+//                                    rxConnectionData(2, sourceAdr, pdu_specific, dataBytes);
+//                                    Log.d(TAG, "Check me on Port 2 ! ******** Data Transfer RXD ******** ");
+//                                    break;
+//                            }
+//                        }
+//                        else parsePgn(pgn, pdu_format, pdu_specific, sourceAdr, dataBytes, 8);
 
                         ++canbusFrameCount;
                         canbusByteCount += canbusFrame1.getData().length;

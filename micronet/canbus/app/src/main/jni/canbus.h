@@ -26,9 +26,9 @@
 
 #define CAN1_TTY    "/dev/ttyACM2"
 #define CAN2_TTY    "/dev/ttyACM3"
-#define J1708_TTY_READ   "/dev/ttyACM4"
-//#define J1708_TTY_READ   "/dev/j1708"
-#define J1708_TTY_WRITE   "/dev/ttyMICRONET_J1708"
+//#define J1708_TTY_READ   "/dev/ttyACM4"
+#define J1708_TTY   "/dev/j1708"
+//#define J1708_TTY_WRITE   "/dev/ttyMICRONET_J1708"
 
 
 #define DWORD uint32_t
@@ -106,7 +106,6 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_CanbusInterface_getImplId(JNIEnv
 JNIEXPORT jint JNICALL Java_com_micronet_canbus_J1708Interface_getImplId(JNIEnv * env, jclass cls);//added
 
 
-//JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANVehicleInterfaceBridge_createCanInterface(JNIEnv *env, jobject instance, jboolean listeningModeEnable, jint bitrate, jboolean termination, jobjectArray  hardwarefilter, int port_number,jobjectArray flowControl);
 JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANVehicleInterfaceBridge_create(JNIEnv *env, jobject instance, jboolean listeningModeEnable, jint bitrate, jboolean termination, jobjectArray  hardwarefilter, int port_number,jobjectArray flowControl);
 JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANVehicleInterfaceBridge_configureCanInterface(JNIEnv *env, jobject instance, jboolean listeningModeEnable, jint bitrate, jboolean termination,jobjectArray  hardwarefilter, jint port_number,jobjectArray flowControl);
 

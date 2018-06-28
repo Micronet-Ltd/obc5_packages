@@ -221,19 +221,25 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANVehicleInterfaceBridge_re
 JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANVehicleInterfaceBridge_createJ1708Interface(JNIEnv *env, jobject instance){
 
     LOGD("Creating a J1708 Interface");
-    jfieldID fd_read_id;
-    jfieldID fd_write_id;
+//    jfieldID fd_read_id;
+//    jfieldID fd_write_id;
 
-    jint fdJ1708Read = FlexCAN_j1708_startup(J1708_TTY_READ);
-    jint fdJ1708Write = getFd(J1708_TTY_WRITE_NUMBER);
+//    jint fdJ1708Read = FlexCAN_j1708_startup(J1708_TTY_READ);
+//    jint fdJ1708Write = getFd(J1708_TTY_WRITE_NUMBER);
 
-    jclass clazz = env->FindClass("com/micronet/canbus/FlexCANVehicleInterfaceBridge");
+      jfieldID fd_1708;
+      jint fdJ1708 = getFd(J1708_TTY_NUMBER);
 
-    fd_read_id = env->GetFieldID(clazz, "fdJ1708Read", "I");
-    env->SetIntField(instance, fd_read_id, fdJ1708Read);
+      jclass clazz = env->FindClass("com/micronet/canbus/FlexCANVehicleInterfaceBridge");
 
-    fd_write_id = env->GetFieldID(clazz, "fdJ1708Write", "I");
-    env->SetIntField(instance, fd_write_id, fdJ1708Write);
+//    fd_read_id = env->GetFieldID(clazz, "fdJ1708Read", "I");
+//    env->SetIntField(instance, fd_read_id, fdJ1708Read);
+
+//    fd_write_id = env->GetFieldID(clazz, "fdJ1708Write", "I");
+//    env->SetIntField(instance, fd_write_id, fdJ1708Write);
+
+      fd_1708 = env->GetFieldID(clazz, "fdJ1708", "I");
+      env->SetIntField(instance, fd_1708, fdJ1708);
 
     return 0;
 
@@ -246,14 +252,18 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANVehicleInterfaceBridge_re
     LOGD("Entered removeJ1708Interface: Begin deinit()!!");
     closeJ1708Thread();
     LOGD("Closing J1708 file descriptors");
-    if (closePort(J1708_TTY_READ_NUMBER) == -1) {
+    if (closePort(J1708_TTY_NUMBER) == -1) {
+        return -1;
+        LOGD("Couldn't close J1708_READ successfully ");
+    }
+   /* if (closePort(J1708_TTY_READ_NUMBER) == -1) {
         return -1;
         LOGD("Couldn't close J1708_READ successfully ");
     }
     if (closePort(J1708_TTY_WRITE_NUMBER) == -1) {
         return -1;
         LOGD("Couldn't close J1708_READ successfully ");
-    }
+    }*/
     LOGD("Removing J1708 Interface");
     return 0;
     error:

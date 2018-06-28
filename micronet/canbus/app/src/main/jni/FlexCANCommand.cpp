@@ -168,11 +168,12 @@ int FlexCAN_j1708_startup(char *portName){
 
     int i=0, ret_read = -1;
     char *port = portName;
-    int fd_read = -1, fd_write = -1;
+    int fd_1708 = -1;
+    int fd_write = -1;
 
-    fd_read = ret_read = serial_init(J1708_TTY_READ);
+    fd_1708 = ret_read = serial_init(J1708_TTY);
 
-    fd_write = serial_init(J1708_TTY_WRITE);
+   // fd_write = serial_init(J1708_TTY_WRITE);
 
     //TODO: Check if CAN 1 is enabled, it isn't then enable power to the GPIO pin
     //If CAN1 is open, don't close the port continue reading. If its closed, open it.
@@ -428,8 +429,8 @@ int computeJ1708Checksum(int id, int priority, BYTE *dataBytes, int dataLength){
     for (int i = 0; i < dataLength; i++){
         sum = sum + dataBytes[i];
     }
-
-    checksum = (255 - (sum % 256)) + 1 ;
+    //TODO: Check this logic
+    //checksum = (255 - (sum % 256)) + 1 ;
 
     LOGD("Returned Checksum = % d", checksum);
 
@@ -444,9 +445,10 @@ void FlexCAN_send_j1708_packet(DWORD id, BYTE *data, BYTE priority, int dataLeng
     int index = 0, i = 0, fd_write = -1;
     unsigned char packet[dataLength+5]; //={'\0'};
 
-    fd_write = getFd(J1708_TTY_WRITE_NUMBER);
+    //fd_write = getFd(J1708_TTY_WRITE_NUMBER);
+    fd_write = getFd(J1708_TTY_NUMBER);
 
-    packet[index++] = 0x7E;
+   // packet[index++] = 0x7E;
     packet[index++] = priority;
     packet[index++] = (BYTE)(id);
 
@@ -456,7 +458,7 @@ void FlexCAN_send_j1708_packet(DWORD id, BYTE *data, BYTE priority, int dataLeng
     index += i;
 
     packet[index++] = computeJ1708Checksum((BYTE) (id), priority, data, dataLength);
-    packet[index++]=0x7E;
+    // packet[index++]=0x7E;
 
     if( serial_send_data(packet, dataLength + 5, fd_write)){
         error_message("!!!!!!!!!!!!!!! Couldn't transmit 1708 message !!!!!!!!!!!!!!!!!");

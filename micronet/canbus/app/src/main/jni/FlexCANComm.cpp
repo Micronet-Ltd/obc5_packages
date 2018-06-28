@@ -12,8 +12,9 @@
 
 static int fd_CAN1;
 static int fd_CAN2;
-static int fd_J1708_READ;
-static int fd_J1708_WRITE;
+//static int fd_J1708_READ;
+//static int fd_J1708_WRITE;
+static int fd_J1708;
 
 static pthread_t thread__port1;
 static pthread_t thread__port2;
@@ -97,13 +98,23 @@ int serial_init(char *portName)
     else if(strcmp(portName,J1708_TTY_WRITE)== 0){
         if ((fd_J1708_WRITE = open(portName, O_RDWR | O_NOCTTY | O_NONBLOCK)) < 0) {
             perror(portName);
-            return -1;
-            //exit(EXIT_FAILURE);
+            exit(EXIT_FAILURE);
         }
         serial_set_nonblocking(fd_J1708_WRITE);
         DD("opened port: '%s', fd=%d", J1708_TTY_WRITE, fd_J1708_WRITE);
         initTerminalInterface(fd_J1708_WRITE, B9600);
         return fd_J1708_WRITE;
+    }*/
+
+    else if(strcmp(portName,J1708_TTY)== 0){
+        if ((fd_J1708 = open(portName, O_RDWR | O_NOCTTY | O_NONBLOCK)) < 0) {
+            perror(portName);
+            exit(EXIT_FAILURE);
+        }
+        serial_set_nonblocking(fd_J1708);
+        DD("opened port: '%s', fd=%d", J1708_TTY, fd_J1708);
+        initTerminalInterface(fd_J1708, B9600);
+        return fd_J1708;
     }
 
     else return -1;
@@ -152,7 +163,12 @@ int closeTerminalInterface(int port){
         fd_CAN2=-1;
 		return 0; 
     }
-    else if(port == J1708_TTY_READ_NUMBER){
+    else if(port == J1708_TTY_NUMBER ){
+        close(fd_J1708);
+        fd_J1708 = -1;
+        return 0;
+    }
+   /* else if(port == J1708_TTY_READ_NUMBER){
         close(fd_J1708_READ);
         fd_J1708_READ = -1;
 		return 0; 
@@ -161,7 +177,7 @@ int closeTerminalInterface(int port){
         close(fd_J1708_WRITE);
         fd_J1708_WRITE = -1;
         return 0;
-    }
+    }*/
 	else return -1; 
 	
 }
@@ -189,12 +205,15 @@ int getFd(int portNumber){
     else if(portNumber == CAN2_TTY_NUMBER){
             return fd_CAN2;
     }
-    else if(portNumber == J1708_TTY_READ_NUMBER){
+    else if(portNumber == J1708_TTY_NUMBER){
+        return fd_J1708;
+    }
+    /*else if(portNumber == J1708_TTY_READ_NUMBER){
             return fd_J1708_READ;
     }
     else if(portNumber == J1708_TTY_WRITE_NUMBER){
         return fd_J1708_WRITE;
-    }
+    }*/
 	else return -1; 
 }
 /**
@@ -211,7 +230,22 @@ int closePort(int portNumber){
             return -1;
         }
     }
-    else if(portNumber == J1708_TTY_READ_NUMBER || portNumber == J1708_TTY_WRITE_NUMBER){
+    /*else if(portNumber == J1708_TTY_READ_NUMBER || portNumber == J1708_TTY_WRITE_NUMBER){
+        if(getFd(CAN1_TTY_NUMBER) <= 0){
+            //Set CAN1_1708 power enabled to 0
+            //Temp solution below for closing CAN1
+            LOGD("Entered closePort!! 1708 condition!");
+            if (closeCAN(closeFd) == -1) {
+                //Couldn't close CAN channel
+                return -1;
+            }
+        }
+        else{
+            LOGE("Cannot close J1708, CAN1 is being used");
+        }
+    }*/
+
+    else if(portNumber == J1708_TTY_NUMBER){
         if(getFd(CAN1_TTY_NUMBER) <= 0){
             //Set CAN1_1708 power enabled to 0
             //Temp solution below for closing CAN1
@@ -225,6 +259,7 @@ int closePort(int portNumber){
             LOGE("Cannot close J1708, CAN1 is being used");
         }
     }
+
     closeTerminalInterface(portNumber);
     LOGD("Leaving closePort!!");
     return 0;
@@ -1100,17 +1135,17 @@ static void *monitor_data_thread_port1708(void *param) {
             break;
         }
 
-        if(fd_J1708_READ < 0){
+        if(fd_J1708 < 0){
             break;
         }
 
-        if (!waitForData(fd_J1708_READ)) {
+        if (!waitForData(fd_J1708)) {
 
             int readData;
             uint8_t *pend = NULL;
 
             //Returns the number of bytes read on J1708
-            readData = read(fd_J1708_READ, pdata, sizeof(data) - (pdata - data));
+            readData = read(fd_J1708, pdata, sizeof(data) - (pdata - data));
             readCount++;
 
             if(readData > 0){

@@ -9,12 +9,13 @@ final class FlexCANVehicleInterfaceBridge implements IVehicleInterfaceBridge {
     private static final String TAG = "FlexCAN-VehicleI/FBr";
     private int fdCanPort1 = 0;
     private int fdCanPort2 = 0;
-    private int fdJ1708Read = 0;
-    private int fdJ1708Write = 0;
+    private int fdJ1708 = 0;
+//    private int fdJ1708Read = 0;
+//    private int fdJ1708Write = 0;
     static int canPort1Number = 2;
     static int canPort2Number = 3;
-    static int j708ReadPortNumber = 4;
-    static int j708WritePortNumber = 5;
+//    static int j708ReadPortNumber = 4;
+//    static int j708WritePortNumber = 5;
 
     /**
      * Creates new Canbus interface (up).
@@ -224,9 +225,9 @@ final class FlexCANVehicleInterfaceBridge implements IVehicleInterfaceBridge {
 
     /**
      *  Creates new socket on J1708 interface
-    */
+     */
     public J1708Socket createSocketJ1708(){
-        return new FlexCANJ1708Socket(fdJ1708Read, fdJ1708Write);
+        return new FlexCANJ1708Socket(fdJ1708);
     }
 
 

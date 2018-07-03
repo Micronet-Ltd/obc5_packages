@@ -1,11 +1,16 @@
 package com.micronet.canbus.Fragment;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +19,7 @@ import android.widget.CompoundButton;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.micronet.canbus.CanTest;
@@ -26,6 +32,7 @@ import java.util.Date;
 
 public class Can1OverviewFragment extends Fragment {
 
+    private final String TAG = "Can1OverviewFragment";
     private Date LastCreated;
     private Date LastClosed;
 
@@ -60,6 +67,11 @@ public class Can1OverviewFragment extends Fragment {
 
     private ChangeBaudRateTask changeBaudRateTask;
 
+    private int mDockState = -1;
+    private boolean reopenCANOnDockEvent = false;
+    private IntentFilter dockFilter = new IntentFilter(Intent.ACTION_DOCK_EVENT);
+    private DockStateReceiver dockStateReceiver = new DockStateReceiver();
+
     public Can1OverviewFragment() {
         // Required empty public constructor
     }
@@ -70,6 +82,21 @@ public class Can1OverviewFragment extends Fragment {
         canTest = CanTest.getInstance();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        //mDockState = null;
+        getActivity().registerReceiver(dockStateReceiver, dockFilter);
+        Log.d(TAG, "onResume");
+    }
+
+    @Override
+    public void onPause() {
+        getActivity().unregisterReceiver(dockStateReceiver);
+        super.onPause();
+        Log.d(TAG, "onPause");
+    }
+
     private void setStateSocketDependentUI() {
         boolean open = canTest.isPort1SocketOpen();
         btnTransmitCAN.setEnabled(open);
@@ -78,7 +105,7 @@ public class Can1OverviewFragment extends Fragment {
     }
 
     private void setStateInterfaceDependentUI() {
-    boolean open = canTest.isCAN1InterfaceOpen();
+        boolean open = canTest.isCAN1InterfaceOpen();
         //btnGetBaudrateCam.setEnabled(open);
 
     }
@@ -179,22 +206,14 @@ public class Can1OverviewFragment extends Fragment {
         openCan1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                canTest.setRemoveCan1InterfaceState(false);
-                canTest.setBaudrate(baudRateSelected);
-                canTest.setPortNumber(2);
-                canTest.setSilentMode(silentMode);
-                canTest.setTermination(termination);
-                canTest.setRemoveCan1InterfaceState(false);
-                executeChangeBaudrate();
+                openCan1Interface();
             }
         });
 
         closeCan1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                canTest.setRemoveCan1InterfaceState(true);
-                executeChangeBaudrate();
-
+                closeCan1Interface();
             }
         });
 
@@ -232,6 +251,21 @@ public class Can1OverviewFragment extends Fragment {
         updateInterfaceStatusUI();
         setStateInterfaceDependentUI();
         setStateSocketDependentUI();
+    }
+
+    private void openCan1Interface(){
+        canTest.setRemoveCan1InterfaceState(false);
+        canTest.setBaudrate(baudRateSelected);
+        canTest.setPortNumber(2);
+        canTest.setSilentMode(silentMode);
+        canTest.setTermination(termination);
+        canTest.setRemoveCan1InterfaceState(false);
+        executeChangeBaudrate();
+    }
+
+    private void closeCan1Interface(){
+        canTest.setRemoveCan1InterfaceState(true);
+        executeChangeBaudrate();
     }
 
     private void
@@ -381,5 +415,65 @@ public class Can1OverviewFragment extends Fragment {
             setStateSocketDependentUI();
         }
     }
+
+    private class DockStateReceiver extends BroadcastReceiver {
+        private CanTest canTest;
+        public final String TAG = getClass().getSimpleName();
+        public DockStateReceiver() {
+        }
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            mDockState = intent.getIntExtra(Intent.EXTRA_DOCK_STATE, -1);
+            updateCradleIgnState();
+        }
+    }
+
+    private void updateCradleIgnState() {
+        String cradleStateMsg, ignitionStateMsg;
+        switch (mDockState) {
+            case Intent.EXTRA_DOCK_STATE_UNDOCKED:
+                cradleStateMsg = getString(R.string.not_in_cradle_state_text);
+                ignitionStateMsg = getString(R.string.ignition_unknown_state_text);
+                if (canTest.isCAN1InterfaceOpen()){
+                    Toast.makeText(getContext().getApplicationContext(), "closing CAN1 port since device was undocked", Toast.LENGTH_SHORT).show();
+                    closeCan1Interface();
+                    reopenCANOnDockEvent = true;
+                }
+                break;
+            case Intent.EXTRA_DOCK_STATE_DESK:
+            case Intent.EXTRA_DOCK_STATE_LE_DESK:
+            case Intent.EXTRA_DOCK_STATE_HE_DESK:
+                cradleStateMsg = getString(R.string.in_cradle_state_text);
+                //ignitionStateMsg = getString(R.string.ignition_off_state_text);
+                ignitionStateMsg = getString(R.string.ignition_off_state_text);
+                if (reopenCANOnDockEvent){
+                    Toast.makeText(getContext().getApplicationContext(), "Reopening CAN1 port since device was docked", Toast.LENGTH_SHORT).show();
+                    openCan1Interface();
+                    reopenCANOnDockEvent = false;
+                }
+                break;
+            case Intent.EXTRA_DOCK_STATE_CAR:
+                cradleStateMsg = getString(R.string.in_cradle_state_text);
+                ignitionStateMsg = getString(R.string.ignition_on_state_text);
+                if (reopenCANOnDockEvent){
+                    Toast.makeText(getContext().getApplicationContext(), "Reopening CAN1 port since device was docked", Toast.LENGTH_SHORT).show();
+                    openCan1Interface();
+                    reopenCANOnDockEvent = false;
+                }
+                break;
+            default:
+                /* this state indicates un-defined docking state */
+                cradleStateMsg = getString(R.string.not_in_cradle_state_text);
+                ignitionStateMsg = getString(R.string.ignition_unknown_state_text);
+                break;
+        }
+
+        TextView cradleStateTextview = (TextView) getView().findViewById(R.id.textViewCradleState);
+        TextView ignitionStateTextview = (TextView) getView().findViewById(R.id.textViewIgnitionState);
+        cradleStateTextview.setText(cradleStateMsg);
+        ignitionStateTextview.setText(ignitionStateMsg);
+    }
+
 
 }

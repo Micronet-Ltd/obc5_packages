@@ -24,12 +24,11 @@
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR,LOG_TAG,__VA_ARGS__)
 #define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
 
-#define CAN1_TTY    "/dev/ttyACM2"
-#define CAN2_TTY    "/dev/ttyACM3"
+#define CAN1_TTY    "/dev/ttyCAN0" //"/dev/ttyACM2"
+#define CAN2_TTY    "/dev/ttyCAN1" //"/dev/ttyACM3"
 //#define J1708_TTY_READ   "/dev/ttyACM4"
 #define J1708_TTY   "/dev/j1708"
 //#define J1708_TTY_WRITE   "/dev/ttyMICRONET_J1708"
-
 
 #define DWORD uint32_t
 #define BYTE uint8_t

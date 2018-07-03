@@ -18,6 +18,11 @@
     <include
       layout="@layout/fragment_manage_can1_interface"
       android:layout_width="wrap_content"
+      android:layout_height="65dp"/>
+
+    <include
+      layout="@layout/fragment_cradle_state"
+      android:layout_width="wrap_content"
       android:layout_height="wrap_content"/>
 
   </LinearLayout>

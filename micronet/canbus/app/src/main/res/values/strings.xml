@@ -31,4 +31,14 @@
     <string name="j17082">Time (ms), Identifier, Priority, Data, Length</string>
     <string name="block_on_read">Block On Read</string>
     <string name="start_on_boot">Start On Boot</string>
+
+    <!-- Cradle Strings -->
+    <string name="device_cradle_ign_state_text">Device Cradle and Ignition State</string>
+    <string name="in_cradle_state_text">In Cradle</string>
+    <string name="not_in_cradle_state_text">Not In Cradle</string>
+    <string name="ignition_off_state_text">Ignition Off</string>
+    <string name="ignition_on_state_text">Ignition On</string>
+    <string name="ignition_unknown_state_text">Ignition Unknown</string>
+    <string name="ignition_state">Ignition State: </string>
+    <string name="cradle_state">Cradle State: </string>
 </resources>

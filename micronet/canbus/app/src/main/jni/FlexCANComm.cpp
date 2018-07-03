@@ -62,6 +62,7 @@ int serial_init(char *portName)
     if(strcmp(portName, CAN1_TTY)==0){
         if ((fd_CAN1 = open(portName, O_RDWR | O_NOCTTY | O_NONBLOCK)) < 0) {
             perror(portName);
+			DD("failed to open %s, error: %s", portName, strerror(errno));
             return -1;
             //exit(EXIT_FAILURE);
         }
@@ -75,6 +76,7 @@ int serial_init(char *portName)
     else if(strcmp(portName,CAN2_TTY)== 0){
         if ((fd_CAN2 = open(portName, O_RDWR | O_NOCTTY | O_NONBLOCK)) < 0) {
             perror(portName);
+			DD("failed to open %s, error: %s", portName, strerror(errno));
             return -1;
             //exit(EXIT_FAILURE);
         }
@@ -88,6 +90,7 @@ int serial_init(char *portName)
     /*else if(strcmp(portName,J1708_TTY_READ)== 0){
         if ((fd_J1708_READ = open(portName, O_RDWR | O_NOCTTY | O_NONBLOCK)) < 0) {
             perror(portName);
+			DD("failed to open %s, error: %s", portName, strerror(errno));
             return -1;
             //exit(EXIT_FAILURE);
         }
@@ -100,7 +103,9 @@ int serial_init(char *portName)
     else if(strcmp(portName,J1708_TTY_WRITE)== 0){
         if ((fd_J1708_WRITE = open(portName, O_RDWR | O_NOCTTY | O_NONBLOCK)) < 0) {
             perror(portName);
-            exit(EXIT_FAILURE);
+			DD("failed to open %s, error: %s", portName, strerror(errno));
+            return -1;
+            //exit(EXIT_FAILURE);
         }
         serial_set_nonblocking(fd_J1708_WRITE);
         DD("opened port: '%s', fd=%d", J1708_TTY_WRITE, fd_J1708_WRITE);
@@ -191,6 +196,7 @@ int closeCAN(int close_fd) {
     sprintf(buf, "C\r");
     if (-1 == write(close_fd, buf, strlen(buf))) {
         ERR("Error write %s command\n", buf);
+		close(close_fd);
         return -1;
     }
     LOGD("Closed CAN channel ");
@@ -948,6 +954,7 @@ static void *monitor_data_thread_port1(void *param) {
 
             if (0 == readData) {
                 quit_port1 = true;
+				close(fd_CAN1);
                 LOGD("quit1=%d", quit_port1);
                 break;
             }
@@ -1061,6 +1068,7 @@ static void *monitor_data_thread_can_port2(void *param) {
 
             if (0 == readData) {
                 quit_port2 = true;
+				close(fd_CAN2);
                 LOGD("quit2=%d", quit_port2);
                 break;
             }

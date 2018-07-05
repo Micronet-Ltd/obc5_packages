@@ -44,11 +44,11 @@ char getCharType(uint32_t type){
  * */
 void setFilterAndMasks(FLEXCAN_filter_mask *filter_array, int numfilter, int port_fd){
 
-    int i=0;
+    uint8_t i=0;
     uint32_t filterId=0;
     char filterIdString[MAX_MASK_FILTER_SIZE]={0};
-    int filterSetCount=0;
-    int maskSetCount=0;
+    uint8_t filterSetCount=0;
+    uint8_t maskSetCount=0;
 
     uint8_t filterMaskType=0;
     char filterMaskTypeChar=0;
@@ -66,7 +66,7 @@ void setFilterAndMasks(FLEXCAN_filter_mask *filter_array, int numfilter, int por
 
         tmp_filter = *filter_array;
 
-        for(int index=0; index < tmp_filter.filter_count; index++){
+        for(uint8_t index=0; index < tmp_filter.filter_count; index++){
 
             filterMaskType = tmp_filter.filter_mask_type[index];
             filterMaskTypeChar = getCharType(filterMaskType);

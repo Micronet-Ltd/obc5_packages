@@ -214,6 +214,16 @@
     <string
         name="msensor_name">Magnetic Sensor</string>
 
+    <!-- BatteryDetach -->
+    <string
+        name="battery_detach_name">Battery Detach</string>
+    <string
+        name="battery_detach_text">Please wait for test finish measurement...</string>
+    <string
+        name="battery_detach_text_fail">Test Fail. Start Again...</string>
+    <string
+        name="battery_detach_number_of_test">Done: 0/10</string>
+
     <!-- OSensor -->
     <string
         name="osensor_name">Oritentation Sensor</string>
@@ -589,3 +599,4 @@
 
     <string name="test_done">To finish the test, go to the PC and connect the ADB cable to the PC. From the MT5 folder run the MT5_TEST_MAIN.bat batch file</string>
 </resources>
+

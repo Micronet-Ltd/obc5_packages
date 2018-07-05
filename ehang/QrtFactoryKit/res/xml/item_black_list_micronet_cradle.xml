@@ -2,5 +2,6 @@
 
 <BlackList>
     <TestItem name="Battery" />
+    <TestItem name="BatteryDetach" />
     <TestItem name = "HightSensor"/>
 </BlackList>

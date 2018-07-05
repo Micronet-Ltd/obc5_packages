@@ -47,21 +47,21 @@ public class Can1OverviewFragment extends Fragment {
     private Thread updateUIThread;
 
     private CanTest canTest;
-    private TextView txtInterfaceClsTime;
-    private TextView txtInterfaceOpenTime;
-    private TextView txtCanTxSpeed;
-    private TextView txtCanBaudRate;
+    private TextView txtInterfaceClsTimeCan1;
+    private TextView txtInterfaceOpenTimeCan1;
+    private TextView txtCanTxSpeedCan1;
+    private TextView txtCanBaudRateCan1;
 
     private TextView textViewFrames;
 
     // Socket dependent UI
-    private Button btnTransmitCAN;
-    private ToggleButton swCycleTransmitJ1939;
-    private SeekBar seekBarJ1939Send;
+    private Button btnTransmitCAN1;
+    private ToggleButton swCycleTransmitJ1939Can1;
+    private SeekBar seekBarJ1939SendCan1;
 
     //Interface dependent UI
-    private ToggleButton toggleButtonTerm;
-    private ToggleButton toggleButtonListen;
+    private ToggleButton toggleButtonTermCan1;
+    private ToggleButton toggleButtonListenCan1;
     private RadioGroup baudRateCan1;
 
     private Button openCan1;
@@ -101,13 +101,13 @@ public class Can1OverviewFragment extends Fragment {
 
     private void setStateSocketDependentUI() {
         boolean open = canTest.isPort1SocketOpen();
-        btnTransmitCAN.setEnabled(open);
-        swCycleTransmitJ1939.setEnabled(open);
-        seekBarJ1939Send.setEnabled(open);
+        btnTransmitCAN1.setEnabled(open);
+        swCycleTransmitJ1939Can1.setEnabled(open);
+        seekBarJ1939SendCan1.setEnabled(open);
     }
 
     private void setStateInterfaceDependentUI() {
-        boolean open = canTest.isCAN1InterfaceOpen();
+        boolean open = canTest.isCan1InterfaceOpen();
         //btnGetBaudrateCam.setEnabled(open);
 
     }
@@ -117,7 +117,7 @@ public class Can1OverviewFragment extends Fragment {
         if(status != null) {
             txtInterfaceStatus.setText(status);
             txtInterfaceStatus.setBackgroundColor(Color.YELLOW);
-        } else if(canTest.isCAN1InterfaceOpen()) {
+        } else if(canTest.isCan1InterfaceOpen()) {
             txtInterfaceStatus.setText(getString(R.string.open));
             txtInterfaceStatus.setBackgroundColor(Color.GREEN);
         } else { // closed
@@ -154,22 +154,22 @@ public class Can1OverviewFragment extends Fragment {
         textViewFrames = rootView.findViewById(R.id.textViewCan1Frames);
 
         baudRateCan1 = rootView.findViewById(R.id.radioGrCan1BaudRates);
-        toggleButtonListen = rootView.findViewById(R.id.toggleButtonListenCan1);
-        toggleButtonTerm = rootView.findViewById(R.id.toggleButtonTermCan1);
+        toggleButtonListenCan1 = rootView.findViewById(R.id.toggleButtonCan1Listen);
+        toggleButtonTermCan1 = rootView.findViewById(R.id.toggleButtonCan1Term);
 
         openCan1 = rootView.findViewById(R.id.buttonOpenCan1);
         closeCan1 = rootView.findViewById(R.id.buttonCloseCan1);
-        txtInterfaceClsTime = rootView.findViewById(R.id.textViewClosedTime);
-        txtInterfaceOpenTime = rootView.findViewById(R.id.textViewCreatedTime);
-        txtCanTxSpeed = rootView.findViewById(R.id.textViewCan1CurrTransmitInterval);
-        txtCanBaudRate = rootView.findViewById(R.id.textViewCan1CurrBaudRate);
+        txtInterfaceClsTimeCan1 = rootView.findViewById(R.id.textViewCan1ClosedTime);
+        txtInterfaceOpenTimeCan1 = rootView.findViewById(R.id.textViewCan1CreatedTime);
+        txtCanTxSpeedCan1 = rootView.findViewById(R.id.textViewCan1CurrTransmitInterval);
+        txtCanBaudRateCan1 = rootView.findViewById(R.id.textViewCan1CurrBaudRate);
 
-        btnTransmitCAN = rootView.findViewById(R.id.btnCan1SendJ1939);
-        seekBarJ1939Send = rootView.findViewById(R.id.seekBarSendSpeedCan1);
-        swCycleTransmitJ1939 = rootView.findViewById(R.id.swCan1CycleTransmitJ1939);
+        btnTransmitCAN1 = rootView.findViewById(R.id.btnCan1SendJ1939);
+        seekBarJ1939SendCan1 = rootView.findViewById(R.id.seekBarCan1SendSpeed);
+        swCycleTransmitJ1939Can1 = rootView.findViewById(R.id.swCan1CycleTransmitJ1939);
 
-        seekBarJ1939Send.setProgress(canTest.getJ1939IntervalDelay());
-        btnTransmitCAN.setOnClickListener(new View.OnClickListener() {
+        seekBarJ1939SendCan1.setProgress(canTest.getJ1939IntervalDelay());
+        btnTransmitCAN1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 canTest.sendJ1939Port1();
@@ -190,7 +190,7 @@ public class Can1OverviewFragment extends Fragment {
             }
         });
 
-        toggleButtonTerm.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        toggleButtonTermCan1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 termination = isChecked;
@@ -198,7 +198,7 @@ public class Can1OverviewFragment extends Fragment {
         });
 
 
-        toggleButtonListen.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        toggleButtonListenCan1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 silentMode = isChecked;
@@ -219,20 +219,20 @@ public class Can1OverviewFragment extends Fragment {
             }
         });
 
-        swCycleTransmitJ1939.setOnClickListener(new View.OnClickListener() {
+        swCycleTransmitJ1939Can1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                canTest.setAutoSendJ1939Port1(swCycleTransmitJ1939.isChecked());
+                canTest.setAutoSendJ1939Port1(swCycleTransmitJ1939Can1.isChecked());
                 canTest.sendJ1939Port1();
             }
         });
 
-        seekBarJ1939Send.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        seekBarJ1939SendCan1.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (fromUser) {
                     canTest.setJ1939IntervalDelay(progress);
-                    txtCanTxSpeed.setText(progress + "ms");
+                    txtCanTxSpeedCan1.setText(progress + "ms");
                 }
             }
 
@@ -247,7 +247,7 @@ public class Can1OverviewFragment extends Fragment {
             }
         });
 
-        //txtCanTxSpeed.setText(canTest.getJ1939IntervalDelay() + "ms");
+        //txtCanTxSpeedCan1.setText(canTest.getJ1939IntervalDelay() + "ms");
         updateBaudRateUI();
         updateInterfaceTime();
         updateInterfaceStatusUI();
@@ -292,7 +292,7 @@ public class Can1OverviewFragment extends Fragment {
     private void updateCountUI() {
         if (canTest != null){
             String s = "J1939 Frames/Bytes: " + canTest.getPort1CanbusFrameCount() + "/" + canTest.getPort1CanbusByteCount();
-            swCycleTransmitJ1939.setChecked(canTest.isAutoSendJ1939Port1());
+            swCycleTransmitJ1939Can1.setChecked(canTest.isAutoSendJ1939Port1());
             textViewFrames.setText(s);
         }
 
@@ -305,7 +305,7 @@ public class Can1OverviewFragment extends Fragment {
         } else if (canTest.getBaudrate() == BITRATE_500K) {
             baudrateDesc = getString(R.string._500k_desc);
         }
-        txtCanBaudRate.setText(baudrateDesc);
+        txtCanBaudRateCan1.setText(baudrateDesc);
     }
 
     private void updateInterfaceTime() {
@@ -318,8 +318,8 @@ public class Can1OverviewFragment extends Fragment {
             createdDate = LastCreated.toString();
         }
 
-        txtInterfaceOpenTime.setText(createdDate);
-        txtInterfaceClsTime.setText(closedDate);
+        txtInterfaceOpenTimeCan1.setText(createdDate);
+        txtInterfaceClsTimeCan1.setText(closedDate);
     }
 
 
@@ -377,7 +377,7 @@ public class Can1OverviewFragment extends Fragment {
         @Override
         protected Void doInBackground(Void... params) {
             LastClosed = Calendar.getInstance().getTime();
-            if(canTest.isCAN1InterfaceOpen() || canTest.isPort1SocketOpen()) {
+            if(canTest.isCan1InterfaceOpen() || canTest.isPort1SocketOpen()) {
                 publishProgress("Closing interface, please wait...");
                 canTest.closeCan1Interface();
                 publishProgress("Closing socket, please wait...");
@@ -441,7 +441,7 @@ public class Can1OverviewFragment extends Fragment {
             case Intent.EXTRA_DOCK_STATE_UNDOCKED:
                 cradleStateMsg = getString(R.string.not_in_cradle_state_text);
                 ignitionStateMsg = getString(R.string.ignition_unknown_state_text);
-                if (canTest.isCAN1InterfaceOpen()){
+                if (canTest.isCan1InterfaceOpen()){
                     Toast.makeText(getContext().getApplicationContext(), "closing CAN1 port since device was undocked", Toast.LENGTH_SHORT).show();
                     closeCan1Interface();
                     reopenCANOnDockEvent = true;
@@ -455,7 +455,7 @@ public class Can1OverviewFragment extends Fragment {
                 ignitionStateMsg = getString(R.string.ignition_off_state_text);
                 if (reopenCANOnDockEvent){
                     Toast.makeText(getContext().getApplicationContext(), "Reopening CAN1 port since device was docked", Toast.LENGTH_SHORT).show();
-                    sleep(2000);
+                    sleep(4000);
                     openCan1Interface();
                     reopenCANOnDockEvent = false;
                 }
@@ -465,7 +465,7 @@ public class Can1OverviewFragment extends Fragment {
                 ignitionStateMsg = getString(R.string.ignition_on_state_text);
                 if (reopenCANOnDockEvent){
                     Toast.makeText(getContext().getApplicationContext(), "Reopening CAN1 port since device was docked", Toast.LENGTH_SHORT).show();
-                    sleep(2000);
+                    sleep(4000);
                     openCan1Interface();
                     reopenCANOnDockEvent = false;
                 }

@@ -1,11 +1,18 @@
 package com.micronet.canbus.Fragment;
 
+import static java.lang.Thread.sleep;
+
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,8 +20,8 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
-import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.micronet.canbus.CanTest;
@@ -27,6 +34,7 @@ import java.util.Date;
 
 public class Can2OverviewFragment extends Fragment {
 
+    private final String TAG = "Can2OverviewFragment";
     private Date LastCreated;
     private Date LastClosed;
 
@@ -41,13 +49,14 @@ public class Can2OverviewFragment extends Fragment {
     private CanTest canTest;
     private TextView txtInterfaceClsTimeCan2;
     private TextView txtInterfaceOpenTimeCan2;
-    private TextView txtCanSpeedCan2;
+    private TextView txtCanTxSpeedCan2;
+    private TextView txtCanBaudRateCan2;
 
     private TextView textViewFrames;
 
-    //Socket dependent UI
-    private Button btnTransmitCAN2;
-    private Switch swCycleTransmitJ1939Can2;
+    // Socket dependent UI
+    private Button btnTransmitCan2;
+    private ToggleButton swCycleTransmitJ1939Can2;
     private SeekBar seekBarJ1939SendCan2;
 
     //Interface dependent UI
@@ -60,6 +69,11 @@ public class Can2OverviewFragment extends Fragment {
 
     private ChangeBaudRateTask changeBaudRateTask;
 
+    private int mDockState = -1;
+    private boolean reopenCANOnDockEvent = false;
+    private IntentFilter dockFilter = new IntentFilter(Intent.ACTION_DOCK_EVENT);
+    private DockStateReceiver dockStateReceiver = new DockStateReceiver();
+
     public Can2OverviewFragment() {
         // Required empty public constructor
     }
@@ -70,16 +84,32 @@ public class Can2OverviewFragment extends Fragment {
         canTest = CanTest.getInstance();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        //mDockState = null;
+        getActivity().registerReceiver(dockStateReceiver, dockFilter);
+        Log.d(TAG, "onResume");
+    }
+
+    @Override
+    public void onPause() {
+        getActivity().unregisterReceiver(dockStateReceiver);
+        super.onPause();
+        Log.d(TAG, "onPause");
+    }
+
     private void setStateSocketDependentUI() {
-        boolean open = canTest.isPort1SocketOpen();
-        btnTransmitCAN2.setEnabled(open);
+        boolean open = canTest.isPort2SocketOpen();
+        btnTransmitCan2.setEnabled(open);
         swCycleTransmitJ1939Can2.setEnabled(open);
         seekBarJ1939SendCan2.setEnabled(open);
     }
 
     private void setStateInterfaceDependentUI() {
-    boolean open = canTest.isCAN2InterfaceOpen();
-        //btnGetBaudrate.setEnabled(open);
+        boolean open = canTest.isCan2InterfaceOpen();
+        //btnGetBaudrateCam.setEnabled(open);
+
     }
 
     private void updateInterfaceStatusUI(String status) {
@@ -87,7 +117,7 @@ public class Can2OverviewFragment extends Fragment {
         if(status != null) {
             txtInterfaceStatus.setText(status);
             txtInterfaceStatus.setBackgroundColor(Color.YELLOW);
-        } else if(canTest.isCAN2InterfaceOpen()) {
+        } else if(canTest.isCan2InterfaceOpen()) {
             txtInterfaceStatus.setText(getString(R.string.open));
             txtInterfaceStatus.setBackgroundColor(Color.GREEN);
         } else { // closed
@@ -99,7 +129,7 @@ public class Can2OverviewFragment extends Fragment {
         if(status != null) {
             txtSocketStatus.setText(status);
             txtSocketStatus.setBackgroundColor(Color.YELLOW);
-        } else if(canTest.isPort1SocketOpen()) {
+        } else if(canTest.isPort2SocketOpen()) {
             txtSocketStatus.setText(getString(R.string.open));
             txtSocketStatus.setBackgroundColor(Color.GREEN);
         } else { // closed
@@ -124,24 +154,25 @@ public class Can2OverviewFragment extends Fragment {
         textViewFrames = rootView.findViewById(R.id.textViewCan2Frames);
 
         baudRateCan2 = rootView.findViewById(R.id.radioGrCan2BaudRates);
-        toggleButtonListenCan2 = rootView.findViewById(R.id.toggleButtonListenCan2);
-        toggleButtonTermCan2 = rootView.findViewById(R.id.toggleButtonTermCan2);
+        toggleButtonListenCan2 = rootView.findViewById(R.id.toggleButtonCan2Listen);
+        toggleButtonTermCan2 = rootView.findViewById(R.id.toggleButtonCan2Term);
 
         openCan2 = rootView.findViewById(R.id.buttonOpenCan2);
         closeCan2 = rootView.findViewById(R.id.buttonCloseCan2);
-        txtInterfaceClsTimeCan2 = rootView.findViewById(R.id.textViewClosedTime);
-        txtInterfaceOpenTimeCan2 = rootView.findViewById(R.id.textViewCreatedTime);
-        txtCanSpeedCan2 = rootView.findViewById(R.id.textViewCan2CurrBaudRate);
+        txtInterfaceClsTimeCan2 = rootView.findViewById(R.id.textViewCan2ClosedTime);
+        txtInterfaceOpenTimeCan2 = rootView.findViewById(R.id.textViewCan2CreatedTime);
+        txtCanTxSpeedCan2 = rootView.findViewById(R.id.textViewCan2CurrTransmitInterval);
+        txtCanBaudRateCan2 = rootView.findViewById(R.id.textViewCan2CurrBaudRate);
 
-        btnTransmitCAN2 = rootView.findViewById(R.id.btnCan2SendJ1939);
-        seekBarJ1939SendCan2 = rootView.findViewById(R.id.seekBarSendSpeedCan2);
+        btnTransmitCan2 = rootView.findViewById(R.id.btnCan2SendJ1939);
+        seekBarJ1939SendCan2 = rootView.findViewById(R.id.seekBarCan2SendSpeed);
         swCycleTransmitJ1939Can2 = rootView.findViewById(R.id.swCan2CycleTransmitJ1939);
 
         seekBarJ1939SendCan2.setProgress(canTest.getJ1939IntervalDelay());
-        btnTransmitCAN2.setOnClickListener(new View.OnClickListener() {
+        btnTransmitCan2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                canTest.sendJ1939Port1();
+                canTest.sendJ1939Port2();
             }
         });
 
@@ -177,22 +208,14 @@ public class Can2OverviewFragment extends Fragment {
         openCan2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                canTest.setRemoveCan2InterfaceState(false);
-                canTest.setBaudrate(baudRateSelected);
-                canTest.setPortNumber(3);
-                canTest.setSilentMode(silentMode);
-                canTest.setTermination(termination);
-                canTest.setRemoveCan2InterfaceState(false);
-                executeChangeBaudrate();
+                openCan2Interface();
             }
         });
 
         closeCan2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                canTest.setRemoveCan2InterfaceState(true);
-                executeChangeBaudrate();
-
+                closeCan2Interface();
             }
         });
 
@@ -209,7 +232,7 @@ public class Can2OverviewFragment extends Fragment {
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (fromUser) {
                     canTest.setJ1939IntervalDelay(progress);
-                    txtCanSpeedCan2.setText(progress + "ms");
+                    txtCanTxSpeedCan2.setText(progress + "ms");
                 }
             }
 
@@ -224,12 +247,27 @@ public class Can2OverviewFragment extends Fragment {
             }
         });
 
-        //txtCanSpeedCan2.setText(canTest.getJ1939IntervalDelay() + "ms");
+        //txtCanTxSpeedCan2.setText(canTest.getJ1939IntervalDelay() + "ms");
         updateBaudRateUI();
         updateInterfaceTime();
         updateInterfaceStatusUI();
         setStateInterfaceDependentUI();
         setStateSocketDependentUI();
+    }
+
+    private void openCan2Interface(){
+        canTest.setRemoveCan2InterfaceState(false);
+        canTest.setBaudrate(baudRateSelected);
+        canTest.setPortNumber(3);
+        canTest.setSilentMode(silentMode);
+        canTest.setTermination(termination);
+        canTest.setRemoveCan2InterfaceState(false);
+        executeChangeBaudrate();
+    }
+
+    private void closeCan2Interface(){
+        canTest.setRemoveCan2InterfaceState(true);
+        executeChangeBaudrate();
     }
 
     private void
@@ -252,9 +290,12 @@ public class Can2OverviewFragment extends Fragment {
     }
 
     private void updateCountUI() {
-        String s = "J1939 Frames/Bytes: " + canTest.getPort1CanbusFrameCount() + "/" + canTest.getPort1CanbusByteCount() + "\n";
-        swCycleTransmitJ1939Can2.setChecked(canTest.isAutoSendJ1939Port1());
-        textViewFrames.setText(s);
+        if (canTest != null){
+            String s = "J1939 Frames/Bytes: " + canTest.getPort2CanbusFrameCount() + "/" + canTest.getPort2CanbusByteCount();
+            swCycleTransmitJ1939Can2.setChecked(canTest.isAutoSendJ1939Port2());
+            textViewFrames.setText(s);
+        }
+
     }
 
     private void updateBaudRateUI() {
@@ -264,7 +305,7 @@ public class Can2OverviewFragment extends Fragment {
         } else if (canTest.getBaudrate() == BITRATE_500K) {
             baudrateDesc = getString(R.string._500k_desc);
         }
-        txtCanSpeedCan2.setText("Baudrate: " + baudrateDesc);
+        txtCanBaudRateCan2.setText(baudrateDesc);
     }
 
     private void updateInterfaceTime() {
@@ -295,7 +336,7 @@ public class Can2OverviewFragment extends Fragment {
                             }
                         });
                         try {
-                            Thread.sleep(500);
+                            sleep(500);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
@@ -311,10 +352,12 @@ public class Can2OverviewFragment extends Fragment {
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
-        View view = inflater.inflate(R.layout.fragment_can2_overview, container, false);
-        return view;
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+        Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_can2_overview, container, false);
     }
+
     private class ChangeBaudRateTask extends AsyncTask<Void, String, Void> {
 
         int baudrate;
@@ -334,7 +377,7 @@ public class Can2OverviewFragment extends Fragment {
         @Override
         protected Void doInBackground(Void... params) {
             LastClosed = Calendar.getInstance().getTime();
-            if(canTest.isCAN2InterfaceOpen() || canTest.isPort2SocketOpen()) {
+            if(canTest.isCan2InterfaceOpen() || canTest.isPort2SocketOpen()) {
                 publishProgress("Closing interface, please wait...");
                 canTest.closeCan2Interface();
                 publishProgress("Closing socket, please wait...");
@@ -345,8 +388,17 @@ public class Can2OverviewFragment extends Fragment {
             }
 
             publishProgress("Opening, please wait...");
-            canTest.CreateCanInterface2(silent,baudrate,termination,port);
-            LastCreated = Calendar.getInstance().getTime();
+            int ret = canTest.CreateCanInterface2(silent,baudrate,termination,port);
+            if (ret == 0) {
+                LastCreated = Calendar.getInstance().getTime();
+            }
+            else{
+                publishProgress("Closing interface, please wait...");
+                canTest.closeCan2Interface();
+                publishProgress("Closing socket, please wait...");
+                canTest.closeCan2Socket();
+                publishProgress("failed");
+            }
             return null;
         }
 
@@ -365,5 +417,71 @@ public class Can2OverviewFragment extends Fragment {
             setStateSocketDependentUI();
         }
     }
+
+    private class DockStateReceiver extends BroadcastReceiver {
+        private CanTest canTest;
+        public final String TAG = getClass().getSimpleName();
+        public DockStateReceiver() {
+        }
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            mDockState = intent.getIntExtra(Intent.EXTRA_DOCK_STATE, -1);
+            try {
+                updateCradleIgnState();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void updateCradleIgnState() throws InterruptedException {
+        String cradleStateMsg, ignitionStateMsg;
+        switch (mDockState) {
+            case Intent.EXTRA_DOCK_STATE_UNDOCKED:
+                cradleStateMsg = getString(R.string.not_in_cradle_state_text);
+                ignitionStateMsg = getString(R.string.ignition_unknown_state_text);
+                if (canTest.isCan2InterfaceOpen()){
+                    Toast.makeText(getContext().getApplicationContext(), "closing Can2 port since device was undocked", Toast.LENGTH_SHORT).show();
+                    closeCan2Interface();
+                    reopenCANOnDockEvent = true;
+                }
+                break;
+            case Intent.EXTRA_DOCK_STATE_DESK:
+            case Intent.EXTRA_DOCK_STATE_LE_DESK:
+            case Intent.EXTRA_DOCK_STATE_HE_DESK:
+                cradleStateMsg = getString(R.string.in_cradle_state_text);
+                //ignitionStateMsg = getString(R.string.ignition_off_state_text);
+                ignitionStateMsg = getString(R.string.ignition_off_state_text);
+                if (reopenCANOnDockEvent){
+                    Toast.makeText(getContext().getApplicationContext(), "Reopening Can2 port since device was docked", Toast.LENGTH_SHORT).show();
+                    sleep(4000);
+                    openCan2Interface();
+                    reopenCANOnDockEvent = false;
+                }
+                break;
+            case Intent.EXTRA_DOCK_STATE_CAR:
+                cradleStateMsg = getString(R.string.in_cradle_state_text);
+                ignitionStateMsg = getString(R.string.ignition_on_state_text);
+                if (reopenCANOnDockEvent){
+                    Toast.makeText(getContext().getApplicationContext(), "Reopening Can2 port since device was docked", Toast.LENGTH_SHORT).show();
+                    sleep(4000);
+                    openCan2Interface();
+                    reopenCANOnDockEvent = false;
+                }
+                break;
+            default:
+                /* this state indicates un-defined docking state */
+                cradleStateMsg = getString(R.string.not_in_cradle_state_text);
+                ignitionStateMsg = getString(R.string.ignition_unknown_state_text);
+                break;
+        }
+
+        TextView cradleStateTextview = (TextView) getView().findViewById(R.id.textViewCradleState);
+        TextView ignitionStateTextview = (TextView) getView().findViewById(R.id.textViewIgnitionState);
+        cradleStateTextview.setText(cradleStateMsg);
+        ignitionStateTextview.setText(ignitionStateMsg);
+    }
+
 
 }

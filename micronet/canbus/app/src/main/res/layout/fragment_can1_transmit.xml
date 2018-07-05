@@ -21,7 +21,7 @@
           android:layout_centerHorizontal="true"/>
 
         <TextView
-          android:id="@+id/lblInterfaceStateTitle"
+          android:id="@+id/lblCan1TransmitTitle"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_alignParentStart="true"
@@ -31,11 +31,11 @@
           android:textSize="14sp"/>
 
         <TextView
-          android:id="@+id/lblCycleTransmit"
+          android:id="@+id/lblCan1CycleTransmit"
           android:layout_width="wrap_content"
           android:layout_height="24dp"
           android:layout_marginTop="3dp"
-          android:layout_below="@+id/lblInterfaceStateTitle"
+          android:layout_below="@+id/lblCan1TransmitTitle"
           android:text="Cycle Transmit"
           android:textColor="@android:color/black"
           android:textSize="10sp"/>
@@ -45,22 +45,22 @@
           android:layout_height="29dp"
           android:layout_marginTop="3dp"
           android:layout_alignLeft="@+id/yAxis"
-          android:layout_below="@+id/lblInterfaceStateTitle"
+          android:layout_below="@+id/lblCan1TransmitTitle"
           android:text="Cycle Transmit Toggle Button"
           android:textColorLink="@android:color/holo_green_light"
           android:textSize="8sp"/>
 
         <TextView
-          android:id="@+id/lblCanTransmitSpeed"
+          android:id="@+id/lblCan1TransmitSpeed"
           android:layout_width="wrap_content"
           android:layout_height="24dp"
           android:layout_marginTop="3dp"
-          android:layout_below="@+id/lblCycleTransmit"
+          android:layout_below="@+id/lblCan1CycleTransmit"
           android:text="@string/j1939_send_interval"
           android:textColor="@android:color/black"
           android:textSize="10sp"/>
         <SeekBar
-          android:id="@+id/seekBarSendSpeedCan1"
+          android:id="@+id/seekBarCan1SendSpeed"
           android:layout_width="162dp"
           android:layout_height="wrap_content"
           android:layout_marginTop="3dp"
@@ -76,7 +76,7 @@
           android:layout_height="24dp"
           android:layout_marginTop="3dp"
           android:layout_alignLeft="@+id/yAxis"
-          android:layout_below="@+id/lblCanTransmitSpeed"
+          android:layout_below="@+id/lblCan1TransmitSpeed"
           android:background="@color/colorButtons"
           android:text="@string/transmit_can"
           android:textAppearance="@style/TextAppearance.AppCompat"

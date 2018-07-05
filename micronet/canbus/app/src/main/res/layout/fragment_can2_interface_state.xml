@@ -42,7 +42,7 @@
       android:textSize="10sp"/>
 
     <TextView
-      android:id="@+id/lblCan1SocketStatus"
+      android:id="@+id/lblCan2SocketStatus"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_marginTop="3dp"
@@ -51,54 +51,54 @@
       android:text="@string/socket_status"
       android:textSize="10sp"/>
     <TextView
-      android:id="@+id/lblCan1ViewBaud"
+      android:id="@+id/lblCan2ViewBaud"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_marginTop="3dp"
       android:layout_alignLeft="@+id/xAxis"
-      android:layout_below="@+id/lblCan1SocketStatus"
+      android:layout_below="@+id/lblCan2SocketStatus"
       android:text="Current Baud Rate: "
       android:textSize="10sp"/>
     <TextView
-      android:id="@+id/lblCan1TransmitInterval"
+      android:id="@+id/lblCan2TransmitInterval"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_marginTop="3dp"
       android:layout_alignLeft="@+id/xAxis"
-      android:layout_below="@+id/lblCan1ViewBaud"
+      android:layout_below="@+id/lblCan2ViewBaud"
       android:text="Current Transmit Interval: "
       android:textSize="10sp"/>
     <TextView
-      android:id="@+id/textViewCan1Frames"
+      android:id="@+id/textViewCan2Frames"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_marginTop="3dp"
       android:layout_alignLeft="@+id/xAxis"
-      android:layout_below="@+id/lblCan1TransmitInterval"
+      android:layout_below="@+id/lblCan2TransmitInterval"
       android:text="@string/lbl_j1939"
       android:textSize="10sp"/>
     <TextView
-      android:id="@+id/lblViewCan1InterfaceCreated"
+      android:id="@+id/lblViewCan2InterfaceCreated"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_marginTop="3dp"
       android:layout_alignLeft="@+id/xAxis"
-      android:layout_below="@+id/textViewCan1Frames"
+      android:layout_below="@+id/textViewCan2Frames"
       android:text="Last Interface Created At: "
       android:textSize="10sp"/>
     <TextView
-      android:id="@+id/lblViewCan1CloseInterface"
+      android:id="@+id/lblViewCan2CloseInterface"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_marginTop="3dp"
       android:layout_alignLeft="@+id/xAxis"
-      android:layout_below="@+id/lblViewCan1InterfaceCreated"
+      android:layout_below="@+id/lblViewCan2InterfaceCreated"
       android:text="Last Interface Closed At:"
       android:textSize="10sp"/>
 
 
     <TextView
-      android:id="@+id/textCan1InterfaceStatus"
+      android:id="@+id/textCan2InterfaceStatus"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_marginTop="5dp"
@@ -107,54 +107,54 @@
       android:text="@string/closed"
       android:textSize="10sp"/>
     <TextView
-      android:id="@+id/textCan1SocketStatus"
+      android:id="@+id/textCan2SocketStatus"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_marginTop="3dp"
       android:layout_alignLeft="@+id/yAxis"
-      android:layout_alignTop="@+id/lblCan1SocketStatus"
-      android:layout_below="@+id/textCan1InterfaceStatus"
+      android:layout_alignTop="@+id/lblCan2SocketStatus"
+      android:layout_below="@+id/textCan2InterfaceStatus"
       android:text="@string/closed"
       android:textSize="10sp"/>
 
     <TextView
-      android:id="@+id/textViewCan1CurrBaudRate"
+      android:id="@+id/textViewCan2CurrBaudRate"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_marginTop="3dp"
       android:layout_alignLeft="@+id/yAxis"
-      android:layout_alignTop="@+id/lblCan1ViewBaud"
+      android:layout_alignTop="@+id/lblCan2ViewBaud"
       android:text="@string/_000k_desc"
       android:textSize="10sp"/>
 
     <TextView
-      android:id="@+id/textViewCan1CurrTransmitInterval"
+      android:id="@+id/textViewCan2CurrTransmitInterval"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_marginTop="3dp"
       android:layout_alignLeft="@+id/yAxis"
-      android:layout_alignTop="@+id/lblCan1TransmitInterval"
+      android:layout_alignTop="@+id/lblCan2TransmitInterval"
       android:text="disabled"
       android:textSize="10sp"/>
 
 
     <TextView
-      android:id="@+id/textViewCan1CreatedTime"
+      android:id="@+id/textViewCan2CreatedTime"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_marginTop="3dp"
       android:layout_alignLeft="@+id/yAxis"
-      android:layout_alignTop="@+id/lblViewCan1InterfaceCreated"
+      android:layout_alignTop="@+id/lblViewCan2InterfaceCreated"
       android:text="Date"
       android:textSize="10sp"/>
 
     <TextView
-      android:id="@+id/textViewCan1ClosedTime"
+      android:id="@+id/textViewCan2ClosedTime"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_marginTop="3dp"
       android:layout_alignLeft="@+id/yAxis"
-      android:layout_alignTop="@+id/lblViewCan1CloseInterface"
+      android:layout_alignTop="@+id/lblViewCan2CloseInterface"
       android:text="Date"
       android:textSize="10sp"/>
 

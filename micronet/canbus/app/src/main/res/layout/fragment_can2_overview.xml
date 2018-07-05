@@ -1,125 +1,45 @@
-
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin">
+    android:orientation="vertical">
 
-    <View
-        android:id="@+id/xAxis"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true" />
-
-    <View
-        android:id="@+id/yAxis"
-        android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_marginBottom="0dp">
 
-    <include
-        layout="@layout/fragment_can2_interface_config"
-        layout_alignParentStart="true"
-        layout_alignParentTop="true"
-        layout_alignStart="@+id/xAxis"
-        layout_alignTop="@+id/yAxis"
-        layout_marginStart="0dp"
-        layout_marginTop="172dp"
-        android:layout_width="wrap_content"
-        android:layout_height="140dp"
-        android:layout_below="@+id/textViewCan2Frames"
-        android:layout_centerHorizontal="true" />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/textViewCan2Frames"
-        android:layout_width="wrap_content"
-        android:layout_height="25dp"
-        android:layout_alignParentTop="true"
-        android:layout_alignStart="@+id/xAxis"
-        android:layout_marginTop="55dp"
-        android:text="@string/lbl_j1939"
-        android:textSize="10sp" />
+            <include
+                layout="@layout/fragment_can2_interface_config"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+            <include
+                layout="@layout/fragment_manage_can2_interface"
+                android:layout_width="wrap_content"
+                android:layout_height="71dp"/>
 
+            <include
+                layout="@layout/fragment_can2_interface_state"
+                android:layout_width="wrap_content"
+                android:layout_height="143dp"/>
 
-    <TextView
-        android:id="@+id/txtCan2Speed"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@id/lblCanSpeed"
-        android:layout_below="@id/textViewCan1CurrBaudRate"
-        android:layout_marginTop="@dimen/label_vertical_margin"
-        android:layout_toEndOf="@id/seekBarSendSpeedCan1"
-        android:layout_toRightOf="@id/seekBarSendSpeedCan1" />
+            <include
+                layout="@layout/fragment_cradle_state"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
 
-    <TextView
-        android:id="@+id/lblInterfaceStatus"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignStart="@+id/xAxis"
-        android:text="@string/interface_status"
-        android:textSize="10sp" />
+            <include
+                layout="@layout/fragment_can2_transmit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
 
-    <TextView
-        android:id="@+id/textCan2SocketStatus"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/lblSocketStatus"
-        android:layout_alignBottom="@+id/lblSocketStatus"
-        android:layout_alignStart="@+id/yAxis"
-        android:text="@string/closed"
-        android:textSize="10sp" />
+    </ScrollView>
 
 
-    <TextView
-        android:id="@+id/lblSocketStatus"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/lblInterfaceStatus"
-        android:layout_below="@+id/lblInterfaceStatus"
-        android:layout_marginTop="13dp"
-        android:text="@string/socket_status"
-        android:textSize="10sp" />
-
-    <TextView
-        android:id="@+id/textCan2InterfaceStatus"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignStart="@+id/yAxis"
-        android:text="@string/closed"
-        android:textSize="10sp" />
-
-    <include
-        layout="@layout/fragment_manage_can2_interface"
-        layout_alignParentStart="true"
-        layout_alignParentTop="true"
-        layout_alignStart="@+id/xAxis"
-        layout_alignTop="@+id/yAxis"
-        layout_marginStart="0dp"
-        layout_marginTop="172dp"
-        android:layout_width="344dp"
-        android:layout_height="90dp"
-        android:layout_alignTop="@+id/xAxis"
-        android:layout_centerHorizontal="true" />
-
-    <include
-        layout="@layout/fragment_can2_transmit"
-        layout_alignParentStart="true"
-        layout_alignParentTop="true"
-        layout_alignStart="@+id/xAxis"
-        layout_alignTop="@+id/yAxis"
-        layout_marginStart="0dp"
-        layout_marginTop="172dp"
-        android:layout_width="wrap_content"
-        android:layout_height="70dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="50dp" />
-
-
-</RelativeLayout>
+</LinearLayout>

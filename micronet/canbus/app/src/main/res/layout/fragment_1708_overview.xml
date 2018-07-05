@@ -50,15 +50,15 @@
         android:layout_marginTop="21dp"
         android:text="@string/lbl_j1708"
         android:textSize="13sp"
-        android:layout_below="@+id/lblSocketStatus"
-        android:layout_alignStart="@+id/lblSocketStatus" />
+        android:layout_below="@+id/lblCan1SocketStatus"
+        android:layout_alignStart="@+id/lblCan1SocketStatus" />
 
     <TextView
         android:id="@+id/txtJ1708SocketStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/lblSocketStatus"
-        android:layout_alignBottom="@+id/lblSocketStatus"
+        android:layout_alignBaseline="@+id/lblCan1SocketStatus"
+        android:layout_alignBottom="@+id/lblCan1SocketStatus"
         android:layout_alignStart="@+id/txtJ1708InterfaceStatus"
         android:text="@string/closed" />
 
@@ -67,22 +67,22 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/closed"
-        android:layout_alignBaseline="@+id/lblInterfaceStatus"
-        android:layout_alignBottom="@+id/lblInterfaceStatus"
-        android:layout_toEndOf="@+id/lblInterfaceStatus"
+        android:layout_alignBaseline="@+id/lblCan2InterfaceStatus"
+        android:layout_alignBottom="@+id/lblCan2InterfaceStatus"
+        android:layout_toEndOf="@+id/lblCan2InterfaceStatus"
         android:layout_marginStart="117dp" />
 
     <TextView
-        android:id="@+id/lblSocketStatus"
+        android:id="@+id/lblCan1SocketStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="19dp"
         android:text="@string/socket_status"
-        android:layout_below="@+id/lblInterfaceStatus"
-        android:layout_alignStart="@+id/lblInterfaceStatus" />
+        android:layout_below="@+id/lblCan2InterfaceStatus"
+        android:layout_alignStart="@+id/lblCan2InterfaceStatus" />
 
     <TextView
-        android:id="@+id/lblInterfaceStatus"
+        android:id="@+id/lblCan2InterfaceStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/interface_status"

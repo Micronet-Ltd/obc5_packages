@@ -190,11 +190,13 @@ public class CanTest {
         return canbusSocket2 != null;
     }
 
-    public boolean isCAN1InterfaceOpen() {
+    public boolean isCan1InterfaceOpen() {
         return isCan1InterfaceOpen;
     }
 
-    public boolean isCAN2InterfaceOpen() {return isCan2InterfaceOpen;}
+    public boolean isCan2InterfaceOpen() {
+        return isCan2InterfaceOpen;
+    }
 
     public boolean isJ1708InterfaceOpen() {return isJ1708InterfaceOpen;}
 

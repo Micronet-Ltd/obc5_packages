@@ -8,16 +8,14 @@ package com.micronet.canbus;
 public class J1708Frame{
 
 	private static final String TAG = "Canbus";
-	private int mPri;
 	private int mId;
 	private byte[] mData;
 	
 	/**
      * Constructs data frame with id and data buffer.
      */
-	public J1708Frame(int priority, int id, byte[] data)
+	public J1708Frame( int id, byte[] data)
 	{
-		mPri = priority;
 		mData = data;
 		mId = id;
 	}
@@ -48,21 +46,6 @@ public class J1708Frame{
      */
 	public void setId(int id) {
 		this.mId = id;
-	}
-
-	/**
-     * Returns the frame priority.
-     */
-	public int getPriority() {
-		return this.mPri;
-	}
-
-	/**
-	 * Sets the frame priority, values from 0x01 to 0x08.
-	 */
-	public void setPriority(int priority)
-	{
-		this.mPri = priority;
 	}
 
 }

@@ -292,14 +292,14 @@ public class CanTest {
         this.termination=termination;
         this.portNumber=port;
 
-        if (canbusInterface1 == null  ) {
+        if (canbusInterface1 == null) {
             canbusInterface1 = new CanbusInterface();
-            canbusFilter=setFilters();
-            canbusFlowControls=setFlowControlMessages();
+            canbusFilter = setFilters();
+            canbusFlowControls = setFlowControlMessages();
             try {
-                canbusInterface1.create(silentMode,baudrate,termination,canbusFilter,2,canbusFlowControls);
+                canbusInterface1.create(silentMode, baudrate, termination, canbusFilter, 2, canbusFlowControls);
             } catch (CanbusException e) {
-                Log.e(TAG, e.getMessage() + ", errorCode = " + e.getErrorCode() );
+                Log.e(TAG, e.getMessage() + ", errorCode = " + e.getErrorCode());
                 e.printStackTrace();
                 return -1;
             }
@@ -1584,8 +1584,6 @@ public class CanTest {
                             j1708Data.append(time);
                             j1708Data.append(", ");
                             j1708Data.append(Integer.toHexString(j1708Frame.getId()));
-                            j1708Data.append(", ");
-                            j1708Data.append(Integer.toHexString(j1708Frame.getPriority()));
                             j1708Data.append(", [");
                             j1708Data.append(bytesToHex(j1708Frame.getData()));
                             j1708Data.append("], ");
@@ -1631,7 +1629,7 @@ public class CanTest {
                 a[2] = 0x37;
                 a[3] = 0x30;
                 a[4] = 0x38;
-                J1708Frame frame = new J1708Frame(8, 0x31, a);
+                J1708Frame frame = new J1708Frame(0x31, a);
                 try {
                     if (j1708Socket != null) {
                         j1708Socket.writeJ1708Port(frame);

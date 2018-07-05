@@ -15,7 +15,7 @@ static int J1708_TTY_NUMBER= 4;
 int serial_init(char *name);
 
 char* getPortName(int portNumber);
-int initTerminalInterface(int fd, speed_t interfaceBaud);
+int initTerminalInterface(int fd, speed_t interfaceBaud, uint8_t readMinChar);
 int closeTerminalInterface(int port);
 int closePort(int portNumber);
 int closeCAN(int close_fd);
@@ -46,7 +46,8 @@ int serial_deinit_thread_j1708();
 
 int waitForData(int port_fd);
 int parseHex(uint8_t * asciiString, int len, uint8_t * hexValue);
-int computeJ1708Checksum(int id, int priority, BYTE *dataBytes, int dataLength);
+int computeJ1708Checksum(int id, BYTE *dataBytes, int dataLength);
+bool verifyJ1708Checksum(int id, BYTE *dataBytes, int dataLength);
 
 void sendCanbusFramePort1(uint32_t frameId, int type, int length, BYTE* data );
 void sendCanbusFramePort2(uint32_t frameId, int type, int length, BYTE* data);

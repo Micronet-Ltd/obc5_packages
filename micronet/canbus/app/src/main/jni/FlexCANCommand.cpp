@@ -114,10 +114,10 @@ void configureFlowControl( struct FLEXCAN_Flow_Control *configuration_array, int
 
     for(count = 0; count < numFlowCodes; count++ ){
         struct FLEXCAN_Flow_Control tmp_flow_control={
-                .search_id = {0},
-                .response_id = {0},
-                .flow_msg_type = {0},
-                .flow_msg_data_length = {0},
+                .search_id = 0,
+                .response_id = 0,
+                .flow_msg_type = 0,
+                .flow_msg_data_length = 0,
                 .response_data_bytes = {0},
         };
 
@@ -166,12 +166,12 @@ void configureFlowControl( struct FLEXCAN_Flow_Control *configuration_array, int
  * */
 int FlexCAN_j1708_startup(char *portName){
 
-    int i=0, ret_read = -1;
+    int i=0, ret = -1;
     char *port = portName;
     int fd_1708 = -1;
-    int fd_write = -1;
+    //int fd_write = -1;
 
-    fd_1708 = ret_read = serial_init(J1708_TTY);
+    fd_1708 = ret = serial_init(port);
 
    // fd_write = serial_init(J1708_TTY_WRITE);
 
@@ -188,7 +188,7 @@ int FlexCAN_j1708_startup(char *portName){
         return -1;
     }
 
-    return ret_read;
+    return ret;
 }
 
 /**
@@ -213,7 +213,7 @@ int FlexCAN_startup(bool listeningModeEnable, int bitrate, int termination, FLEX
         return -1;
     }
 
-    if (initTerminalInterface(fd, B9600) == -1) {
+    if (initTerminalInterface(fd, B9600,1) == -1) {
         return -1;
     }
 
@@ -249,9 +249,11 @@ int FlexCAN_startup(bool listeningModeEnable, int bitrate, int termination, FLEX
     usleep(25000);
 
     /**
-     * Configure Flow Control
+     * Configure Flow Control if the user has set any flow control codes
      */
-    configureFlowControl(flexcan_flow_control, numOfFlowMessages,fd);
+    if(numOfFlowMessages > 0){
+        configureFlowControl(flexcan_flow_control, numOfFlowMessages,fd);
+    }
 
     if(strcmp(portName, CAN1_TTY) == 0){
         if(serial_start_monitor_thread_can_port1())
@@ -422,34 +424,62 @@ void FlexCAN_send_can_packet(BYTE type, DWORD id, int data_len, BYTE *data, int 
     }
 }
 
-int computeJ1708Checksum(int id, int priority, BYTE *dataBytes, int dataLength){
-    int  sum = 0, checksum = 0;
+int computeJ1708Checksum(int id, BYTE *dataBytes, int dataLength){
+    int  sum = 0;
+    int checksum = 0;
 
-    sum = sum + id + priority;
+    sum = sum + id;
     for (int i = 0; i < dataLength; i++){
         sum = sum + dataBytes[i];
     }
     //TODO: Check this logic
     //checksum = (255 - (sum % 256)) + 1 ;
+    checksum = sum & 0xff ;
 
     LOGD("Returned Checksum = % d", checksum);
-
     return checksum;
 }
 
 /**
+ * A simple way to decide if a message has been correctly transmitted is to add the checksum to the 8 -bit sum of all data bytes plus the MID of a received message.
+ * The 8 -bit sum should be zero if the message was transmitted correctly.
+ * As an example using the sample message below -
+ * Message Format:  |MID|Data1|Data2|Data3|Data4|Checksum|
+ * Message Example: |44	| 23 | 61 | 114 | 62 | 208|
+ * STEP 1: 44+23+61+114+62+208 = 512
+ * STEP 2:( 512 AND 0· xFF) = 0· , so the message· is correct .
+ * Source: https://www.kvaser.com/about-can/can-standards/j1708/
+ */
+bool verifyJ1708Checksum(int id, BYTE *dataBytes, int dataLength){
+    int  sum = 0;
+
+    sum = sum + id;
+
+    //This array would contain the cheksum also
+    for (int i = 0; i < dataLength; i++){
+        sum = sum + dataBytes[i];
+    }
+    return (sum && 0xFF) == 0;
+}
+
+/**
  * Sends a J1708 frame to the 1708 port
+ * Implementation: 29th June 2018
+ * The maximum size of a J1708 packet is 21 bytes
+ * The MCU expects raw data in the following format:
+ * |---------------------------------|
+ * |MID/ID|..data bytes...|checksum  |
+ * |Byte0|................|Last-Byte |
+ * |---------------------------------|
  * */
-void FlexCAN_send_j1708_packet(DWORD id, BYTE *data, BYTE priority, int dataLength)
+void FlexCAN_send_j1708_packet(DWORD id,  BYTE *data, int dataLength)
 {
     int index = 0, i = 0, fd_write = -1;
-    unsigned char packet[dataLength+5]; //={'\0'};
+    unsigned char packet[dataLength+2]; //={'\0'};
 
     //fd_write = getFd(J1708_TTY_WRITE_NUMBER);
     fd_write = getFd(J1708_TTY_NUMBER);
 
-   // packet[index++] = 0x7E;
-    packet[index++] = priority;
     packet[index++] = (BYTE)(id);
 
     for (i = 0; i < dataLength; i++){
@@ -457,10 +487,9 @@ void FlexCAN_send_j1708_packet(DWORD id, BYTE *data, BYTE priority, int dataLeng
     }
     index += i;
 
-    packet[index++] = computeJ1708Checksum((BYTE) (id), priority, data, dataLength);
-    // packet[index++]=0x7E;
+    packet[index] = computeJ1708Checksum((BYTE) (id), data, dataLength);
 
-    if( serial_send_data(packet, dataLength + 5, fd_write)){
+    if( serial_send_data(packet, dataLength + 2, fd_write)){
         error_message("!!!!!!!!!!!!!!! Couldn't transmit 1708 message !!!!!!!!!!!!!!!!!");
         return;
     }

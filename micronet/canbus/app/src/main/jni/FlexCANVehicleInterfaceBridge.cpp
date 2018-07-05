@@ -38,7 +38,12 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANVehicleInterfaceBridge_co
     int total_masks = 0, total_filters = 0, total_filter_mask_types=0;
 
     struct FLEXCAN_Flow_Control flowControlMessageArray[8];
-    int numFlowControlMessages = env->GetArrayLength (flowControl);
+    int numFlowControlMessages = 0;
+    if (flowControl != NULL){
+        numFlowControlMessages = env->GetArrayLength (flowControl);
+    }
+
+    env->GetArrayLength (flowControl);
     LOGD("Flow Control Messages in JNI = %d", numFlowControlMessages);
     int x =0 , flowMesgCount = 0;
 
@@ -114,12 +119,13 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANVehicleInterfaceBridge_co
     }
 
     //Set the correct port number
-    if(port_number == 2 || port_number == 4){
+    if(port_number == 2 || port_number == 3){
         port = getPortName(port_number);
     } else{
         throwException(env, "Entered an incorrect port number: %d ", (const char *) ttyport_number);
 
     }
+
     //Get Flow control codes
     if(flowControl != NULL){
 
@@ -228,7 +234,7 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANVehicleInterfaceBridge_cr
 //    jint fdJ1708Write = getFd(J1708_TTY_WRITE_NUMBER);
 
       jfieldID fd_1708;
-      jint fdJ1708 = getFd(J1708_TTY_NUMBER);
+      jint fdJ1708 = FlexCAN_j1708_startup(J1708_TTY);
 
       jclass clazz = env->FindClass("com/micronet/canbus/FlexCANVehicleInterfaceBridge");
 

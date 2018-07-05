@@ -35,22 +35,19 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANJ1708Socket_registerCallb
 JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANJ1708Socket_sendJ1708(JNIEnv *env, jobject instance, jint socket, jobject frame){
 
     int id;
-    int priority;
 
     jclass cls = env->GetObjectClass(frame);
+
     jmethodID methodId = env->GetMethodID(cls, "getData", "()[B");
     jbyteArray data = (jbyteArray)env->CallObjectMethod(frame, methodId);
 
     methodId = env->GetMethodID(cls, "getId", "()I");
     id = env->CallIntMethod(frame, methodId);
 
-    methodId = env->GetMethodID(cls, "getPriority", "()I");
-    priority = env->CallIntMethod(frame, methodId);
-
     jbyte* bufferPtr = env->GetByteArrayElements(data, NULL);
     jsize lengthOfDataArray = env->GetArrayLength(data);
 
-    FlexCAN_send_j1708_packet(id, (BYTE *) bufferPtr, (BYTE) priority, lengthOfDataArray);
+    FlexCAN_send_j1708_packet(id, (BYTE *) bufferPtr, lengthOfDataArray);
 
     env->ReleaseByteArrayElements(data, bufferPtr, JNI_ABORT);
 

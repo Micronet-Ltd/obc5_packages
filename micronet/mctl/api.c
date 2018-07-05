@@ -248,6 +248,19 @@ int get_rtc_date_time(int * fd, char * dt_str)
 	return ret;
 }
 
+int get_rtc_flags(int * fd, uint32_t *flags)
+{
+	int ret = 0;
+	uint8_t returned_flags[4] = {0};
+	uint8_t req[] = { MCTRL_MAPI, MAPI_READ_RQ, MAPI_GET_RTC_ALARM1_INIT_FLAGS };
+
+	ret = get_command(fd, req, sizeof(req), returned_flags, sizeof(returned_flags));
+	memcpy(flags,returned_flags,sizeof(returned_flags));
+	return ret;
+}
+
+
+
 /* Expected dt_str format: year-month-day hour:min:sec.deciseconds
  * 					  Ex : 2016-03-29 19:09:06.58
 */
@@ -391,3 +404,104 @@ int set_accel_reg_dbg(int * fd, uint8_t address, uint8_t data)
 					address, data};
 	return set_command(fd, req, sizeof(req));
 }
+
+
+/* returns true if the given time is in legal format 
+ * false otherwise.
+ * Expected time format: two digits for each: monthdayhourmin
+ * note that seconds and miliseconds aren't being considered as the device 
+ * is not that accurate. 
+ *                        Ex : 16032919
+ *                        16/03 29:19
+ *                              
+  */
+bool is_date_legal(int * fd,const uint8_t *date)
+{
+    uint8_t max_num_of_days_per_month[] = {31,29,31,30,31,30,31,31,30,31,30,31};
+    uint8_t month = date[0];
+    uint8_t day = date[1];
+    uint8_t hour = date[2];
+    uint8_t minute = date[3];
+
+    if(month > 12)
+    {
+        printf("ERROR: month can't be larger than 12\n");
+        return false;
+    }
+    if(0 == month)
+    {
+        printf("ERROR: month can't be zero\n");
+        return false;
+    }
+    if(day > max_num_of_days_per_month[month-1])
+    {
+        printf("ERROR: there are no more than %d days in this month\n", max_num_of_days_per_month[month-1]);
+        return false;
+    }
+    if(0 == day)
+    {
+        printf("ERROR: day can't be zero\n");
+        return false;
+    }
+    if(hour > 23)
+    {
+        printf("ERROR: hour can't be larger than 23\n");
+        return false;
+    }
+    if(minute > 59)
+    {
+        printf("ERROR: minutes can't be larger than 59\n");
+        return false;
+    }
+    //in the special case of leap year the api needs to poll and check the year in the RTC 
+    if(29 == day && 2 == month)
+    {
+        uint8_t rtc_year_data[] = {0};
+        uint8_t req[] = { MCTRL_MAPI, MAPI_READ_RQ, MAPI_GET_RTC_REG_DBG, 0x7/*the year register*/};
+       
+        if (0 != get_command(fd, req, sizeof(req), &rtc_year_data, sizeof(rtc_year_data)))
+        {
+          //printf("ERROR: can't check if the year is a leap year as there is no connection to the MCU, trying to set the date regardless...\n");
+            return true;
+        }
+        /*no need to pluck the tens of years as it won't matter for this specific 
+         calculation, being a multi of 4 means that there are two trailing zeroes in the
+         start of the BCD representation of the number...*/
+        if(!(rtc_year_data[0]%4))
+        {
+            return true;
+        }
+        printf("ERRROR: there is no 29/02 in a year which is not a leap year!\n");
+        return false;
+    }
+
+    return true;
+}
+
+
+/* This functions gets an array of [month,days,hours,minutes] in BCD format and
+ * sends a message to the other device to activate the alarm at this time.
+*/
+int set_rtc_alarm1_time(int * fd, const uint8_t *dt_num)
+{
+
+    if(!is_date_legal(fd, dt_num))
+    {
+        printf("date format is illegal\n");
+        return -1;
+    }
+
+    #define TURN_DEC_DATE_TO_BCD_MACRO(decimal_date) ((decimal_date%10) + ((decimal_date/10)<<4))
+
+    uint8_t req[] = { MCTRL_MAPI, MAPI_WRITE_RQ, MAPI_SET_RTC_ALARM1_TIME,
+					(uint8_t)TURN_DEC_DATE_TO_BCD_MACRO(dt_num[0]),
+                    (uint8_t)TURN_DEC_DATE_TO_BCD_MACRO(dt_num[1]), 
+                    (uint8_t)TURN_DEC_DATE_TO_BCD_MACRO(dt_num[2]),
+                    (uint8_t)TURN_DEC_DATE_TO_BCD_MACRO(dt_num[3]),
+                    0//seconds should be zeroed for now
+                    };
+
+    return set_command(fd, req, sizeof(req));
+}
+
+

@@ -26,8 +26,8 @@
                     packageName = "com.qrt.factory"
                     className = "com.qrt.factory.activity.Battery" />
         </TestItem>
-
-        <TestItem name = "GravitySensor" enable = "true">
+      
+	<TestItem name = "GravitySensor" enable = "true">
             <Intent
                     packageName = "com.qrt.factory"
                     className = "com.qrt.factory.activity.GravitySensor" />
@@ -65,7 +65,6 @@
     </Auto>
 
     <Single>
-
 
         <TestItem name = "TouchPanelKey" enable = "true">
             <Intent

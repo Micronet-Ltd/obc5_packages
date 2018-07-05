@@ -1,5 +1,7 @@
 package com.micronet.canbus.Fragment;
 
+import static java.lang.Thread.sleep;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -334,7 +336,7 @@ public class Can1OverviewFragment extends Fragment {
                             }
                         });
                         try {
-                            Thread.sleep(500);
+                            sleep(500);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
@@ -425,11 +427,15 @@ public class Can1OverviewFragment extends Fragment {
         @Override
         public void onReceive(Context context, Intent intent) {
             mDockState = intent.getIntExtra(Intent.EXTRA_DOCK_STATE, -1);
-            updateCradleIgnState();
+            try {
+                updateCradleIgnState();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 
-    private void updateCradleIgnState() {
+    private void updateCradleIgnState() throws InterruptedException {
         String cradleStateMsg, ignitionStateMsg;
         switch (mDockState) {
             case Intent.EXTRA_DOCK_STATE_UNDOCKED:
@@ -449,6 +455,7 @@ public class Can1OverviewFragment extends Fragment {
                 ignitionStateMsg = getString(R.string.ignition_off_state_text);
                 if (reopenCANOnDockEvent){
                     Toast.makeText(getContext().getApplicationContext(), "Reopening CAN1 port since device was docked", Toast.LENGTH_SHORT).show();
+                    sleep(2000);
                     openCan1Interface();
                     reopenCANOnDockEvent = false;
                 }
@@ -458,6 +465,7 @@ public class Can1OverviewFragment extends Fragment {
                 ignitionStateMsg = getString(R.string.ignition_on_state_text);
                 if (reopenCANOnDockEvent){
                     Toast.makeText(getContext().getApplicationContext(), "Reopening CAN1 port since device was docked", Toast.LENGTH_SHORT).show();
+                    sleep(2000);
                     openCan1Interface();
                     reopenCANOnDockEvent = false;
                 }

@@ -12,7 +12,7 @@
 
 #define MAX_PACKET_SIZE 256
 
-char getCharType(uint32_t type){
+char getCharType(uint8_t type){
     char typeChar=0;
     if(type==0){typeChar='t';}
     else if(type==1){typeChar='T';}
@@ -108,8 +108,8 @@ void configureFlowControl( struct FLEXCAN_Flow_Control *configuration_array, int
     int count = 0;
     int flowCodeSetCount=0;
     char flowMessageTypeChar='\0';
-    char searchIdString[MAX_FlexCAN_Flowcontrol_CAN];
-    char responseIdString[MAX_FlexCAN_Flowcontrol_CAN];
+    char searchIdString[MAX_FlexCAN_Flowcontrol_CAN + 2]; //Additional space for NULL terminator of sprintf
+    char responseIdString[MAX_FlexCAN_Flowcontrol_CAN + 2]; //Additional space for NULL terminator of sprintf
     BYTE dataBytes[8]={0,0,0,0,0,0,0,0};
 
     for(count = 0; count < numFlowCodes; count++ ){

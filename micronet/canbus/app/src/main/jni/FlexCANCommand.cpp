@@ -108,49 +108,40 @@ void configureFlowControl( struct FLEXCAN_Flow_Control *configuration_array, int
     int count = 0;
     int flowCodeSetCount=0;
     char flowMessageTypeChar='\0';
-    char *searchIdString = new char[MAX_FlexCAN_Flowcontrol_CAN];
-    char *responseIdString = new char[MAX_FlexCAN_Flowcontrol_CAN];
+    char searchIdString[MAX_FlexCAN_Flowcontrol_CAN];
+    char responseIdString[MAX_FlexCAN_Flowcontrol_CAN];
     BYTE dataBytes[8]={0,0,0,0,0,0,0,0};
 
     for(count = 0; count < numFlowCodes; count++ ){
-        struct FLEXCAN_Flow_Control tmp_flow_control={
-                .search_id = 0,
-                .response_id = 0,
-                .flow_msg_type = 0,
-                .flow_msg_data_length = 0,
-                .response_data_bytes = {0},
-        };
-
-        tmp_flow_control = configuration_array[count];
-
-        flowMessageTypeChar = getCharType(tmp_flow_control.flow_msg_type);
+        LOGD("configureFlowControl: count=%d, numFlowCodes=%d, messageType=%d", count,  numFlowCodes, configuration_array[count].flow_msg_type);
+        flowMessageTypeChar = getCharType(configuration_array[count].flow_msg_type);
 
         if(flowMessageTypeChar=='T'){
             // Parse Search Id
-            sprintf ((char*)searchIdString, "%08x", tmp_flow_control.search_id);
+            sprintf ((char*)searchIdString, "%08x", configuration_array[count].search_id);
             //Parse Response Id
-            sprintf ((char*)responseIdString, "%08x", tmp_flow_control.response_id);
+            sprintf ((char*)responseIdString, "%08x", configuration_array[count].response_id);
         } else if(flowMessageTypeChar=='t'){
             // Parse Search Id
-            sprintf ((char*)searchIdString, "%03x", tmp_flow_control.search_id);
+            sprintf ((char*)searchIdString, "%03x", configuration_array[count].search_id);
             //Parse Response Id
-            sprintf ((char*)responseIdString, "%03x", tmp_flow_control.response_id);
+            sprintf ((char*)responseIdString, "%03x", configuration_array[count].response_id);
         }
 
         for(int j = 0; j < 8; j++){
-            LOGD("Flow messgae %d, Sturcture dataBytes[%d] = %x", count , j, tmp_flow_control.response_data_bytes[j]);
+            LOGD("Flow message %d, Structure dataBytes[%d] = %x", count , j, configuration_array[count].response_data_bytes[j]);
         }
 
         //Workaround to fix compile time error
         dataBytes[0] = 0;
-        for(int index = 0; index < tmp_flow_control.flow_msg_data_length; index++){
-            LOGD("Flow message %d, Old data bytes %x to data bytes from structure = %x", index, dataBytes[index], tmp_flow_control.response_data_bytes[index] );
-            dataBytes[index] = tmp_flow_control.response_data_bytes[index];
-            LOGD("Flow messgae %d, dataBytes[%d] = %x", count , index, dataBytes[index]);
+        for(int index = 0; index < configuration_array[count].flow_msg_data_length; index++){
+            LOGD("Flow message %d, Old data bytes %x to data bytes from structure = %x", index, dataBytes[index], configuration_array[count].response_data_bytes[index] );
+            dataBytes[index] = configuration_array[count].response_data_bytes[index];
+            LOGD("Flow message %d, dataBytes[%d] = %x", count , index, dataBytes[index]);
         }
 
         if((flowCodeSetCount <= numFlowCodes) && (flowCodeSetCount<=8)) {
-            setFlowControlMessage(flowMessageTypeChar, searchIdString, responseIdString, tmp_flow_control.flow_msg_data_length,dataBytes, port_fd);
+            setFlowControlMessage(flowMessageTypeChar, searchIdString, responseIdString, configuration_array[count].flow_msg_data_length,dataBytes, port_fd);
             memset(dataBytes,0, sizeof dataBytes);
             usleep(5000);
             flowCodeSetCount++;

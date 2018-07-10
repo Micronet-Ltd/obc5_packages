@@ -30,22 +30,23 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANVehicleInterfaceBridge_co
     // /Initialisation
     static char *port=NULL;
     int ttyport_number=0;
-
-    struct FLEXCAN_filter_mask filter_array[24];
-    int numfilter = env->GetArrayLength (hardwarefilter);
-
     int i=0,f=0,m=0,fmt=0;
     int total_masks = 0, total_filters = 0, total_filter_mask_types=0;
-
     struct FLEXCAN_Flow_Control flowControlMessageArray[8];
+    struct FLEXCAN_filter_mask filter_array[24];
+    int numfilter = 0;
     int numFlowControlMessages = 0;
+    int x =0 , flowMesgCount = 0;
+
+    if (hardwarefilter != NULL){
+        numfilter = env->GetArrayLength (hardwarefilter);
+    }
+
     if (flowControl != NULL){
         numFlowControlMessages = env->GetArrayLength (flowControl);
     }
 
-    env->GetArrayLength (flowControl);
     LOGD("Flow Control Messages in JNI = %d", numFlowControlMessages);
-    int x =0 , flowMesgCount = 0;
 
     jclass clazz = env->FindClass("com/micronet/canbus/FlexCANVehicleInterfaceBridge");
 

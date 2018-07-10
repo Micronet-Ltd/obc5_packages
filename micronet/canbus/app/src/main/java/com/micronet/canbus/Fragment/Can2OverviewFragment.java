@@ -42,6 +42,8 @@ public class Can2OverviewFragment extends Fragment {
     private int BITRATE_500K = 500000;
     private boolean silentMode = false;
     private boolean termination = false;
+    private boolean filtersEnabled = false;
+    private boolean flowControlEnabled = false;
     private int baudRateSelected = BITRATE_250K;
 
     private Thread updateUIThread;
@@ -63,6 +65,8 @@ public class Can2OverviewFragment extends Fragment {
     private ToggleButton toggleButtonTermCan2;
     private ToggleButton toggleButtonListenCan2;
     private RadioGroup baudRateCan2;
+    private ToggleButton toggleButtonFilterSetCan2;
+    private ToggleButton toggleButtonFlowControlCan2;
 
     private Button openCan2;
     private Button closeCan2;
@@ -156,6 +160,8 @@ public class Can2OverviewFragment extends Fragment {
         baudRateCan2 = rootView.findViewById(R.id.radioGrCan2BaudRates);
         toggleButtonListenCan2 = rootView.findViewById(R.id.toggleButtonCan2Listen);
         toggleButtonTermCan2 = rootView.findViewById(R.id.toggleButtonCan2Term);
+        toggleButtonFilterSetCan2 = rootView.findViewById(R.id.toggleButtonCan2Filters);
+        toggleButtonFlowControlCan2 = rootView.findViewById(R.id.toggleButtonCan2FlowControl);
 
         openCan2 = rootView.findViewById(R.id.buttonOpenCan2);
         closeCan2 = rootView.findViewById(R.id.buttonCloseCan2);
@@ -202,6 +208,20 @@ public class Can2OverviewFragment extends Fragment {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 silentMode = isChecked;
+            }
+        });
+
+        toggleButtonFilterSetCan2.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                filtersEnabled = isChecked;
+            }
+        });
+
+        toggleButtonFlowControlCan2.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                flowControlEnabled = isChecked;
             }
         });
 
@@ -262,6 +282,8 @@ public class Can2OverviewFragment extends Fragment {
         canTest.setSilentMode(silentMode);
         canTest.setTermination(termination);
         canTest.setRemoveCan2InterfaceState(false);
+        canTest.setFiltersEnabled(filtersEnabled);
+        canTest.setFlowControlEnabled(flowControlEnabled);
         executeChangeBaudrate();
     }
 
@@ -273,7 +295,7 @@ public class Can2OverviewFragment extends Fragment {
     private void
     executeChangeBaudrate() {
         if (changeBaudRateTask == null || changeBaudRateTask.getStatus() != AsyncTask.Status.RUNNING) {
-            changeBaudRateTask = new ChangeBaudRateTask( canTest.isSilentChecked(),canTest.getBaudrate(),canTest.getTermination(),canTest.getPortNumber());
+            changeBaudRateTask = new ChangeBaudRateTask( silentMode , baudRateSelected, termination, canTest.getPortNumber(), filtersEnabled, flowControlEnabled);
             changeBaudRateTask.execute();
         }
     }
@@ -365,13 +387,17 @@ public class Can2OverviewFragment extends Fragment {
         boolean termination;
         int port;
         boolean removeInterface;
+        boolean filtersEnabled;
+        boolean flowControlEnabled;
 
-        public ChangeBaudRateTask(boolean silent,int baudrate,boolean termination, int port ) {
+        public ChangeBaudRateTask(boolean silent,int baudrate,boolean termination, int port, boolean filtersEnabled, boolean flowControlEnabled) {
             this.baudrate = baudrate;
             this.silent = silent;
             this.termination=termination;
             this.port=port;
             this.removeInterface=canTest.getRemoveCan2InterfaceState();
+            this.filtersEnabled = filtersEnabled;
+            this.flowControlEnabled = flowControlEnabled;
         }
 
         @Override
@@ -388,7 +414,7 @@ public class Can2OverviewFragment extends Fragment {
             }
 
             publishProgress("Opening, please wait...");
-            int ret = canTest.CreateCanInterface2(silent,baudrate,termination,port);
+            int ret = canTest.CreateCanInterface2(silent, baudrate, termination, port, filtersEnabled, flowControlEnabled);
             if (ret == 0) {
                 LastCreated = Calendar.getInstance().getTime();
             }

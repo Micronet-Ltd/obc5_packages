@@ -15,11 +15,14 @@ import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.RadioGroup;
+import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -42,6 +45,8 @@ public class Can1OverviewFragment extends Fragment {
     private int BITRATE_500K = 500000;
     private boolean silentMode = false;
     private boolean termination = false;
+    private boolean filtersEnabled = false;
+    private boolean flowControlEnabled = false;
     private int baudRateSelected = BITRATE_250K;
 
     private Thread updateUIThread;
@@ -63,6 +68,8 @@ public class Can1OverviewFragment extends Fragment {
     private ToggleButton toggleButtonTermCan1;
     private ToggleButton toggleButtonListenCan1;
     private RadioGroup baudRateCan1;
+    private ToggleButton toggleButtonFilterSetCan1;
+    private ToggleButton toggleButtonFlowControlCan1;
 
     private Button openCan1;
     private Button closeCan1;
@@ -156,6 +163,8 @@ public class Can1OverviewFragment extends Fragment {
         baudRateCan1 = rootView.findViewById(R.id.radioGrCan1BaudRates);
         toggleButtonListenCan1 = rootView.findViewById(R.id.toggleButtonCan1Listen);
         toggleButtonTermCan1 = rootView.findViewById(R.id.toggleButtonCan1Term);
+        toggleButtonFilterSetCan1 = rootView.findViewById(R.id.toggleButtonCan1Filters);
+        toggleButtonFlowControlCan1 = rootView.findViewById(R.id.toggleButtonCan1FlowControl);
 
         openCan1 = rootView.findViewById(R.id.buttonOpenCan1);
         closeCan1 = rootView.findViewById(R.id.buttonCloseCan1);
@@ -176,7 +185,7 @@ public class Can1OverviewFragment extends Fragment {
             }
         });
 
-        baudRateCan1.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
+        baudRateCan1.setOnCheckedChangeListener(new OnCheckedChangeListener()
         {
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 switch(checkedId){
@@ -205,21 +214,35 @@ public class Can1OverviewFragment extends Fragment {
             }
         });
 
-        openCan1.setOnClickListener(new View.OnClickListener() {
+        toggleButtonFilterSetCan1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                filtersEnabled = isChecked;
+            }
+        });
+
+        toggleButtonFlowControlCan1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                flowControlEnabled = isChecked;
+            }
+        });
+
+        openCan1.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 openCan1Interface();
             }
         });
 
-        closeCan1.setOnClickListener(new View.OnClickListener() {
+        closeCan1.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 closeCan1Interface();
             }
         });
 
-        swCycleTransmitJ1939Can1.setOnClickListener(new View.OnClickListener() {
+        swCycleTransmitJ1939Can1.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 canTest.setAutoSendJ1939Port1(swCycleTransmitJ1939Can1.isChecked());
@@ -227,7 +250,7 @@ public class Can1OverviewFragment extends Fragment {
             }
         });
 
-        seekBarJ1939SendCan1.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        seekBarJ1939SendCan1.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (fromUser) {
@@ -262,6 +285,8 @@ public class Can1OverviewFragment extends Fragment {
         canTest.setSilentMode(silentMode);
         canTest.setTermination(termination);
         canTest.setRemoveCan1InterfaceState(false);
+        canTest.setFiltersEnabled(filtersEnabled);
+        canTest.setFlowControlEnabled(flowControlEnabled);
         executeChangeBaudrate();
     }
 
@@ -273,7 +298,7 @@ public class Can1OverviewFragment extends Fragment {
     private void
     executeChangeBaudrate() {
         if (changeBaudRateTask == null || changeBaudRateTask.getStatus() != AsyncTask.Status.RUNNING) {
-            changeBaudRateTask = new ChangeBaudRateTask( canTest.isSilentChecked(),canTest.getBaudrate(),canTest.getTermination(),canTest.getPortNumber());
+            changeBaudRateTask = new ChangeBaudRateTask( silentMode , baudRateSelected, termination, canTest.getPortNumber(), filtersEnabled, flowControlEnabled);
             changeBaudRateTask.execute();
         }
     }
@@ -365,13 +390,17 @@ public class Can1OverviewFragment extends Fragment {
         boolean termination;
         int port;
         boolean removeInterface;
+        boolean filtersEnabled;
+        boolean flowControlEnabled;
 
-        public ChangeBaudRateTask(boolean silent,int baudrate,boolean termination, int port ) {
+        public ChangeBaudRateTask(boolean silent,int baudrate,boolean termination, int port, boolean filtersEnabled, boolean flowControlEnabled ) {
             this.baudrate = baudrate;
             this.silent = silent;
             this.termination=termination;
             this.port=port;
             this.removeInterface=canTest.getRemoveCan1InterfaceState();
+            this.filtersEnabled = filtersEnabled;
+            this.flowControlEnabled = flowControlEnabled;
         }
 
         @Override
@@ -388,7 +417,7 @@ public class Can1OverviewFragment extends Fragment {
             }
 
             publishProgress("Opening, please wait...");
-            int ret = canTest.CreateCanInterface1(silent,baudrate,termination,port);
+            int ret = canTest.CreateCanInterface1(silent, baudrate, termination, port, filtersEnabled, flowControlEnabled);
             if (ret == 0) {
                 LastCreated = Calendar.getInstance().getTime();
             }

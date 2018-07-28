@@ -967,7 +967,7 @@ static void *monitor_data_thread_port1(void *param) {
             }
 
             //To identify the message type and store each valid message in the process buffer in data[]
-            for (i = 0; i <= readData; i++) {
+            for (i = 0; i < readData; i++) {
                 carriageReturn = 0;
                 start=0;
                 packetLength=0;
@@ -1080,7 +1080,7 @@ static void *monitor_data_thread_can_port2(void *param) {
             }
 
             //To identify the message type and store each valid message in the process buffer in data[]
-            for (i = 0; i <= readData; i++) {
+            for (i = 0; i < readData; i++) {
                 carriageReturn=0;
                 start=0;
                 packetLength=0;

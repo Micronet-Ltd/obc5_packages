@@ -47,7 +47,7 @@ int serial_deinit_thread_j1708();
 int waitForData(int port_fd);
 int parseHex(uint8_t * asciiString, int len, uint8_t * hexValue);
 int computeJ1708Checksum(int id, BYTE *dataBytes, int dataLength);
-bool verifyJ1708Checksum(int id, BYTE *dataBytes, int dataLength);
+bool verifyJ1708Checksum(int id, BYTE *dataBytes, int dataLength, int checksum);
 
 void sendCanbusFramePort1(uint32_t frameId, int type, int length, BYTE* data );
 void sendCanbusFramePort2(uint32_t frameId, int type, int length, BYTE* data);

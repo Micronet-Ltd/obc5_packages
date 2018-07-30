@@ -86,33 +86,6 @@ int serial_init(char *portName)
         return fd_CAN2;
     }
 
-    //Initialising J1708_READ
-    /*else if(strcmp(portName,J1708_TTY_READ)== 0){
-        if ((fd_J1708_READ = open(portName, O_RDWR | O_NOCTTY | O_NONBLOCK)) < 0) {
-            perror(portName);
-			DD("failed to open %s, error: %s", portName, strerror(errno));
-            return -1;
-            //exit(EXIT_FAILURE);
-        }
-        serial_set_nonblocking(fd_J1708_READ);
-        DD("opened port: '%s', fd=%d", J1708_TTY_READ, fd_J1708_READ);
-        initTerminalInterface(fd_J1708_READ, B9600);
-        return fd_J1708_READ;
-    }
-        //Initialising J1708_WRITE
-    else if(strcmp(portName,J1708_TTY_WRITE)== 0){
-        if ((fd_J1708_WRITE = open(portName, O_RDWR | O_NOCTTY | O_NONBLOCK)) < 0) {
-            perror(portName);
-			DD("failed to open %s, error: %s", portName, strerror(errno));
-            return -1;
-            //exit(EXIT_FAILURE);
-        }
-        serial_set_nonblocking(fd_J1708_WRITE);
-        DD("opened port: '%s', fd=%d", J1708_TTY_WRITE, fd_J1708_WRITE);
-        initTerminalInterface(fd_J1708_WRITE, B9600);
-        return fd_J1708_WRITE;
-    }*/
-
     else if(strcmp(portName,J1708_TTY)== 0){
         if ((fd_J1708 = open(portName, O_RDWR | O_NOCTTY | O_NONBLOCK)) < 0) {
             perror(portName);
@@ -149,10 +122,9 @@ int initTerminalInterface(int fd, speed_t interfaceBaud, uint8_t readMinChar) {
         tcflush(fd, TCIOFLUSH);
     }
     else {
-        ERR("Error isatty(fd): invalid terminal %s\n", strerror(errno));
+        LOGE("Error isatty(fd): invalid terminal %s\n", strerror(errno));
         close(fd);
         return -1;
-        //exit(EXIT_FAILURE);
     }
 
     return 0;
@@ -825,20 +797,19 @@ void j1939rxd(BYTE *rxd, int portNumber) {
             sendCanbusFramePort2(frameId, type, length, hexData);
     }
 }
-
 /**
  * MCU A.2.8.0 Implementation
  * <Byte1 = packet length> <J1708 Packet which includes MID, PID, Checksum> <0x0 padding up to 24 bytes>
  *  Note: the read packet is always 24 bytes long and includes the packet length.
  * J1708 Raw Frame Format
  * Maximum Size -> 21 Bytes
- * |MID|Data1-Data19|Checksum
+ * |MID|Data1-Data19|Checksum|
  */
 void j1708rxd( BYTE *rxd, BYTE length)
 {
     int mid;
-    int checksum;
-    int verifyChecksum = 0;
+    uint8_t *dataBytes = rxd;
+    int checkSum;
 
     if(length < 2)
     {
@@ -847,8 +818,10 @@ void j1708rxd( BYTE *rxd, BYTE length)
     }
 
     mid = rxd[0]; // Note: 111 is factory test mid
-    //TODO: Validate checksum then send the frame!
-    if(verifyJ1708Checksum(mid, reinterpret_cast<uint8_t *>(*rxd + 1), length)){
+    memcpy(dataBytes, (const void *) (rxd + 1), length-2);
+    checkSum = rxd[length-1];
+
+    if(verifyJ1708Checksum(mid,dataBytes, length-2,checkSum)){
         JNIEnv *env;
         jint rs = g_canbus.g_vm->AttachCurrentThread(&env, &g_canbus.args);
 
@@ -858,11 +831,14 @@ void j1708rxd( BYTE *rxd, BYTE length)
 
         jclass j1708FrameClass = g_canbus.j1708FrameClass;
         jmethodID j1708FrameConstructor = env->GetMethodID(j1708FrameClass, "<init>", "(I[B)V");
+
         // if length-1 == 0, this will be empty byte array. Must not be NULL.
-        jbyteArray data_l = env->NewByteArray(length - 1);
-        env->SetByteArrayRegion(data_l, 0, length-1, (jbyte*)rxd + 1);
+        jbyteArray data_l = env->NewByteArray(length - 2);
+        env->SetByteArrayRegion(data_l, 0, length-2, reinterpret_cast<const jbyte *>(dataBytes));
+
         jobject frameObj = env->NewObject(j1708FrameClass, j1708FrameConstructor, mid, data_l);
         // on rare occasion, frame is received before socket is initialized
+
         if(g_canbus.g_listenerObject_J1708 != NULL && g_canbus.g_onPacketReceiveJ1708 != NULL) {
             env->CallVoidMethod(g_canbus.g_listenerObject_J1708, g_canbus.g_onPacketReceiveJ1708, frameObj);
         }
@@ -876,6 +852,7 @@ void j1708rxd( BYTE *rxd, BYTE length)
         LOGE("J1708 Frame Parsing Failed ! ");
     }
 }
+
 
 
 
@@ -905,17 +882,16 @@ int parseJ1708Frame(int start, int packetLength, uint8_t *pdata){
 
     uint8_t frame[packetLength];
     memcpy(frame, (const void *) (pdata+start), packetLength);
-    //LOGD("J1708 Frame on ttyACM4 = %d, packetLength = %d",frame[0], packetLength);
+    LOGD("J1708 Frame on /dev/j1708; Mid= %d, packetLength = %d",frame[0], packetLength);
     if(packetLength > 2){
         j1708rxd(frame, packetLength);
-        return 0; 
-	}
+        return 0;
+    }
     else{
         LOGD("J1708 ERROR: Incomplete packet received - Frame not sent to j1708rxd()");
         return -1;
     }
 }
-
 
 
 static void *monitor_data_thread_port1(void *param) {

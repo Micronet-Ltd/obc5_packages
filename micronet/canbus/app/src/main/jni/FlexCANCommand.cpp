@@ -430,7 +430,6 @@ int computeJ1708Checksum(int id, BYTE *dataBytes, int dataLength){
     LOGD("Returned Checksum = % d", checksum);
     return checksum;
 }
-
 /**
  * A simple way to decide if a message has been correctly transmitted is to add the checksum to the 8 -bit sum of all data bytes plus the MID of a received message.
  * The 8 -bit sum should be zero if the message was transmitted correctly.
@@ -438,19 +437,25 @@ int computeJ1708Checksum(int id, BYTE *dataBytes, int dataLength){
  * Message Format:  |MID|Data1|Data2|Data3|Data4|Checksum|
  * Message Example: |44	| 23 | 61 | 114 | 62 | 208|
  * STEP 1: 44+23+61+114+62+208 = 512
- * STEP 2:( 512 AND 0· xFF) = 0· , so the message· is correct .
+ * STEP 2:( 512 AND 0xFF) = 0· , so the message· is correct .
  * Source: https://www.kvaser.com/about-can/can-standards/j1708/
  */
-bool verifyJ1708Checksum(int id, BYTE *dataBytes, int dataLength){
+bool verifyJ1708Checksum(int id, BYTE *dataBytes, int dataLength, int checksum){
+    bool validFrame = false;
     int  sum = 0;
-
     sum = sum + id;
 
-    //This array would contain the cheksum also
+    //This array would contain the checksum also
     for (int i = 0; i < dataLength; i++){
-        sum = sum + dataBytes[i];
+        LOGD("J1708 Checksum - Previous Sum = %d, Data bytes = %d", sum, *(dataBytes +i));
+        sum = sum + *(dataBytes + i);
     }
-    return (sum && 0xFF) == 0;
+    sum = sum + checksum;
+    if((sum & 0xFF) == 0){
+        validFrame = true;
+    }
+    LOGD("J1708 - Verified Valid Frame = %d; MID = %d, Checksum=%d, sum =%d, checkme=%d", validFrame,id, checksum, sum);
+    return validFrame;
 }
 
 /**
@@ -480,8 +485,9 @@ void FlexCAN_send_j1708_packet(DWORD id,  BYTE *data, int dataLength)
 
     packet[index] = computeJ1708Checksum((BYTE) (id), data, dataLength);
 
-    if( serial_send_data(packet, dataLength + 2, fd_write)){
+    if( serial_send_data(packet, dataLength + 2, fd_write)) {
         error_message("!!!!!!!!!!!!!!! Couldn't transmit 1708 message !!!!!!!!!!!!!!!!!");
         return;
+
     }
 }

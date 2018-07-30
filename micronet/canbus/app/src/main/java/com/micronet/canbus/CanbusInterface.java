@@ -26,6 +26,8 @@ public class CanbusInterface {
      * @param portNumber 2, CAN1.
      *                   3, CAN2 (Can also be used as single wired CAN if the baud rate is set to 33.33 Kbits per seconds).
      *
+     * @throws CanbusException if create fails
+     *
 	 */
 	public void create(CanbusHardwareFilter[] hardwareFilters,int portNumber)
 			throws CanbusException {
@@ -41,6 +43,8 @@ public class CanbusInterface {
 	 *                   3, CAN2 (Can also be used as single wired CAN if the baud rate is set to 33.33 Kbits per seconds).
 	 *
 	 * @param flowControls Search Ids, Response Ids, Response Data lengths, Response Data pairs to set auto respond flow control messages.
+     *
+     * @throws CanbusException if create fails
 	 */
 	public void create(CanbusHardwareFilter[] hardwareFilters,int portNumber,CanbusFlowControl[] flowControls)
 			throws CanbusException {
@@ -58,6 +62,7 @@ public class CanbusInterface {
      * @param portNumber 2, CAN1.
      *                   3, CAN2 (Can also be used as single wired CAN if the baud rate is set to 33.33 Kbits per seconds).
      *
+     * @throws CanbusException if create fails
 	 */
 	public void create(boolean listeningModeEnable,CanbusHardwareFilter[] hardwareFilters, int portNumber)
 			throws CanbusException {
@@ -76,6 +81,8 @@ public class CanbusInterface {
 	 *                   3, CAN2 (Can also be used as single wired CAN if the baud rate is set to 33.33 Kbits per seconds).
 	 *
 	 * @param flowControls Search Ids, Response Ids, Response Data lengths, Response Data pairs to set auto respond flow control messages.
+     *
+     * @throws CanbusException if create fails
 	 */
 	public void create(boolean listeningModeEnable,CanbusHardwareFilter[] hardwareFilters, int portNumber,CanbusFlowControl[] flowControls)
 			throws CanbusException {
@@ -97,6 +104,7 @@ public class CanbusInterface {
      * @param portNumber 2, CAN1.
      *                   3, CAN2 (Can also be used as single wired CAN if the baud rate is set to 33.33 Kbits per seconds).
      *
+     * @throws CanbusException if create fails
 	 */
 	public void create(boolean listeningModeEnable, int bitrate, boolean termination, CanbusHardwareFilter[] hardwareFilters,int portNumber)
 			throws CanbusException {
@@ -119,6 +127,8 @@ public class CanbusInterface {
 	 *                   3, CAN2 (Can also be used as single wired CAN if the baud rate is set to 33.33 Kbits per seconds).
 	 *
 	 * @param flowControls Search Ids, Response Ids, Response Data lengths, Response Data pairs to set auto respond flow control messages.
+     *
+     * @throws CanbusException if create fails
 	 */
 	public void create(boolean listeningModeEnable, int bitrate, boolean termination, CanbusHardwareFilter[] hardwareFilters,int portNumber,CanbusFlowControl[] flowControls)
 			throws CanbusException {
@@ -177,6 +187,7 @@ public class CanbusInterface {
 	 * @param portNumber 2, CAN1.
 	 *                   3, CAN2 (Can also be used as single wired CAN if the baud rate is set to 33.33 Kbits per seconds).
 	 *
+     * @throws CanbusException if setCANTermination fails
 	 */
 	public void setCANTermination(boolean termination, CanbusHardwareFilter[] hardwareFilters,int portNumber)
 			throws CanbusException {
@@ -193,6 +204,8 @@ public class CanbusInterface {
 	 *                   3, CAN2 (Can also be used as single wired CAN if the baud rate is set to 33.33 Kbits per seconds).
 	 *
 	 * @param flowControls Search Ids, Response Ids, Response Data lengths, Response Data pairs to set auto respond flow control messages.
+     *
+     * @throws CanbusException if setCANTermination fails
 	 */
 	public void setCANTermination(boolean termination, CanbusHardwareFilter[] hardwareFilters,int portNumber,CanbusFlowControl[] flowControls)
 			throws CanbusException {

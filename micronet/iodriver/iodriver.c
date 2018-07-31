@@ -93,6 +93,7 @@ void set_otg(bool enable)
 
 void do_run()
 {
+    static int once = 1;
 	pthread_t control_thread;
 	pthread_t accel_thread;
     pthread_t j1708_thread;
@@ -123,11 +124,6 @@ void do_run()
 	pthread_create(&accel_thread, NULL, accel_proc, &accelctx);
     pthread_create(&j1708_thread, NULL, j1708_proc, &j1708ctx);
 
-#ifndef LINUX_BUILD
-    property_set("iodriver.boot_complete", "1");
-    DINFO("%s: boot_complete\n", __func__);
-#endif
-
 	// TODO: main thread processing
 	while(true)
 	{
@@ -138,6 +134,16 @@ void do_run()
 			memset(&controlctx, 0, sizeof(controlctx)); 				// GCC bug #53119
 			snprintf(controlctx.name, sizeof(controlctx.name)-1, "/dev/ttyMICRONET_CONTROL"); //"/dev/ttyACM0");
 			pthread_create(&control_thread, NULL, control_proc, &controlctx);
+
+        #ifndef LINUX_BUILD
+            if (once) {
+                sleep(2);
+                property_set("iodriver.boot_complete", "1"); 
+                DINFO("%s: boot_complete\n", __func__);
+                once = 0;
+            }
+        #endif
+
 			//break;
 		}
 	}

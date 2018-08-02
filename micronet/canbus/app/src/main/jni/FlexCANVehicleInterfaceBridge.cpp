@@ -256,9 +256,9 @@ JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANVehicleInterfaceBridge_cr
 
 JNIEXPORT jint JNICALL Java_com_micronet_canbus_FlexCANVehicleInterfaceBridge_removeJ1708Interface(JNIEnv *env, jobject instance){
 
-    LOGD("Entered removeJ1708Interface: Begin deinit()!!");
+    //LOGD("Entered removeJ1708Interface: Begin deinit()!!");
     closeJ1708Thread();
-    LOGD("Closing J1708 file descriptors");
+    //LOGD("Closing J1708 file descriptors");
     if (closePort(J1708_TTY_NUMBER) == -1) {
         return -1;
         LOGD("Couldn't close J1708_READ successfully ");

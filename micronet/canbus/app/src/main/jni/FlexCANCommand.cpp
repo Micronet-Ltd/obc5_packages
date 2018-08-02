@@ -129,15 +129,15 @@ void configureFlowControl( struct FLEXCAN_Flow_Control *configuration_array, int
         }
 
         for(int j = 0; j < 8; j++){
-            LOGD("Flow message %d, Structure dataBytes[%d] = %x", count , j, configuration_array[count].response_data_bytes[j]);
+           // LOGD("Flow message %d, Structure dataBytes[%d] = %x", count , j, configuration_array[count].response_data_bytes[j]);
         }
 
         //Workaround to fix compile time error
         dataBytes[0] = 0;
         for(int index = 0; index < configuration_array[count].flow_msg_data_length; index++){
-            LOGD("Flow message %d, Old data bytes %x to data bytes from structure = %x", index, dataBytes[index], configuration_array[count].response_data_bytes[index] );
+            //LOGD("Flow message %d, Old data bytes %x to data bytes from structure = %x", index, dataBytes[index], configuration_array[count].response_data_bytes[index] );
             dataBytes[index] = configuration_array[count].response_data_bytes[index];
-            LOGD("Flow message %d, dataBytes[%d] = %x", count , index, dataBytes[index]);
+            //LOGD("Flow message %d, dataBytes[%d] = %x", count , index, dataBytes[index]);
         }
 
         if((flowCodeSetCount <= numFlowCodes) && (flowCodeSetCount<=8)) {
@@ -434,7 +434,7 @@ int computeJ1708Checksum(int id, BYTE *dataBytes, int dataLength){
     //This calculation is acheived by calculating the modular sum and adding one/
     checksum = (255 - (sum % 256)) + 1 ;
 
-    LOGD("Returned Checksum = % d", checksum);
+    //LOGD("Returned Checksum = % d", checksum);
     return checksum;
 }
 /**
@@ -454,14 +454,14 @@ bool verifyJ1708Checksum(int id, BYTE *dataBytes, int dataLength, int checksum){
 
     //This array would contain the checksum also
     for (int i = 0; i < dataLength; i++){
-        LOGD("J1708 Checksum - Previous Sum = %d, Data bytes = %d", sum, *(dataBytes +i));
+        //LOGD("J1708 Checksum - Previous Sum = %d, Data bytes = %d", sum, *(dataBytes +i));
         sum = sum + *(dataBytes + i);
     }
     sum = sum + checksum;
     if((sum & 0xFF) == 0){
         validFrame = true;
     }
-    LOGD("J1708 - Verified Valid Frame = %d; MID = %d, Checksum=%d, sum =%d, checkme=%d", validFrame,id, checksum, sum);
+    //LOGD("J1708 - Verified Valid Frame = %d; MID = %d, Checksum=%d, sum =%d, checkme=%d", validFrame,id, checksum, sum);
     return validFrame;
 }
 

@@ -414,7 +414,14 @@ void FlexCAN_send_can_packet(BYTE type, DWORD id, int data_len, BYTE *data, int 
         return;
     }
 }
-
+/**
+ * Checksum:
+ * Modular sum[edit]
+ * A variant of the previous algorithm is to add all the "words" as unsigned binary numbers, discarding any overflow bits, and append the two's complement of the total as the checksum.
+ * To validate a message, the receiver adds all the words in the same manner, including the checksum;
+ * if the result is not a word full of zeros, an error must have occurred. This variant too detects any single-bit error, but the promodular sum is used in SAE J1708.[1]
+ * [1] https://en.wikipedia.org/wiki/J1708
+ */
 int computeJ1708Checksum(int id, BYTE *dataBytes, int dataLength){
     int  sum = 0;
     int checksum = 0;
@@ -423,9 +430,9 @@ int computeJ1708Checksum(int id, BYTE *dataBytes, int dataLength){
     for (int i = 0; i < dataLength; i++){
         sum = sum + dataBytes[i];
     }
-    //TODO: Check this logic
-    //checksum = (255 - (sum % 256)) + 1 ;
-    checksum = sum & 0xff ;
+    //To calculate the checksum, the sum bits are inverted and added by.
+    //This calculation is acheived by calculating the modular sum and adding one/
+    checksum = (255 - (sum % 256)) + 1 ;
 
     LOGD("Returned Checksum = % d", checksum);
     return checksum;
@@ -485,7 +492,10 @@ void FlexCAN_send_j1708_packet(DWORD id,  BYTE *data, int dataLength)
 
     packet[index] = computeJ1708Checksum((BYTE) (id), data, dataLength);
 
-    if( serial_send_data(packet, dataLength + 2, fd_write)) {
+    int checkme = serial_send_data(packet, dataLength+2, fd_write);
+
+//    if( serial_send_data(packet, dataLength + 2, fd_write)) {
+    if( checkme) {
         error_message("!!!!!!!!!!!!!!! Couldn't transmit 1708 message !!!!!!!!!!!!!!!!!");
         return;
 

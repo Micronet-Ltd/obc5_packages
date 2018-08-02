@@ -103,6 +103,10 @@ int serial_init(char *portName)
 
 int initTerminalInterface(int fd, speed_t interfaceBaud, uint8_t readMinChar) {
     if (isatty(fd)) {
+        LOGD("The port that is being init is a tty port");
+    } else {
+        LOGD("The port that is being init is not a ttyport");
+    }
         struct termios ios;
 
         tcgetattr(fd, &ios);
@@ -120,15 +124,8 @@ int initTerminalInterface(int fd, speed_t interfaceBaud, uint8_t readMinChar) {
 
         tcsetattr(fd, TCSANOW, &ios);
         tcflush(fd, TCIOFLUSH);
-    }
-    else {
-        LOGE("Error isatty(fd): invalid terminal %s\n", strerror(errno));
-        close(fd);
-        return -1;
-    }
-
     return 0;
-}
+    }
 
 int closeTerminalInterface(int port){
     LOGD("Entered closeTerminalInterface!!");
@@ -1208,12 +1205,18 @@ int serial_send_data(BYTE *mydata, DWORD bytes_to_write, int fd) {
     DWORD numwr = 0;
     if(fd!=-1){
         numwr = write(fd, mydata, bytes_to_write);
-        LOGD("Frame sent successfully!! Number of bytes=%d, frame=%s, fd=%d",bytes_to_write, mydata,fd);
-        //TODO: this may not be an error
-        if(numwr != bytes_to_write ){
+        if(numwr == bytes_to_write){
+            LOGD("Frame sent sucessfully! Number of bytes=%d, frame=%s, fd=%d",bytes_to_write, mydata,fd);
+            return 0;
+        } else{
+            //TODO: this may not be an error
+            LOGE("Alert - Frame sent to port!");
+            LOGD("Check me! Number of bytes=%d, frame=%s, fd=%d",bytes_to_write, mydata,fd);
             return -1;
         }
-        return 0;
     }
-    else return -1 ;
+    else {
+        LOGE("Alert - FileDescriptor = %d!", fd);
+        return -1 ;
+    }
 }

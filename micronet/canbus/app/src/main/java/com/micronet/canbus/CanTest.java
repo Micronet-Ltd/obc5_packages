@@ -154,6 +154,8 @@ public class CanTest {
     private boolean isJ1708InterfaceOpen = false;
     private boolean discardInBuffer;
 
+    private int j1708TransmitCount = 0;
+
     public static String txtRequestVin ="None";
     public static String txtRequestEngineHours= "-1";
     public static int txtGetLowOdometer = -1;
@@ -1581,6 +1583,15 @@ public class CanTest {
         return j1708Reader.getJ1708FrameCount();
     }
 
+    public int getJ1708TxCount(){
+        return j1708TransmitCount;
+    }
+
+    public int initJ1708Cnt(){
+        j1708TransmitCount = 0;
+        return 0;
+    }
+
     public int getJ1708ByteCount() {
         return j1708Reader.getJ1708ByteCount();
     }
@@ -1669,6 +1680,7 @@ public class CanTest {
                 try {
                     if (j1708Socket != null) {
                         j1708Socket.writeJ1708Port(frame);
+                        j1708TransmitCount++;
                     }
                     Thread.sleep(j1708IntervalDelay);
                 } catch (InterruptedException e) {

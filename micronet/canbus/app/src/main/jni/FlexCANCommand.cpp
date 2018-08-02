@@ -409,7 +409,7 @@ void FlexCAN_send_can_packet(BYTE type, DWORD id, int data_len, BYTE *data, int 
 
     msgLength = ParseCanMessToString(type, id, data_len, data, canPacketToTx);
 
-    if( serial_send_data(canPacketToTx, msgLength, fd)){
+    if( serial_send_data(canPacketToTx, msgLength, fd) < 0){
         error_message("!!!!!!!!!!!!!!! Couldn't send FLEXCAN CAN message !!!!!!!!!!!!!!!!!");
         return;
     }
@@ -492,12 +492,8 @@ void FlexCAN_send_j1708_packet(DWORD id,  BYTE *data, int dataLength)
 
     packet[index] = computeJ1708Checksum((BYTE) (id), data, dataLength);
 
-    int checkme = serial_send_data(packet, dataLength+2, fd_write);
-
-//    if( serial_send_data(packet, dataLength + 2, fd_write)) {
-    if( checkme) {
+   if( serial_send_data(packet, dataLength + 2, fd_write) < 0) {
         error_message("!!!!!!!!!!!!!!! Couldn't transmit 1708 message !!!!!!!!!!!!!!!!!");
         return;
-
     }
 }

@@ -1203,7 +1203,7 @@ int closeJ1708Thread() {
 
 int serial_send_data(BYTE *mydata, DWORD bytes_to_write, int fd) {
     DWORD numwr = 0;
-    if(fd!=-1){
+    if(fd != -1){
         numwr = write(fd, mydata, bytes_to_write);
         if(numwr == bytes_to_write){
             LOGD("Frame sent sucessfully! Number of bytes=%d, frame=%s, fd=%d",bytes_to_write, mydata,fd);

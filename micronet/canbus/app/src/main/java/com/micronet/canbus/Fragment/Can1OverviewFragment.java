@@ -1,7 +1,5 @@
 package com.micronet.canbus.Fragment;
 
-import static java.lang.Thread.sleep;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -34,6 +32,8 @@ import com.micronet.canbus.R;
 
 import java.util.Calendar;
 import java.util.Date;
+
+import static java.lang.Thread.sleep;
 
 public class Can1OverviewFragment extends Fragment {
 

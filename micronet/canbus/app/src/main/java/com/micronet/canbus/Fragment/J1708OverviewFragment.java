@@ -199,7 +199,8 @@ public class J1708OverviewFragment extends Fragment {
     }
 
     private void updateCountUI() {
-        String s = "\nJ1708 Frames/Bytes: " + canTest.getJ1708FrameCount() + "/" + canTest.getJ1708ByteCount();
+        String s = "\nJ1708 Rx Frames/Bytes: " + canTest.getJ1708FrameCount() + "/" + canTest.getJ1708ByteCount();
+        s += "\n\nJ1708 Tx Frame Count: " + canTest.getJ1708TxCount();
         swCycleTransmitJ1708.setChecked(canTest.isAutoSendJ1708());
         textView.setText(s);
     }
@@ -245,6 +246,7 @@ public class J1708OverviewFragment extends Fragment {
                 canTest.closeJ1708Interface();
                 publishProgress("Closing socket, please wait...");
                 canTest.closeJ1708Socket();
+                canTest.initJ1708Cnt();
             }
 
             if(removeJ1708){

@@ -6,52 +6,50 @@
         android:id="@+id/swCycleTransmitJ1708"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignStart="@+id/seekBarSendJ1708Speed"
+        android:layout_marginBottom="91dp"
         android:text="@string/cycle_transmit"
-        android:textSize="13sp"
-        android:layout_alignBaseline="@+id/btnSendJ1708"
-        android:layout_alignBottom="@+id/btnSendJ1708"
-        android:layout_alignParentEnd="true" />
+        android:textSize="13sp" />
 
     <SeekBar
         android:id="@+id/seekBarSendJ1708Speed"
-        android:layout_width="240dp"
+        android:layout_width="162dp"
         android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignTop="@+id/lblJ1708Speed"
         android:max="1000"
         android:maxHeight="5dip"
-        android:minHeight="5dip"
-        android:layout_centerVertical="true"
-        android:layout_alignParentEnd="true"
-        android:layout_toEndOf="@+id/lblJ1708Speed" />
+        android:minHeight="5dip" />
 
     <TextView
         android:id="@+id/lblJ1708Speed"
-        android:layout_width="wrap_content"
+        android:layout_width="218dp"
         android:layout_height="wrap_content"
-        android:text="@string/j1939_send_interval"
-        android:layout_above="@+id/btnSendJ1708"
+        android:layout_alignParentBottom="true"
         android:layout_alignStart="@+id/txt1708Frames"
-        android:layout_alignTop="@+id/seekBarSendJ1708Speed" />
+        android:layout_marginBottom="158dp"
+        android:text="@string/j1939_send_interval" />
 
     <Button
         android:id="@+id/btnSendJ1708"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="26dp"
+        android:layout_alignStart="@+id/lblJ1708Speed"
+        android:layout_alignTop="@+id/swCycleTransmitJ1708"
         android:background="@color/colorButtons"
         android:text="@string/transmit_j1708"
-        android:textAppearance="@style/TextAppearance.AppCompat"
-        android:layout_below="@+id/seekBarSendJ1708Speed"
-        android:layout_alignStart="@+id/lblJ1708Speed" />
+        android:textAppearance="@style/TextAppearance.AppCompat" />
 
     <TextView
         android:id="@+id/txt1708Frames"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="60dp"
+        android:layout_alignStart="@+id/lblCan1SocketStatus"
+        android:layout_below="@+id/lblCan1SocketStatus"
         android:layout_marginTop="21dp"
         android:text="@string/lbl_j1708"
-        android:textSize="13sp"
-        android:layout_below="@+id/lblCan1SocketStatus"
-        android:layout_alignStart="@+id/lblCan1SocketStatus" />
+        android:textSize="13sp" />
 
     <TextView
         android:id="@+id/txtJ1708SocketStatus"
@@ -96,24 +94,23 @@
         style="@style/Widget.AppCompat.Button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/txt1708Frames"
+        android:layout_alignTop="@+id/btnCloseInterface"
         android:background="@color/colorButtons"
         android:text="Create Interface"
         android:textAllCaps="true"
-        android:textAppearance="@style/TextAppearance.AppCompat"
-        android:layout_alignBaseline="@+id/btnCloseInterface"
-        android:layout_alignBottom="@+id/btnCloseInterface"
-        android:layout_alignStart="@+id/txt1708Frames" />
+        android:textAppearance="@style/TextAppearance.AppCompat" />
 
     <Button
         android:id="@+id/btnCloseInterface"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignStart="@+id/txtJ1708SocketStatus"
+        android:layout_marginTop="212dp"
         android:background="@color/colorButtons"
         android:text="CLOSE INTERFACE"
-        android:textAppearance="@style/TextAppearance.AppCompat"
-        android:layout_marginTop="30dp"
-        android:layout_below="@+id/txt1708Frames"
-        android:layout_toEndOf="@+id/lblJ1708Speed" />
+        android:textAppearance="@style/TextAppearance.AppCompat" />
 
 
 </RelativeLayout>

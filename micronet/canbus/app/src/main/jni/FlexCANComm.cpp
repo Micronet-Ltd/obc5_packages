@@ -1212,7 +1212,7 @@ int serial_send_data(BYTE *mydata, DWORD bytes_to_write, int fd) {
             //TODO: this may not be an error
             LOGD("Alert - Frame sent to port! but the number of bytes written were not equal to what it should have written. numwr=%d, bytes_to_write=%d", numwr, bytes_to_write);
             //LOGD("Check me! Number of bytes=%d, frame=%s, fd=%d",bytes_to_write, mydata,fd);
-            //return -1;
+            return 0;
         }
     }
     else {

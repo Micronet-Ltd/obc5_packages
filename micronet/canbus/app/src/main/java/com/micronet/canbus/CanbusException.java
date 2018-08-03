@@ -1,5 +1,8 @@
 package com.micronet.canbus;
 
+/**
+ * Exception class
+ */
 public class CanbusException extends Exception{
     /**
      * The specific error code.

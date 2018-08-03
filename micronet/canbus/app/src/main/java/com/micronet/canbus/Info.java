@@ -14,6 +14,6 @@ public final class Info
 	  * For example 20150817.000 represents August 17th 2015 and minor version 0.
 	  */
 	
-	public static final String VERSION = "20180802.000";
+	public static final String VERSION = "20180803.000";
 
 }

@@ -253,6 +253,6 @@ final class FlexCANVehicleInterfaceBridge implements IVehicleInterfaceBridge {
 
     static
     {
-        System.loadLibrary("canbus");
+        System.loadLibrary("vehiclebus");
     }
 }

@@ -232,7 +232,7 @@ public class CanbusInterface {
 	private native static int getImplId();
 	static
 	{
-		System.loadLibrary("canbus");
+		System.loadLibrary("vehiclebus");
 	}
 
 

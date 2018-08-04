@@ -47,7 +47,7 @@ public class J1708Interface {
 
     static
     {
-        System.loadLibrary("canbus");
+        System.loadLibrary("vehiclebus");
     }
 
 }

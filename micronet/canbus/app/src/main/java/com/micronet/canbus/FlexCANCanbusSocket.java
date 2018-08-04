@@ -192,7 +192,7 @@ class FlexCANCanbusSocket extends CanbusSocket implements CanbusListenerPort1, C
 
     static
     {
-        System.loadLibrary("canbus");
+        System.loadLibrary("vehiclebus");
     }
 
 }

@@ -9,6 +9,8 @@ import android.util.Log;
 
 public class CanbusInterface { 
 	private static final String TAG = "CanbusSocketPort1";
+	private static final int portCan1 = 2;
+	private static final int portCan2 = 3;
 
 	IVehicleInterfaceBridge impl;
 
@@ -23,8 +25,8 @@ public class CanbusInterface {
 	/**
 	 * Creates new Canbus interface with hardware filters and default values [ListeningMode=false, Baud rate=250000,Termination=true] (up).
      * @param hardwareFilters Filters, masks and filter types used for filtering CAN packets.
-     * @param portNumber 2, CAN1.
-     *                   3, CAN2 (Can also be used as single wired CAN if the baud rate is set to 33.33 Kbits per seconds).
+     * @param portNumber portCan1, CAN1.
+     *                   portCan2, CAN2 (Can also be used as single wired CAN if the baud rate is set to 33.33 Kbits per seconds).
      *
      * @throws CanbusException if create fails
      *
@@ -39,8 +41,8 @@ public class CanbusInterface {
 	/**
 	 * Creates new Canbus interface with hardware filters and default values [ListeningMode=false, Baud rate=250000,Termination=true] (up).
 	 * @param hardwareFilters Filters, masks and filter types used for filtering CAN packets.
-	 * @param portNumber 2, CAN1.
-	 *                   3, CAN2 (Can also be used as single wired CAN if the baud rate is set to 33.33 Kbits per seconds).
+	 * @param portNumber portCan1, CAN1.
+	 *                   portCan2, CAN2 (Can also be used as single wired CAN if the baud rate is set to 33.33 Kbits per seconds).
 	 *
 	 * @param flowControls Search Ids, Response Ids, Response Data lengths, Response Data pairs to set auto respond flow control messages.
      *
@@ -59,8 +61,8 @@ public class CanbusInterface {
 	 *                            This mode may be used to analyze a CANbus without disturbing the bus.
 	 *                            false, turns on the CAN module's transmitter and receiver.
      * @param hardwareFilters Filters, masks and filter types used for filtering CAN packets.
-     * @param portNumber 2, CAN1.
-     *                   3, CAN2 (Can also be used as single wired CAN if the baud rate is set to 33.33 Kbits per seconds).
+     * @param portNumber portCan1, CAN1.
+     *                   portCan2, CAN2 (Can also be used as single wired CAN if the baud rate is set to 33.33 Kbits per seconds).
      *
      * @throws CanbusException if create fails
 	 */
@@ -77,8 +79,8 @@ public class CanbusInterface {
 	 *                            This mode may be used to analyze a CANbus without disturbing the bus.
 	 *                            false, turns on the CAN module's transmitter and receiver.
 	 * @param hardwareFilters Filters, masks and filter types used for filtering CAN packets.
-	 * @param portNumber 2, CAN1.
-	 *                   3, CAN2 (Can also be used as single wired CAN if the baud rate is set to 33.33 Kbits per seconds).
+	 * @param portNumber portCan1, CAN1.
+	 *                   portCan2, CAN2 (Can also be used as single wired CAN if the baud rate is set to 33.33 Kbits per seconds).
 	 *
 	 * @param flowControls Search Ids, Response Ids, Response Data lengths, Response Data pairs to set auto respond flow control messages.
      *
@@ -101,8 +103,8 @@ public class CanbusInterface {
 	 *                    true, enables the termination resistor in the device.
 	 *                    false, disables the termination resistor in the device.
      * @param hardwareFilters Filters, masks and filter types used for filtering CAN packets.
-     * @param portNumber 2, CAN1.
-     *                   3, CAN2 (Can also be used as single wired CAN if the baud rate is set to 33.33 Kbits per seconds).
+     * @param portNumber portCan1, CAN1.
+     *                   portCan2, CAN2 (Can also be used as single wired CAN if the baud rate is set to 33.33 Kbits per seconds).
      *
      * @throws CanbusException if create fails
 	 */
@@ -123,8 +125,8 @@ public class CanbusInterface {
 	 *                    true, enables the termination resistor in the device.
 	 *                    false, disables the termination resistor in the device.
 	 * @param hardwareFilters Filters, masks and filter types used for filtering CAN packets.
-	 * @param portNumber 2, CAN1.
-	 *                   3, CAN2 (Can also be used as single wired CAN if the baud rate is set to 33.33 Kbits per seconds).
+	 * @param portNumber portCan1, CAN1.
+	 *                   portCan2, CAN2 (Can also be used as single wired CAN if the baud rate is set to 33.33 Kbits per seconds).
 	 *
 	 * @param flowControls Search Ids, Response Ids, Response Data lengths, Response Data pairs to set auto respond flow control messages.
      *
@@ -154,8 +156,8 @@ public class CanbusInterface {
      * Interface must be removed first!
      * @param bitrate
      * @param hardwareFilters Filters, masks and filter types used for filtering CAN packets.
-     * @param portNumber 2, CAN1.
-     *                   3, CAN2 (Can also be used as single wired CAN if the baud rate is set to 33.33 Kbits per seconds).
+     * @param portNumber portCan1, CAN1.
+     *                   portCan2, CAN2 (Can also be used as single wired CAN if the baud rate is set to 33.33 Kbits per seconds).
      *
      */
 	public void setBitrate(int bitrate,CanbusHardwareFilter[] hardwareFilters,int portNumber) {
@@ -169,8 +171,8 @@ public class CanbusInterface {
 	 * Interface must be removed first!
 	 * @param bitrate
 	 * @param hardwareFilters Filters, masks and filter types used for filtering CAN packets.
-	 * @param portNumber 2, CAN1.
-	 *                   3, CAN2 (Can also be used as single wired CAN if the baud rate is set to 33.33 Kbits per seconds).
+	 * @param portNumber portCan1, CAN1.
+	 *                   portCan2, CAN2 (Can also be used as single wired CAN if the baud rate is set to 33.33 Kbits per seconds).
 	 *
 	 * @param flowControls Search Ids, Response Ids, Response Data lengths, Response Data pairs to set auto respond flow control messages.
 	 */
@@ -184,8 +186,8 @@ public class CanbusInterface {
 	 * Changing termination will result in the CAN module being re-opened.
 	 * @param termination
 	 * @param hardwareFilters Filters, masks and filter types used for filtering CAN packets.
-	 * @param portNumber 2, CAN1.
-	 *                   3, CAN2 (Can also be used as single wired CAN if the baud rate is set to 33.33 Kbits per seconds).
+	 * @param portNumber portCan1, CAN1.
+	 *                   portCan2, CAN2 (Can also be used as single wired CAN if the baud rate is set to 33.33 Kbits per seconds).
 	 *
      * @throws CanbusException if setCANTermination fails
 	 */
@@ -200,8 +202,8 @@ public class CanbusInterface {
 	 * Changing termination will result in the CAN module being re-opened.
 	 * @param termination
 	 * @param hardwareFilters Filters, masks and filter types used for filtering CAN packets.
-	 * @param portNumber 2, CAN1.
-	 *                   3, CAN2 (Can also be used as single wired CAN if the baud rate is set to 33.33 Kbits per seconds).
+	 * @param portNumber portCan1, CAN1.
+	 *                   portCan2, CAN2 (Can also be used as single wired CAN if the baud rate is set to 33.33 Kbits per seconds).
 	 *
 	 * @param flowControls Search Ids, Response Ids, Response Data lengths, Response Data pairs to set auto respond flow control messages.
      *

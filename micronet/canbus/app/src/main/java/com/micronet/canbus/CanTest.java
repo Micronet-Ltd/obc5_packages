@@ -358,7 +358,6 @@ public class CanTest {
     }
 
     public int create1708Interface(){
-        Log.d(TAG, "Creating a 1708 Interface - Java");
         if(j1708Interface == null){
             j1708Interface = new J1708Interface();
             j1708Interface.createJ1708();

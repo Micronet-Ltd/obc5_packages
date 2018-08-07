@@ -16,16 +16,16 @@ public class J1708Socket implements J1708Listener {
     }
 
     /**
-     * Reads J1708 frame. Will block the calling thread__port1 until data
-     * is written to Canbus socket.
+     * Reads J1708 frame. Will block the calling thread until data
+     * is written to J1708 socket.
      */
     public J1708Frame readJ1708Port(){
         throw new IllegalArgumentException("Not implemented");
     }
 
     /**
-     * Reads J1708 frame. Will block the calling thread__port1 until data
-     * is written to Canbus socket or timeout has elapsed.
+     * Reads J1708 frame. Will block the calling thread until data
+     * is written to J1708 socket or timeout has elapsed.
      *
      * @param timeout how long to wait before giving up, in units of milliseconds
      *

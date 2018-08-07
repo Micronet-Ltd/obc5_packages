@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <Switch
+        android:id="@+id/swCycleTransmitJ1708"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignStart="@+id/seekBarSendJ1708Speed"
+        android:layout_marginBottom="91dp"
+        android:text="@string/cycle_transmit"
+        android:textSize="13sp" />
+
+    <SeekBar
+        android:id="@+id/seekBarSendJ1708Speed"
+        android:layout_width="162dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignTop="@+id/lblJ1708Speed"
+        android:max="1000"
+        android:maxHeight="5dip"
+        android:minHeight="5dip" />
+
+    <TextView
+        android:id="@+id/lblJ1708Speed"
+        android:layout_width="218dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignStart="@+id/txt1708Frames"
+        android:layout_marginBottom="158dp"
+        android:text="@string/j1939_send_interval" />
+
+    <Button
+        android:id="@+id/btnSendJ1708"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/lblJ1708Speed"
+        android:layout_alignTop="@+id/swCycleTransmitJ1708"
+        android:background="@color/colorButtons"
+        android:text="@string/transmit_j1708"
+        android:textAppearance="@style/TextAppearance.AppCompat" />
+
+    <TextView
+        android:id="@+id/txt1708Frames"
+        android:layout_width="wrap_content"
+        android:layout_height="60dp"
+        android:layout_alignStart="@+id/lblCan1SocketStatus"
+        android:layout_below="@+id/lblCan1SocketStatus"
+        android:layout_marginTop="21dp"
+        android:text="@string/lbl_j1708"
+        android:textSize="13sp" />
+
+    <TextView
+        android:id="@+id/txtJ1708SocketStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/lblCan1SocketStatus"
+        android:layout_alignBottom="@+id/lblCan1SocketStatus"
+        android:layout_alignStart="@+id/txtJ1708InterfaceStatus"
+        android:text="@string/closed" />
+
+    <TextView
+        android:id="@+id/txtJ1708InterfaceStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/closed"
+        android:layout_alignBaseline="@+id/lblCan2InterfaceStatus"
+        android:layout_alignBottom="@+id/lblCan2InterfaceStatus"
+        android:layout_toEndOf="@+id/lblCan2InterfaceStatus"
+        android:layout_marginStart="117dp" />
+
+    <TextView
+        android:id="@+id/lblCan1SocketStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="19dp"
+        android:text="@string/socket_status"
+        android:layout_below="@+id/lblCan2InterfaceStatus"
+        android:layout_alignStart="@+id/lblCan2InterfaceStatus" />
+
+    <TextView
+        android:id="@+id/lblCan2InterfaceStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/interface_status"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="28dp"
+        android:layout_marginTop="33dp" />
+
+    <Button
+        android:id="@+id/btnInterface1708"
+        style="@style/Widget.AppCompat.Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/txt1708Frames"
+        android:layout_alignTop="@+id/btnCloseInterface"
+        android:background="@color/colorButtons"
+        android:text="Create Interface"
+        android:textAllCaps="true"
+        android:textAppearance="@style/TextAppearance.AppCompat" />
+
+    <Button
+        android:id="@+id/btnCloseInterface"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignStart="@+id/txtJ1708SocketStatus"
+        android:layout_marginTop="212dp"
+        android:background="@color/colorButtons"
+        android:text="CLOSE INTERFACE"
+        android:textAppearance="@style/TextAppearance.AppCompat" />
+
+
+</RelativeLayout>

@@ -269,16 +269,26 @@ int send_api_hex2(int * fd, char * hexdata)
 			ret = set_app_watchdog_dbg(fd);
 			printf("set app watchdog req, ret = %d  \n", ret);
 			break;
-		case MCTL_GET_CAN1_J1708_PWR_ENABLE_GPIO:
+		case MCTL_GET_J1708_PWR_ENABLE_GPIO:
+			/* V4 and below boards */
 			ret = get_gpio_state_dbg(fd, CAN1_J1708_PWR_ENABLE, &gpio_val);
 			printf("get CAN1 J1708 pwr enable gpio: %d, value read: %d, ret = %d  \n", \
 					CAN1_J1708_PWR_ENABLE, gpio_val, ret);
+			/* V6 and above boards */
+			ret = get_gpio_state_dbg(fd, J1708_PWR_EN, &gpio_val);
+			printf("get CAN1 J1708 pwr enable gpio: %d, value read: %d, ret = %d  \n", \
+					J1708_PWR_EN, gpio_val, ret);
 			break;
-		case MCTL_SET_CAN1_J1708_PWR_ENABLE_GPIO:
+		case MCTL_SET_J1708_PWR_ENABLE_GPIO:
 			gpio_val = data[2];
+			/* V4 and below boards */
 			ret = set_gpio_state_dbg(fd, CAN1_J1708_PWR_ENABLE, gpio_val);
 			printf("set CAN1 J1708 pwr enable , gpio: %d, value set: %d, ret = %d  \n", \
 					CAN1_J1708_PWR_ENABLE, gpio_val, ret);
+			/* V6 and above boards */
+			ret = set_gpio_state_dbg(fd, J1708_PWR_EN, gpio_val);
+			printf("set J1708 pwr enable , gpio: %d, value set: %d, ret = %d  \n", \
+					J1708_PWR_EN, gpio_val, ret);
 			break;
 		case MAPI_SET_WIGGLE_EN_REQ_DBG:
 			wig_en = data[2];

@@ -169,7 +169,7 @@ int FlexCAN_j1708_startup(char *portName){
     //TODO: Check if CAN 1 is enabled, it isn't then enable power to the GPIO pin
     //If CAN1 is open, don't close the port continue reading. If its closed, open it.
     if(getFd(CAN1_TTY_NUMBER) == -1){
-        system("mctl api 0213020001");
+        system("mctl api 02fc01");
         //The firmware has a 20ms delay after opening the port.
         usleep(20000);
     }

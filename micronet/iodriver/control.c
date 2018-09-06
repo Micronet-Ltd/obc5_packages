@@ -56,6 +56,7 @@
 #include <sys/time.h>
 #include <time.h>
 #include <errno.h>
+#include <cutils/properties.h>
 
 //#define IO_CONTROL_RECOVERY_DEBUG 1
 #define TIME_BETWEEN_MCU_PINGS 2 /* 2 sec */
@@ -84,7 +85,7 @@ static uint8_t control_get_seq(struct control_thread_context * context)
 	return context->seq++;
 }
 
-static int control_get_status_message(struct control_thread_context * context, char * buff, size_t size)
+static int control_get_status_message(char * buff, size_t size)
 {
 	snprintf(buff, size, "No status");
 	return 0;
@@ -580,10 +581,15 @@ static int control_handle_sock_command(struct control_thread_context * context, 
 	char buf[64] = {0};
 	int wdg_max_time = 0, count = 0;
 
+	if (len <= 0)
+	{
+		return -2;
+	}
+
 	if(0 == memcmp(data, "status", strlen("status")+1))
 	{
 		char statusbuf[SOCK_MAX_MSG-2];
-		if(0 == control_get_status_message(context, statusbuf, sizeof(statusbuf)))
+		if(0 == control_get_status_message(statusbuf, sizeof(statusbuf)))
 		{
 			if(send_sock_string_message(context, addr, statusbuf))
 				r = -1;
@@ -1168,6 +1174,19 @@ static bool set_app_watchdog_count(int count)
 	return true;
 }
 
+bool device_has_rtc(){
+	bool ret = false;
+    char model_str[PROPERTY_VALUE_MAX] = "0";
+	
+	property_get("ro.product.model", model_str, "0");	
+	if (strcmp((const char *)model_str, "TREQr_5")==0){
+     	ret = true;
+	}
+	DINFO("%s: ro.product.model=%s, ret=%d", __func__, model_str, ret);
+
+	return ret;
+}
+
 void * control_proc(void * cntx)
 {
 	struct control_thread_context * context = cntx;
@@ -1227,7 +1246,10 @@ void * control_proc(void * cntx)
 		if (on_init && (context->mcu_fd > -1 ) && !FD_ISSET(context->mcu_fd, &context->fds))
 		{
 			on_init = false;
-			update_system_time_with_rtc(context);
+			if (device_has_rtc())
+			{
+				update_system_time_with_rtc(context);
+			}
 			clock_gettime(CLOCK_MONOTONIC_RAW, &time_last_sent_ping);
 			clock_gettime(CLOCK_MONOTONIC_RAW, &(context->last_app_ping_time));
 			update_all_GP_inputs(context);

@@ -1,1 +1,0 @@
-../../../../../canbus/app/src/main/java/com/micronet/canbus/FlexCANCanbusInterfaceBridge.java

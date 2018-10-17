@@ -1,54 +1,45 @@
-apply plugin: 'com.android.model.application'
+apply plugin: 'com.android.application'
 
-model {
-
-    android {
-
-        compileSdkVersion = 25
-        buildToolsVersion = "25.0.1"
-        defaultConfig {
-            applicationId "com.micronet.canbus"
-            minSdkVersion.apiLevel = 21
-            targetSdkVersion.apiLevel = 25
-            versionCode 1
-            versionName "1.1"
-        }
-        buildTypes {
-            release {
-                minifyEnabled = false
-                proguardFiles.add(file('proguard-rules.txt'))
-                signingConfig = $("android.signingConfigs.treqr5platformkey")
-            }
-            debug {
-                signingConfig = $("android.signingConfigs.treqr5platformkey")
-            }
-        }
-        ndk {
-            debuggable true
-            moduleName = 'canbus'
-            toolchain = 'gcc'
-            stl = 'gnustl_static'
-            cppFlags.addAll(['-std=c++11'])
-            ldLibs.addAll(['android', 'log'])
-            // build a default combined apk including all ABIs.
-            abiFilters.addAll(['armeabi'])
+android {
+    signingConfigs {
+        config {
+            keyAlias 'micronet'
+            keyPassword 'micronet'
+            storeFile file('micronet-treqr5-platform.keystore')
+            storePassword 'micronet'
         }
     }
-
-    android.signingConfigs {
-        create("treqr5platformkey") {
-            storeFile "micronet-treqr5-platform.keystore"
-            storePassword "micronet"
-            keyAlias "micronet"
-            keyPassword "micronet"
+    compileSdkVersion 27
+    defaultConfig {
+        applicationId "com.micronet.canbus"
+        minSdkVersion 15
+        targetSdkVersion 27
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        externalNativeBuild {
+            cmake {
+                cppFlags ""
+            }
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    externalNativeBuild {
+        cmake {
+            path "CMakeLists.txt"
         }
     }
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:25.1.0'
-    compile 'com.android.support:support-v4:25.2.0'
-    compile 'com.android.support:design:25.2.0'
-    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation 'com.android.support:appcompat-v7:27.1.0'
+    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.1'
+    implementation 'com.android.support:design:27.1.0'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
 }

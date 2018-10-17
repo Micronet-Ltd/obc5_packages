@@ -29,6 +29,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.List;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 
 /**
  * Created by IntelliJ IDEA. User: wangwenlong Date: 12-1-16 Time: 上午9:09 To
@@ -222,6 +225,8 @@ public class ResultActivity extends Activity {
         results.append(telephonyManager.getDeviceId() + ",");
         results.append(Build.DISPLAY + ",");
         results.append(wInfo.getMacAddress() + ",");
+        results.append(getRam() + ",");
+        results.append(getRom() + ",");
 
         for (int i = 1; i < mItemList.size()-1; i++) {
             TestItem k = mItemList.get(i);
@@ -237,6 +242,58 @@ public class ResultActivity extends Activity {
         results.append(String.valueOf(VER));
         return results;
 
+    }
+    
+    private String getRom() {
+        String fileName = "/sys/class/block/mmcblk0/size";
+        String line = null;
+        int rom = 0;
+        try {
+            FileReader fileReader = new FileReader(fileName);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            while ((line = bufferedReader.readLine()) != null) {
+                if (line != null) {
+                    rom = ((int)(Integer.parseInt(line) / 2000000.0)) + 1;
+                }
+            }
+            bufferedReader.close();
+        } catch (FileNotFoundException ex) {
+            ex.printStackTrace();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        return Integer.toString(rom) + "GB";
+    }
+
+    private String getRam() {
+        String fileName = "/proc/meminfo";
+        String line = null;
+        int ram = 0;
+        String memTotal = "";
+        String mapped = "";
+        try {
+            FileReader fileReader = new FileReader(fileName);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            while ((line = bufferedReader.readLine()) != null) {
+                if (line.contains("MemTotal")) {
+                    memTotal = line.replaceAll("\\s", "");
+                    memTotal = memTotal.substring(line.indexOf(":") + 1);
+                    memTotal = memTotal.substring(0, memTotal.length() - 2);
+                }
+                else if (line.contains("Mapped")) {
+                    mapped = line.replaceAll("\\s", "");
+                    mapped = mapped.substring(line.indexOf(":") + 1);
+                    mapped = mapped.substring(0, mapped.length() - 2);
+                }
+            }
+            ram = (int) ((Integer.parseInt(memTotal) + Integer.parseInt(mapped)) / 1024000.0);
+            bufferedReader.close();
+        } catch (FileNotFoundException ex) {
+            ex.printStackTrace();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        return Integer.toString(ram) + "GB";
     }
 }
 

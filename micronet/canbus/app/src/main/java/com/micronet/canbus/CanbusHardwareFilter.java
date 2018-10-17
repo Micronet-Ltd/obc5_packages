@@ -4,6 +4,7 @@ package com.micronet.canbus;
  * Sets Canbus hardware module to pass certain packet ids.
  * Filtering is done using both Mask and Frame Id to achieve maximum flexibility.
  */
+
 public class CanbusHardwareFilter {
 	private int[] mIds;
 	private int[] mMask;

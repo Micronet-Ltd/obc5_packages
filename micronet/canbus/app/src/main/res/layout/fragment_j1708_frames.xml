@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin">
+
+    <View
+        android:id="@+id/xAxis"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"/>
+
+    <TextView
+        android:id="@+id/lblJ1708"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/j1708"
+        android:textStyle="normal|bold"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:id="@+id/lblJ17082"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:textColor="@color/colorAccent"
+        android:textAllCaps="true"
+        android:text="@string/j17082"
+        android:layout_marginTop="13dp"
+        android:layout_below="@+id/lblJ1708"
+        android:layout_centerHorizontal="true" />
+
+
+    <TextView
+        android:id="@+id/lvJ1708Frames"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="29dp"
+        android:gravity="bottom"
+        android:maxLines="20"
+        android:minLines="1"
+        android:scrollbars="vertical"
+        android:textSize="12sp"
+        android:layout_below="@+id/lblJ17082"
+        android:layout_alignStart="@+id/lblJ17082" />
+
+</RelativeLayout>

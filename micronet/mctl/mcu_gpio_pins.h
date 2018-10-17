@@ -26,7 +26,6 @@ enum _gpio_pins_pinNames {
 	//SWD_RST								(RESET_B),
 
 	// POWRE RAIL CONTROL
-	POWER_3V3_ENABLE					= GPIO_MAKE_PIN(GPIOA_IDX, 14),
 	POWER_5V0_ENABLE					= GPIO_MAKE_PIN(GPIOA_IDX, 11),
 	POWER_CHARGE_ENABLE					= GPIO_MAKE_PIN(GPIOA_IDX, 15),
 	POWER_DISCHARGE_ENABLE				= GPIO_MAKE_PIN(GPIOB_IDX,  8),
@@ -55,7 +54,6 @@ enum _gpio_pins_pinNames {
 	FPGA_RSTB							= GPIO_MAKE_PIN(GPIOA_IDX, 12),
 	FPGA_DONE							= GPIO_MAKE_PIN(GPIOE_IDX,  9),
 	FPGA_GPIO0							= GPIO_MAKE_PIN(GPIOC_IDX,  8),
-	FPGA_GPIO1							= GPIO_MAKE_PIN(GPIOC_IDX,  9),
 	FPGA_GPIO2							= GPIO_MAKE_PIN(GPIOE_IDX,  2),
 	FPGA_GPIO3							= GPIO_MAKE_PIN(GPIOE_IDX,  3),
 
@@ -66,11 +64,13 @@ enum _gpio_pins_pinNames {
 	SPI_MEM_DO							= GPIO_MAKE_PIN(GPIOB_IDX, 23),
 
 	// CAN BUS INTERFACE
+	CAN1_PWR_EN							= GPIO_MAKE_PIN(GPIOA_IDX, 14), //only present of NET869V6 and greater boards
 	CAN1_J1708_PWR_ENABLE				= GPIO_MAKE_PIN(GPIOC_IDX,  0),
 	CAN2_SWC_PWR_ENABLE					= GPIO_MAKE_PIN(GPIOC_IDX,  4),
 	CAN1_TERM_ENABLE					= GPIO_MAKE_PIN(GPIOE_IDX, 24),
 	CAN2_TERM_ENABLE					= GPIO_MAKE_PIN(GPIOA_IDX, 10),
 	CAN2_SWC_SELECT						= GPIO_MAKE_PIN(GPIOC_IDX,  6),
+	J1708_PWR_EN						= GPIO_MAKE_PIN(GPIOC_IDX,  9), //only present of NET869V6 and greater boards
 	J1708_ENABLE						= GPIO_MAKE_PIN(GPIOA_IDX,  9),
 	SWC_ENABLE							= GPIO_MAKE_PIN(GPIOA_IDX,  8),
 	SWC_MODE0							= GPIO_MAKE_PIN(GPIOC_IDX, 12),
@@ -92,7 +92,7 @@ enum _gpio_pins_pinNames {
 
 	// UART INTERFACE
 	UART_ENABLE							= GPIO_MAKE_PIN(GPIOB_IDX,  1),
-	//RS485_ENABLE						= GPIO_MAKE_PIN(GPIOA_IDX,  2),
+	RS485_ENABLE						= GPIO_MAKE_PIN(GPIOE_IDX,  27),
 	FTDI_RSTN							= GPIO_MAKE_PIN(GPIOC_IDX, 19),
 
 	// UART CHANNEL 4
@@ -131,7 +131,7 @@ enum _gpio_pins_pinNames {
 	CPU_POWER_LOSS					    = GPIO_MAKE_PIN(GPIOE_IDX, 25), //swapped CPU_SPKR_EN with CPU_POWER_LOSS in schematic
 	CPU_MIC_EN						    = GPIO_MAKE_PIN(GPIOE_IDX, 26),
 
-
+	EXT_GPS_EN							= GPIO_MAKE_PIN(GPIOD_IDX, 10), //used to control power to the external GPS antenna (only routed in NET869 V6 and greater boards)
 
 	PORT_D_SPARE1						= GPIO_MAKE_PIN(GPIOD_IDX,  0),
 	PORT_D_SPARE2						= GPIO_MAKE_PIN(GPIOD_IDX,  1),
@@ -143,7 +143,7 @@ enum _gpio_pins_pinNames {
 	PORT_D_SPARE8						= GPIO_MAKE_PIN(GPIOD_IDX,  7),
 	PORT_D_SPARE9						= GPIO_MAKE_PIN(GPIOD_IDX,  8),
 	PORT_D_SPARE10						= GPIO_MAKE_PIN(GPIOD_IDX,  9),
-	PORT_D_SPARE11						= GPIO_MAKE_PIN(GPIOD_IDX, 10),
+
 	PORT_D_SPARE12						= GPIO_MAKE_PIN(GPIOD_IDX, 11),
 	PORT_D_SPARE13						= GPIO_MAKE_PIN(GPIOD_IDX, 12),
 	PORT_D_SPARE14						= GPIO_MAKE_PIN(GPIOD_IDX, 13),
@@ -151,13 +151,18 @@ enum _gpio_pins_pinNames {
 	PORT_D_SPARE16						= GPIO_MAKE_PIN(GPIOD_IDX, 15),
 
 //    PORT_E_SPARE1						= GPIO_MAKE_PIN(GPIOE_IDX, 24),
-	PORT_E_SPARE4						= GPIO_MAKE_PIN(GPIOE_IDX, 27),
+//	PORT_E_SPARE4						= GPIO_MAKE_PIN(GPIOE_IDX, 27),
 
+	I2C0_SCL = GPIO_MAKE_PIN(GPIOB_IDX, 2),
+	I2C0_SDA = GPIO_MAKE_PIN(GPIOB_IDX, 3),
 
-//	I2C_SDA = GPIO_MAKE_PIN(GPIOB_IDX, 2),
-//	I2C_SCL = GPIO_MAKE_PIN(GPIOB_IDX, 3),
+	I2C1_SCL = GPIO_MAKE_PIN(GPIOC_IDX, 10),
+	I2C1_SDA = GPIO_MAKE_PIN(GPIOC_IDX, 11),
 };
 
+#define LED_RED_GPIO_NUM 	4 
+#define LED_BLUE_GPIO_NUM 	7
+#define LED_GREEN_GPIO_NUM	5
 // I2C INTERFACE - CHANNEL 2
 #define I2C0_SDA_GPIO_PORT			PORTB
 #define I2C0_SDA_GPIO_PIN			3
@@ -182,23 +187,26 @@ enum _gpio_pins_pinNames {
 #define EXTAL0_PIN    				18
 
 
-// ANALOG INPUTS
-#define ADC_POWER_IN					kAdc16Chn17
-#define ADC_POWER_VCAP					kAdc16Chn8
-#define ADC_TEMPERATURE					kAdc16Chn16
-#define ADC_CABLE_TYPE					kAdc16Chn10
+// ANALOG INPUTS  (Pg 116 of the datasheet defines the channel numbers)
+#define ADC_POWER_IN					kAdc16Chn17			//ADC0_SE16/ADC0_SE21
+#define ADC_POWER_VCAP					kAdc16Chn8			//ADC0_SE8/ADC1_SE8
+#define ADC_TEMPERATURE					kAdc16Chn16			//ADC1_SE16/ADC0_SE22
+#define ADC_CABLE_TYPE					kAdc16Chn10			//ADC1_SE10
+
+#define ADC_BOARD_VER					kAdc16Chn20 /* Pg 115 of the K20 reference manual ADC0_DM1*/
+#define ADC_BOARD_CONFIG				kAdc16Chn1  /* ADC0_DP1*/
 
 // TELEMETRY INPUTS (ANALOG INPUTS),
-#define ADC_ANALOG_IN1					kAdc16Chn12
-#define ADC_GPIO_IN1					kAdc16Chn20			// dm1
-#define ADC_GPIO_IN2					kAdc16Chn1			// dp1
-#define ADC_GPIO_IN3					kAdc16Chn3			// dp3 and dm3
-#define ADC_GPIO_IN4					kAdc16Chn3			// dp3
-#define ADC_GPIO_IN5					kAdc16Chn19			// dm0
-#define ADC_GPIO_IN6					kAdc16Chn0			// dp0
-#define ADC_GPIO_IN7					kAdc16Chn18
+#define ADC_ANALOG_IN1					kAdc16Chn12			// ADC1_SE12
+#define ADC_GPIO_IN1					kAdc16Chn20			// ADC1_DM1
+#define ADC_GPIO_IN2					kAdc16Chn1			// ADC1_DP1
+#define ADC_GPIO_IN3					kAdc16Chn3			// ADC1_DM3
+#define ADC_GPIO_IN4					kAdc16Chn3			// ADC1_DP3
+#define ADC_GPIO_IN5					kAdc16Chn19			// ADC1_DM0
+#define ADC_GPIO_IN6					kAdc16Chn0			// ADC1_DP0
+#define ADC_GPIO_IN7					kAdc16Chn18			// ADC1_SE18
 
-#define ADC_POWER_IN_ISR                kAdc16Chn16//kAdc16Chn3 (if GPIO6 is used)
+#define ADC_POWER_IN_ISR                kAdc16Chn16//kAdc16Chn3 (if GPIO6 is used) ADC0_SE16/ADC0_SE21
 
 #ifdef __cplusplus
 extern "C"

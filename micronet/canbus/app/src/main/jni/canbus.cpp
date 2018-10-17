@@ -30,7 +30,7 @@ jint JNI_OnLoad(JavaVM* vm, void* reserved)
         jclass infoClass = env->FindClass("com/micronet/canbus/Info");
         if(!infoClass)
         {
-            LOGE("Canbus Library mismatch, JNI '%s'\n", CANBUS_JNI_VER);
+            LOGE("Canbus Library mismatch, JNI '%s'\n", VEHICLE_BUS_JNI_VER);
             throwRuntimeException(env, "Canbus Library mismatch. Unable to load class com.micronet.canbus.Info");
             return -1;
 
@@ -39,10 +39,10 @@ jint JNI_OnLoad(JavaVM* vm, void* reserved)
         jstring versionString = (jstring)env->GetStaticObjectField(infoClass, versionField);
         const char * versionCString = env->GetStringUTFChars(versionString, 0);
 
-        if(strcmp(versionCString, CANBUS_JNI_VER))
+        if(strcmp(versionCString, VEHICLE_BUS_JNI_VER))
         {
-            LOGE("Canbus Library mismatch, JNI '%s' != JAR '%s'\n", CANBUS_JNI_VER, versionCString);
-            throwRuntimeException(env, "Canbus Library mismatch. canbus_api.jar does not match libcanbus.so");
+            LOGE("Canbus Library mismatch, JNI '%s' != JAR '%s'\n", VEHICLE_BUS_JNI_VER, versionCString);
+            throwRuntimeException(env, "Vehicle Bus Library mismatch. vehiclebus_api.jar does not match libvehiclebus.so");
             env->ReleaseStringUTFChars(versionString, versionCString);
             return -1;
         }
@@ -52,8 +52,11 @@ jint JNI_OnLoad(JavaVM* vm, void* reserved)
 
 
     // Initialization for FlexCAN Implementation
-    jclass cls = env->FindClass("com/micronet/canbus/CanbusFrame");
-    g_canbus.canbusFrameClass = (jclass)env->NewGlobalRef(cls);
+    jclass classPort1 = env->FindClass("com/micronet/canbus/CanbusFramePort1");
+    g_canbus.canbusFramePort1Class = (jclass)env->NewGlobalRef(classPort1);
+
+    jclass classPort2 = env->FindClass("com/micronet/canbus/CanbusFramePort2");
+    g_canbus.canbusFramePort2Class = (jclass)env->NewGlobalRef(classPort2);
 
     jclass j1708Class = env->FindClass("com/micronet/canbus/J1708Frame");
     g_canbus.j1708FrameClass = (jclass)env->NewGlobalRef(j1708Class);
@@ -64,12 +67,10 @@ jint JNI_OnLoad(JavaVM* vm, void* reserved)
     jfieldID typeExtendedRemoteField = env->GetStaticFieldID(clsCanbusFrameType, "EXTENDED_REMOTE", "Lcom/micronet/canbus/CanbusFrameType;");
     jfieldID typeStandardRemoteField = env->GetStaticFieldID(clsCanbusFrameType, "STANDARD_REMOTE", "Lcom/micronet/canbus/CanbusFrameType;");
 
-
     g_canbus.type_s = (jobject) env->NewGlobalRef(env->GetStaticObjectField(clsCanbusFrameType, typeStandardField));
     g_canbus.type_e = (jobject) env->NewGlobalRef(env->GetStaticObjectField(clsCanbusFrameType, typeExtendedField));
     g_canbus.type_s_r = (jobject) env->NewGlobalRef(env->GetStaticObjectField(clsCanbusFrameType, typeStandardRemoteField));
     g_canbus.type_e_r= (jobject) env->NewGlobalRef(env->GetStaticObjectField(clsCanbusFrameType, typeExtendedRemoteField));
-    // end FlexCAN
 
     return JNI_VERSION_1_6;
 }

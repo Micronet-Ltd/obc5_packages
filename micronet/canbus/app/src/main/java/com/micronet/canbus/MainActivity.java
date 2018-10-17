@@ -9,11 +9,17 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
-import com.micronet.canbus.Fragment.CanOverviewFragment;
+import com.micronet.canbus.Fragment.Can1OverviewFragment;
+import com.micronet.canbus.Fragment.Can2OverviewFragment;
 import com.micronet.canbus.Fragment.CanbusFramesFragment;
+import com.micronet.canbus.Fragment.J1708FramesFragment;
+import com.micronet.canbus.Fragment.J1708OverviewFragment;
+import com.micronet.canbus.Fragment.VehicleStatusFragment;
 
 import java.util.ArrayList;
 import java.util.List;
+
+//import com.micronet.canbus.Fragment.Can1OverviewFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -22,28 +28,36 @@ public class MainActivity extends AppCompatActivity {
     private ViewPager viewPager;
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 
 
-        viewPager = (ViewPager) findViewById(R.id.viewpager);
+        viewPager = findViewById(R.id.viewpager);
         setupViewPager(viewPager);
 
-        tabLayout = (TabLayout) findViewById(R.id.tabs);
+        tabLayout = findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
 
 
     }
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFrag(new CanOverviewFragment(), "Main");
-        adapter.addFrag(new CanbusFramesFragment(), "Frames");
-        /*adapter.addFrag(new CanbusMessageTypeFragment(), "Transmit Message");*/
+        adapter.addFrag(new Can1OverviewFragment(), "CAN1");
+        adapter.addFrag(new CanbusFramesFragment(), "CAN Frames");
+        adapter.addFrag(new Can2OverviewFragment(), "CAN2");
+        adapter.addFrag(new VehicleStatusFragment(), "Vehicle Status");
+        adapter.addFrag(new J1708OverviewFragment(), "J1708");
+        adapter.addFrag(new J1708FramesFragment(), "J1708 Frames");
         viewPager.setAdapter(adapter);
     }
 
@@ -82,21 +96,5 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-      /*    CanbusInterface canbus = new CanbusInterface();
-        CanbusSocket canbusSocket=new CanbusSocket();
-        CanbusInterface setFilters=new CanbusInterface();
-        ArrayList<CanbusHardwareFilter> filterList = new ArrayList<CanbusHardwareFilter>();
-        CanbusHardwareFilter[] filters;
-
-        // Up to 24 filters.
-        int[] ids = new int[]{65265, 61444, 61443, 65248, 65276, 61445, 65262, 65266, 60416 , 60160, 61444};
-        int[] mask = {0x1F000000,0x1FF00000};
-        int[] type={CanbusHardwareFilter.EXTENDED, CanbusHardwareFilter.EXTENDED};
-
-        filterList.add(new CanbusHardwareFilter(ids,mask, type));
-        filters = filterList.toArray(new CanbusHardwareFilter[0]);
-
-      canbus.create(filters);
-        canbusSocket.open();*/
     }
 }
